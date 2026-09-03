@@ -8,6 +8,7 @@ import { SurveyWizard } from './components/wizard/SurveyWizard';
 import { ResponsesModule } from './components/responses/ResponsesModule';
 import { AnalyticsModule } from './components/analytics/AnalyticsModule';
 import { MetasModule } from './components/metas/MetasModule';
+import { TeamSizingModule } from './components/team/TeamSizingModule';
 import { ExternalImportModule } from './components/import/ExternalImportModule';
 import { AccessPolicies } from './components/registrations/AccessPolicies';
 import { CollaboratorForm } from './components/registrations/CollaboratorForm';
@@ -16,12 +17,34 @@ import { TwoFactorModal } from './components/auth/TwoFactorModal';
 import { ActionHistory } from './components/audit/ActionHistory';
 import { ConnectionSyncNotification } from './components/common/ConnectionSyncNotification';
 import { ResearcherEnvironment } from './components/researcher/ResearcherEnvironment';
+import { LoginScreen } from './components/auth/LoginScreen';
+import { PWAFirstVisitMobilePrompt } from './components/pwa/PWAFirstVisitMobilePrompt';
 import { ShieldAlert, ArrowLeft } from 'lucide-react';
 
 const MainContent: React.FC = () => {
-  const { activeModule, setActiveModule, hasPermission, currentProfile, darkMode } = useApp();
+  const {
+    isAuthenticated,
+    activeModule,
+    setActiveModule,
+    hasPermission,
+    currentProfile,
+    darkMode,
+  } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [twoFactorModalOpen, setTwoFactorModalOpen] = useState(false);
+
+  if (!isAuthenticated) {
+    return (
+      <div
+        className={`min-h-screen flex flex-col font-sans transition-colors selection:bg-blue-600 selection:text-white ${
+          darkMode ? 'bg-[#0a0b10] text-[#e2e8f0]' : 'bg-[#f8fafc] text-[#0f172a]'
+        }`}
+      >
+        <LoginScreen />
+        <PWAFirstVisitMobilePrompt onProceedToLogin={() => {}} />
+      </div>
+    );
+  }
 
   const isResearcher =
     currentProfile?.id === 'prof_pesq' ||
@@ -46,6 +69,9 @@ const MainContent: React.FC = () => {
       case 'metas':
       case 'meta':
         return hasPermission('meta_acesso');
+      case 'dimensionamento':
+      case 'equipe':
+        return isResearcher ? true : hasPermission('meta_acesso');
       case 'importacao':
         return hasPermission('importacao_acesso');
       case 'politicas_acesso':
@@ -105,6 +131,9 @@ const MainContent: React.FC = () => {
       case 'metas':
       case 'meta':
         return <MetasModule />;
+      case 'dimensionamento':
+      case 'equipe':
+        return <TeamSizingModule />;
       case 'importacao':
         return <ExternalImportModule />;
       case 'politicas_acesso':

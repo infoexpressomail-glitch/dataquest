@@ -1,11 +1,12 @@
-import { Survey } from '../types';
+import { Survey, InterviewSubmission } from '../types';
 
-const DB_NAME = 'dataquest_survey_cache_v1';
-const DB_VERSION = 1;
+const DB_NAME = 'dataquest_survey_cache_v2';
+const DB_VERSION = 2;
 
 export const STORES = {
   CURRENT_DRAFT: 'current_survey_draft',
   OFFLINE_SURVEYS: 'offline_surveys_store',
+  OFFLINE_SUBMISSIONS: 'offline_submissions_store',
   SYNC_LOGS: 'supabase_sync_logs',
 };
 
@@ -64,6 +65,10 @@ function openDB(): Promise<IDBDatabase> {
 
       if (!db.objectStoreNames.contains(STORES.OFFLINE_SURVEYS)) {
         db.createObjectStore(STORES.OFFLINE_SURVEYS, { keyPath: 'id' });
+      }
+
+      if (!db.objectStoreNames.contains(STORES.OFFLINE_SUBMISSIONS)) {
+        db.createObjectStore(STORES.OFFLINE_SUBMISSIONS, { keyPath: 'id' });
       }
 
       if (!db.objectStoreNames.contains(STORES.SYNC_LOGS)) {
@@ -318,5 +323,71 @@ export async function getSyncLogsFromDB(limit = 20): Promise<SyncLogEntry[]> {
   } catch (err) {
     console.warn('[IndexedDB] Fallback getSyncLogsFromDB:', err);
     return memoryFallback.logs.slice(0, limit);
+  }
+}
+
+// ==========================================
+// 4. Offline Interview Submissions in IndexedDB
+// ==========================================
+
+export interface OfflineStoredSubmission {
+  id: string;
+  submission: InterviewSubmission;
+  savedAt: string;
+  pendingSync: boolean;
+}
+
+export async function saveOfflineSubmissionToDB(submission: InterviewSubmission): Promise<void> {
+  const item: OfflineStoredSubmission = {
+    id: submission.id,
+    submission,
+    savedAt: new Date().toISOString(),
+    pendingSync: true,
+  };
+
+  try {
+    const db = await openDB();
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction([STORES.OFFLINE_SUBMISSIONS], 'readwrite');
+      const store = transaction.objectStore(STORES.OFFLINE_SUBMISSIONS);
+      const req = store.put(item);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  } catch (err) {
+    console.warn('[IndexedDB] Fallback saveOfflineSubmissionToDB:', err);
+    try {
+      const raw = localStorage.getItem('dataquest_offline_submissions_browser') || '[]';
+      const parsed: OfflineStoredSubmission[] = JSON.parse(raw);
+      parsed.unshift(item);
+      localStorage.setItem('dataquest_offline_submissions_browser', JSON.stringify(parsed));
+    } catch {
+      // ignore
+    }
+  }
+}
+
+export async function getAllPendingOfflineSubmissionsFromDB(): Promise<OfflineStoredSubmission[]> {
+  try {
+    const db = await openDB();
+    return await new Promise<OfflineStoredSubmission[]>((resolve, reject) => {
+      const transaction = db.transaction([STORES.OFFLINE_SUBMISSIONS], 'readonly');
+      const store = transaction.objectStore(STORES.OFFLINE_SUBMISSIONS);
+      const req = store.getAll();
+
+      req.onsuccess = () => {
+        const results = (req.result || []) as OfflineStoredSubmission[];
+        resolve(results.filter((i) => i.pendingSync));
+      };
+      req.onerror = () => reject(req.error);
+    });
+  } catch (err) {
+    console.warn('[IndexedDB] Fallback getAllPendingOfflineSubmissionsFromDB:', err);
+    try {
+      const raw = localStorage.getItem('dataquest_offline_submissions_browser') || '[]';
+      return JSON.parse(raw);
+    } catch {
+      return [];
+    }
   }
 }

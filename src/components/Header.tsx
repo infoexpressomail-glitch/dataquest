@@ -47,6 +47,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
     connectionState,
     syncProgress,
     pendingIndexedDbCount,
+    logout,
   } = useApp();
 
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -302,7 +303,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                 </div>
               </div>
 
-              <div className="border-t border-slate-800 pt-2">
+              <div className="border-t border-slate-800 pt-2 space-y-1">
                 <button
                   id="btn-header-open-2fa"
                   onClick={() => {
@@ -313,6 +314,18 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                 >
                   <KeyRound className="h-3.5 w-3.5 text-blue-400" />
                   <span>Configurar 2FA (Dois Fatores)</span>
+                </button>
+
+                <button
+                  id="btn-header-logout"
+                  onClick={() => {
+                    setUserDropdownOpen(false);
+                    logout();
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-rose-400 hover:bg-rose-500/15 transition font-semibold"
+                >
+                  <LogOut className="h-3.5 w-3.5 text-rose-400" />
+                  <span>Sair do Sistema</span>
                 </button>
               </div>
             </div>

@@ -53,12 +53,12 @@ export const ActionHistory: React.FC = () => {
       }
 
       // Target type filter
-      if (selectedTargetType !== 'all' && log.alvo.tipo !== selectedTargetType) {
+      if (selectedTargetType !== 'all' && log.alvo?.tipo !== selectedTargetType) {
         return false;
       }
 
       // User filter
-      if (selectedUserLogin !== 'all' && log.autor.login !== selectedUserLogin) {
+      if (selectedUserLogin !== 'all' && log.autor?.login !== selectedUserLogin) {
         return false;
       }
 
@@ -77,14 +77,14 @@ export const ActionHistory: React.FC = () => {
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
         const matchesAuthor =
-          log.autor.nome.toLowerCase().includes(term) ||
-          log.autor.login.toLowerCase().includes(term) ||
-          log.autor.perfil.toLowerCase().includes(term);
+          (log.autor?.nome && log.autor.nome.toLowerCase().includes(term)) ||
+          (log.autor?.login && log.autor.login.toLowerCase().includes(term)) ||
+          (log.autor?.perfil && log.autor.perfil.toLowerCase().includes(term));
         const matchesTarget =
-          log.alvo.identificador.toLowerCase().includes(term) ||
-          (log.alvo.nome && log.alvo.nome.toLowerCase().includes(term));
-        const matchesDescription = log.descricaoDetalhada.toLowerCase().includes(term);
-        const matchesTitle = log.tituloAcao.toLowerCase().includes(term);
+          (log.alvo?.identificador && log.alvo.identificador.toLowerCase().includes(term)) ||
+          (log.alvo?.nome && log.alvo.nome.toLowerCase().includes(term));
+        const matchesDescription = log.descricaoDetalhada?.toLowerCase().includes(term);
+        const matchesTitle = log.tituloAcao?.toLowerCase().includes(term);
         const matchesReason =
           log.motivoConformidade && log.motivoConformidade.toLowerCase().includes(term);
         const matchesChanges = log.alteracoes?.some(
@@ -114,7 +114,7 @@ export const ActionHistory: React.FC = () => {
   const totalLogs = auditLogs.length;
   const surveyLogsCount = auditLogs.filter((l) => l.categoria === 'PESQUISA').length;
   const responseLogsCount = auditLogs.filter((l) => l.categoria === 'RESPOSTA').length;
-  const uniqueAuthorsCount = new Set(auditLogs.map((l) => l.autor.login)).size;
+  const uniqueAuthorsCount = new Set(auditLogs.map((l) => l.autor?.login || 'sys')).size;
 
   const handleCopyHash = (id: string, hash: string) => {
     navigator.clipboard.writeText(hash);
@@ -424,16 +424,16 @@ export const ActionHistory: React.FC = () => {
 
                     {/* Target identifier tag */}
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700/80">
-                      {log.alvo.tipo === 'pesquisa' ? (
+                      {log.alvo?.tipo === 'pesquisa' ? (
                         <FileQuestion className="h-3 w-3 text-cyan-400" />
                       ) : (
                         <MessageSquare className="h-3 w-3 text-purple-400" />
                       )}
-                      <span>{log.alvo.identificador}</span>
+                      <span>{log.alvo?.identificador || 'N/A'}</span>
                     </span>
 
                     {/* Target survey name if present */}
-                    {log.alvo.nome && (
+                    {log.alvo?.nome && (
                       <span className="text-xs text-slate-400 font-medium truncate max-w-xs sm:max-w-md">
                         • {log.alvo.nome}
                       </span>
@@ -462,18 +462,18 @@ export const ActionHistory: React.FC = () => {
                         Quem Alterou
                       </span>
                       <span className="text-[10px] font-mono text-slate-500">
-                        IP: {log.autor.ip || '127.0.0.1'}
+                        IP: {log.autor?.ip || '127.0.0.1'}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3 pt-1">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-xs shrink-0">
-                        {log.autor.nome.slice(0, 2).toUpperCase()}
+                        {(log.autor?.nome || 'U').slice(0, 2).toUpperCase()}
                       </div>
                       <div className="overflow-hidden min-w-0 flex-1">
-                        <p className="text-xs font-bold text-white truncate">{log.autor.nome}</p>
+                        <p className="text-xs font-bold text-white truncate">{log.autor?.nome || 'Usuário'}</p>
                         <p className="text-[11px] text-slate-400 truncate">
-                          Login: <span className="font-mono text-slate-300">@{log.autor.login}</span>
+                          Login: <span className="font-mono text-slate-300">@{log.autor?.login || 'usuario'}</span>
                         </p>
                       </div>
                     </div>
@@ -481,7 +481,7 @@ export const ActionHistory: React.FC = () => {
                     <div className="pt-1.5 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
                       <span className="text-slate-500">Perfil:</span>
                       <span className="font-semibold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded text-[10px] border border-blue-500/20">
-                        {log.autor.perfil}
+                        {log.autor?.perfil || 'Operador'}
                       </span>
                     </div>
                   </div>
@@ -638,7 +638,7 @@ export const ActionHistory: React.FC = () => {
                 <div className="flex justify-between items-center text-slate-400">
                   <span className="font-semibold">Responsável:</span>
                   <span className="text-slate-200">
-                    {inspectingLog.autor.nome} ({inspectingLog.autor.login} - {inspectingLog.autor.perfil})
+                    {inspectingLog.autor?.nome || 'Sistema'} ({inspectingLog.autor?.login || 'sistema'} - {inspectingLog.autor?.perfil || 'Operador'})
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-slate-400">
@@ -648,7 +648,7 @@ export const ActionHistory: React.FC = () => {
                 <div className="flex justify-between items-center text-slate-400">
                   <span className="font-semibold">Alvo Auditado:</span>
                   <span className="text-slate-200">
-                    {inspectingLog.alvo.identificador} ({inspectingLog.alvo.nome || inspectingLog.alvo.tipo})
+                    {inspectingLog.alvo?.identificador || 'N/A'} ({inspectingLog.alvo?.nome || inspectingLog.alvo?.tipo || 'sistema'})
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 pt-1 border-t border-slate-800 text-slate-400">

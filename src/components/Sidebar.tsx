@@ -11,12 +11,15 @@ import {
   FolderCog,
   ShieldCheck,
   Users,
+  Calculator,
+  UserCheck,
   ChevronDown,
   ChevronRight,
   Smartphone,
   Sparkles,
   RotateCcw,
   History,
+  LogOut,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -34,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
     currentUser,
     resetToDefaults,
     auditLogs,
+    logout,
   } = useApp();
 
   const [cadastrosOpen, setCadastrosOpen] = useState(true);
@@ -128,6 +132,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
               </button>
 
               <button
+                id="menu-item-pesquisador-dimensionamento"
+                onClick={() => handleNavigate('dimensionamento')}
+                className={navItemClass(activeModule === 'dimensionamento')}
+              >
+                <Calculator className="h-4 w-4 shrink-0 text-blue-400" />
+                <span>{t('teamSizing')}</span>
+              </button>
+
+              <button
                 id="menu-item-pesquisador-auditoria"
                 onClick={() => handleNavigate('historico_acoes')}
                 className={navItemClass(activeModule === 'historico_acoes')}
@@ -200,6 +213,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
             >
               <Target className="h-4 w-4 shrink-0" />
               <span>{t('metas')}</span>
+            </button>
+          )}
+
+          {/* Módulo de Dimensionamento de Equipe */}
+          {hasPermission('meta_acesso') && (
+            <button
+              id="menu-item-dimensionamento"
+              onClick={() => handleNavigate('dimensionamento')}
+              className={navItemClass(activeModule === 'dimensionamento')}
+            >
+              <Calculator className="h-4 w-4 shrink-0 text-blue-400" />
+              <span>{t('teamSizing')}</span>
             </button>
           )}
 
@@ -321,6 +346,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
               <p className="text-[10px] text-slate-400 truncate">Perfil: {currentProfile?.name}</p>
             </div>
           </div>
+
+          <button
+            id="btn-sidebar-logout"
+            onClick={() => {
+              onCloseMobile();
+              logout();
+            }}
+            title="Encerrar sessão de acesso"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-colors"
+          >
+            <LogOut className="h-3.5 w-3.5 text-rose-400" />
+            <span>Sair do Sistema</span>
+          </button>
 
           <button
             id="btn-reset-demo-data"

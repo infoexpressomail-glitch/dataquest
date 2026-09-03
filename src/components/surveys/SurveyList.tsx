@@ -109,20 +109,33 @@ export const SurveyList: React.FC = () => {
   const canExport = hasPermission('pesquisa_exportar_resultados');
   const accessAllWithoutAssociation = hasPermission('pesquisa_acessa_todas_sem_associacao');
 
+  const isResearcher =
+    currentProfile?.id === 'prof_pesq' ||
+    currentProfile?.name.toLowerCase().includes('pesquisador');
+
   // Filter surveys based on association if not permitted to see all
   const filteredSurveys = surveys.filter((s) => {
-    // Association check
-    if (!accessAllWithoutAssociation) {
+    // Researcher restriction: only active surveys assigned to this researcher; past/inactive are hidden
+    if (isResearcher) {
+      if (s.status !== 'ativa') return false;
       const isAssociated =
         s.pesquisadoresIds.includes(currentUser.id) ||
         (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id));
       if (!isAssociated) return false;
-    }
+    } else {
+      // Association check for non-researchers without global access
+      if (!accessAllWithoutAssociation) {
+        const isAssociated =
+          s.pesquisadoresIds.includes(currentUser.id) ||
+          (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id));
+        if (!isAssociated) return false;
+      }
 
-    // Status filter
-    if (activeTab === 'ativas' && s.status !== 'ativa') return false;
-    if (activeTab === 'inativas' && s.status !== 'inativa') return false;
-    if (activeTab === 'excluidas' && s.status !== 'excluida') return false;
+      // Status filter
+      if (activeTab === 'ativas' && s.status !== 'ativa') return false;
+      if (activeTab === 'inativas' && s.status !== 'inativa') return false;
+      if (activeTab === 'excluidas' && s.status !== 'excluida') return false;
+    }
 
     // Search term
     if (searchTerm.trim()) {
@@ -268,44 +281,55 @@ export const SurveyList: React.FC = () => {
       {/* Search Bar & Status Tabs */}
       <div className="flex flex-col justify-between gap-3 border-b border-slate-800 pb-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
-          <button
-            id="tab-surveys-active"
-            onClick={() => setActiveTab('ativas')}
-            className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
-              activeTab === 'ativas'
-                ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            Ativas ({surveys.filter((s) => s.status === 'ativa').length})
-          </button>
+          {isResearcher ? (
+            <div className="flex items-center gap-2">
+              <span className="rounded-lg px-3.5 py-1.5 text-xs font-bold border bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-xs flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Ativas Atribuídas ({filteredSurveys.length})
+              </span>
+            </div>
+          ) : (
+            <>
+              <button
+                id="tab-surveys-active"
+                onClick={() => setActiveTab('ativas')}
+                className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
+                  activeTab === 'ativas'
+                    ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
+                    : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                Ativas ({surveys.filter((s) => s.status === 'ativa').length})
+              </button>
 
-          {canViewInactive && (
-            <button
-              id="tab-surveys-inactive"
-              onClick={() => setActiveTab('inativas')}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
-                activeTab === 'inativas'
-                  ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                  : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              Inativas ({surveys.filter((s) => s.status === 'inativa').length})
-            </button>
-          )}
+              {canViewInactive && (
+                <button
+                  id="tab-surveys-inactive"
+                  onClick={() => setActiveTab('inativas')}
+                  className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
+                    activeTab === 'inativas'
+                      ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
+                      : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  Inativas ({surveys.filter((s) => s.status === 'inativa').length})
+                </button>
+              )}
 
-          {canViewExcluded && (
-            <button
-              id="tab-surveys-deleted"
-              onClick={() => setActiveTab('excluidas')}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
-                activeTab === 'excluidas'
-                  ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                  : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              Excluídas ({surveys.filter((s) => s.status === 'excluida').length})
-            </button>
+              {canViewExcluded && (
+                <button
+                  id="tab-surveys-deleted"
+                  onClick={() => setActiveTab('excluidas')}
+                  className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
+                    activeTab === 'excluidas'
+                      ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
+                      : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  Excluídas ({surveys.filter((s) => s.status === 'excluida').length})
+                </button>
+              )}
+            </>
           )}
         </div>
 

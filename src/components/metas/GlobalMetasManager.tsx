@@ -33,6 +33,7 @@ import {
   Check,
   Percent,
 } from 'lucide-react';
+import { FieldTeamSizingCard } from './FieldTeamSizingCard';
 
 interface GlobalMetasManagerProps {
   activeSurvey: Survey;
@@ -49,6 +50,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
     saveGlobalTarget,
     deleteGlobalTarget,
     assignResearcherQuota,
+    saveSurvey,
   } = useApp();
 
   const [expandedTargetId, setExpandedTargetId] = useState<string | null>(null);
@@ -242,6 +244,18 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Dimensionamento de Equipe em Campo & Quantidade Mínima de Pesquisadores */}
+      <FieldTeamSizingCard
+        survey={activeSurvey}
+        submissions={submissions}
+        onUpdateSurveyParams={(params) => {
+          saveSurvey({
+            ...activeSurvey,
+            ...params,
+          });
+        }}
+      />
+
       {/* Top Banner & KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">

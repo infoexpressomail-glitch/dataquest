@@ -192,6 +192,17 @@ export interface Survey {
   atualizadaEm: string;
   dataInicio?: string; // Data de início do campo (YYYY-MM-DD)
   dataFim?: string; // Data limite/término do campo (YYYY-MM-DD)
+  // Plano Amostral e Dimensionamento de Equipe em Campo
+  metaTotalColetas?: number; // Meta total estabelecida de coletas (amostra total N)
+  nivelConfiancaPercentual?: number; // Nível/margem de confiança (padrão: 95%)
+  margemErroPercentual?: number; // Margem de erro máxima aceitável (padrão: ±3.5%)
+  populacaoUniverso?: number; // População total finita (universo amostral, opcional)
+  metaSexoMasculino?: number; // Quota de sexo masculino (soma com feminino = total de coletas)
+  metaSexoFeminino?: number; // Quota de sexo feminino (soma com masculino = total de coletas)
+  metaSexoOutro?: number; // Quota de sexo outro/não binário
+  diasPrevistosCampo?: number; // Dias úteis estimados para o trabalho de campo (padrão: 3 a 5)
+  mediaColetasDiaPesquisador?: number; // Capacidade média diária por pesquisador (padrão: 15 entrevistas/dia)
+  reservaTecnicaPercentual?: number; // Margem de segurança de amostragem (padrão: 15%)
   // Configurações de Gravação de Áudio de Campo
   habilitarGravacaoAudio?: boolean; // Padrão true
   gravarAudioAPartirPerguntaId?: string; // ID da pergunta a partir de onde será gravada (se vazio, grava desde o início)

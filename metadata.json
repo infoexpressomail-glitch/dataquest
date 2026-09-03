@@ -1,7 +1,7 @@
 {
   "name": "DataQuest - Sistema de Gestão de Pesquisas",
   "description": "Sistema completo de criação e gestão de questionários de pesquisas com lógica condicional, metas, exportação CSV/PDF, controle de acesso, análise em tempo real e histórico de ações para auditoria e conformidade.",
-  "requestFramePermissions": ["geolocation", "microphone"],
+  "requestFramePermissions": ["geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
 

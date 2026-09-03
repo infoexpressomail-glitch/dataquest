@@ -6,18 +6,23 @@ import {
   Trash2,
   Globe2,
   User,
+  Users,
   Smartphone,
   Layers,
   Sparkles,
   Info,
+  Calculator,
+  ArrowRight,
 } from 'lucide-react';
 import { MetaTarget, ConditionOperator } from '../../types';
 import { GlobalMetasManager } from './GlobalMetasManager';
 import { ResearcherIndividualGoalsView } from './ResearcherIndividualGoalsView';
 import { MobileMetasDashboard } from './MobileMetasDashboard';
+import { FieldTeamSizingCard } from './FieldTeamSizingCard';
+import { calculateTeamSizing } from '../../utils/crosstabUtils';
 
 export const MetasModule: React.FC = () => {
-  const { surveys, saveSurvey, hasPermission } = useApp();
+  const { surveys, submissions, saveSurvey, hasPermission, setActiveModule } = useApp();
 
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>(surveys[0]?.id || '');
   const activeSurvey = surveys.find((s) => s.id === selectedSurveyId) || surveys[0];
@@ -25,9 +30,13 @@ export const MetasModule: React.FC = () => {
   const canManageMetas = hasPermission('meta_criar_alterar_excluir');
 
   // Se o usuário for pesquisador (sem permissão de gestão), abre por padrão no progresso individual
-  const [activeTab, setActiveTab] = useState<'globais' | 'individual' | 'mobile' | 'questoes'>(
+  const [activeTab, setActiveTab] = useState<'globais' | 'dimensionamento' | 'individual' | 'mobile' | 'questoes'>(
     canManageMetas ? 'globais' : 'individual'
   );
+
+  const teamSizing = activeSurvey
+    ? calculateTeamSizing(activeSurvey, submissions)
+    : null;
 
   // New Meta por questão state
   const [perguntaId, setPerguntaId] = useState<string>('');
@@ -138,6 +147,30 @@ export const MetasModule: React.FC = () => {
 
         <button
           type="button"
+          onClick={() => setActiveTab('dimensionamento')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
+            activeTab === 'dimensionamento'
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+          }`}
+        >
+          <Users className="h-4 w-4" />
+          <span>Dimensionamento de Pesquisadores</span>
+          {teamSizing && (
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] ${
+                activeTab === 'dimensionamento'
+                  ? 'bg-blue-800 text-blue-100'
+                  : 'bg-slate-800 text-slate-300'
+              }`}
+            >
+              Min: {teamSizing.minPesquisadores}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab('individual')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'individual'
@@ -189,6 +222,42 @@ export const MetasModule: React.FC = () => {
       {/* Submodule View 1: Gerenciamento de Metas Globais */}
       {activeTab === 'globais' && activeSurvey && (
         <GlobalMetasManager activeSurvey={activeSurvey} canManageMetas={canManageMetas} />
+      )}
+
+      {/* Submodule View: Dimensionamento de Equipe em Campo */}
+      {activeTab === 'dimensionamento' && activeSurvey && (
+        <div className="space-y-4">
+          <div className="p-4 rounded-xl bg-blue-600/10 border border-blue-500/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Calculator className="h-4 w-4 text-blue-400" />
+                <span>Módulo Dedicado de Dimensionamento & Alocação de Equipe</span>
+              </h4>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Acesse a matriz completa de sensibilidade, alocação rápida de colaboradores e exportações multiformato.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveModule('dimensionamento')}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-xs hover:bg-blue-500 transition-colors whitespace-nowrap"
+            >
+              <span>Abrir Módulo de Dimensionamento</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          <FieldTeamSizingCard
+            survey={activeSurvey}
+            submissions={submissions}
+            onUpdateSurveyParams={(params) => {
+              saveSurvey({
+                ...activeSurvey,
+                ...params,
+              });
+            }}
+          />
+        </div>
       )}
 
       {/* Submodule View 2: Meu Progresso Individual em Tempo Real */}

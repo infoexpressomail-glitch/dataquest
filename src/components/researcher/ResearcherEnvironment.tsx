@@ -59,19 +59,17 @@ export const ResearcherEnvironment: React.FC = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
 
-  // Filter surveys assigned to this researcher or all active surveys if linked
+  // Filter surveys strictly: only active surveys assigned to this researcher; past/inactive surveys do not appear
   const researcherSurveys = surveys.filter((s) => {
-    if (s.status === 'excluida') return false;
-    // Check if directly linked in collaborator's profile
-    if (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id)) {
-      return true;
-    }
-    // If researcher is assigned in survey's pesquisadoresIds
-    if (s.pesquisadoresIds && s.pesquisadoresIds.includes(currentUser.id)) {
-      return true;
-    }
-    // Fallback: if no specific surveys linked, allow active surveys
-    return s.status === 'ativa';
+    // Only ACTIVE surveys
+    if (s.status !== 'ativa') return false;
+
+    // Must be assigned to this researcher
+    const isAssigned =
+      (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id)) ||
+      (s.pesquisadoresIds && s.pesquisadoresIds.includes(currentUser.id));
+
+    return Boolean(isAssigned);
   });
 
   // Filter submissions made by this researcher
