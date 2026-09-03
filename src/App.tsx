@@ -15,18 +15,25 @@ import { CollectionSimulator } from './components/simulator/CollectionSimulator'
 import { TwoFactorModal } from './components/auth/TwoFactorModal';
 import { ActionHistory } from './components/audit/ActionHistory';
 import { ConnectionSyncNotification } from './components/common/ConnectionSyncNotification';
+import { ResearcherEnvironment } from './components/researcher/ResearcherEnvironment';
 import { ShieldAlert, ArrowLeft } from 'lucide-react';
 
 const MainContent: React.FC = () => {
-  const { activeModule, setActiveModule, hasPermission } = useApp();
+  const { activeModule, setActiveModule, hasPermission, currentProfile, darkMode } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [twoFactorModalOpen, setTwoFactorModalOpen] = useState(false);
+
+  const isResearcher =
+    currentProfile?.id === 'prof_pesq' ||
+    currentProfile?.name.toLowerCase().includes('pesquisador');
 
   // Determine permission requirement for current active module
   const checkModuleAccess = (module: string): boolean => {
     switch (module) {
+      case 'pesquisador':
+        return true;
       case 'home':
-        return hasPermission('home_acesso');
+        return isResearcher ? true : hasPermission('home_acesso');
       case 'pesquisas':
       case 'pesquisa':
         return hasPermission('pesquisa_acesso');
@@ -82,8 +89,10 @@ const MainContent: React.FC = () => {
     }
 
     switch (activeModule) {
+      case 'pesquisador':
+        return <ResearcherEnvironment />;
       case 'home':
-        return <HomeDashboard />;
+        return isResearcher ? <ResearcherEnvironment /> : <HomeDashboard />;
       case 'pesquisas':
       case 'pesquisa':
         return <SurveyList />;
@@ -113,7 +122,11 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0b10] text-[#e2e8f0] pb-10 flex flex-col font-sans transition-colors selection:bg-blue-600 selection:text-white">
+    <div
+      className={`min-h-screen pb-10 flex flex-col font-sans transition-colors selection:bg-blue-600 selection:text-white ${
+        darkMode ? 'bg-[#0a0b10] text-[#e2e8f0]' : 'bg-[#f8fafc] text-[#0f172a]'
+      }`}
+    >
       {/* Top Header */}
       <Header
         onToggleMobileSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
@@ -133,7 +146,13 @@ const MainContent: React.FC = () => {
       </div>
 
       {/* Bottom Status/Language Bar (Immersive UI) */}
-      <footer className="fixed bottom-0 left-0 md:left-64 right-0 h-8 bg-[#0a0b10]/95 backdrop-blur-md border-t border-slate-800/80 px-4 sm:px-6 flex items-center justify-between z-20 text-[10px] text-slate-500">
+      <footer
+        className={`fixed bottom-0 left-0 md:left-64 right-0 h-8 backdrop-blur-md border-t px-4 sm:px-6 flex items-center justify-between z-20 text-[10px] transition-colors ${
+          darkMode
+            ? 'bg-[#0a0b10]/95 border-slate-800/80 text-slate-500'
+            : 'bg-white/95 border-slate-200 text-slate-600 shadow-xs'
+        }`}
+      >
         <div className="flex items-center gap-3 font-semibold">
           <span className="text-emerald-400 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>

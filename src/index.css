@@ -2,25 +2,212 @@
 
 @layer base {
   body {
-    background-color: #0a0b10;
-    color: #e2e8f0;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  /* Immersive dark scrollbars */
+  html.dark body {
+    background-color: #0a0b10;
+    color: #e2e8f0;
+  }
+
+  html.light body,
+  html:not(.dark) body {
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+
+  /* Scrollbars */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-  ::-webkit-scrollbar-track {
+  
+  html.dark ::-webkit-scrollbar-track {
     background: #0a0b10;
   }
-  ::-webkit-scrollbar-thumb {
+  html.dark ::-webkit-scrollbar-thumb {
     background: #1e2230;
     border-radius: 9999px;
   }
-  ::-webkit-scrollbar-thumb:hover {
+  html.dark ::-webkit-scrollbar-thumb:hover {
     background: #2b3245;
+  }
+
+  html.light ::-webkit-scrollbar-track,
+  html:not(.dark) ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  html.light ::-webkit-scrollbar-thumb,
+  html:not(.dark) ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  html.light ::-webkit-scrollbar-thumb:hover,
+  html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
 }
 
+/* ==========================================================================
+   LIGHT MODE COMPREHENSIVE OVERRIDES
+   Ensures seamless, high-contrast, polished UI when switching to Light Mode
+   ========================================================================== */
+html.light,
+html:not(.dark) {
+  color-scheme: light;
+}
+
+/* Background overrides for Light Theme */
+html.light .bg-\[\#0a0b10\],
+html:not(.dark) .bg-\[\#0a0b10\] {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-\[\#0a0b10\]\/90,
+html.light .bg-\[\#0a0b10\]\/95,
+html:not(.dark) .bg-\[\#0a0b10\]\/90,
+html:not(.dark) .bg-\[\#0a0b10\]\/95 {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+}
+
+html.light .bg-\[\#0d0e14\],
+html:not(.dark) .bg-\[\#0d0e14\] {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-\[\#111218\],
+html:not(.dark) .bg-\[\#111218\] {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-\[\#16171d\],
+html.light .bg-\[\#16171d\]\/80,
+html.light .bg-\[\#16171d\]\/90,
+html:not(.dark) .bg-\[\#16171d\],
+html:not(.dark) .bg-\[\#16171d\]\/80,
+html:not(.dark) .bg-\[\#16171d\]\/90 {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-\[\#1b1c24\],
+html.light .bg-\[\#1e2029\],
+html:not(.dark) .bg-\[\#1b1c24\],
+html:not(.dark) .bg-\[\#1e2029\] {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-slate-900,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/80,
+html:not(.dark) .bg-slate-900,
+html:not(.dark) .bg-slate-900\/50,
+html:not(.dark) .bg-slate-900\/80 {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-slate-950,
+html:not(.dark) .bg-slate-950 {
+  background-color: #f1f5f9 !important;
+}
+
+/* Border overrides for Light Theme */
+html.light .border-slate-800,
+html.light .border-slate-800\/80,
+html.light .border-slate-800\/60,
+html.light .border-slate-800\/50,
+html:not(.dark) .border-slate-800,
+html:not(.dark) .border-slate-800\/80,
+html:not(.dark) .border-slate-800\/60,
+html:not(.dark) .border-slate-800\/50 {
+  border-color: #e2e8f0 !important;
+}
+
+html.light .border-slate-700,
+html.light .border-slate-700\/50,
+html:not(.dark) .border-slate-700,
+html:not(.dark) .border-slate-700\/50 {
+  border-color: #cbd5e1 !important;
+}
+
+/* Typography contrast in Light Theme */
+html.light .text-white,
+html:not(.dark) .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100,
+html:not(.dark) .text-slate-100 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-200,
+html:not(.dark) .text-slate-200 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-300,
+html:not(.dark) .text-slate-300 {
+  color: #475569 !important;
+}
+
+html.light .text-slate-400,
+html:not(.dark) .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.light .text-slate-500,
+html:not(.dark) .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Form Controls in Light Theme */
+html.light input:not([type="checkbox"]):not([type="radio"]),
+html.light select,
+html.light textarea,
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) select,
+html:not(.dark) textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder,
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Hover states in Light Theme */
+html.light .hover\:bg-slate-800:hover,
+html:not(.dark) .hover\:bg-slate-800:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light .hover\:bg-slate-700:hover,
+html:not(.dark) .hover\:bg-slate-700:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Modal and Dropdown surfaces in Light Theme */
+html.light .bg-black\/80,
+html.light .bg-black\/70,
+html.light .bg-black\/60,
+html:not(.dark) .bg-black\/80,
+html:not(.dark) .bg-black\/70,
+html:not(.dark) .bg-black\/60 {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+}
+
+html.light .shadow-2xl,
+html.light .shadow-xl,
+html.light .shadow-lg,
+html:not(.dark) .shadow-2xl,
+html:not(.dark) .shadow-xl,
+html:not(.dark) .shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04) !important;
+}

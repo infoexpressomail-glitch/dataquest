@@ -15,6 +15,7 @@ import {
   Clock,
   Sparkles,
 } from 'lucide-react';
+import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
 
 export const HomeDashboard: React.FC = () => {
   const {
@@ -194,6 +195,9 @@ export const HomeDashboard: React.FC = () => {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Coluna 1 & 2: Pesquisas Ativas e Monitoramento */}
         <div className="space-y-6 lg:col-span-2">
+          {/* Gráfico de Evolução da Pesquisa em Andamento e Anteriores */}
+          <SurveyEvolutionCard surveys={surveys} submissions={submissions} />
+
           <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div>

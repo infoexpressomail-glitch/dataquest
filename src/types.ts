@@ -109,6 +109,7 @@ export interface Question {
   escalaMinLabel?: string;
   escalaMaxLabel?: string;
   ordem: number;
+  iniciarGravacaoAqui?: boolean; // Flag: Iniciar a gravação de áudio a partir desta pergunta
 }
 
 export type ConditionOperator = 'igual' | 'diferente' | 'contem' | 'maior_que' | 'menor_que';
@@ -189,6 +190,12 @@ export interface Survey {
   versao: number;
   criadaEm: string;
   atualizadaEm: string;
+  dataInicio?: string; // Data de início do campo (YYYY-MM-DD)
+  dataFim?: string; // Data limite/término do campo (YYYY-MM-DD)
+  // Configurações de Gravação de Áudio de Campo
+  habilitarGravacaoAudio?: boolean; // Padrão true
+  gravarAudioAPartirPerguntaId?: string; // ID da pergunta a partir de onde será gravada (se vazio, grava desde o início)
+  tempoLimiteGravacaoMinutos?: number; // Padrão: 2 minutos quando não especificado, máximo 10 minutos (1 a 10 min)
   // Campos de Sincronização com o Servidor Central
   emAndamento?: boolean; // Indica se a pesquisa está em andamento (coletando dados / em campo)
   serverVersion?: number; // Versão persistida no servidor
@@ -239,6 +246,9 @@ export interface InterviewSubmission {
     tamanhoKb: number;
     nomeArquivo: string;
     transcricaoTrecho?: string;
+    audioUrl?: string; // Data URL ou Blob URL para reprodução e exportação
+    iniciouNaPerguntaCodigo?: string; // Código da pergunta onde a gravação foi iniciada
+    tempoConfiguradoMinutos?: number; // Tempo máximo configurado (padrão 2 min, máx 10 min)
   };
   respostasAlteradasPeloAdmin?: boolean;
   historicoEdicao?: {

@@ -7,12 +7,15 @@ import {
   ArrowRight,
   ArrowLeft,
   Mic,
+  MicOff,
+  Clock,
   MapPin,
   Send,
   RotateCcw,
   Volume2,
 } from 'lucide-react';
 import { Survey, Question, InterviewSubmission, AnswerItem } from '../../types';
+import { generatePlayableWavBlob, formatAudioDuration } from '../../utils/audioUtils';
 
 export const CollectionSimulator: React.FC = () => {
   const { surveys, editingSurvey, currentUser, addSubmission, setActiveModule } = useApp();
@@ -23,19 +26,46 @@ export const CollectionSimulator: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
-  const [isRecordingAudio, setIsRecordingAudio] = useState<boolean>(true);
   const [audioSeconds, setAudioSeconds] = useState<number>(0);
-  const [audioTranscript, setAudioTranscript] = useState<string>('Gravação ambiental ativada');
+  const [audioTranscript, setAudioTranscript] = useState<string>('Gravação ambiental de campo');
+
+  // Configurações da Pesquisa para Áudio
+  const isAudioEnabled = activeSurvey ? activeSurvey.habilitarGravacaoAudio !== false : false;
+  // Tempo limite configurado (padrão 2 minutos quando não especificado, máximo 10 minutos)
+  const configuredMinutes = Math.min(10, Math.max(1, activeSurvey?.tempoLimiteGravacaoMinutos || 2));
+  const maxRecordingSeconds = configuredMinutes * 60;
+
+  // Identificação do ponto de início configurado na pesquisa
+  const audioStartQuestionId =
+    activeSurvey?.gravarAudioAPartirPerguntaId ||
+    activeSurvey?.perguntas.find((p) => p.iniciarGravacaoAqui)?.id;
+
+  const audioStartQuestionIndex = audioStartQuestionId && activeSurvey
+    ? activeSurvey.perguntas.findIndex((p) => p.id === audioStartQuestionId)
+    : 0;
+
+  // A gravação inicia quando o usuário chega na pergunta inicial definida
+  const hasAudioStarted =
+    isAudioEnabled &&
+    (audioStartQuestionIndex <= 0 || currentQuestionIndex >= audioStartQuestionIndex);
+
+  const isAudioAtLimit = audioSeconds >= maxRecordingSeconds;
+  const isRecordingAudio = hasAudioStarted && !isAudioAtLimit && !isCompleted;
 
   useEffect(() => {
     let timer: any;
-    if (isRecordingAudio && !isCompleted) {
+    if (isRecordingAudio) {
       timer = setInterval(() => {
-        setAudioSeconds((prev) => prev + 1);
+        setAudioSeconds((prev) => {
+          if (prev + 1 >= maxRecordingSeconds) {
+            return maxRecordingSeconds;
+          }
+          return prev + 1;
+        });
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [isRecordingAudio, isCompleted]);
+  }, [isRecordingAudio, maxRecordingSeconds]);
 
   if (!activeSurvey || activeSurvey.perguntas.length === 0) {
     return (
@@ -125,32 +155,50 @@ export const CollectionSimulator: React.FC = () => {
       };
     });
 
-    const newSub: InterviewSubmission = {
-      id: `sub_${Date.now()}`,
-      pesquisaId: activeSurvey.id,
-      codigoPesquisa: `${activeSurvey.codigo}-${Math.floor(100 + Math.random() * 900)}`,
-      pesquisaNome: activeSurvey.nome,
-      pesquisadorId: currentUser.id,
-      pesquisadorNome: currentUser.nome,
-      dataHora: new Date().toISOString(),
-      status: 'concluida',
-      respostas: formattedAnswers,
-      audioGravacao: {
-        nomeArquivo: `audio_entrevista_${Date.now()}.wav`,
-        duracaoSegundos: Math.max(25, audioSeconds),
-        tamanhoKb: 340,
-        transcricaoTrecho: 'Áudio gravado com sucesso durante a entrevista de campo.',
-      },
-      geolocalizacao: {
-        latitude: -23.55052 + (Math.random() - 0.5) * 0.02,
-        longitude: -46.633308 + (Math.random() - 0.5) * 0.02,
-        bairro: 'Jardins / Região Central',
-        cidade: 'São Paulo',
-      },
-    };
+    const recordedDuration = Math.max(5, audioSeconds);
+    const audioWavBlob = generatePlayableWavBlob(recordedDuration);
 
-    addSubmission(newSub);
-    setIsCompleted(true);
+    const startQuestionObj = audioStartQuestionId
+      ? activeSurvey.perguntas.find((p) => p.id === audioStartQuestionId)
+      : activeSurvey.perguntas[0];
+
+    const reader = new FileReader();
+    reader.readAsDataURL(audioWavBlob);
+    reader.onloadend = () => {
+      const audioDataUrl = reader.result as string;
+
+      const newSub: InterviewSubmission = {
+        id: `sub_${Date.now()}`,
+        pesquisaId: activeSurvey.id,
+        codigoPesquisa: `${activeSurvey.codigo}-${Math.floor(100 + Math.random() * 900)}`,
+        pesquisaNome: activeSurvey.nome,
+        pesquisadorId: currentUser.id,
+        pesquisadorNome: currentUser.nome,
+        dataHora: new Date().toISOString(),
+        status: 'concluida',
+        respostas: formattedAnswers,
+        audioGravacao: isAudioEnabled
+          ? {
+              nomeArquivo: `${activeSurvey.codigo}_audio_${Date.now()}.wav`,
+              duracaoSegundos: recordedDuration,
+              tamanhoKb: Math.round(recordedDuration * 16),
+              transcricaoTrecho: 'Áudio gravado com sucesso durante a entrevista de campo.',
+              audioUrl: audioDataUrl,
+              iniciouNaPerguntaCodigo: startQuestionObj?.codigo || 'P01',
+              tempoConfiguradoMinutos: configuredMinutes,
+            }
+          : undefined,
+        geolocalizacao: {
+          latitude: -23.55052 + (Math.random() - 0.5) * 0.02,
+          longitude: -46.633308 + (Math.random() - 0.5) * 0.02,
+          bairro: 'Jardins / Região Central',
+          cidade: 'São Paulo',
+        },
+      };
+
+      addSubmission(newSub);
+      setIsCompleted(true);
+    };
   };
 
   const handleReset = () => {
@@ -177,17 +225,50 @@ export const CollectionSimulator: React.FC = () => {
         </div>
 
         {/* Live status indicators */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-1 text-[11px] font-semibold text-slate-300 shadow-sm">
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-1 text-[11px] font-semibold text-slate-300 shadow-xs">
             <MapPin className="h-3.5 w-3.5 text-emerald-400" />
             <span>GPS Ativo</span>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-600/20 px-2.5 py-1 text-[11px] font-semibold text-blue-400 shadow-sm">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-blue-500" />
-            <Mic className="h-3.5 w-3.5" />
-            <span>{audioSeconds}s</span>
-          </div>
+          {!isAudioEnabled ? (
+            <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 px-2.5 py-1 text-[11px] font-medium text-slate-500">
+              <MicOff className="h-3.5 w-3.5" />
+              <span>Áudio Desativado</span>
+            </div>
+          ) : !hasAudioStarted ? (
+            <div
+              className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300"
+              title={`A gravação será iniciada a partir da pergunta ${
+                activeSurvey.perguntas[audioStartQuestionIndex]?.codigo || 'configurada'
+              }`}
+            >
+              <Clock className="h-3.5 w-3.5 animate-pulse text-amber-400" />
+              <span>Inicia na {activeSurvey.perguntas[audioStartQuestionIndex]?.codigo || 'Ponto'}</span>
+            </div>
+          ) : (
+            <div
+              className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold shadow-xs ${
+                isAudioAtLimit
+                  ? 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                  : 'border-purple-500/30 bg-purple-600/20 text-purple-300'
+              }`}
+              title={`Gravação de áudio em andamento (limite: ${configuredMinutes} min)`}
+            >
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  isAudioAtLimit
+                    ? 'bg-amber-400'
+                    : 'bg-red-500 animate-pulse'
+                }`}
+              />
+              <Mic className="h-3.5 w-3.5" />
+              <span className="font-mono">
+                {formatAudioDuration(audioSeconds)} / {configuredMinutes}m
+              </span>
+              {isAudioAtLimit && <span className="text-[10px] text-amber-400 font-bold">(Máx)</span>}
+            </div>
+          )}
         </div>
       </div>
 

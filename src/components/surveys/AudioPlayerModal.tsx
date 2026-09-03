@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, Play, Pause, RotateCcw, X, Mic, CheckCircle2 } from 'lucide-react';
+import { Volume2, Play, Pause, RotateCcw, X, Mic, CheckCircle2, Download } from 'lucide-react';
 import { InterviewSubmission } from '../../types';
+import { exportSingleAudio } from '../../utils/audioUtils';
 
 interface AudioPlayerModalProps {
   submission: InterviewSubmission | null;
@@ -12,8 +13,19 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
 
   const duration = submission.audioGravacao?.duracaoSegundos || 120;
+
+  const handleDownload = async () => {
+    try {
+      await exportSingleAudio(submission);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.message || 'Erro ao exportar gravação.');
+    }
+  };
 
   useEffect(() => {
     let interval: any;
@@ -146,7 +158,25 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
           </div>
         )}
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex items-center justify-between">
+          <button
+            onClick={handleDownload}
+            className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+            title="Exportar esta gravação individualmente (.wav)"
+          >
+            {downloadSuccess ? (
+              <>
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                <span className="text-emerald-400">Download Concluído</span>
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                <span>Exportar Gravação (.WAV)</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={onClose}
             className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"

@@ -22,7 +22,9 @@ import {
 } from 'lucide-react';
 import { InterviewSubmission, Survey } from '../../types';
 import { exportSubmissionsToCSV, exportSubmissionsToPDF } from '../../utils/exportUtils';
+import { exportSingleAudio } from '../../utils/audioUtils';
 import { AudioPlayerModal } from '../surveys/AudioPlayerModal';
+import { AudioExportModal } from '../surveys/AudioExportModal';
 import { GeoMapModal } from '../surveys/GeoMapModal';
 
 export const ResponsesModule: React.FC = () => {
@@ -44,6 +46,7 @@ export const ResponsesModule: React.FC = () => {
 
   // Modals
   const [audioModalSub, setAudioModalSub] = useState<InterviewSubmission | null>(null);
+  const [audioExportModalOpen, setAudioExportModalOpen] = useState(false);
   const [geoModalOpen, setGeoModalOpen] = useState(false);
   const [geoModalSub, setGeoModalSub] = useState<InterviewSubmission[]>([]);
 
@@ -137,6 +140,18 @@ export const ResponsesModule: React.FC = () => {
             <History className="h-4 w-4 text-blue-400" />
             <span>Histórico de Auditoria</span>
           </button>
+
+          {hasPermission('pesquisa_ouvir_audio') && (
+            <button
+              id="btn-export-audios-from-responses"
+              onClick={() => setAudioExportModalOpen(true)}
+              className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+              title="Exportar gravações de áudio separadas por pesquisa (individual ou lote .ZIP)"
+            >
+              <Volume2 className="h-4 w-4 text-purple-400" />
+              <span>Exportar Áudios (.ZIP)</span>
+            </button>
+          )}
 
           {canExport && (
             <>
@@ -256,13 +271,22 @@ export const ResponsesModule: React.FC = () => {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           {sub.audioGravacao && canListenAudio && (
-                            <button
-                              onClick={() => setAudioModalSub(sub)}
-                              title="Ouvir gravação de áudio da entrevista"
-                              className="rounded p-1 text-purple-400 hover:bg-slate-800 transition-colors"
-                            >
-                              <Volume2 className="h-4 w-4" />
-                            </button>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => setAudioModalSub(sub)}
+                                title="Ouvir gravação de áudio da entrevista"
+                                className="rounded p-1 text-purple-400 hover:bg-slate-800 transition-colors"
+                              >
+                                <Volume2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => exportSingleAudio(sub)}
+                                title={`Baixar gravação individual (.wav): ${sub.audioGravacao.nomeArquivo}`}
+                                className="rounded p-1 text-purple-300 hover:bg-slate-800 hover:text-white transition-colors"
+                              >
+                                <Download className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
                           )}
                           {sub.geolocalizacao && canViewGeo && (
                             <button
@@ -480,6 +504,15 @@ export const ResponsesModule: React.FC = () => {
         <AudioPlayerModal
           submission={audioModalSub}
           onClose={() => setAudioModalSub(null)}
+        />
+      )}
+
+      {/* Audio Batch/Individual Export Modal */}
+      {audioExportModalOpen && (
+        <AudioExportModal
+          isOpen={audioExportModalOpen}
+          onClose={() => setAudioExportModalOpen(false)}
+          initialSurveyId={selectedSurveyId !== 'all' ? selectedSurveyId : undefined}
         />
       )}
 

@@ -29,13 +29,17 @@ import {
   Calendar,
   Server,
   ShieldCheck,
+  Upload,
 } from 'lucide-react';
-import { Survey, InterviewSubmission } from '../../types';
-import { exportSubmissionsToCSV, exportSubmissionsToPDF } from '../../utils/exportUtils';
+import { Survey, InterviewSubmission, Question } from '../../types';
+import { exportSubmissionsToCSV, exportSubmissionsToPDF, exportConsolidatedSurveysToPDF } from '../../utils/exportUtils';
 import { AudioPlayerModal } from './AudioPlayerModal';
+import { AudioExportModal } from './AudioExportModal';
 import { GeoMapModal } from './GeoMapModal';
 import { SurveyDailyTrackingModal } from './SurveyDailyTrackingModal';
+import { ConsolidatedPdfExportModal } from './ConsolidatedPdfExportModal';
 import { ServerSyncCheckModal } from '../wizard/ServerSyncCheckModal';
+import { QuestionnaireImportModal } from '../wizard/QuestionnaireImportModal';
 
 export const SurveyList: React.FC = () => {
   const {
@@ -44,6 +48,8 @@ export const SurveyList: React.FC = () => {
     submissions,
     collaborators,
     currentUser,
+    currentProfile,
+    saveSurvey,
     hasPermission,
     setActiveModule,
     setEditingSurvey,
@@ -80,6 +86,16 @@ export const SurveyList: React.FC = () => {
   // Central Server Sync Modal State
   const [syncModalSurvey, setSyncModalSurvey] = useState<Survey | null>(null);
 
+  // Consolidated Multi-Survey PDF Export Modal State
+  const [consolidatedPdfModalOpen, setConsolidatedPdfModalOpen] = useState(false);
+
+  // Questionnaire Import Modal State
+  const [questionnaireImportModalOpen, setQuestionnaireImportModalOpen] = useState(false);
+
+  // Audio Export Modal State
+  const [audioExportModalOpen, setAudioExportModalOpen] = useState(false);
+  const [audioExportSurveyId, setAudioExportSurveyId] = useState<string | undefined>(undefined);
+
   // Check permissions
   const canCreate = hasPermission('pesquisa_criar');
   const canEdit = hasPermission('pesquisa_alterar');
@@ -97,7 +113,9 @@ export const SurveyList: React.FC = () => {
   const filteredSurveys = surveys.filter((s) => {
     // Association check
     if (!accessAllWithoutAssociation) {
-      const isAssociated = s.pesquisadoresIds.includes(currentUser.id);
+      const isAssociated =
+        s.pesquisadoresIds.includes(currentUser.id) ||
+        (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id));
       if (!isAssociated) return false;
     }
 
@@ -147,6 +165,34 @@ export const SurveyList: React.FC = () => {
     exportSubmissionsToPDF(surveySubs, survey);
   };
 
+  const handleImportQuestionsToList = (imported: Question[]) => {
+    const newSurvey: Survey = {
+      id: `pesq_${Date.now()}`,
+      codigo: `PESQ-${new Date().getFullYear()}-${String(surveys.length + 1).padStart(2, '0')}`,
+      nome: `Questionário Importado - ${new Date().toLocaleDateString('pt-BR')}`,
+      descricao: 'Questionário importado com questões e alternativas organizadas.',
+      status: 'ativa',
+      habilitarColetaWeb: true,
+      tipoColetaWeb: 'publico',
+      colaboradorWebId: collaborators[0]?.id || '',
+      pesquisadoresIds: collaborators.map((c) => c.id),
+      cicloAtual: 1,
+      versao: 1,
+      criadaEm: new Date().toISOString(),
+      atualizadaEm: new Date().toISOString(),
+      perguntas: imported.map((q, idx) => ({
+        ...q,
+        ordem: idx + 1,
+        codigo: q.codigo || `P${String(idx + 1).padStart(2, '0')}`,
+      })),
+      regras: [],
+      metas: [],
+    };
+    saveSurvey(newSurvey);
+    setEditingSurvey(newSurvey);
+    setActiveModule('wizard');
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Header */}
@@ -171,15 +217,42 @@ export const SurveyList: React.FC = () => {
             <span>Histórico de Auditoria</span>
           </button>
 
-          {canCreate && (
+          {canListenAudio && (
             <button
-              id="btn-survey-create-new"
-              onClick={handleCreateNew}
-              className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+              id="btn-export-audios-by-survey"
+              onClick={() => {
+                setAudioExportSurveyId(undefined);
+                setAudioExportModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+              title="Exportar gravações de áudio separadas por pesquisa (individual ou lote .ZIP)"
             >
-              <PlusCircle className="h-4 w-4" />
-              <span>Criar Pesquisa (Abrir Wizard)</span>
+              <Volume2 className="h-4 w-4 text-purple-400" />
+              <span>Exportar Áudios (.ZIP)</span>
             </button>
+          )}
+
+          {canCreate && (
+            <>
+              <button
+                id="btn-survey-import-questionnaire"
+                onClick={() => setQuestionnaireImportModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+                title="Importar questionário de texto/arquivo com questões e alternativas organizadas"
+              >
+                <Upload className="h-4 w-4 text-purple-400" />
+                <span>Importar Questionário</span>
+              </button>
+
+              <button
+                id="btn-survey-create-new"
+                onClick={handleCreateNew}
+                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+              >
+                <PlusCircle className="h-4 w-4" />
+                <span>Criar Pesquisa (Abrir Wizard)</span>
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -294,6 +367,19 @@ export const SurveyList: React.FC = () => {
               <BarChart3 className="h-3.5 w-3.5 text-blue-400" />
               <span>Gráfico Diário ({selectedSurveyIds.length})</span>
             </button>
+
+            {/* Export Consolidated PDF for all selected surveys */}
+            {canExport && (
+              <button
+                id="btn-bulk-export-consolidated-pdf"
+                onClick={() => setConsolidatedPdfModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-rose-500/40 bg-rose-600/20 px-3 py-1.5 text-xs font-bold text-rose-300 hover:bg-rose-600 hover:text-white transition-colors shadow-xs"
+                title="Exportar todas as pesquisas selecionadas para um único arquivo PDF consolidado"
+              >
+                <FileText className="h-3.5 w-3.5 text-rose-400" />
+                <span>Exportar PDF Consolidado ({selectedSurveyIds.length})</span>
+              </button>
+            )}
 
             {canToggleActive && (
               <>
@@ -561,11 +647,14 @@ export const SurveyList: React.FC = () => {
                       <BarChart3 className="h-4 w-4 text-blue-400" />
                     </button>
 
-                    {canListenAudio && firstAudioSub && (
+                    {canListenAudio && (
                       <button
                         id={`btn-audio-survey-${survey.id}`}
-                        onClick={() => setAudioModalSubmission(firstAudioSub)}
-                        title="Ouvir áudio gravado das entrevistas"
+                        onClick={() => {
+                          setAudioExportSurveyId(survey.id);
+                          setAudioExportModalOpen(true);
+                        }}
+                        title={`Exportar em lote ou ouvir gravações de áudio da pesquisa "${survey.nome}"`}
                         className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-purple-400 transition-colors"
                       >
                         <Volume2 className="h-4 w-4 text-purple-400" />
@@ -710,6 +799,40 @@ export const SurveyList: React.FC = () => {
           onUploadSuccess={() => {
             setSyncModalSurvey(null);
           }}
+        />
+      )}
+
+      {/* Consolidated PDF Export Modal */}
+      {consolidatedPdfModalOpen && (
+        <ConsolidatedPdfExportModal
+          surveys={surveys.filter((s) => selectedSurveyIds.includes(s.id))}
+          submissions={submissions}
+          onClose={() => setConsolidatedPdfModalOpen(false)}
+          onSuccess={() => {
+            setConsolidatedPdfModalOpen(false);
+          }}
+        />
+      )}
+
+      {/* Questionnaire Import Modal */}
+      {questionnaireImportModalOpen && (
+        <QuestionnaireImportModal
+          isOpen={questionnaireImportModalOpen}
+          onClose={() => setQuestionnaireImportModalOpen(false)}
+          existingQuestionsCount={0}
+          onImport={(imported) => {
+            handleImportQuestionsToList(imported);
+            setQuestionnaireImportModalOpen(false);
+          }}
+        />
+      )}
+
+      {/* Audio Batch & Individual Export Modal strictly segregated by survey */}
+      {audioExportModalOpen && (
+        <AudioExportModal
+          isOpen={audioExportModalOpen}
+          onClose={() => setAudioExportModalOpen(false)}
+          initialSurveyId={audioExportSurveyId}
         />
       )}
     </div>
