@@ -1,0 +1,1767 @@
+import React, { useState, useEffect } from 'react';
+import { useApp } from '../../context/AppContext';
+import { getCurrentSurveyDraftFromDB } from '../../utils/indexedDBStorage';
+import {
+  Survey,
+  Question,
+  ConditionalRule,
+  MetaTarget,
+  QuestionType,
+  ConditionOperator,
+  ConditionActionType,
+} from '../../types';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Plus,
+  Trash2,
+  GripVertical,
+  MoveUp,
+  MoveDown,
+  Sparkles,
+  GitBranch,
+  Target,
+  UserCheck,
+  AlertCircle,
+  HelpCircle,
+  Eye,
+  Check,
+  RotateCcw,
+  CloudOff,
+  Wifi,
+  WifiOff,
+  Save,
+  RefreshCw,
+  Database,
+  Server,
+  ShieldCheck,
+  Lock,
+  ArrowUpCircle,
+} from 'lucide-react';
+import { ServerSyncCheckModal } from './ServerSyncCheckModal';
+
+export const SurveyWizard: React.FC = () => {
+  const {
+    surveys,
+    saveSurvey,
+    editingSurvey,
+    setEditingSurvey,
+    collaborators,
+    setActiveModule,
+    effectiveOnline,
+    offlineQueue,
+    syncOfflineQueue,
+    // Central Server Sync
+    isSurveyInProgress,
+    serverOnline,
+    syncSurveyWithCentralServer,
+    uploadSurveyChangesToCentralServer,
+    // IndexedDB & Supabase Sync
+    currentSurveyDraft,
+    lastIndexedDBSave,
+    supabaseSyncStatus,
+    lastSupabaseSync,
+    pendingIndexedDbCount,
+    saveCurrentSurveyDraft,
+    clearCurrentSurveyDraft,
+    syncAllPendingWithSupabase,
+    isSupabaseLive,
+    lastAutoSyncNotice,
+    setLastAutoSyncNotice,
+  } = useApp();
+
+  // Offline Draft Saved Banner State
+  const [offlineDraftNotice, setOfflineDraftNotice] = useState<string | null>(null);
+  const [draftRecoveryAvailable, setDraftRecoveryAvailable] = useState<boolean>(false);
+  const [recoveredDraft, setRecoveredDraft] = useState<Survey | null>(null);
+
+  // Central Server Sync State
+  const [serverSyncModalOpen, setServerSyncModalOpen] = useState<boolean>(false);
+
+  // Wizard active step 1 to 5
+  const [currentStep, setCurrentStep] = useState<number>(1);
+
+  // Form State initialized from editingSurvey or clean default
+  const [formData, setFormData] = useState<Survey>(() => {
+    if (editingSurvey) return JSON.parse(JSON.stringify(editingSurvey));
+
+    return {
+      id: `pesq_${Date.now()}`,
+      codigo: `PESQ-${new Date().getFullYear()}-${String(surveys.length + 1).padStart(2, '0')}`,
+      nome: 'LiterArraial 2025 - Prefeitura',
+      descricao: 'Dados sobre a percepção da Feira Literária.',
+      status: 'ativa',
+      habilitarColetaWeb: true,
+      tipoColetaWeb: 'publico',
+      colaboradorWebId: collaborators[0]?.id || '',
+      pesquisadoresIds: collaborators.map((c) => c.id),
+      cicloAtual: 1,
+      versao: 1,
+      criadaEm: new Date().toISOString(),
+      atualizadaEm: new Date().toISOString(),
+      perguntas: [
+        {
+          id: 'q_default_1',
+          codigo: 'P01',
+          enunciado: 'Você reside no município onde a feira literária está sendo realizada?',
+          tipo: 'sim_nao',
+          obrigatoria: true,
+          ordem: 1,
+          opcoes: [
+            { id: 'opt_1', label: 'Sim, sou morador', value: 'Sim' },
+            { id: 'opt_2', label: 'Não, sou visitante/turista', value: 'Não' },
+          ],
+        },
+        {
+          id: 'q_default_2',
+          codigo: 'P02',
+          enunciado: 'Qual a sua faixa etária?',
+          tipo: 'multipla_escolha',
+          obrigatoria: true,
+          ordem: 2,
+          opcoes: [
+            { id: 'opt_fe1', label: '18 a 25 anos', value: '18 a 25 anos' },
+            { id: 'opt_fe2', label: '26 a 40 anos', value: '26 a 40 anos' },
+            { id: 'opt_fe3', label: '41 a 60 anos', value: '41 a 60 anos' },
+            { id: 'opt_fe4', label: 'Acima de 60 anos', value: 'Acima de 60 anos' },
+          ],
+        },
+      ],
+      regras: [],
+      metas: [],
+    };
+  });
+
+  // Simulator test inside Wizard step 3
+  const [simTestAnswer, setSimTestAnswer] = useState<Record<string, string>>({});
+
+  // STEP 2 State: Add Question form
+  const [newQuestionEnunciado, setNewQuestionEnunciado] = useState('');
+  const [newQuestionTipo, setNewQuestionTipo] = useState<QuestionType>('multipla_escolha');
+  const [newQuestionObrigatoria, setNewQuestionObrigatoria] = useState(true);
+  const [newQuestionOpcoes, setNewQuestionOpcoes] = useState<string>('Opção 1, Opção 2, Opção 3');
+
+  // STEP 3 State: Add Rule form
+  const [ruleOrigemId, setRuleOrigemId] = useState<string>('');
+  const [ruleCondicao, setRuleCondicao] = useState<ConditionOperator>('igual');
+  const [ruleValor, setRuleValor] = useState<string>('');
+  const [ruleAcao, setRuleAcao] = useState<ConditionActionType>('saltar_para');
+  const [ruleDestinoId, setRuleDestinoId] = useState<string>('');
+
+  // STEP 4 State: Add Meta form
+  const [metaPerguntaId, setMetaPerguntaId] = useState<string>('');
+  const [metaCondicao, setMetaCondicao] = useState<ConditionOperator>('igual');
+  const [metaResposta, setMetaResposta] = useState<string>('');
+  const [metaQuantidadeAlvo, setMetaQuantidadeAlvo] = useState<number>(100);
+
+  // Success message modal / toast
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Helper to reorder questions
+  const moveQuestion = (index: number, direction: 'up' | 'down') => {
+    const newQuestions = [...formData.perguntas];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newQuestions.length) return;
+
+    const temp = newQuestions[index];
+    newQuestions[index] = newQuestions[targetIndex];
+    newQuestions[targetIndex] = temp;
+
+    // update ordem numbers
+    newQuestions.forEach((q, i) => {
+      q.ordem = i + 1;
+      q.codigo = `P${String(i + 1).padStart(2, '0')}`;
+    });
+
+    setFormData({ ...formData, perguntas: newQuestions });
+  };
+
+  const handleAddQuestion = () => {
+    if (!newQuestionEnunciado.trim()) return;
+
+    const nextOrder = formData.perguntas.length + 1;
+    const newQ: Question = {
+      id: `q_${Date.now()}`,
+      codigo: `P${String(nextOrder).padStart(2, '0')}`,
+      enunciado: newQuestionEnunciado.trim(),
+      tipo: newQuestionTipo,
+      obrigatoria: newQuestionObrigatoria,
+      ordem: nextOrder,
+    };
+
+    if (
+      newQuestionTipo === 'multipla_escolha' ||
+      newQuestionTipo === 'multipla_selecao'
+    ) {
+      newQ.opcoes = newQuestionOpcoes
+        .split(',')
+        .map((opt) => opt.trim())
+        .filter(Boolean)
+        .map((opt, idx) => ({
+          id: `opt_${Date.now()}_${idx}`,
+          label: opt,
+          value: opt,
+        }));
+    } else if (newQuestionTipo === 'sim_nao') {
+      newQ.opcoes = [
+        { id: `opt_s_${Date.now()}`, label: 'Sim', value: 'Sim' },
+        { id: `opt_n_${Date.now()}`, label: 'Não', value: 'Não' },
+      ];
+    } else if (newQuestionTipo === 'escala_numerica') {
+      newQ.escalaMin = 1;
+      newQ.escalaMax = 5;
+      newQ.escalaMinLabel = 'Muito Ruim';
+      newQ.escalaMaxLabel = 'Excelente';
+    } else if (newQuestionTipo === 'nps') {
+      newQ.escalaMin = 0;
+      newQ.escalaMax = 10;
+      newQ.escalaMinLabel = 'Não Indicaria';
+      newQ.escalaMaxLabel = 'Indicaria com Certeza';
+    }
+
+    setFormData({
+      ...formData,
+      perguntas: [...formData.perguntas, newQ],
+    });
+
+    setNewQuestionEnunciado('');
+    setNewQuestionOpcoes('Opção 1, Opção 2, Opção 3');
+  };
+
+  const handleDeleteQuestion = (qId: string) => {
+    const remaining = formData.perguntas.filter((q) => q.id !== qId);
+    remaining.forEach((q, i) => {
+      q.ordem = i + 1;
+      q.codigo = `P${String(i + 1).padStart(2, '0')}`;
+    });
+    // also clean rules pointing to this question
+    const remainingRules = formData.regras.filter(
+      (r) => r.perguntaOrigemId !== qId && r.perguntaDestinoId !== qId
+    );
+    const remainingMetas = formData.metas.filter((m) => m.perguntaId !== qId);
+
+    setFormData({
+      ...formData,
+      perguntas: remaining,
+      regras: remainingRules,
+      metas: remainingMetas,
+    });
+  };
+
+  const handleAddRule = () => {
+    if (!ruleOrigemId || !ruleValor.trim()) {
+      alert('Selecione a pergunta de origem e a resposta de comparação.');
+      return;
+    }
+    if (
+      (ruleAcao === 'saltar_para' || ruleAcao === 'esconder_pergunta') &&
+      !ruleDestinoId
+    ) {
+      alert('Selecione a pergunta de destino para a ação.');
+      return;
+    }
+
+    const qOrigem = formData.perguntas.find((q) => q.id === ruleOrigemId);
+    const qDestino = formData.perguntas.find((q) => q.id === ruleDestinoId);
+
+    const desc =
+      ruleAcao === 'finalizar_formulario'
+        ? `Se ${qOrigem?.codigo} for ${ruleCondicao} a "${ruleValor}", Finalizar formulário`
+        : `Se ${qOrigem?.codigo} for ${ruleCondicao} a "${ruleValor}", ${
+            ruleAcao === 'saltar_para' ? 'Saltar para' : 'Esconder'
+          } ${qDestino?.codigo || 'pergunta'}`;
+
+    const newRule: ConditionalRule = {
+      id: `regra_${Date.now()}`,
+      perguntaOrigemId: ruleOrigemId,
+      condicao: ruleCondicao,
+      valorComparacao: ruleValor.trim(),
+      acao: ruleAcao,
+      perguntaDestinoId: ruleDestinoId || undefined,
+      descricao: desc,
+    };
+
+    setFormData({
+      ...formData,
+      regras: [...formData.regras, newRule],
+    });
+
+    setRuleValor('');
+  };
+
+  const handleDeleteRule = (ruleId: string) => {
+    setFormData({
+      ...formData,
+      regras: formData.regras.filter((r) => r.id !== ruleId),
+    });
+  };
+
+  const handleAddMeta = () => {
+    if (!metaPerguntaId || !metaResposta.trim()) {
+      alert('Selecione a questão e informe a resposta para a meta.');
+      return;
+    }
+
+    const newMeta: MetaTarget = {
+      id: `meta_${Date.now()}`,
+      pesquisaId: formData.id,
+      perguntaId: metaPerguntaId,
+      condicao: metaCondicao,
+      resposta: metaResposta.trim(),
+      quantidadeAlvo: Number(metaQuantidadeAlvo) || 50,
+      quantidadeAtingida: 0,
+      ciclo: `Ciclo ${formData.cicloAtual} - ${new Date().getFullYear()}`,
+    };
+
+    setFormData({
+      ...formData,
+      metas: [...formData.metas, newMeta],
+    });
+
+    setMetaResposta('');
+  };
+
+  const handleDeleteMeta = (metaId: string) => {
+    setFormData({
+      ...formData,
+      metas: formData.metas.filter((m) => m.id !== metaId),
+    });
+  };
+
+  const toggleResearcher = (colabId: string) => {
+    const exists = formData.pesquisadoresIds.includes(colabId);
+    const updated = exists
+      ? formData.pesquisadoresIds.filter((id) => id !== colabId)
+      : [...formData.pesquisadoresIds, colabId];
+
+    setFormData({ ...formData, pesquisadoresIds: updated });
+  };
+
+  // Check for previous cached draft in IndexedDB
+  useEffect(() => {
+    getCurrentSurveyDraftFromDB()
+      .then((cached) => {
+        if (cached && cached.survey && !editingSurvey) {
+          if (cached.survey.id !== formData.id && cached.survey.nome) {
+            setRecoveredDraft(cached.survey);
+            setDraftRecoveryAvailable(true);
+          }
+        }
+      })
+      .catch((err) => console.warn('Erro ao verificar rascunho:', err));
+  }, [editingSurvey]);
+
+  // Debounced auto-save of current survey state to IndexedDB cache
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (formData && formData.nome && formData.nome.trim()) {
+        saveCurrentSurveyDraft(formData, currentStep);
+      }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [formData, currentStep]);
+
+  // Central Server Sync Governance Check
+  const isInProgress = isSurveyInProgress(formData) || (editingSurvey ? isSurveyInProgress(editingSurvey) : false);
+  const initialSnapshotRef = React.useRef<string>(JSON.stringify(editingSurvey || formData));
+  const hasLocalModifications = React.useMemo(() => {
+    try {
+      return JSON.stringify(formData) !== initialSnapshotRef.current;
+    } catch {
+      return false;
+    }
+  }, [formData]);
+
+  const handleFinishWizard = async () => {
+    if (!formData.nome.trim()) {
+      alert('Por favor, informe o nome da pesquisa.');
+      setCurrentStep(1);
+      return;
+    }
+    if (formData.perguntas.length === 0) {
+      alert('Adicione pelo menos uma pergunta ao questionário.');
+      setCurrentStep(2);
+      return;
+    }
+    if (formData.pesquisadoresIds.length === 0) {
+      alert('Selecione ao menos um pesquisador para atuar na pesquisa.');
+      setCurrentStep(5);
+      return;
+    }
+
+    // REGRA DE GOVERNANÇA: Pesquisa em andamento exige sincronização prévia antes de subir qualquer alteração!
+    if (isInProgress && !formData.serverSyncToken) {
+      setServerSyncModalOpen(true);
+      return;
+    }
+
+    if (isInProgress && formData.serverSyncToken && effectiveOnline) {
+      const uploadRes = await uploadSurveyChangesToCentralServer(formData, formData.serverSyncToken);
+      if (!uploadRes.success && uploadRes.requiresSync) {
+        setServerSyncModalOpen(true);
+        return;
+      }
+    } else {
+      saveSurvey(formData);
+    }
+
+    clearCurrentSurveyDraft();
+    setSaveSuccess(true);
+  };
+
+  const handleSaveDraftOffline = () => {
+    if (!formData.nome.trim()) {
+      alert('Por favor, informe pelo menos o nome da pesquisa para salvar.');
+      return;
+    }
+    saveCurrentSurveyDraft(formData, currentStep);
+    saveSurvey(formData);
+    setOfflineDraftNotice(
+      !effectiveOnline
+        ? `Pesquisa "${formData.nome}" salva no cache IndexedDB e enfileirada para sincronização!`
+        : `Pesquisa "${formData.nome}" salva e sincronizada com o Supabase!`
+    );
+    setTimeout(() => setOfflineDraftNotice(null), 5000);
+  };
+
+  // Tab Header definitions as seen in Screenshot 1
+  const tabs = [
+    { step: 1, title: '1. Dados e Configurações Gerais' },
+    { step: 2, title: '2. Perguntas' },
+    { step: 3, title: '3. Pulos, Saltos e Regras' },
+    { step: 4, title: '4. Consistência' },
+    { step: 5, title: '5. Pesquisadores' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Breadcrumb & Header matching Screenshot 1 */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+            Wizard de criação de pesquisa
+          </h1>
+          <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+            <span
+              onClick={() => setActiveModule('home')}
+              className="cursor-pointer hover:text-blue-400 hover:underline"
+            >
+              Home
+            </span>
+            <span>/</span>
+            <span
+              onClick={() => setActiveModule('pesquisas')}
+              className="cursor-pointer hover:text-blue-400 hover:underline"
+            >
+              Nova Pesquisa
+            </span>
+            <span>/</span>
+            <span className="font-semibold text-white">
+              Wizard
+            </span>
+          </div>
+        </div>
+
+        {/* Status badges & Actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* IndexedDB Status Badge */}
+          <div
+            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-2.5 py-1.5 text-[11px] font-medium text-slate-300"
+            title="Gerenciador de cache IndexedDB ativo no navegador"
+          >
+            <Database className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+            <span>
+              Cache IndexedDB: <strong className="text-white">{lastIndexedDBSave ? new Date(lastIndexedDBSave).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Ativo'}</strong>
+            </span>
+          </div>
+
+          {/* Supabase Sync Badge */}
+          <div
+            className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-[11px] font-medium transition ${
+              supabaseSyncStatus === 'syncing'
+                ? 'border-blue-500/30 bg-blue-500/15 text-blue-300'
+                : !effectiveOnline || supabaseSyncStatus === 'pending'
+                ? 'border-amber-500/30 bg-amber-500/15 text-amber-300'
+                : 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300'
+            }`}
+            title="Status de sincronização com o banco central Supabase"
+          >
+            {supabaseSyncStatus === 'syncing' ? (
+              <>
+                <RefreshCw className="h-3.5 w-3.5 animate-spin text-blue-400" />
+                <span>Supabase: Sincronizando...</span>
+              </>
+            ) : !effectiveOnline || supabaseSyncStatus === 'pending' ? (
+              <>
+                <CloudOff className="h-3.5 w-3.5 text-amber-400" />
+                <span>Supabase: Pendente (Offline)</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Supabase: Sincronizado {lastSupabaseSync ? `(${lastSupabaseSync})` : ''}</span>
+              </>
+            )}
+          </div>
+
+          {/* Force Sync button if online and pending */}
+          {effectiveOnline && (supabaseSyncStatus === 'pending' || pendingIndexedDbCount > 0) && (
+            <button
+              type="button"
+              id="btn-sync-supabase-now"
+              onClick={async () => {
+                const res = await syncAllPendingWithSupabase();
+                setOfflineDraftNotice(res.message);
+                setTimeout(() => setOfflineDraftNotice(null), 5000);
+              }}
+              className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-500 transition shadow-xs"
+              title="Forçar sincronização das alterações locais para o Supabase"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Sincronizar Supabase</span>
+            </button>
+          )}
+
+          {/* Central Server Sync Status / Trigger Button */}
+          <button
+            type="button"
+            id="btn-trigger-server-sync-header"
+            onClick={() => setServerSyncModalOpen(true)}
+            className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition shadow-xs ${
+              formData.serverSyncToken
+                ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'
+                : isInProgress
+                ? 'border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 animate-pulse'
+                : 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+            }`}
+            title="Sincronização obrigatória com o servidor para pesquisas em andamento antes de subir alterações"
+          >
+            <Server className="h-3.5 w-3.5" />
+            <span>
+              {formData.serverSyncToken
+                ? 'Servidor: Autorizado'
+                : isInProgress
+                ? 'Sincronizar com Servidor (Obrigatório)'
+                : 'Servidor Central'}
+            </span>
+          </button>
+
+          {/* Quick Offline Draft Save button at header */}
+          <button
+            type="button"
+            id="btn-wizard-save-draft-top"
+            onClick={handleSaveDraftOffline}
+            className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-bold transition shadow-xs ${
+              !effectiveOnline
+                ? 'border-amber-500/40 bg-amber-600/20 text-amber-300 hover:bg-amber-600/30'
+                : 'border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white'
+            }`}
+            title="Salvar pesquisa atual no estado atual (online ou offline)"
+          >
+            <Save className="h-3.5 w-3.5" />
+            <span>{!effectiveOnline ? 'Salvar Pesquisa (Offline)' : 'Salvar Rascunho'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Recoverable Draft Alert Banner */}
+      {draftRecoveryAvailable && recoveredDraft && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-blue-500/30 bg-blue-950/40 p-3.5 text-xs text-blue-200 shadow-md">
+          <div className="flex items-center gap-2.5">
+            <Database className="h-4 w-4 shrink-0 text-blue-400" />
+            <div>
+              <span className="font-bold text-white">Rascunho recuperado do IndexedDB:</span> Encontramos a pesquisa "{recoveredDraft.nome}" ({recoveredDraft.perguntas.length} questões) salva localmente em cache offline. Deseja restaurá-la?
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setFormData(recoveredDraft);
+                setDraftRecoveryAvailable(false);
+                setOfflineDraftNotice(`Rascunho de "${recoveredDraft.nome}" recuperado do IndexedDB com sucesso!`);
+                setTimeout(() => setOfflineDraftNotice(null), 4000);
+              }}
+              className="rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-xs"
+            >
+              Restaurar Rascunho
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                clearCurrentSurveyDraft();
+                setDraftRecoveryAvailable(false);
+              }}
+              className="rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1.5 text-slate-300 hover:text-white transition"
+            >
+              Descartar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* In-Progress Survey Central Server Sync Required Banner */}
+      {isInProgress && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-blue-500/40 bg-gradient-to-r from-blue-950/60 via-slate-900/90 to-blue-950/60 p-4 text-xs text-blue-200 shadow-lg">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400">
+              <Server className="h-5 w-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-white text-sm">Pesquisa em Andamento no Servidor Central</span>
+                <span className="rounded bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                  {formData.serverSyncToken ? 'Autorizado para Subir' : 'Sincronização Prévia Obrigatória'}
+                </span>
+                <span className="rounded bg-slate-800 border border-slate-700 px-1.5 py-0.5 text-[10px] font-mono text-slate-300">
+                  v{formData.versao}
+                </span>
+              </div>
+              <p className="mt-1 text-slate-300 text-xs leading-relaxed">
+                {formData.serverSyncToken ? (
+                  <span className="text-emerald-300 font-medium">
+                    ✓ Sincronização prévia concluída com sucesso! Token: <code className="bg-emerald-950/60 px-1 py-0.5 rounded text-[11px]">{formData.serverSyncToken}</code>. Você pode subir as alterações com segurança.
+                  </span>
+                ) : (
+                  <span>
+                    Esta pesquisa está ativa e coletando entrevistas. Para alterar ou ajustar qualquer parte (perguntas, saltos, metas ou pesquisadores), <strong>é obrigatório sincronizar previamente com o servidor</strong> antes de subir qualquer alteração.
+                  </span>
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end pt-2 sm:pt-0">
+            {formData.serverSyncToken ? (
+              <button
+                type="button"
+                id="btn-open-sync-status-modal"
+                onClick={() => setServerSyncModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2 text-xs transition shadow-md shadow-emerald-600/20"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                <span>Pronto para Subir Alterações</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                id="btn-sync-server-banner"
+                onClick={() => setServerSyncModalOpen(true)}
+                className="flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 text-xs transition shadow-lg shadow-amber-500/20 active:scale-95"
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span>Sincronizar com Servidor antes de Subir</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Auto-Sync Alert Banner */}
+      {lastAutoSyncNotice && (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-3 text-xs text-emerald-300 shadow-md animate-fadeIn">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+            <div>
+              <span className="font-bold">Auto-Sync Supabase:</span> {lastAutoSyncNotice}
+            </div>
+          </div>
+          <button
+            onClick={() => setLastAutoSyncNotice(null)}
+            className="text-xs text-emerald-400 hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Offline Alert Banner */}
+      {!effectiveOnline && (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-300 shadow-md">
+          <div className="flex items-center gap-2.5">
+            <CloudOff className="h-4 w-4 shrink-0 text-amber-400" />
+            <div>
+              <span className="font-bold">Modo Offline Ativo:</span> Você pode preencher, configurar e salvar a pesquisa corrente mesmo sem conexão com a internet. Ela ficará armazenada com segurança no dispositivo e poderá ser enviada ao servidor assim que reconectar.
+            </div>
+          </div>
+          {offlineQueue.length > 0 && (
+            <span className="rounded bg-amber-500/20 border border-amber-500/30 px-2.5 py-1 text-[11px] font-bold text-amber-200 shrink-0">
+              {offlineQueue.length} na fila
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Draft Notification Toast */}
+      {offlineDraftNotice && (
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/15 p-3 text-xs text-emerald-300 flex items-center justify-between gap-2 shadow-lg animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+            <span>{offlineDraftNotice}</span>
+          </div>
+          <button
+            onClick={() => setOfflineDraftNotice(null)}
+            className="text-xs text-emerald-400 hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Wizard Step Tabs matching Screenshot 1 */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3">
+        {tabs.map((tab) => {
+          const isActive = currentStep === tab.step;
+          return (
+            <button
+              key={tab.step}
+              id={`wizard-tab-step-${tab.step}`}
+              onClick={() => setCurrentStep(tab.step)}
+              className={`rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
+                isActive
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40 ring-2 ring-blue-500/30'
+                  : 'border border-slate-800 bg-[#16171d] text-slate-300 hover:bg-slate-800 hover:text-white'
+              }`}
+            >
+              {tab.title}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* TAB 1: DADOS E CONFIGURAÇÕES GERAIS (Matching Screenshot 2) */}
+      {currentStep === 1 && (
+        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-xl">
+          <h2 className="text-lg font-bold text-white">
+            Informe aqui o nome, descrição e configurações da pesquisa
+          </h2>
+
+          <div className="mt-6 space-y-6 max-w-3xl">
+            {/* Nome da pesquisa * */}
+            <div>
+              <label
+                htmlFor="input-survey-name"
+                className="block text-xs font-bold text-slate-300"
+              >
+                Nome da pesquisa *
+              </label>
+              <input
+                id="input-survey-name"
+                type="text"
+                value={formData.nome}
+                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                placeholder="Ex: LiterArraial 2025 - Prefeitura"
+                className="mt-1.5 w-full rounded-lg border border-slate-800 bg-[#111218] px-3.5 py-2 text-xs text-white placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Descrição da pesquisa */}
+            <div>
+              <label
+                htmlFor="input-survey-description"
+                className="block text-xs font-bold text-slate-300"
+              >
+                Descrição da pesquisa
+              </label>
+              <textarea
+                id="input-survey-description"
+                rows={3}
+                value={formData.descricao}
+                onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                placeholder="Dados sobre a percepção da Feira Literária."
+                className="mt-1.5 w-full rounded-lg border border-slate-800 bg-[#111218] px-3.5 py-2 text-xs text-white placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Habilitar Coleta Web Switch */}
+            <div className="border-t border-slate-800 pt-5">
+              <div className="flex items-center gap-3">
+                <button
+                  id="switch-habilitar-coleta-web"
+                  type="button"
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      habilitarColetaWeb: !formData.habilitarColetaWeb,
+                    })
+                  }
+                  aria-checked={formData.habilitarColetaWeb}
+                  role="switch"
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    formData.habilitarColetaWeb ? 'bg-blue-600' : 'bg-slate-800'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out ${
+                      formData.habilitarColetaWeb ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <span className="text-xs font-bold text-white">
+                  Habilitar Coleta Web
+                </span>
+              </div>
+
+              {formData.habilitarColetaWeb && (
+                <div className="mt-4 space-y-4 pl-2">
+                  {/* Radio buttons for Coleta Web */}
+                  <div className="space-y-3">
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="tipoColetaWeb"
+                        checked={formData.tipoColetaWeb === 'publico'}
+                        onChange={() =>
+                          setFormData({ ...formData, tipoColetaWeb: 'publico' })
+                        }
+                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <div>
+                        <span className="text-xs font-bold text-white">
+                          Acesso público
+                        </span>
+                        <span className="ml-1.5 text-xs text-slate-400">
+                          link público sem a necessidade de autenticação
+                        </span>
+                      </div>
+                    </label>
+
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="tipoColetaWeb"
+                        checked={formData.tipoColetaWeb === 'interno'}
+                        onChange={() =>
+                          setFormData({ ...formData, tipoColetaWeb: 'interno' })
+                        }
+                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <div>
+                        <span className="text-xs font-bold text-white">
+                          Acesso interno
+                        </span>
+                        <span className="ml-1.5 text-xs text-slate-400">
+                          o acesso é feito pelo pesquisador através da sua autenticação
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Atribuição do pesquisador web */}
+                  <div className="pt-2">
+                    <label
+                      htmlFor="select-web-researcher"
+                      className="block text-xs font-bold text-slate-300 leading-snug"
+                    >
+                      Informe o Pesquisador para atribuir os registros das coletas WEB para identificá-los na exportação das coletas
+                    </label>
+                    <select
+                      id="select-web-researcher"
+                      value={formData.colaboradorWebId || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, colaboradorWebId: e.target.value })
+                      }
+                      className="mt-2 w-full rounded-lg border border-slate-800 bg-[#111218] px-3.5 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="">Selecione o colaborador para registro das coletas web</option>
+                      {collaborators.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.nome} ({c.login}) - CPF: {c.cpf}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: PERGUNTAS (Com ordenação, tipos de dados e personalização) */}
+      {currentStep === 2 && (
+        <div className="space-y-6">
+          <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-xl">
+            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+              <div>
+                <h2 className="text-lg font-bold text-white">
+                  Gerenciamento de Perguntas e Respostas
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Adicione perguntas, selecione o tipo de dados e organize a ordem de exibição facilmente com os botões de subir/descer.
+                </p>
+              </div>
+              <span className="rounded-md border border-slate-800 bg-[#111218] px-2.5 py-1 text-xs font-bold text-slate-300">
+                {formData.perguntas.length} pergunta(s)
+              </span>
+            </div>
+
+            {/* List of existing questions */}
+            <div className="mt-6 space-y-3">
+              {formData.perguntas.map((q, idx) => (
+                <div
+                  key={q.id}
+                  className="flex items-start justify-between gap-3 rounded-xl border border-slate-800 bg-[#111218] p-4 transition hover:border-slate-700"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex flex-col items-center justify-center gap-1 pt-1 text-slate-400">
+                      <button
+                        onClick={() => moveQuestion(idx, 'up')}
+                        disabled={idx === 0}
+                        title="Subir posição"
+                        className="rounded p-1 hover:bg-slate-800 hover:text-white disabled:opacity-30 transition-colors"
+                      >
+                        <MoveUp className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => moveQuestion(idx, 'down')}
+                        disabled={idx === formData.perguntas.length - 1}
+                        title="Descer posição"
+                        className="rounded p-1 hover:bg-slate-800 hover:text-white disabled:opacity-30 transition-colors"
+                      >
+                        <MoveDown className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded border border-blue-500/30 bg-blue-600/20 px-2 py-0.5 text-[10px] font-bold text-blue-400">
+                          {q.codigo}
+                        </span>
+                        <span className="rounded border border-slate-800 bg-[#16171d] px-2 py-0.5 text-[10px] font-medium text-slate-300">
+                          {q.tipo.replace('_', ' ').toUpperCase()}
+                        </span>
+                        {q.obrigatoria && (
+                          <span className="text-[10px] font-semibold text-rose-400">
+                            * Obrigatória
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-1 text-xs font-semibold text-white">
+                        {q.enunciado}
+                      </div>
+
+                      {/* Options preview */}
+                      {q.opcoes && q.opcoes.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {q.opcoes.map((opt) => (
+                            <span
+                              key={opt.id}
+                              className="rounded-md border border-slate-800 bg-[#16171d] px-2 py-0.5 text-[11px] text-slate-300"
+                            >
+                              • {opt.label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {q.tipo === 'escala_numerica' && (
+                        <div className="mt-1 text-xs text-slate-400">
+                          Escala: {q.escalaMin} ({q.escalaMinLabel}) até {q.escalaMax} ({q.escalaMaxLabel})
+                        </div>
+                      )}
+
+                      {q.tipo === 'nps' && (
+                        <div className="mt-1 text-xs text-slate-400">
+                          Escala NPS: 0 a 10 (Detratores, Neutros, Promotores)
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteQuestion(q.id)}
+                    title="Excluir pergunta"
+                    className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-950/40 hover:text-rose-400 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Form to add a new question */}
+            <div className="mt-8 rounded-xl border border-dashed border-slate-800 bg-[#111218]/60 p-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                + Adicionar Nova Pergunta ao Questionário
+              </h3>
+
+              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-slate-300">
+                    Enunciado da Pergunta *
+                  </label>
+                  <input
+                    type="text"
+                    value={newQuestionEnunciado}
+                    onChange={(e) => setNewQuestionEnunciado(e.target.value)}
+                    placeholder="Ex: Como você avalia a qualidade do atendimento?"
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    Tipo de Dado da Resposta
+                  </label>
+                  <select
+                    value={newQuestionTipo}
+                    onChange={(e) => setNewQuestionTipo(e.target.value as QuestionType)}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="multipla_escolha">Múltipla Escolha (Opção Única)</option>
+                    <option value="multipla_selecao">Múltipla Seleção (Várias Opções)</option>
+                    <option value="texto_aberto">Texto Aberto</option>
+                    <option value="escala_numerica">Escala Numérica (1 a 5)</option>
+                    <option value="nps">NPS (Escala 0 a 10)</option>
+                    <option value="sim_nao">Sim / Não</option>
+                    <option value="data_hora">Data / Hora</option>
+                  </select>
+                </div>
+              </div>
+
+              {(newQuestionTipo === 'multipla_escolha' ||
+                newQuestionTipo === 'multipla_selecao') && (
+                <div className="mt-3">
+                  <label className="block text-xs font-bold text-slate-300">
+                    Opções de Resposta (separadas por vírgula)
+                  </label>
+                  <input
+                    type="text"
+                    value={newQuestionOpcoes}
+                    onChange={(e) => setNewQuestionOpcoes(e.target.value)}
+                    placeholder="Opção A, Opção B, Opção C"
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              )}
+
+              <div className="mt-4 flex items-center justify-between">
+                <label className="flex items-center gap-2 text-xs font-medium text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newQuestionObrigatoria}
+                    onChange={(e) => setNewQuestionObrigatoria(e.target.checked)}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <span>Resposta Obrigatória</span>
+                </label>
+
+                <button
+                  type="button"
+                  id="btn-add-question-to-survey"
+                  onClick={handleAddQuestion}
+                  disabled={!newQuestionEnunciado.trim()}
+                  className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 disabled:opacity-40 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Inserir Pergunta</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: PULOS, SALTOS E REGRAS (Lógica condicional completa) */}
+      {currentStep === 3 && (
+        <div className="space-y-6">
+          <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-xl">
+            <div>
+              <h2 className="text-lg font-bold text-white">
+                Pulos, Saltos e Regras Condicionais
+              </h2>
+              <p className="text-xs text-slate-400">
+                Defina o fluxo inteligente do questionário: pule para perguntas específicas, esconda perguntas irrelevantes ou finalize o formulário conforme a resposta anterior.
+              </p>
+            </div>
+
+            {/* Existing rules table */}
+            <div className="mt-6 space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Regras Cadastradas ({formData.regras.length})
+              </h3>
+
+              {formData.regras.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-slate-800 p-4 text-center text-xs text-slate-400">
+                  Nenhuma regra de salto condicional definida. O questionário seguirá em ordem linear.
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-800 rounded-xl border border-slate-800 bg-[#111218]">
+                  {formData.regras.map((regra) => {
+                    const qOrigem = formData.perguntas.find((q) => q.id === regra.perguntaOrigemId);
+                    const qDest = formData.perguntas.find((q) => q.id === regra.perguntaDestinoId);
+
+                    return (
+                      <div
+                        key={regra.id}
+                        className="flex items-center justify-between p-3.5 text-xs"
+                      >
+                        <div className="flex items-center gap-3">
+                          <GitBranch className="h-4 w-4 text-blue-400 shrink-0" />
+                          <div>
+                            <span className="font-bold text-white">
+                              Se {qOrigem?.codigo || 'Pergunta'} ({qOrigem?.enunciado.slice(0, 30)}...)
+                            </span>
+                            <span className="mx-1 text-slate-400 font-semibold">
+                              {regra.condicao.toUpperCase()}
+                            </span>
+                            <span className="rounded border border-slate-800 bg-[#16171d] px-1.5 py-0.5 font-bold text-slate-200">
+                              "{regra.valorComparacao}"
+                            </span>
+                            <span className="mx-1 text-slate-400">➔</span>
+                            <span
+                              className={`font-semibold rounded border px-2 py-0.5 ${
+                                regra.acao === 'saltar_para'
+                                  ? 'border-blue-500/30 bg-blue-600/20 text-blue-300'
+                                  : regra.acao === 'esconder_pergunta'
+                                  ? 'border-amber-500/30 bg-amber-600/20 text-amber-300'
+                                  : 'border-rose-500/30 bg-rose-600/20 text-rose-300'
+                              }`}
+                            >
+                              {regra.acao === 'saltar_para' && `Saltar para ${qDest?.codigo || ''}`}
+                              {regra.acao === 'esconder_pergunta' && `Esconder ${qDest?.codigo || ''}`}
+                              {regra.acao === 'finalizar_formulario' && 'Finalizar Formulário'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteRule(regra.id)}
+                          className="text-slate-500 hover:text-rose-400 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Add new rule form (Exact fields requested) */}
+            <div className="mt-8 rounded-xl border border-slate-800 bg-[#111218] p-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                + Nova Regra de Salto / Condicional
+              </h3>
+
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Pergunta (caixa de seleção) */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    Pergunta Anterior
+                  </label>
+                  <select
+                    id="select-rule-origem"
+                    value={ruleOrigemId}
+                    onChange={(e) => {
+                      setRuleOrigemId(e.target.value);
+                      const q = formData.perguntas.find((x) => x.id === e.target.value);
+                      if (q?.opcoes && q.opcoes.length > 0) {
+                        setRuleValor(q.opcoes[0].value);
+                      }
+                    }}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="">Selecione a pergunta...</option>
+                    {formData.perguntas.map((q) => (
+                      <option key={q.id} value={q.id}>
+                        [{q.codigo}] {q.enunciado.slice(0, 40)}...
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Condições (igual, diferente, contem) */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    Condição
+                  </label>
+                  <select
+                    id="select-rule-condicao"
+                    value={ruleCondicao}
+                    onChange={(e) => setRuleCondicao(e.target.value as ConditionOperator)}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="igual">Igual a (=)</option>
+                    <option value="diferente">Diferente de (≠)</option>
+                    <option value="contem">Contém o termo</option>
+                  </select>
+                </div>
+
+                {/* Respostas como devem ser exibidas de acordo com a condição */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    Resposta de Comparação
+                  </label>
+                  <input
+                    id="input-rule-valor"
+                    type="text"
+                    value={ruleValor}
+                    onChange={(e) => setRuleValor(e.target.value)}
+                    placeholder="Ex: Não, Sim, ou valor..."
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                {/* Campo de ação de acordo com o filtro */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    Ação a Executar
+                  </label>
+                  <select
+                    id="select-rule-acao"
+                    value={ruleAcao}
+                    onChange={(e) => setRuleAcao(e.target.value as ConditionActionType)}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="saltar_para">Saltar para a pergunta</option>
+                    <option value="esconder_pergunta">Esconder pergunta</option>
+                    <option value="finalizar_formulario">Finalizar o formulário de perguntas</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Se a ação for saltar ou esconder, seleciona o destino */}
+              {ruleAcao !== 'finalizar_formulario' && (
+                <div className="mt-3 max-w-sm">
+                  <label className="block text-xs font-bold text-slate-300">
+                    Pergunta de Destino
+                  </label>
+                  <select
+                    id="select-rule-destino"
+                    value={ruleDestinoId}
+                    onChange={(e) => setRuleDestinoId(e.target.value)}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="">Selecione para onde aplicar a ação...</option>
+                    {formData.perguntas.map((q) => (
+                      <option key={q.id} value={q.id}>
+                        [{q.codigo}] {q.enunciado.slice(0, 45)}...
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="mt-4 flex justify-end">
+                <button
+                  type="button"
+                  id="btn-save-rule"
+                  onClick={handleAddRule}
+                  className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Cadastrar Regra</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Simulador Interativo de Condições */}
+            <div className="mt-8 rounded-xl border border-blue-500/30 bg-blue-950/20 p-5">
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4 text-blue-400" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-blue-300">
+                  Simulador de Comportamento em Tempo Real
+                </h3>
+              </div>
+              <p className="mt-1 text-xs text-blue-300/80">
+                Teste interativamente abaixo como as perguntas e saltos se comportam dinamicamente com as respostas selecionadas:
+              </p>
+
+              <div className="mt-4 space-y-3">
+                {formData.perguntas.map((q) => {
+                  let isHidden = false;
+                  formData.regras.forEach((r) => {
+                    if (r.acao === 'esconder_pergunta' && r.perguntaDestinoId === q.id) {
+                      const given = simTestAnswer[r.perguntaOrigemId];
+                      if (given) {
+                        if (r.condicao === 'igual' && given === r.valorComparacao) isHidden = true;
+                        if (r.condicao === 'diferente' && given !== r.valorComparacao) isHidden = true;
+                        if (r.condicao === 'contem' && given.includes(r.valorComparacao)) isHidden = true;
+                      }
+                    }
+                  });
+
+                  if (isHidden) {
+                    return (
+                      <div
+                        key={q.id}
+                        className="rounded-lg border border-dashed border-amber-500/40 bg-amber-950/20 p-2.5 text-xs text-amber-300"
+                      >
+                        👁️ [{q.codigo}] <em>Esta pergunta foi ocultada pela regra condicional configurada.</em>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div
+                      key={q.id}
+                      className="rounded-xl border border-slate-800 bg-[#111218] p-3.5 shadow-sm"
+                    >
+                      <div className="text-xs font-semibold text-white">
+                        [{q.codigo}] {q.enunciado}
+                      </div>
+
+                      {q.opcoes ? (
+                        <div className="mt-2.5 flex flex-wrap gap-2">
+                          {q.opcoes.map((opt) => (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() =>
+                                setSimTestAnswer({ ...simTestAnswer, [q.id]: opt.value })
+                              }
+                              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                                simTestAnswer[q.id] === opt.value
+                                  ? 'bg-blue-600 text-white font-bold shadow-sm shadow-blue-900/50'
+                                  : 'border border-slate-800 bg-[#16171d] text-slate-300 hover:bg-slate-800 hover:text-white'
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <input
+                          type="text"
+                          value={simTestAnswer[q.id] || ''}
+                          onChange={(e) =>
+                            setSimTestAnswer({ ...simTestAnswer, [q.id]: e.target.value })
+                          }
+                          placeholder="Digite para testar regra..."
+                          className="mt-2 w-full rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-1 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: CONSISTÊNCIA E CADASTRO DE METAS */}
+      {currentStep === 4 && (
+        <div className="space-y-6">
+          <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-xl">
+            <div>
+              <h2 className="text-lg font-bold text-white">
+                Consistência e Cadastro de Metas
+              </h2>
+              <p className="text-xs text-slate-400">
+                Metas amostrais estruturadas obrigatoriamente pela tríade: <strong>Questão</strong>, <strong>Condição</strong> e <strong>Resposta</strong>, vinculadas ao ciclo atual.
+              </p>
+            </div>
+
+            {/* Metas list */}
+            <div className="mt-6 space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Metas Definidas ({formData.metas.length})
+              </h3>
+
+              {formData.metas.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-slate-800 p-4 text-center text-xs text-slate-400">
+                  Nenhuma meta cadastrada para este questionário.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {formData.metas.map((meta) => {
+                    const q = formData.perguntas.find((x) => x.id === meta.perguntaId);
+                    return (
+                      <div
+                        key={meta.id}
+                        className="flex items-start justify-between rounded-xl border border-slate-800 bg-[#111218] p-3.5 text-xs"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <Target className="h-3.5 w-3.5 text-blue-400" />
+                            <span className="font-bold text-white">
+                              Meta: {meta.quantidadeAlvo} coletas
+                            </span>
+                            <span className="rounded border border-slate-800 bg-[#16171d] px-1.5 py-0.5 text-[9px] text-slate-300">
+                              {meta.ciclo}
+                            </span>
+                          </div>
+
+                          <div className="text-slate-300">
+                            <strong className="text-slate-400">Questão:</strong> [{q?.codigo}] {q?.enunciado.slice(0, 35)}...
+                          </div>
+                          <div className="text-slate-300">
+                            <strong className="text-slate-400">Condição:</strong> {meta.condicao.toUpperCase()}
+                          </div>
+                          <div className="text-slate-300">
+                            <strong className="text-slate-400">Resposta:</strong> "{meta.resposta}"
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteMeta(meta.id)}
+                          className="text-slate-500 hover:text-rose-400 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Add Meta Form */}
+            <div className="mt-8 rounded-xl border border-slate-800 bg-[#111218] p-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                + Cadastrar Nova Meta (Composição Obrigatória)
+              </h3>
+
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Campo 1: Questão */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    1. Questão *
+                  </label>
+                  <select
+                    id="select-meta-questao"
+                    value={metaPerguntaId}
+                    onChange={(e) => {
+                      setMetaPerguntaId(e.target.value);
+                      const q = formData.perguntas.find((x) => x.id === e.target.value);
+                      if (q?.opcoes && q.opcoes.length > 0) {
+                        setMetaResposta(q.opcoes[0].value);
+                      }
+                    }}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="">Selecione a questão...</option>
+                    {formData.perguntas.map((q) => (
+                      <option key={q.id} value={q.id}>
+                        [{q.codigo}] {q.enunciado.slice(0, 35)}...
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Campo 2: Condição */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    2. Condição *
+                  </label>
+                  <select
+                    id="select-meta-condicao"
+                    value={metaCondicao}
+                    onChange={(e) => setMetaCondicao(e.target.value as ConditionOperator)}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="igual">Igual a (=)</option>
+                    <option value="diferente">Diferente de (≠)</option>
+                    <option value="contem">Contém o termo</option>
+                  </select>
+                </div>
+
+                {/* Campo 3: Resposta */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    3. Resposta Esperada *
+                  </label>
+                  <input
+                    id="input-meta-resposta"
+                    type="text"
+                    value={metaResposta}
+                    onChange={(e) => setMetaResposta(e.target.value)}
+                    placeholder="Ex: Sim, 18 a 25 anos..."
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                {/* Quantidade Alvo */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-300">
+                    Quantidade Alvo (Amostragem)
+                  </label>
+                  <input
+                    id="input-meta-quantidade"
+                    type="number"
+                    min={1}
+                    value={metaQuantidadeAlvo}
+                    onChange={(e) => setMetaQuantidadeAlvo(Number(e.target.value))}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-2 text-xs text-white shadow-xs focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 flex justify-end">
+                <button
+                  type="button"
+                  id="btn-add-meta"
+                  onClick={handleAddMeta}
+                  className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Cadastrar Meta da Questão</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Verificação de Consistência Automática */}
+            <div className="mt-8 rounded-2xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-xs text-emerald-300">
+              <div className="flex items-center gap-2 font-bold text-emerald-300">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                <span>Auditoria de Consistência do Questionário</span>
+              </div>
+              <ul className="mt-2 space-y-1 text-emerald-300/80">
+                <li>• Nenhuma referência circular detectada nas regras de salto.</li>
+                <li>• Todas as {formData.perguntas.length} perguntas possuem identificador único válido.</li>
+                <li>• {formData.regras.length} regras de salto ativas e validadas contra o fluxo de perguntas.</li>
+                <li>• {formData.metas.length} metas cadastradas em conformidade (Questão, Condição e Resposta).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: PESQUISADORES */}
+      {currentStep === 5 && (
+        <div className="space-y-6">
+          <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-xl">
+            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+              <div>
+                <h2 className="text-lg font-bold text-white">
+                  Seleção de Pesquisadores Participantes
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Pesquisadores disponíveis e cadastrados no sistema. Selecione quais colaboradores irão participar efetivamente desta pesquisa em campo.
+                </p>
+              </div>
+
+              <div className="text-xs font-bold text-slate-300">
+                {formData.pesquisadoresIds.length} selecionado(s) de {collaborators.length}
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {collaborators.map((colab) => {
+                const isSelected = formData.pesquisadoresIds.includes(colab.id);
+                return (
+                  <div
+                    key={colab.id}
+                    onClick={() => toggleResearcher(colab.id)}
+                    className={`flex cursor-pointer items-start justify-between rounded-xl border p-4 transition ${
+                      isSelected
+                        ? 'border-blue-500/60 bg-blue-600/10 shadow-sm shadow-blue-950/40'
+                        : 'border-slate-800 bg-[#111218] hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-xs text-white">
+                          {colab.nome}
+                        </span>
+                        {!colab.ativo && (
+                          <span className="rounded border border-rose-500/30 bg-rose-950/40 px-1.5 py-0.5 text-[9px] font-bold text-rose-300">
+                            Inativo
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        Login: {colab.login} • CPF: {colab.cpf}
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        Email: {colab.email}
+                      </div>
+                      {colab.celular && (
+                        <div className="text-[11px] text-slate-400">
+                          Celular: {colab.celular} ({colab.nomeContatoCelular || 'Contato'})
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
+                        isSelected
+                          ? 'border-blue-600 bg-blue-600 text-white'
+                          : 'border-slate-700 bg-slate-800'
+                      }`}
+                    >
+                      {isSelected && <Check className="h-3.5 w-3.5 stroke-[3]" />}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Navigation Buttons: Voltar, Avançar e Concluir/Salvar */}
+      <div className="flex items-center justify-between border-t border-slate-800 pt-4">
+        <button
+          type="button"
+          id="btn-wizard-prev"
+          onClick={() => {
+            if (currentStep > 1) {
+              setCurrentStep(currentStep - 1);
+            } else {
+              setActiveModule('pesquisas');
+            }
+          }}
+          className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>{currentStep === 1 ? 'Cancelar e Voltar' : 'Etapa Anterior'}</span>
+        </button>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            id="btn-wizard-save-draft-bottom"
+            onClick={handleSaveDraftOffline}
+            className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition ${
+              !effectiveOnline
+                ? 'border-amber-500/40 bg-amber-600/15 text-amber-300 hover:bg-amber-600/25'
+                : 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+            }`}
+            title="Salvar rascunho da pesquisa atual"
+          >
+            <Save className="h-3.5 w-3.5" />
+            <span>{!effectiveOnline ? 'Salvar Offline' : 'Salvar Rascunho'}</span>
+          </button>
+
+          {currentStep < 5 ? (
+            <button
+              type="button"
+              id="btn-wizard-next"
+              onClick={() => setCurrentStep(currentStep + 1)}
+              className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+            >
+              <span>Próxima Etapa</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : isInProgress && !formData.serverSyncToken ? (
+            <button
+              type="button"
+              id="btn-wizard-sync-mandatory-finish"
+              onClick={() => setServerSyncModalOpen(true)}
+              className="flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 px-6 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-amber-500/30 transition active:scale-95 animate-pulse"
+              title="Sincronização obrigatória com o servidor para pesquisas em andamento antes de subir alterações"
+            >
+              <Server className="h-4 w-4" />
+              <span>Sincronizar com o Servidor antes de Subir</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              id="btn-wizard-finish"
+              onClick={handleFinishWizard}
+              className={`flex items-center gap-1.5 rounded-xl px-6 py-2.5 text-xs font-bold text-white shadow-lg active:scale-95 transition-colors ${
+                !effectiveOnline
+                  ? 'bg-amber-600 shadow-amber-900/40 hover:bg-amber-500'
+                  : formData.serverSyncToken
+                  ? 'bg-emerald-600 shadow-emerald-900/40 hover:bg-emerald-500'
+                  : 'bg-emerald-600 shadow-emerald-900/40 hover:bg-emerald-500'
+              }`}
+            >
+              {!effectiveOnline ? (
+                <CloudOff className="h-4 w-4" />
+              ) : formData.serverSyncToken ? (
+                <ArrowUpCircle className="h-4 w-4" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4" />
+              )}
+              <span>
+                {!effectiveOnline
+                  ? 'Concluir e Salvar (Offline)'
+                  : formData.serverSyncToken
+                  ? 'Subir Alterações para o Servidor'
+                  : 'Concluir e Salvar Questionário'}
+              </span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Central Server Sync Modal */}
+      <ServerSyncCheckModal
+        isOpen={serverSyncModalOpen}
+        onClose={() => setServerSyncModalOpen(false)}
+        survey={formData}
+        hasLocalModifications={hasLocalModifications}
+        onUploadSuccess={(updatedSurvey) => {
+          setFormData(updatedSurvey);
+          setServerSyncModalOpen(false);
+          clearCurrentSurveyDraft();
+          setSaveSuccess(true);
+        }}
+      />
+
+      {/* Success Notification Modal */}
+      {saveSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-2xl text-center">
+            <div
+              className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full border ${
+                !effectiveOnline
+                  ? 'border-amber-500/30 bg-amber-950/60 text-amber-400'
+                  : 'border-emerald-500/30 bg-emerald-950/60 text-emerald-400'
+              }`}
+            >
+              {!effectiveOnline ? (
+                <CloudOff className="h-8 w-8" />
+              ) : (
+                <CheckCircle2 className="h-8 w-8" />
+              )}
+            </div>
+
+            <h3 className="mt-4 text-base font-bold text-white">
+              {!effectiveOnline
+                ? 'Pesquisa Salva Offline com Sucesso!'
+                : 'Questionário Salvo com Sucesso!'}
+            </h3>
+            <p className="mt-2 text-xs text-slate-400 leading-relaxed">
+              {!effectiveOnline ? (
+                <>
+                  A pesquisa <strong className="text-white">{formData.nome}</strong> (Cód: {formData.codigo}) foi salva de forma segura no armazenamento local do navegador e colocada na fila de sincronização. Assim que a conexão for reestabelecida, ela poderá ser transmitida ao servidor.
+                </>
+              ) : (
+                <>
+                  A pesquisa <strong className="text-white">{formData.nome}</strong> (Cód: {formData.codigo}) está configurada com {formData.perguntas.length} perguntas, {formData.regras.length} regras de salto e vinculada aos {formData.pesquisadoresIds.length} pesquisadores selecionados.
+                </>
+              )}
+            </p>
+
+            {!effectiveOnline && (
+              <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-[11px] text-amber-300 text-left flex items-start gap-2">
+                <CloudOff className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>
+                  Você pode continuar criando ou coletando entrevistas normalmente. Nenhuma informação será perdida.
+                </span>
+              </div>
+            )}
+
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
+              <button
+                onClick={() => {
+                  setSaveSuccess(false);
+                  setActiveModule('pesquisas');
+                }}
+                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+              >
+                Ir para Lista de Pesquisas
+              </button>
+              <button
+                onClick={() => {
+                  setSaveSuccess(false);
+                  setActiveModule('simulador');
+                }}
+                className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+              >
+                Testar Coleta no Simulador
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
