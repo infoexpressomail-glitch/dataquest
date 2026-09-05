@@ -2,6 +2,7 @@
 // Usa a SUPABASE_SERVICE_ROLE_KEY, que ignora RLS — por isso este arquivo NUNCA deve
 // ser importado por código que roda no navegador. Ele só é usado dentro de /api/*.
 
+import 'dotenv/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 let adminClient: SupabaseClient | null = null;
