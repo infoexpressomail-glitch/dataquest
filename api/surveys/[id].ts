@@ -3,8 +3,8 @@
 //                        quando a pesquisa está em andamento (erro 428 / SYNC_REQUIRED_BEFORE_UPLOAD)
 // Mesmo contrato de server.ts original (rotas 3 e 5).
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseAdmin } from '../_lib/supabaseAdmin';
-import { isSurveyInProgress, rowToDTO, surveyPayloadToRow, SurveyRow } from '../_lib/surveyMapper';
+import { getSupabaseAdmin } from '../_lib/supabaseAdmin.js';
+import { isSurveyInProgress, rowToDTO, surveyPayloadToRow, SurveyRow } from '../_lib/surveyMapper.js';
 
 async function getSubmissionsCount(supabase: ReturnType<typeof getSupabaseAdmin>, surveyId: string): Promise<number> {
   const { count } = await supabase

@@ -1,6 +1,6 @@
 // GET /api/health — healthcheck. Mesmo contrato de resposta do server.ts original.
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseAdmin } from './_lib/supabaseAdmin';
+import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {

@@ -5,8 +5,8 @@
 // tabela `sync_tokens` (Postgres) em vez de um Map em memória, porque funções
 // serverless não mantêm estado entre invocações.
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseAdmin } from '../../_lib/supabaseAdmin';
-import { isSurveyInProgress, rowToDTO, surveyPayloadToRow, SurveyRow } from '../../_lib/surveyMapper';
+import { getSupabaseAdmin } from '../../_lib/supabaseAdmin.js';
+import { isSurveyInProgress, rowToDTO, surveyPayloadToRow, SurveyRow } from '../../_lib/surveyMapper.js';
 
 function generateSyncToken(): string {
   const randomSuffix = Math.random().toString(36).substring(2, 9).toUpperCase();

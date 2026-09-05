@@ -2,8 +2,8 @@
 // POST /api/surveys — criar nova pesquisa no servidor
 // Mesmo contrato de server.ts original (rotas 2 e 6).
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseAdmin } from './_lib/supabaseAdmin';
-import { rowToDTO, surveyPayloadToRow, SurveyRow } from './_lib/surveyMapper';
+import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
+import { rowToDTO, surveyPayloadToRow, SurveyRow } from './_lib/surveyMapper.js';
 
 async function getSubmissionsCounts(surveyIds: string[]): Promise<Record<string, number>> {
   if (surveyIds.length === 0) return {};
