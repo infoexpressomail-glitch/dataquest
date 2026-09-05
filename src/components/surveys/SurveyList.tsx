@@ -29,13 +29,17 @@ import {
   Calendar,
   Server,
   ShieldCheck,
+  Upload,
 } from 'lucide-react';
-import { Survey, InterviewSubmission } from '../../types';
-import { exportSubmissionsToCSV, exportSubmissionsToPDF } from '../../utils/exportUtils';
+import { Survey, InterviewSubmission, Question } from '../../types';
+import { exportSubmissionsToCSV, exportSubmissionsToPDF, exportConsolidatedSurveysToPDF } from '../../utils/exportUtils';
 import { AudioPlayerModal } from './AudioPlayerModal';
+import { AudioExportModal } from './AudioExportModal';
 import { GeoMapModal } from './GeoMapModal';
 import { SurveyDailyTrackingModal } from './SurveyDailyTrackingModal';
+import { ConsolidatedPdfExportModal } from './ConsolidatedPdfExportModal';
 import { ServerSyncCheckModal } from '../wizard/ServerSyncCheckModal';
+import { QuestionnaireImportModal } from '../wizard/QuestionnaireImportModal';
 
 export const SurveyList: React.FC = () => {
   const {
@@ -44,6 +48,8 @@ export const SurveyList: React.FC = () => {
     submissions,
     collaborators,
     currentUser,
+    currentProfile,
+    saveSurvey,
     hasPermission,
     setActiveModule,
     setEditingSurvey,
@@ -80,6 +86,16 @@ export const SurveyList: React.FC = () => {
   // Central Server Sync Modal State
   const [syncModalSurvey, setSyncModalSurvey] = useState<Survey | null>(null);
 
+  // Consolidated Multi-Survey PDF Export Modal State
+  const [consolidatedPdfModalOpen, setConsolidatedPdfModalOpen] = useState(false);
+
+  // Questionnaire Import Modal State
+  const [questionnaireImportModalOpen, setQuestionnaireImportModalOpen] = useState(false);
+
+  // Audio Export Modal State
+  const [audioExportModalOpen, setAudioExportModalOpen] = useState(false);
+  const [audioExportSurveyId, setAudioExportSurveyId] = useState<string | undefined>(undefined);
+
   // Check permissions
   const canCreate = hasPermission('pesquisa_criar');
   const canEdit = hasPermission('pesquisa_alterar');
@@ -93,18 +109,33 @@ export const SurveyList: React.FC = () => {
   const canExport = hasPermission('pesquisa_exportar_resultados');
   const accessAllWithoutAssociation = hasPermission('pesquisa_acessa_todas_sem_associacao');
 
+  const isResearcher =
+    currentProfile?.id === 'prof_pesq' ||
+    currentProfile?.name.toLowerCase().includes('pesquisador');
+
   // Filter surveys based on association if not permitted to see all
   const filteredSurveys = surveys.filter((s) => {
-    // Association check
-    if (!accessAllWithoutAssociation) {
-      const isAssociated = s.pesquisadoresIds.includes(currentUser.id);
+    // Researcher restriction: only active surveys assigned to this researcher; past/inactive are hidden
+    if (isResearcher) {
+      if (s.status !== 'ativa') return false;
+      const isAssociated =
+        s.pesquisadoresIds.includes(currentUser.id) ||
+        (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id));
       if (!isAssociated) return false;
-    }
+    } else {
+      // Association check for non-researchers without global access
+      if (!accessAllWithoutAssociation) {
+        const isAssociated =
+          s.pesquisadoresIds.includes(currentUser.id) ||
+          (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id));
+        if (!isAssociated) return false;
+      }
 
-    // Status filter
-    if (activeTab === 'ativas' && s.status !== 'ativa') return false;
-    if (activeTab === 'inativas' && s.status !== 'inativa') return false;
-    if (activeTab === 'excluidas' && s.status !== 'excluida') return false;
+      // Status filter
+      if (activeTab === 'ativas' && s.status !== 'ativa') return false;
+      if (activeTab === 'inativas' && s.status !== 'inativa') return false;
+      if (activeTab === 'excluidas' && s.status !== 'excluida') return false;
+    }
 
     // Search term
     if (searchTerm.trim()) {
@@ -147,6 +178,34 @@ export const SurveyList: React.FC = () => {
     exportSubmissionsToPDF(surveySubs, survey);
   };
 
+  const handleImportQuestionsToList = (imported: Question[]) => {
+    const newSurvey: Survey = {
+      id: `pesq_${Date.now()}`,
+      codigo: `PESQ-${new Date().getFullYear()}-${String(surveys.length + 1).padStart(2, '0')}`,
+      nome: `Questionário Importado - ${new Date().toLocaleDateString('pt-BR')}`,
+      descricao: 'Questionário importado com questões e alternativas organizadas.',
+      status: 'ativa',
+      habilitarColetaWeb: true,
+      tipoColetaWeb: 'publico',
+      colaboradorWebId: collaborators[0]?.id || '',
+      pesquisadoresIds: collaborators.map((c) => c.id),
+      cicloAtual: 1,
+      versao: 1,
+      criadaEm: new Date().toISOString(),
+      atualizadaEm: new Date().toISOString(),
+      perguntas: imported.map((q, idx) => ({
+        ...q,
+        ordem: idx + 1,
+        codigo: q.codigo || `P${String(idx + 1).padStart(2, '0')}`,
+      })),
+      regras: [],
+      metas: [],
+    };
+    saveSurvey(newSurvey);
+    setEditingSurvey(newSurvey);
+    setActiveModule('wizard');
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Header */}
@@ -171,15 +230,42 @@ export const SurveyList: React.FC = () => {
             <span>Histórico de Auditoria</span>
           </button>
 
-          {canCreate && (
+          {canListenAudio && (
             <button
-              id="btn-survey-create-new"
-              onClick={handleCreateNew}
-              className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+              id="btn-export-audios-by-survey"
+              onClick={() => {
+                setAudioExportSurveyId(undefined);
+                setAudioExportModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+              title="Exportar gravações de áudio separadas por pesquisa (individual ou lote .ZIP)"
             >
-              <PlusCircle className="h-4 w-4" />
-              <span>Criar Pesquisa (Abrir Wizard)</span>
+              <Volume2 className="h-4 w-4 text-purple-400" />
+              <span>Exportar Áudios (.ZIP)</span>
             </button>
+          )}
+
+          {canCreate && (
+            <>
+              <button
+                id="btn-survey-import-questionnaire"
+                onClick={() => setQuestionnaireImportModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+                title="Importar questionário de texto/arquivo com questões e alternativas organizadas"
+              >
+                <Upload className="h-4 w-4 text-purple-400" />
+                <span>Importar Questionário</span>
+              </button>
+
+              <button
+                id="btn-survey-create-new"
+                onClick={handleCreateNew}
+                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+              >
+                <PlusCircle className="h-4 w-4" />
+                <span>Criar Pesquisa (Abrir Wizard)</span>
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -195,44 +281,55 @@ export const SurveyList: React.FC = () => {
       {/* Search Bar & Status Tabs */}
       <div className="flex flex-col justify-between gap-3 border-b border-slate-800 pb-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
-          <button
-            id="tab-surveys-active"
-            onClick={() => setActiveTab('ativas')}
-            className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
-              activeTab === 'ativas'
-                ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            Ativas ({surveys.filter((s) => s.status === 'ativa').length})
-          </button>
+          {isResearcher ? (
+            <div className="flex items-center gap-2">
+              <span className="rounded-lg px-3.5 py-1.5 text-xs font-bold border bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-xs flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Ativas Atribuídas ({filteredSurveys.length})
+              </span>
+            </div>
+          ) : (
+            <>
+              <button
+                id="tab-surveys-active"
+                onClick={() => setActiveTab('ativas')}
+                className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
+                  activeTab === 'ativas'
+                    ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
+                    : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                Ativas ({surveys.filter((s) => s.status === 'ativa').length})
+              </button>
 
-          {canViewInactive && (
-            <button
-              id="tab-surveys-inactive"
-              onClick={() => setActiveTab('inativas')}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
-                activeTab === 'inativas'
-                  ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                  : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              Inativas ({surveys.filter((s) => s.status === 'inativa').length})
-            </button>
-          )}
+              {canViewInactive && (
+                <button
+                  id="tab-surveys-inactive"
+                  onClick={() => setActiveTab('inativas')}
+                  className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
+                    activeTab === 'inativas'
+                      ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
+                      : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  Inativas ({surveys.filter((s) => s.status === 'inativa').length})
+                </button>
+              )}
 
-          {canViewExcluded && (
-            <button
-              id="tab-surveys-deleted"
-              onClick={() => setActiveTab('excluidas')}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
-                activeTab === 'excluidas'
-                  ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                  : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              Excluídas ({surveys.filter((s) => s.status === 'excluida').length})
-            </button>
+              {canViewExcluded && (
+                <button
+                  id="tab-surveys-deleted"
+                  onClick={() => setActiveTab('excluidas')}
+                  className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
+                    activeTab === 'excluidas'
+                      ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
+                      : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  Excluídas ({surveys.filter((s) => s.status === 'excluida').length})
+                </button>
+              )}
+            </>
           )}
         </div>
 
@@ -294,6 +391,19 @@ export const SurveyList: React.FC = () => {
               <BarChart3 className="h-3.5 w-3.5 text-blue-400" />
               <span>Gráfico Diário ({selectedSurveyIds.length})</span>
             </button>
+
+            {/* Export Consolidated PDF for all selected surveys */}
+            {canExport && (
+              <button
+                id="btn-bulk-export-consolidated-pdf"
+                onClick={() => setConsolidatedPdfModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-rose-500/40 bg-rose-600/20 px-3 py-1.5 text-xs font-bold text-rose-300 hover:bg-rose-600 hover:text-white transition-colors shadow-xs"
+                title="Exportar todas as pesquisas selecionadas para um único arquivo PDF consolidado"
+              >
+                <FileText className="h-3.5 w-3.5 text-rose-400" />
+                <span>Exportar PDF Consolidado ({selectedSurveyIds.length})</span>
+              </button>
+            )}
 
             {canToggleActive && (
               <>
@@ -561,11 +671,14 @@ export const SurveyList: React.FC = () => {
                       <BarChart3 className="h-4 w-4 text-blue-400" />
                     </button>
 
-                    {canListenAudio && firstAudioSub && (
+                    {canListenAudio && (
                       <button
                         id={`btn-audio-survey-${survey.id}`}
-                        onClick={() => setAudioModalSubmission(firstAudioSub)}
-                        title="Ouvir áudio gravado das entrevistas"
+                        onClick={() => {
+                          setAudioExportSurveyId(survey.id);
+                          setAudioExportModalOpen(true);
+                        }}
+                        title={`Exportar em lote ou ouvir gravações de áudio da pesquisa "${survey.nome}"`}
                         className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-purple-400 transition-colors"
                       >
                         <Volume2 className="h-4 w-4 text-purple-400" />
@@ -710,6 +823,40 @@ export const SurveyList: React.FC = () => {
           onUploadSuccess={() => {
             setSyncModalSurvey(null);
           }}
+        />
+      )}
+
+      {/* Consolidated PDF Export Modal */}
+      {consolidatedPdfModalOpen && (
+        <ConsolidatedPdfExportModal
+          surveys={surveys.filter((s) => selectedSurveyIds.includes(s.id))}
+          submissions={submissions}
+          onClose={() => setConsolidatedPdfModalOpen(false)}
+          onSuccess={() => {
+            setConsolidatedPdfModalOpen(false);
+          }}
+        />
+      )}
+
+      {/* Questionnaire Import Modal */}
+      {questionnaireImportModalOpen && (
+        <QuestionnaireImportModal
+          isOpen={questionnaireImportModalOpen}
+          onClose={() => setQuestionnaireImportModalOpen(false)}
+          existingQuestionsCount={0}
+          onImport={(imported) => {
+            handleImportQuestionsToList(imported);
+            setQuestionnaireImportModalOpen(false);
+          }}
+        />
+      )}
+
+      {/* Audio Batch & Individual Export Modal strictly segregated by survey */}
+      {audioExportModalOpen && (
+        <AudioExportModal
+          isOpen={audioExportModalOpen}
+          onClose={() => setAudioExportModalOpen(false)}
+          initialSurveyId={audioExportSurveyId}
         />
       )}
     </div>

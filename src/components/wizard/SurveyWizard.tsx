@@ -4,6 +4,7 @@ import { getCurrentSurveyDraftFromDB } from '../../utils/indexedDBStorage';
 import {
   Survey,
   Question,
+  QuestionOption,
   ConditionalRule,
   MetaTarget,
   QuestionType,
@@ -38,8 +39,18 @@ import {
   ShieldCheck,
   Lock,
   ArrowUpCircle,
+  FileSpreadsheet,
+  Edit3,
+  ChevronDown,
+  ChevronUp,
+  ListOrdered,
+  X,
+  Mic,
+  Volume2,
+  Clock,
 } from 'lucide-react';
 import { ServerSyncCheckModal } from './ServerSyncCheckModal';
+import { QuestionnaireImportModal } from './QuestionnaireImportModal';
 
 export const SurveyWizard: React.FC = () => {
   const {
@@ -100,6 +111,9 @@ export const SurveyWizard: React.FC = () => {
       versao: 1,
       criadaEm: new Date().toISOString(),
       atualizadaEm: new Date().toISOString(),
+      habilitarGravacaoAudio: true,
+      gravarAudioAPartirPerguntaId: '',
+      tempoLimiteGravacaoMinutos: 2,
       perguntas: [
         {
           id: 'q_default_1',
@@ -141,6 +155,8 @@ export const SurveyWizard: React.FC = () => {
   const [newQuestionTipo, setNewQuestionTipo] = useState<QuestionType>('multipla_escolha');
   const [newQuestionObrigatoria, setNewQuestionObrigatoria] = useState(true);
   const [newQuestionOpcoes, setNewQuestionOpcoes] = useState<string>('Opção 1, Opção 2, Opção 3');
+  const [questionnaireImportModalOpen, setQuestionnaireImportModalOpen] = useState(false);
+  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
 
   // STEP 3 State: Add Rule form
   const [ruleOrigemId, setRuleOrigemId] = useState<string>('');
@@ -247,6 +263,133 @@ export const SurveyWizard: React.FC = () => {
       regras: remainingRules,
       metas: remainingMetas,
     });
+  };
+
+  const handleImportQuestions = (imported: Question[], mode: 'append' | 'replace') => {
+    if (mode === 'replace') {
+      setFormData((prev) => ({
+        ...prev,
+        perguntas: imported.map((q, idx) => ({
+          ...q,
+          ordem: idx + 1,
+          codigo: q.codigo || `P${String(idx + 1).padStart(2, '0')}`,
+        })),
+        regras: [],
+      }));
+    } else {
+      const existing = [...formData.perguntas];
+      const startIdx = existing.length;
+      const mapped = imported.map((q, idx) => ({
+        ...q,
+        ordem: startIdx + idx + 1,
+        codigo: `P${String(startIdx + idx + 1).padStart(2, '0')}`,
+      }));
+      setFormData((prev) => ({
+        ...prev,
+        perguntas: [...existing, ...mapped],
+      }));
+    }
+  };
+
+  const handleUpdateQuestionType = (qId: string, newType: QuestionType) => {
+    setFormData((prev) => {
+      const updated = prev.perguntas.map((q) => {
+        if (q.id !== qId) return q;
+        const updatedQ = { ...q, tipo: newType };
+        if (newType === 'sim_nao') {
+          updatedQ.opcoes = [
+            { id: `opt_s_${Date.now()}`, label: 'Sim', value: 'Sim' },
+            { id: `opt_n_${Date.now()}`, label: 'Não', value: 'Não' },
+          ];
+        } else if (newType === 'escala_numerica') {
+          updatedQ.escalaMin = 1;
+          updatedQ.escalaMax = 5;
+          updatedQ.escalaMinLabel = 'Péssimo';
+          updatedQ.escalaMaxLabel = 'Excelente';
+          if (!updatedQ.opcoes || updatedQ.opcoes.length === 0) {
+            updatedQ.opcoes = [
+              { id: `opt_${Date.now()}_1`, label: '1 - Péssimo', value: '1' },
+              { id: `opt_${Date.now()}_2`, label: '2 - Ruim', value: '2' },
+              { id: `opt_${Date.now()}_3`, label: '3 - Regular', value: '3' },
+              { id: `opt_${Date.now()}_4`, label: '4 - Bom', value: '4' },
+              { id: `opt_${Date.now()}_5`, label: '5 - Excelente', value: '5' },
+            ];
+          }
+        } else if (newType === 'nps') {
+          updatedQ.escalaMin = 0;
+          updatedQ.escalaMax = 10;
+          updatedQ.escalaMinLabel = 'Não Indicaria';
+          updatedQ.escalaMaxLabel = 'Indicaria com Certeza';
+          updatedQ.opcoes = undefined;
+        } else if (newType === 'texto_aberto' || newType === 'data_hora') {
+          updatedQ.opcoes = undefined;
+        } else if (newType === 'multipla_escolha' || newType === 'multipla_selecao') {
+          if (!updatedQ.opcoes || updatedQ.opcoes.length === 0) {
+            updatedQ.opcoes = [
+              { id: `opt_${Date.now()}_1`, label: 'Opção 1', value: 'Opção 1' },
+              { id: `opt_${Date.now()}_2`, label: 'Opção 2', value: 'Opção 2' },
+              { id: `opt_${Date.now()}_3`, label: 'Opção 3', value: 'Opção 3' },
+            ];
+          }
+        }
+        return updatedQ;
+      });
+      return { ...prev, perguntas: updated };
+    });
+  };
+
+  const handleUpdateOptionLabel = (qId: string, optIndex: number, newLabel: string) => {
+    setFormData((prev) => {
+      const updated = prev.perguntas.map((q) => {
+        if (q.id !== qId || !q.opcoes) return q;
+        const newOpts = [...q.opcoes];
+        newOpts[optIndex] = { ...newOpts[optIndex], label: newLabel, value: newLabel };
+        return { ...q, opcoes: newOpts };
+      });
+      return { ...prev, perguntas: updated };
+    });
+  };
+
+  const handleAddOptionToQuestion = (qId: string) => {
+    setFormData((prev) => {
+      const updated = prev.perguntas.map((q) => {
+        if (q.id !== qId) return q;
+        const currentOpts = q.opcoes || [];
+        const newOptNum = currentOpts.length + 1;
+        const newOpt: QuestionOption = {
+          id: `opt_${Date.now()}_${newOptNum}`,
+          label: `Nova Opção ${newOptNum}`,
+          value: `Nova Opção ${newOptNum}`,
+        };
+        return { ...q, opcoes: [...currentOpts, newOpt] };
+      });
+      return { ...prev, perguntas: updated };
+    });
+  };
+
+  const handleDeleteOptionFromQuestion = (qId: string, optIndex: number) => {
+    setFormData((prev) => {
+      const updated = prev.perguntas.map((q) => {
+        if (q.id !== qId || !q.opcoes) return q;
+        return { ...q, opcoes: q.opcoes.filter((_, idx) => idx !== optIndex) };
+      });
+      return { ...prev, perguntas: updated };
+    });
+  };
+
+  const toggleAudioStartQuestion = (questionId: string) => {
+    const isCurrentlyStartingHere =
+      formData.gravarAudioAPartirPerguntaId === questionId;
+    const newStartId = isCurrentlyStartingHere ? '' : questionId;
+
+    setFormData((prev) => ({
+      ...prev,
+      gravarAudioAPartirPerguntaId: newStartId,
+      perguntas: prev.perguntas.map((q) => ({
+        ...q,
+        iniciarGravacaoAqui: q.id === newStartId,
+      })),
+    }));
   };
 
   const handleAddRule = () => {
@@ -874,6 +1017,158 @@ export const SurveyWizard: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {/* Configurações de Gravação de Áudio de Campo */}
+            <div className="border-t border-slate-800 pt-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button
+                    id="switch-habilitar-gravacao-audio"
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        habilitarGravacaoAudio: formData.habilitarGravacaoAudio === false ? true : false,
+                      })
+                    }
+                    aria-checked={formData.habilitarGravacaoAudio !== false}
+                    role="switch"
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      formData.habilitarGravacaoAudio !== false ? 'bg-purple-600' : 'bg-slate-800'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out ${
+                        formData.habilitarGravacaoAudio !== false ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                  <div>
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Mic className="h-4 w-4 text-purple-400" />
+                      Gravação de Áudio da Entrevista
+                    </span>
+                    <span className="text-[11px] text-slate-400">
+                      Registra o áudio das entrevistas em campo para auditoria e controle de qualidade
+                    </span>
+                  </div>
+                </div>
+
+                <span className="rounded-full bg-purple-500/10 border border-purple-500/20 px-2.5 py-0.5 text-[10px] font-bold text-purple-400">
+                  {formData.habilitarGravacaoAudio !== false ? 'Ativado' : 'Desativado'}
+                </span>
+              </div>
+
+              {formData.habilitarGravacaoAudio !== false && (
+                <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4 space-y-4">
+                  {/* Pergunta de Início da Gravação */}
+                  <div>
+                    <label
+                      htmlFor="select-audio-start-question"
+                      className="block text-xs font-bold text-slate-200"
+                    >
+                      Ponto de Início da Gravação (Pergunta a partir de onde será gravada)
+                    </label>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Selecione a pergunta em que o áudio começará a ser capturado. Se não selecionada, inicia na Pergunta 1.
+                    </p>
+                    <select
+                      id="select-audio-start-question"
+                      value={formData.gravarAudioAPartirPerguntaId || ''}
+                      onChange={(e) => {
+                        const targetId = e.target.value;
+                        setFormData({
+                          ...formData,
+                          gravarAudioAPartirPerguntaId: targetId,
+                          perguntas: formData.perguntas.map((q) => ({
+                            ...q,
+                            iniciarGravacaoAqui: q.id === targetId,
+                          })),
+                        });
+                      }}
+                      className="mt-2 w-full rounded-lg border border-slate-800 bg-[#111218] px-3.5 py-2 text-xs text-white shadow-xs focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    >
+                      <option value="">Desde o Início da Entrevista (Pergunta 01 - Padrão)</option>
+                      {formData.perguntas.map((q) => (
+                        <option key={q.id} value={q.id}>
+                          {q.codigo} - {q.enunciado.slice(0, 70)}...
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Tempo Limite de Gravação */}
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5 text-cyan-400" />
+                        Tempo Limite de Gravação de Áudio:
+                      </label>
+                      <span className="font-mono text-xs font-bold text-cyan-400">
+                        {formData.tempoLimiteGravacaoMinutos || 2} minuto(s)
+                        {(formData.tempoLimiteGravacaoMinutos || 2) === 2 && (
+                          <span className="ml-1.5 text-[10px] text-slate-400 font-normal">
+                            (Padrão do Sistema)
+                          </span>
+                        )}
+                        {(formData.tempoLimiteGravacaoMinutos || 2) === 10 && (
+                          <span className="ml-1.5 text-[10px] text-amber-400 font-normal">
+                            (Tempo Máximo)
+                          </span>
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="mt-2 flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        step="1"
+                        value={formData.tempoLimiteGravacaoMinutos || 2}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            tempoLimiteGravacaoMinutos: parseInt(e.target.value, 10),
+                          })
+                        }
+                        className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                      />
+                    </div>
+
+                    {/* Botões rápidos de minutos */}
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((min) => {
+                        const isSelected = (formData.tempoLimiteGravacaoMinutos || 2) === min;
+                        return (
+                          <button
+                            key={min}
+                            type="button"
+                            onClick={() =>
+                              setFormData({
+                                ...formData,
+                                tempoLimiteGravacaoMinutos: min,
+                              })
+                            }
+                            className={`rounded-md px-2.5 py-1 text-[11px] font-bold transition ${
+                              isSelected
+                                ? 'bg-purple-600 text-white shadow-xs'
+                                : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                            }`}
+                          >
+                            {min} min{min === 2 ? ' (Padrão)' : min === 10 ? ' (Máx)' : ''}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <p className="mt-2 text-[10px] text-slate-400">
+                      * O sistema grava por padrão <strong>2 minutos</strong> quando não especificado, com limite máximo de <strong>10 minutos</strong>. O tempo é ajustável individualmente para cada pesquisa.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -888,22 +1183,31 @@ export const SurveyWizard: React.FC = () => {
                   Gerenciamento de Perguntas e Respostas
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Adicione perguntas, selecione o tipo de dados e organize a ordem de exibição facilmente com os botões de subir/descer.
+                  Adicione perguntas, importe questionários estruturados e organize ou altere o tipo das alternativas facilmente.
                 </p>
               </div>
-              <span className="rounded-md border border-slate-800 bg-[#111218] px-2.5 py-1 text-xs font-bold text-slate-300">
-                {formData.perguntas.length} pergunta(s)
-              </span>
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  id="btn-open-questionnaire-import"
+                  onClick={() => setQuestionnaireImportModalOpen(true)}
+                  className="flex items-center gap-1.5 rounded-lg bg-blue-600/20 border border-blue-500/30 px-3.5 py-1.5 text-xs font-bold text-blue-400 shadow-sm hover:bg-blue-600 hover:text-white transition active:scale-95"
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5" />
+                  <span>Importar Questionário</span>
+                </button>
+                <span className="rounded-md border border-slate-800 bg-[#111218] px-2.5 py-1 text-xs font-bold text-slate-300">
+                  {formData.perguntas.length} pergunta(s)
+                </span>
+              </div>
             </div>
 
             {/* List of existing questions */}
             <div className="mt-6 space-y-3">
               {formData.perguntas.map((q, idx) => (
-                <div
-                  key={q.id}
-                  className="flex items-start justify-between gap-3 rounded-xl border border-slate-800 bg-[#111218] p-4 transition hover:border-slate-700"
-                >
-                  <div className="flex items-start gap-3">
+                <div key={q.id} className="space-y-2">
+                  <div className="flex items-start justify-between gap-3 rounded-xl border border-slate-800 bg-[#111218] p-4 transition hover:border-slate-700">
+                    <div className="flex items-start gap-3">
                     <div className="flex flex-col items-center justify-center gap-1 pt-1 text-slate-400">
                       <button
                         onClick={() => moveQuestion(idx, 'up')}
@@ -934,6 +1238,12 @@ export const SurveyWizard: React.FC = () => {
                         {q.obrigatoria && (
                           <span className="text-[10px] font-semibold text-rose-400">
                             * Obrigatória
+                          </span>
+                        )}
+                        {(formData.gravarAudioAPartirPerguntaId === q.id || q.iniciarGravacaoAqui) && (
+                          <span className="inline-flex items-center gap-1 rounded border border-emerald-500/40 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                            <Mic className="h-3 w-3" />
+                            Início da Gravação
                           </span>
                         )}
                       </div>
@@ -970,15 +1280,124 @@ export const SurveyWizard: React.FC = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleDeleteQuestion(q.id)}
-                    title="Excluir pergunta"
-                    className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-950/40 hover:text-rose-400 transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => toggleAudioStartQuestion(q.id)}
+                      className={`flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
+                        formData.gravarAudioAPartirPerguntaId === q.id || q.iniciarGravacaoAqui
+                          ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 shadow-xs'
+                          : 'border-slate-700 bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                      title="Definir esta pergunta como ponto onde a gravação de áudio da entrevista será acionada"
+                    >
+                      <Mic className="h-3 w-3" />
+                      <span>
+                        {formData.gravarAudioAPartirPerguntaId === q.id || q.iniciarGravacaoAqui
+                          ? 'Início do Áudio'
+                          : 'Gravar a partir daqui'}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setExpandedQuestionId(expandedQuestionId === q.id ? null : q.id)}
+                      className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-[11px] font-semibold text-blue-400 hover:bg-slate-700 hover:text-blue-300 transition"
+                      title="Alterar tipo da questão ou gerenciar alternativas"
+                    >
+                      <Edit3 className="h-3 w-3" />
+                      <span>{expandedQuestionId === q.id ? 'Fechar' : 'Alterar Tipo / Alternativas'}</span>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteQuestion(q.id)}
+                      title="Excluir pergunta"
+                      className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-950/40 hover:text-rose-400 transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-              ))}
+
+                {/* Inline Type & Alternatives Editor for imported or created questions */}
+                {expandedQuestionId === q.id && (
+                  <div className="mt-2 rounded-xl border border-blue-500/30 bg-[#0d0e14] p-4 space-y-3 shadow-inner">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-2.5">
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-bold text-slate-300">
+                          Alterar Tipo de Resposta:
+                        </label>
+                        <select
+                          value={q.tipo}
+                          onChange={(e) => handleUpdateQuestionType(q.id, e.target.value as QuestionType)}
+                          className="rounded-lg border border-blue-500/50 bg-[#16171d] px-3 py-1.5 text-xs font-bold text-blue-400 focus:border-blue-400 focus:outline-none cursor-pointer"
+                        >
+                          <option value="multipla_escolha">Múltipla Escolha (Opção Única)</option>
+                          <option value="multipla_selecao">Múltipla Seleção (Várias Opções)</option>
+                          <option value="texto_aberto">Texto Aberto</option>
+                          <option value="escala_numerica">Escala Numérica (1 a 5)</option>
+                          <option value="nps">NPS (Escala 0 a 10)</option>
+                          <option value="sim_nao">Sim / Não</option>
+                          <option value="data_hora">Data / Hora</option>
+                        </select>
+                      </div>
+
+                      {(q.tipo === 'multipla_escolha' ||
+                        q.tipo === 'multipla_selecao' ||
+                        q.tipo === 'sim_nao' ||
+                        q.tipo === 'escala_numerica') && (
+                        <button
+                          type="button"
+                          onClick={() => handleAddOptionToQuestion(q.id)}
+                          className="flex items-center gap-1 rounded-md bg-blue-600/20 border border-blue-500/30 px-2.5 py-1 text-[11px] font-bold text-blue-400 hover:bg-blue-600/30 transition"
+                        >
+                          <Plus className="h-3 w-3" />
+                          <span>Adicionar Alternativa</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Alternativas da questão */}
+                    {(q.tipo === 'multipla_escolha' ||
+                      q.tipo === 'multipla_selecao' ||
+                      q.tipo === 'sim_nao' ||
+                      q.tipo === 'escala_numerica') && (
+                      <div className="space-y-1.5 pt-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Alternativas Configuradas ({q.opcoes?.length || 0}):
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {(q.opcoes || []).map((opt, optIdx) => (
+                            <div
+                              key={opt.id || optIdx}
+                              className="flex items-center gap-2 rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-1.5"
+                            >
+                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-800 text-[10px] font-bold text-slate-400">
+                                {String.fromCharCode(65 + optIdx)}
+                              </span>
+                              <input
+                                type="text"
+                                value={opt.label}
+                                onChange={(e) =>
+                                  handleUpdateOptionLabel(q.id, optIdx, e.target.value)
+                                }
+                                className="flex-1 bg-transparent text-xs text-slate-200 focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteOptionFromQuestion(q.id, optIdx)}
+                                className="text-slate-500 hover:text-rose-400 transition"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
             </div>
 
             {/* Form to add a new question */}
@@ -1762,6 +2181,14 @@ export const SurveyWizard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Structured Questionnaire Import Modal */}
+      <QuestionnaireImportModal
+        isOpen={questionnaireImportModalOpen}
+        onClose={() => setQuestionnaireImportModalOpen(false)}
+        onImportQuestions={handleImportQuestions}
+        surveyTitle={formData.nome}
+      />
     </div>
   );
 };

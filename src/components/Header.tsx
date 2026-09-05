@@ -47,6 +47,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
     connectionState,
     syncProgress,
     pendingIndexedDbCount,
+    logout,
   } = useApp();
 
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -62,6 +63,10 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
 
   const activeSurveys = surveys.filter((s) => s.status !== 'excluida').length;
   const activeCollaborators = collaborators.filter((c) => c.ativo).length;
+
+  const isResearcher =
+    currentProfile?.id === 'prof_pesq' ||
+    currentProfile?.name.toLowerCase().includes('pesquisador');
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-800 bg-[#0a0b10]/90 px-4 backdrop-blur-md transition-colors sm:px-6 lg:px-8">
@@ -109,6 +114,20 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Researcher Environment Badge */}
+        {isResearcher && (
+          <button
+            id="btn-header-researcher-badge"
+            onClick={() => setActiveModule('pesquisador')}
+            title="Ir para o Ambiente do Pesquisador"
+            className="flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-400 hover:bg-emerald-500/25 transition shadow-sm"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="hidden sm:inline">Ambiente do Pesquisador</span>
+            <span className="sm:hidden">Pesquisador</span>
+          </button>
+        )}
+
         {/* Nova Pesquisa Button if has permission */}
         {hasPermission('pesquisa_criar') && (
           <button
@@ -284,7 +303,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                 </div>
               </div>
 
-              <div className="border-t border-slate-800 pt-2">
+              <div className="border-t border-slate-800 pt-2 space-y-1">
                 <button
                   id="btn-header-open-2fa"
                   onClick={() => {
@@ -295,6 +314,18 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                 >
                   <KeyRound className="h-3.5 w-3.5 text-blue-400" />
                   <span>Configurar 2FA (Dois Fatores)</span>
+                </button>
+
+                <button
+                  id="btn-header-logout"
+                  onClick={() => {
+                    setUserDropdownOpen(false);
+                    logout();
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-rose-400 hover:bg-rose-500/15 transition font-semibold"
+                >
+                  <LogOut className="h-3.5 w-3.5 text-rose-400" />
+                  <span>Sair do Sistema</span>
                 </button>
               </div>
             </div>

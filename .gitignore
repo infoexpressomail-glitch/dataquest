@@ -6,3 +6,5 @@ coverage/
 *.log
 .env*
 !.env.example
+dataquest.zip
+prompt_dataquest_claude_ai.md

@@ -11,12 +11,15 @@ import {
   FolderCog,
   ShieldCheck,
   Users,
+  Calculator,
+  UserCheck,
   ChevronDown,
   ChevronRight,
   Smartphone,
   Sparkles,
   RotateCcw,
   History,
+  LogOut,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -34,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
     currentUser,
     resetToDefaults,
     auditLogs,
+    logout,
   } = useApp();
 
   const [cadastrosOpen, setCadastrosOpen] = useState(true);
@@ -62,6 +66,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
   const showCadastros =
     hasPermission('politicas_acesso') || hasPermission('colaboradores_acesso');
 
+  const isResearcher =
+    currentProfile?.id === 'prof_pesq' ||
+    currentProfile?.name.toLowerCase().includes('pesquisador');
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -79,21 +87,86 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
         }`}
       >
         <div className="flex-1 overflow-y-auto px-4 py-5 space-y-1">
-          <div className="pt-2 pb-2 px-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-            Navegação Principal
-          </div>
+          {isResearcher ? (
+            /* Dedicated Researcher Environment Navigation */
+            <>
+              <div className="pt-2 pb-2 px-2 text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Portal do Pesquisador
+              </div>
 
-          {/* Módulo Home */}
-          {hasPermission('home_acesso') && (
-            <button
-              id="menu-item-home"
-              onClick={() => handleNavigate('home')}
-              className={navItemClass(activeModule === 'home')}
-            >
-              <LayoutDashboard className="h-4 w-4 shrink-0" />
-              <span>{t('home')}</span>
-            </button>
-          )}
+              <button
+                id="menu-item-pesquisador-home"
+                onClick={() => handleNavigate('pesquisador')}
+                className={navItemClass(activeModule === 'pesquisador' || activeModule === 'home')}
+              >
+                <Sparkles className="h-4 w-4 shrink-0 text-emerald-400" />
+                <span>Ambiente do Pesquisador</span>
+              </button>
+
+              <button
+                id="menu-item-pesquisador-pesquisas"
+                onClick={() => handleNavigate('pesquisas')}
+                className={navItemClass(activeModule === 'pesquisas')}
+              >
+                <FileQuestion className="h-4 w-4 shrink-0" />
+                <span>Pesquisas Liberadas</span>
+              </button>
+
+              <button
+                id="menu-item-pesquisador-coleta"
+                onClick={() => handleNavigate('simulador')}
+                className={navItemClass(activeModule === 'simulador')}
+              >
+                <Smartphone className="h-4 w-4 shrink-0 text-blue-400" />
+                <span>Formulário de Coleta</span>
+              </button>
+
+              <button
+                id="menu-item-pesquisador-metas"
+                onClick={() => handleNavigate('metas')}
+                className={navItemClass(activeModule === 'metas')}
+              >
+                <Target className="h-4 w-4 shrink-0" />
+                <span>Minhas Metas & Cotas</span>
+              </button>
+
+              <button
+                id="menu-item-pesquisador-dimensionamento"
+                onClick={() => handleNavigate('dimensionamento')}
+                className={navItemClass(activeModule === 'dimensionamento')}
+              >
+                <Calculator className="h-4 w-4 shrink-0 text-blue-400" />
+                <span>{t('teamSizing')}</span>
+              </button>
+
+              <button
+                id="menu-item-pesquisador-auditoria"
+                onClick={() => handleNavigate('historico_acoes')}
+                className={navItemClass(activeModule === 'historico_acoes')}
+              >
+                <History className="h-4 w-4 shrink-0 text-blue-400" />
+                <span>Trilha de Conformidade</span>
+              </button>
+            </>
+          ) : (
+            /* General / Administrator Navigation */
+            <>
+              <div className="pt-2 pb-2 px-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                Navegação Principal
+              </div>
+
+              {/* Módulo Home */}
+              {hasPermission('home_acesso') && (
+                <button
+                  id="menu-item-home"
+                  onClick={() => handleNavigate('home')}
+                  className={navItemClass(activeModule === 'home')}
+                >
+                  <LayoutDashboard className="h-4 w-4 shrink-0" />
+                  <span>{t('home')}</span>
+                </button>
+              )}
 
           {/* Módulo de Pesquisa */}
           {hasPermission('pesquisa_acesso') && (
@@ -140,6 +213,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
             >
               <Target className="h-4 w-4 shrink-0" />
               <span>{t('metas')}</span>
+            </button>
+          )}
+
+          {/* Módulo de Dimensionamento de Equipe */}
+          {hasPermission('meta_acesso') && (
+            <button
+              id="menu-item-dimensionamento"
+              onClick={() => handleNavigate('dimensionamento')}
+              className={navItemClass(activeModule === 'dimensionamento')}
+            >
+              <Calculator className="h-4 w-4 shrink-0 text-blue-400" />
+              <span>{t('teamSizing')}</span>
             </button>
           )}
 
@@ -224,11 +309,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
             </div>
           )}
 
-          {/* Quick simulator shortcut */}
-          <div className="pt-4 mt-4 border-t border-slate-800/80">
+          {/* Quick simulator & researcher shortcuts */}
+          <div className="pt-4 mt-4 border-t border-slate-800/80 space-y-1">
             <div className="px-2 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
               Coleta em Campo
             </div>
+            <button
+              id="menu-item-pesquisador-view"
+              onClick={() => handleNavigate('pesquisador')}
+              className={navItemClass(activeModule === 'pesquisador')}
+            >
+              <Sparkles className="h-4 w-4 shrink-0 text-emerald-400" />
+              <span>Ambiente Pesquisador</span>
+            </button>
             <button
               id="menu-item-simulator"
               onClick={() => handleNavigate('simulador')}
@@ -238,7 +331,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
               <span>Simulador de Campo</span>
             </button>
           </div>
-        </div>
+        </>
+      )}
+    </div>
 
         {/* Profile info footer (Immersive UI style) */}
         <div className="border-t border-slate-800/80 p-4 space-y-3 bg-[#0d0e14]">
@@ -251,6 +346,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
               <p className="text-[10px] text-slate-400 truncate">Perfil: {currentProfile?.name}</p>
             </div>
           </div>
+
+          <button
+            id="btn-sidebar-logout"
+            onClick={() => {
+              onCloseMobile();
+              logout();
+            }}
+            title="Encerrar sessão de acesso"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-colors"
+          >
+            <LogOut className="h-3.5 w-3.5 text-rose-400" />
+            <span>Sair do Sistema</span>
+          </button>
 
           <button
             id="btn-reset-demo-data"

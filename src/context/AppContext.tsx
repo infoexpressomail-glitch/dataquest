@@ -48,6 +48,9 @@ import {
 import { ServerSyncCheckResult } from '../types';
 
 interface AppContextType {
+  isAuthenticated: boolean;
+  login: (loginInput: string, senhaInput: string) => { success: boolean; error?: string };
+  logout: () => void;
   language: Language;
   setLanguage: (l: Language) => void;
   darkMode: boolean;
@@ -214,6 +217,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return initialCollaborators[0]; // Admin Master
   });
 
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('dataquest_auth_session') === 'true';
+  });
+
   const [twoFactorVerified, setTwoFactorVerified] = useState<boolean>(true);
 
   const [surveys, setSurveys] = useState<Survey[]>(() => {
@@ -246,8 +253,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   const [auditLogs, setAuditLogs] = useState<ActionAuditLog[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.AUDIT_LOGS);
-    return saved ? JSON.parse(saved) : initialAuditLogs;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.AUDIT_LOGS);
+      if (!saved) return initialAuditLogs;
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return initialAuditLogs;
+      return parsed.map((l: any) => ({
+        ...l,
+        autor: l.autor || {
+          id: l.usuarioId || 'sys',
+          nome: l.usuarioNome || 'Usuário do Sistema',
+          login: l.usuarioLogin || 'usuario',
+          perfil: l.usuarioPerfil || 'Operador',
+        },
+        alvo: {
+          tipo: l.alvo?.tipo || 'sistema',
+          id: l.alvo?.id || l.registroId || 'sys',
+          identificador: l.alvo?.identificador || l.registroId || 'REG-SISTEMA',
+          nome: l.alvo?.nome || l.detalhes || '',
+        },
+      }));
+    } catch {
+      return initialAuditLogs;
+    }
   });
 
   const [activeModule, setActiveModule] = useState<string>('home');
@@ -971,8 +999,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem(STORAGE_KEYS.DARK_MODE, darkMode.toString());
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+      document.documentElement.setAttribute('data-theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      document.documentElement.setAttribute('data-theme', 'light');
     }
   }, [darkMode]);
 
@@ -1027,20 +1059,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addAuditLog = (
-    logData: Omit<ActionAuditLog, 'id' | 'timestamp' | 'hashIntegridade'> & {
-      hashIntegridade?: string;
-      timestamp?: string;
-    }
+    logData: any
   ): ActionAuditLog => {
     const timestamp = logData.timestamp || new Date().toISOString();
+    const safeAlvo = {
+      tipo: logData.alvo?.tipo || 'sistema',
+      id: logData.alvo?.id || logData.registroId || `sys_${Date.now()}`,
+      identificador:
+        logData.alvo?.identificador || logData.registroId || logData.identificador || 'REG-SISTEMA',
+      nome: logData.alvo?.nome || logData.detalhes || logData.tituloAcao || '',
+    };
+    const safeAutor = logData.autor || {
+      id: logData.usuarioId || currentUser?.id || 'sys',
+      nome: logData.usuarioNome || currentUser?.nome || 'Sistema',
+      login: currentUser?.login || 'sistema',
+      perfil: logData.usuarioPerfil || currentProfile?.name || 'Operador',
+    };
     const hash =
       logData.hashIntegridade ||
       generateIntegrityHash(
-        `${timestamp}-${logData.tipoAcao}-${logData.alvo.identificador}-${currentUser.id}`
+        `${timestamp}-${logData.tipoAcao || 'ACAO'}-${safeAlvo.identificador}-${currentUser?.id || 'sys'}`
       );
     const newLog: ActionAuditLog = {
       ...logData,
       id: `log_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      categoria: logData.categoria || 'SISTEMA',
+      tipoAcao: logData.tipoAcao || 'ALTERACAO_SISTEMA',
+      tituloAcao: logData.tituloAcao || logData.acao || 'Ação do Sistema',
+      descricaoDetalhada: logData.descricaoDetalhada || logData.detalhes || '',
+      autor: safeAutor,
+      alvo: safeAlvo,
       timestamp,
       hashIntegridade: hash,
       statusConformidade: logData.statusConformidade || 'conforme',
@@ -1071,6 +1119,78 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCollaborators((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ativo: !c.ativo } : c))
     );
+  };
+
+  const login = (loginInput: string, senhaInput: string): { success: boolean; error?: string } => {
+    const trimmedLogin = loginInput.trim().toLowerCase();
+    const trimmedSenha = senhaInput.trim();
+
+    const colab = collaborators.find(
+      (c) => c.login.toLowerCase() === trimmedLogin
+    );
+
+    if (!colab) {
+      return {
+        success: false,
+        error: 'Usuário não encontrado. Verifique o login cadastrado pelo administrador.',
+      };
+    }
+
+    if (!colab.ativo) {
+      return {
+        success: false,
+        error: 'Este colaborador está inativo no sistema. Contate o administrador para reativação.',
+      };
+    }
+
+    if (colab.senha !== trimmedSenha) {
+      return {
+        success: false,
+        error: 'Senha incorreta. Por favor, verifique a senha definida pelo administrador.',
+      };
+    }
+
+    setCurrentUser(colab);
+    setIsAuthenticated(true);
+    sessionStorage.setItem('dataquest_auth_session', 'true');
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER_ID, colab.id);
+
+    const prof = profiles.find((p) => p.id === colab.perfilAcessoId);
+    if (prof?.id === 'prof_pesq' || prof?.name.toLowerCase().includes('pesquisador')) {
+      setActiveModule('pesquisador');
+    } else {
+      setActiveModule('home');
+    }
+
+    addAuditLog({
+      categoria: 'SISTEMA',
+      tipoAcao: 'SINCRONIZACAO_OFFLINE',
+      tituloAcao: `Autenticação de Usuário: @${colab.login}`,
+      descricaoDetalhada: `Colaborador ${colab.nome} realizou login com sucesso no sistema pelo perfil ${prof?.name || 'Padrão'}.`,
+      autor: {
+        id: colab.id,
+        nome: colab.nome,
+        login: colab.login,
+        perfil: prof?.name || 'Colaborador',
+        ip: '189.40.12.88',
+      },
+      alvo: {
+        tipo: 'colaborador',
+        id: colab.id,
+        identificador: colab.login,
+        nome: colab.nome,
+      },
+      alteracoes: [{ campo: 'sessao', rotulo: 'Sessão de Acesso', valorNovo: 'Iniciada' }],
+      motivoConformidade: 'Autenticação formal de credenciais conforme políticas de segurança.',
+      statusConformidade: 'conforme',
+    });
+
+    return { success: true };
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('dataquest_auth_session');
   };
 
   const saveSurvey = (survey: Survey) => {
@@ -1923,6 +2043,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        isAuthenticated,
+        login,
+        logout,
         language,
         setLanguage,
         darkMode,
