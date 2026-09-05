@@ -1,0 +1,46 @@
+# Configuração do projeto Supabase (usada pelo Supabase CLI)
+# Documentação: https://supabase.com/docs/guides/local-development/cli/config
+
+project_id = "dataquest"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage"]
+extra_search_path = ["public"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+# Autenticação: mantemos email/senha habilitado. O cadastro de colaboradores
+# continua sendo feito pela tela "Cadastro de Colaboradores" do app — o
+# enable_signup do Supabase Auth é usado apenas se você optar por vincular
+# cada colaborador também a uma conta em auth.users (ver seção 4 da migration
+# 0001_initial_schema.sql para o trigger de sincronização).
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://localhost:3000"]
+jwt_expiry = 3600
+enable_signup = true
+enable_confirmations = false
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+# Buckets de Storage previstos pela migration 0001 (audio-gravacoes, importacoes).
+# O Supabase CLI cria buckets via SQL (storage.buckets), não neste arquivo — a
+# seção abaixo é apenas informativa para quem administra o projeto localmente.
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[edge_runtime]
+enabled = false

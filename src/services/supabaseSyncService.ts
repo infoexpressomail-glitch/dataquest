@@ -1,33 +1,19 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { Survey } from '../types';
 import { logSyncEventToDB } from '../utils/indexedDBStorage';
+import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from './supabaseClient';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-let supabaseInstance: SupabaseClient | null = null;
+// NOTA: a instanciação do cliente foi centralizada em ./supabaseClient.ts para ser
+// reaproveitada por outras partes do frontend sem duplicar lógica. As funções abaixo
+// mantêm exatamente os mesmos nomes e contrato usados pelo restante do app
+// (getSupabaseClient, isSupabaseConfigured, syncSurveyToSupabase, syncBatchSurveysToSupabase).
 
 export function getSupabaseClient(): SupabaseClient | null {
-  if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'MY_SUPABASE_URL') {
-    if (!supabaseInstance) {
-      try {
-        supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      } catch (err) {
-        console.error('[Supabase] Erro ao instanciar cliente Supabase:', err);
-      }
-    }
-    return supabaseInstance;
-  }
-  return null;
+  return getSupabaseBrowserClient();
 }
 
 export function isSupabaseConfigured(): boolean {
-  return Boolean(
-    SUPABASE_URL &&
-    SUPABASE_ANON_KEY &&
-    SUPABASE_URL !== 'MY_SUPABASE_URL' &&
-    SUPABASE_URL.startsWith('http')
-  );
+  return isSupabaseBrowserConfigured();
 }
 
 export interface SupabaseSyncResult {
@@ -72,7 +58,7 @@ export async function syncSurveyToSupabase(survey: Survey): Promise<SupabaseSync
       await logSyncEventToDB({
         type: 'SUPABASE_SYNC_SURVEY',
         status: 'success',
-        details: `Pesquisa "${survey.nome}" (${survey.codigo}) sincronizada no Supabase em ${SUPABASE_URL}`,
+        details: `Pesquisa "${survey.nome}" (${survey.codigo}) sincronizada no Supabase em ${import.meta.env.VITE_SUPABASE_URL || ''}`,
       });
 
       return {

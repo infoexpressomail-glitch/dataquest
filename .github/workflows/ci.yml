@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Lint / verificação de tipos (tsc --noEmit)
+        run: npm run lint
+
+      - name: Build (frontend + servidor)
+        run: npm run build
+        env:
+          # Valores fictícios apenas para o build não falhar por variável ausente.
+          # As variáveis reais ficam configuradas nos Secrets do repositório e no
+          # painel da Vercel — este job não faz deploy, apenas valida o build.
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+
+  # Deploy de produção é feito automaticamente pela integração nativa Vercel <-> GitHub
+  # (a Vercel observa pushes na branch `main` e roda `npm run deploy` internamente).
+  # Este job fica disponível caso você prefira disparar o deploy explicitamente pela
+  # Action em vez da integração automática da Vercel; requer os secrets VERCEL_TOKEN,
+  # VERCEL_ORG_ID e VERCEL_PROJECT_ID configurados no repositório.
+  deploy:
+    needs: lint-and-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Deploy para produção na Vercel
+        if: ${{ vars.ENABLE_VERCEL_CLI_DEPLOY == 'true' }}
+        run: npx vercel --prod --token=$VERCEL_TOKEN --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
