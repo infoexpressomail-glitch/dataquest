@@ -107,6 +107,120 @@ html:not(.dark) {
   }
 }
 
+/* ==========================================================================
+   GRADIENTES DECORATIVOS ESCUROS (cards de destaque)
+   Em modo escuro esses gradientes usam tons -900/-950 profundos. No modo
+   claro isso resulta em texto escuro (já corrigido acima) sobre um FUNDO
+   também escuro, tornando-o ilegível. Aqui neutralizamos o gradiente para
+   um par de tons claros e coerentes com a paleta clara do sistema.
+   ========================================================================== */
+html.light [class*="from-blue-950"],
+html.light [class*="from-blue-900"],
+html:not(.dark) [class*="from-blue-950"],
+html:not(.dark) [class*="from-blue-900"] {
+  --tw-gradient-from: #dbeafe !important;
+  --tw-gradient-to: rgb(219 234 254 / 0) !important;
+}
+
+html.light [class*="from-indigo-950"],
+html.light [class*="from-indigo-900"],
+html:not(.dark) [class*="from-indigo-950"],
+html:not(.dark) [class*="from-indigo-900"] {
+  --tw-gradient-from: #e0e7ff !important;
+  --tw-gradient-to: rgb(224 231 255 / 0) !important;
+}
+
+html.light [class*="from-emerald-950"],
+html.light [class*="from-emerald-900"],
+html:not(.dark) [class*="from-emerald-950"],
+html:not(.dark) [class*="from-emerald-900"] {
+  --tw-gradient-from: #d1fae5 !important;
+  --tw-gradient-to: rgb(209 250 229 / 0) !important;
+}
+
+html.light [class*="from-amber-950"],
+html.light [class*="from-amber-900"],
+html:not(.dark) [class*="from-amber-950"],
+html:not(.dark) [class*="from-amber-900"] {
+  --tw-gradient-from: #fef3c7 !important;
+  --tw-gradient-to: rgb(254 243 199 / 0) !important;
+}
+
+html.light [class*="via-slate-900"],
+html:not(.dark) [class*="via-slate-900"] {
+  --tw-gradient-via: #f1f5f9 !important;
+}
+
+html.light [class*="to-slate-900"],
+html.light [class*="to-blue-950"],
+html.light [class*="to-indigo-900"],
+html:not(.dark) [class*="to-slate-900"],
+html:not(.dark) [class*="to-blue-950"],
+html:not(.dark) [class*="to-indigo-900"] {
+  --tw-gradient-to: #ffffff !important;
+}
+
+/* Cards com gradiente escuro decorativo: força texto e labels legíveis mesmo
+   que alguma regra de gradiente específica não seja coberta acima */
+html.light [class*="from-blue-950"] *,
+html.light [class*="from-indigo-950"] *,
+html.light [class*="from-emerald-950"] *,
+html.light [class*="from-amber-950"] *,
+html:not(.dark) [class*="from-blue-950"] *,
+html:not(.dark) [class*="from-indigo-950"] *,
+html:not(.dark) [class*="from-emerald-950"] *,
+html:not(.dark) [class*="from-amber-950"] * {
+  color: #090d16;
+}
+
+/* ==========================================================================
+   CAIXAS DE ALERTA/STATUS COM FUNDO ESCURO TRANSLÚCIDO (bg-*-950/XX)
+   Padrão muito comum em avisos de sucesso/erro/alerta (login, wizard, 2FA,
+   políticas de acesso, cadastro). Em modo escuro fica um fundo verde/azul/
+   vermelho bem escuro e translúcido; no claro isso precisa virar um fundo
+   claro da mesma família de cor, senão o texto (já escurecido acima) fica
+   ilegível sobre um fundo que continua escuro.
+   ========================================================================== */
+html.light [class*="bg-emerald-950/"],
+html:not(.dark) [class*="bg-emerald-950/"] {
+  background-color: #d1fae5 !important;
+}
+
+html.light [class*="bg-blue-950/"],
+html:not(.dark) [class*="bg-blue-950/"] {
+  background-color: #dbeafe !important;
+}
+
+html.light [class*="bg-rose-950/"],
+html.light [class*="bg-red-950/"],
+html:not(.dark) [class*="bg-rose-950/"],
+html:not(.dark) [class*="bg-red-950/"] {
+  background-color: #fee2e2 !important;
+}
+
+html.light [class*="bg-amber-950/"],
+html:not(.dark) [class*="bg-amber-950/"] {
+  background-color: #fef3c7 !important;
+}
+
+html.light [class*="bg-purple-950/"],
+html.light [class*="bg-indigo-950/"],
+html:not(.dark) [class*="bg-purple-950/"],
+html:not(.dark) [class*="bg-indigo-950/"] {
+  background-color: #f3e8ff !important;
+}
+
+html.light [class*="bg-slate-950/"],
+html:not(.dark) [class*="bg-slate-950/"] {
+  background-color: #e2e8f0 !important;
+}
+
+/* hover:bg-*-950/XX (ex: botão de excluir com hover vermelho escuro) */
+html.light [class*="hover\\:bg-rose-950/"]:hover,
+html:not(.dark) [class*="hover\\:bg-rose-950/"]:hover {
+  background-color: #fee2e2 !important;
+}
+
 /* Background overrides for Light Theme */
 html.light .bg-\[\#0a0b10\],
 html:not(.dark) .bg-\[\#0a0b10\] {
@@ -147,14 +261,43 @@ html:not(.dark) .bg-\[\#1e2029\] {
 }
 
 html.light .bg-slate-900,
-html.light .bg-slate-900\/50,
-html.light .bg-slate-900\/80,
-html.light .bg-slate-900\/60,
+html.light [class*="bg-slate-900/"],
 html:not(.dark) .bg-slate-900,
-html:not(.dark) .bg-slate-900\/50,
-html:not(.dark) .bg-slate-900\/80,
-html:not(.dark) .bg-slate-900\/60 {
+html:not(.dark) [class*="bg-slate-900/"] {
   background-color: #f1f5f9 !important;
+}
+
+html.light .bg-slate-800,
+html.light [class*="bg-slate-800/"],
+html:not(.dark) .bg-slate-800,
+html:not(.dark) [class*="bg-slate-800/"] {
+  background-color: #f1f5f9 !important;
+  color: #090d16 !important;
+  border-color: #475569 !important;
+  font-weight: 600;
+}
+
+html.light .bg-slate-800 *,
+html.light [class*="bg-slate-800/"] *,
+html:not(.dark) .bg-slate-800 *,
+html:not(.dark) [class*="bg-slate-800/"] * {
+  color: #090d16 !important;
+}
+
+html.light .bg-slate-700,
+html.light [class*="bg-slate-700/"],
+html:not(.dark) .bg-slate-700,
+html:not(.dark) [class*="bg-slate-700/"] {
+  background-color: #e2e8f0 !important;
+  color: #090d16 !important;
+  border-color: #475569 !important;
+}
+
+html.light .bg-slate-700 *,
+html.light [class*="bg-slate-700/"] *,
+html:not(.dark) .bg-slate-700 *,
+html:not(.dark) [class*="bg-slate-700/"] * {
+  color: #090d16 !important;
 }
 
 html.light .bg-slate-950,
@@ -231,60 +374,86 @@ html:not(.dark) .text-slate-500 {
   font-weight: 500;
 }
 
-/* Semantic & Accent Text on Light Background - Strict WCAG AAA >= 7:1 */
+/* Semantic & Accent Text on Light Background - Strict WCAG AAA >= 7:1
+   Inclui -300 (usado em badges de destaque sobre fundo colorido claro) */
+html.light .text-blue-300,
 html.light .text-blue-400,
 html.light .text-blue-500,
+html:not(.dark) .text-blue-300,
 html:not(.dark) .text-blue-400,
 html:not(.dark) .text-blue-500 {
   color: #1e40af !important; /* 8.5:1 contrast */
 }
 
+html.light .text-emerald-300,
 html.light .text-emerald-400,
 html.light .text-emerald-500,
+html:not(.dark) .text-emerald-300,
 html:not(.dark) .text-emerald-400,
 html:not(.dark) .text-emerald-500 {
   color: #065f46 !important; /* 8.1:1 contrast */
 }
 
+html.light .text-amber-300,
 html.light .text-amber-400,
 html.light .text-amber-500,
 html.light .text-yellow-500,
+html:not(.dark) .text-amber-300,
 html:not(.dark) .text-amber-400,
 html:not(.dark) .text-amber-500,
 html:not(.dark) .text-yellow-500 {
   color: #78350f !important; /* 8.2:1 contrast */
 }
 
+html.light .text-purple-300,
 html.light .text-purple-400,
 html.light .text-purple-500,
+html:not(.dark) .text-purple-300,
 html:not(.dark) .text-purple-400,
 html:not(.dark) .text-purple-500 {
   color: #581c87 !important; /* 9.2:1 contrast */
 }
 
+html.light .text-cyan-300,
 html.light .text-cyan-400,
 html.light .text-cyan-500,
+html:not(.dark) .text-cyan-300,
 html:not(.dark) .text-cyan-400,
 html:not(.dark) .text-cyan-500 {
   color: #0e7490 !important; /* 7.2:1 contrast */
 }
 
+html.light .text-indigo-300,
 html.light .text-indigo-400,
 html.light .text-indigo-500,
+html:not(.dark) .text-indigo-300,
 html:not(.dark) .text-indigo-400,
 html:not(.dark) .text-indigo-500 {
   color: #3730a3 !important; /* 8.0:1 contrast */
 }
 
+html.light .text-rose-300,
 html.light .text-rose-400,
 html.light .text-rose-500,
+html.light .text-red-300,
 html.light .text-red-400,
 html.light .text-red-500,
+html:not(.dark) .text-rose-300,
 html:not(.dark) .text-rose-400,
 html:not(.dark) .text-rose-500,
+html:not(.dark) .text-red-300,
 html:not(.dark) .text-red-400,
 html:not(.dark) .text-red-500 {
   color: #991b1b !important; /* 7.6:1 contrast */
+}
+
+html.light .text-pink-300,
+html.light .text-pink-400,
+html.light .text-pink-500,
+html:not(.dark) .text-pink-300,
+html:not(.dark) .text-pink-400,
+html:not(.dark) .text-pink-500 {
+  color: #9d174d !important; /* 7.3:1 contrast */
 }
 
 /* ==========================================================================
@@ -394,20 +563,6 @@ html:not(.dark) .bg-purple-600 * {
   color: #ffffff !important;
 }
 
-/* Secondary Buttons in Light Theme - High Contrast AAA */
-html.light .bg-slate-800,
-html:not(.dark) .bg-slate-800 {
-  background-color: #f1f5f9 !important;
-  color: #090d16 !important;
-  border-color: #475569 !important;
-  font-weight: 600;
-}
-
-html.light .bg-slate-800 *,
-html:not(.dark) .bg-slate-800 * {
-  color: #090d16 !important;
-}
-
 /* Form Controls in Light Theme - WCAG AAA */
 html.light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 html.light select,
@@ -508,33 +663,136 @@ html:not(.dark) .hover\:bg-slate-700:hover {
   color: #090d16 !important;
 }
 
-/* Badges & Accents in Light Mode */
-html.light .bg-blue-500\/10,
-html:not(.dark) .bg-blue-500\/10 {
+/* Badges & Accents in Light Mode — cobre qualquer opacidade (/10, /15, /20...)
+   usando seletor de atributo, e estende para todas as cores de badge usadas */
+html.light [class*="bg-blue-500/"],
+html:not(.dark) [class*="bg-blue-500/"] {
   background-color: #dbeafe !important;
   color: #1e40af !important;
   border-color: #93c5fd !important;
 }
 
-html.light .bg-emerald-500\/10,
-html:not(.dark) .bg-emerald-500\/10 {
+html.light [class*="bg-emerald-500/"],
+html:not(.dark) [class*="bg-emerald-500/"] {
   background-color: #d1fae5 !important;
   color: #065f46 !important;
   border-color: #a7f3d0 !important;
 }
 
-html.light .bg-purple-500\/10,
-html:not(.dark) .bg-purple-500\/10 {
+html.light [class*="bg-purple-500/"],
+html:not(.dark) [class*="bg-purple-500/"] {
   background-color: #f3e8ff !important;
   color: #581c87 !important;
   border-color: #d8b4fe !important;
 }
 
-html.light .bg-amber-500\/10,
-html:not(.dark) .bg-amber-500\/10 {
+html.light [class*="bg-amber-500/"],
+html:not(.dark) [class*="bg-amber-500/"] {
   background-color: #fef3c7 !important;
   color: #78350f !important;
   border-color: #fde68a !important;
+}
+
+html.light [class*="bg-rose-500/"],
+html.light [class*="bg-red-500/"],
+html:not(.dark) [class*="bg-rose-500/"],
+html:not(.dark) [class*="bg-red-500/"] {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  border-color: #fca5a5 !important;
+}
+
+html.light [class*="bg-cyan-500/"],
+html:not(.dark) [class*="bg-cyan-500/"] {
+  background-color: #cffafe !important;
+  color: #0e7490 !important;
+  border-color: #67e8f9 !important;
+}
+
+html.light [class*="bg-indigo-500/"],
+html:not(.dark) [class*="bg-indigo-500/"] {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+  border-color: #a5b4fc !important;
+}
+
+/* Ícones dentro desses badges herdam a mesma cor do texto do badge */
+html.light [class*="bg-blue-500/"] svg,
+html.light [class*="bg-emerald-500/"] svg,
+html.light [class*="bg-purple-500/"] svg,
+html.light [class*="bg-amber-500/"] svg,
+html.light [class*="bg-rose-500/"] svg,
+html.light [class*="bg-red-500/"] svg,
+html.light [class*="bg-cyan-500/"] svg,
+html.light [class*="bg-indigo-500/"] svg,
+html:not(.dark) [class*="bg-blue-500/"] svg,
+html:not(.dark) [class*="bg-emerald-500/"] svg,
+html:not(.dark) [class*="bg-purple-500/"] svg,
+html:not(.dark) [class*="bg-amber-500/"] svg,
+html:not(.dark) [class*="bg-rose-500/"] svg,
+html:not(.dark) [class*="bg-red-500/"] svg,
+html:not(.dark) [class*="bg-cyan-500/"] svg,
+html:not(.dark) [class*="bg-indigo-500/"] svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+}
+
+/* Também cobre a variante -600/XX usada em alguns badges de destaque de perfil */
+html.light [class*="bg-blue-600/"],
+html:not(.dark) [class*="bg-blue-600/"] {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+  border-color: #93c5fd !important;
+}
+
+html.light [class*="bg-emerald-600/"],
+html:not(.dark) [class*="bg-emerald-600/"] {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  border-color: #a7f3d0 !important;
+}
+
+html.light [class*="bg-amber-600/"],
+html:not(.dark) [class*="bg-amber-600/"] {
+  background-color: #fef3c7 !important;
+  color: #78350f !important;
+  border-color: #fde68a !important;
+}
+
+html.light [class*="bg-rose-600/"],
+html:not(.dark) [class*="bg-rose-600/"] {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  border-color: #fca5a5 !important;
+}
+
+html.light [class*="bg-purple-600/"],
+html:not(.dark) [class*="bg-purple-600/"] {
+  background-color: #f3e8ff !important;
+  color: #581c87 !important;
+  border-color: #d8b4fe !important;
+}
+
+html.light [class*="bg-cyan-600/"],
+html:not(.dark) [class*="bg-cyan-600/"] {
+  background-color: #cffafe !important;
+  color: #0e7490 !important;
+  border-color: #67e8f9 !important;
+}
+
+/* Ícones dentro desses badges -600/XX herdam a cor do texto */
+html.light [class*="bg-emerald-600/"] svg,
+html.light [class*="bg-amber-600/"] svg,
+html.light [class*="bg-rose-600/"] svg,
+html.light [class*="bg-purple-600/"] svg,
+html.light [class*="bg-cyan-600/"] svg,
+html:not(.dark) [class*="bg-emerald-600/"] svg,
+html:not(.dark) [class*="bg-amber-600/"] svg,
+html:not(.dark) [class*="bg-rose-600/"] svg,
+html:not(.dark) [class*="bg-purple-600/"] svg,
+html:not(.dark) [class*="bg-cyan-600/"] svg {
+  color: inherit !important;
+  stroke: currentColor !important;
 }
 
 /* Modal and Dropdown surfaces in Light Theme */

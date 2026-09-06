@@ -226,18 +226,126 @@ alterados — apenas o nome exibido pode ser ajustado, se necessário.
 ## Arquivos alterados até agora (para referência de diff)
 
 ```
-src/components/Sidebar.tsx                              (reescrito)
+src/components/Sidebar.tsx                              (reescrito + sticky no desktop)
 src/components/registrations/CollaboratorForm.tsx       (seções reordenadas)
 src/components/HomeDashboard.tsx                         (gate + grid dinâmico)
 src/components/analytics/AnalyticsModule.tsx             (seletor unificado)
 src/components/researcher/ResearcherEnvironment.tsx      (rótulos de aba)
 src/components/metas/MetasModule.tsx                     (abas por perfil + effectiveTab)
-src/components/team/TeamSizingModule.tsx                 (gate de permissão no salvar)
+src/components/team/TeamSizingModule.tsx                 (gate de permissão + fix tela preta)
 src/components/simulator/CollectionSimulator.tsx         (removida aba de amostragem/dispersão)
 src/components/simulator/PopulationSampleScatterSimulator.tsx  (ARQUIVO EXCLUÍDO)
+src/components/registrations/AccessPolicies.tsx          (resumo geral + colapso + busca)
+src/index.css                                            (cobertura de tema claro ampliada)
 ```
 
-## Item extra: bug real encontrado e corrigido (tela preta em Dimensionamento)
+## Item extra — rodada 3: tema claro, Políticas de Acesso e Sidebar fixo
+
+### 1. Tema claro ilegível (`src/index.css`)
+
+**Causa raiz:** o sistema já tinha uma base robusta de overrides WCAG AAA
+para o tema claro (`html.light` / `html:not(.dark)`), mas cobria apenas um
+subconjunto das classes Tailwind realmente usadas nos componentes — a
+maioria dos 35 arquivos de componente usa cor fixa (ex: `text-slate-400`,
+`bg-slate-800/60`, gradientes `from-emerald-950/40`) sem condicionar por
+`darkMode`, então tudo dependia inteiramente dessa camada de override em
+`index.css` estar completa. Ela não estava.
+
+**Lacunas encontradas e corrigidas** (via varredura automatizada
+grep + script Python comparando classes usadas × seletores cobertos):
+- `bg-slate-700` (51+ usos) e variações com opacidade de `bg-slate-800`/
+  `bg-slate-900` — **nenhuma cobertura antes**.
+- `text-*-300` (blue/emerald/amber/rose/purple/cyan/indigo/pink) — usado em
+  badges de destaque sobre fundo colorido, 91+ usos, **nenhuma cobertura
+  antes**. Esse era provavelmente o maior contribuinte para "texto
+  ilegível" relatado.
+- Badges com opacidade `/15`, `/20` (só `/10` era coberto) e cores
+  `rose`/`cyan`/`indigo`/`red`/`pink` (só `blue`/`emerald`/`purple`/`amber`
+  eram cobertas).
+- Gradientes decorativos escuros (`from-blue-950`, `from-indigo-950`,
+  `from-emerald-950`, `from-amber-950`, `to-slate-900`) usados em cards de
+  destaque (ex: `ConfidenceSampleCalculator`, `SurveyWizard`,
+  `MobileMetasDashboard`) — sem nenhuma cobertura, resultavam em card com
+  fundo escuro decorativo + texto escuro (já corrigido) por cima = texto
+  invisível sobre fundo escuro.
+- Caixas de alerta/status com fundo `bg-*-950/XX` sólido (não gradiente) —
+  usadas em LoginScreen, SurveyWizard, TwoFactorModal, AccessPolicies,
+  CollaboratorForm, TeamSizingModule — mesmo problema dos gradientes.
+
+**O que ainda não tem cobertura** (baixo impacto, documentado para
+referência): variações de `border-*-500/XX` (contorno de card, não afeta
+legibilidade de texto) e `ring-*` (indicador de foco). Rodar novamente
+`/tmp/check_coverage.py` (script descartável desta sessão, lógica descrita
+abaixo) mostraria a lista atualizada se for retomado.
+
+**Validação:** build limpo; suite de 104 testes de render (13 componentes ×
+4 perfis × 2 temas) via Vitest+jsdom, todos passando sem exceção — isso
+confirma que a mudança de CSS não quebrou nenhum componente, mas **não**
+confirma contraste visual real (jsdom não computa CSS), então uma
+inspeção visual rápida no navegador é recomendada.
+
+### 2. Políticas de Acesso mais intuitiva (`src/components/registrations/AccessPolicies.tsx`)
+
+Problema: 9 módulos, 36 permissões, tudo exposto de uma vez em grade fixa —
+"parede de checkboxes" sem hierarquia. Reorganizado (mesmas permissões,
+nada novo criado):
+- **Resumo geral no topo**: badges "X com acesso total / Y com acesso
+  parcial / Z sem acesso", respondendo de imediato "o que este perfil pode
+  fazer?" sem abrir cada grupo.
+- **Badge de status por grupo**: "Acesso total (N/N)" (verde), "Acesso
+  parcial (N/M)" (âmbar) ou "Nenhum acesso (0/M)" (cinza) — antes só
+  mostrava "N de M ativas" sem indicar visualmente o nível.
+- **Grupos colapsáveis**: clicar no cabeçalho do módulo recolhe/expande a
+  lista de permissões daquele grupo — reduz a rolagem necessária.
+- **Busca por texto**: filtra por nome do módulo, permissão ou descrição
+  em tempo real.
+- Nada de lógica de permissão foi alterado — apenas apresentação.
+
+**Validação:** 5 testes (render para os 4 perfis + interação de busca/
+recolhimento) via Vitest, todos passando; incluído na suite de 104 testes
+final.
+
+### 3. Sidebar fixo ao rolar (`src/components/Sidebar.tsx`)
+
+**Causa raiz encontrada:** no desktop (breakpoint `md:`), a classe
+`md:static` anulava o `fixed` do mobile, fazendo o Sidebar voltar ao fluxo
+normal do documento — por isso ele rolava junto com a página em vez de
+ficar fixo.
+
+**Correção:** trocado `md:static` por `md:sticky md:top-16
+md:h-[calc(100vh-4rem)]` — o Sidebar agora gruda logo abaixo do Header
+(que tem `h-16`/64px e já é `sticky top-0`), ocupa a altura restante da
+viewport, e mantém seu próprio scroll interno (`overflow-y-auto` no `div`
+interno, inalterado) caso a lista de navegação seja mais alta que a tela.
+Comportamento mobile (drawer `fixed` com overlay) não foi tocado.
+
+**Validação:** build limpo; nenhum ancestral no `App.tsx`/`index.css` tem
+`overflow` restrito, o que é pré-requisito para `sticky` funcionar
+corretamente — confirmado por grep.
+
+### Metodologia de teste usada nesta e nas rodadas anteriores
+
+Como `tsc --noEmit` e `npm run build:web` não pegam erros de runtime do
+React (caso do bug "tela preta" corrigido antes) nem problemas de CSS
+(cor/contraste), a prática que se mostrou eficaz e deve ser repetida:
+
+1. Instalar temporariamente `vitest jsdom @testing-library/react
+   @vitejs/plugin-react` (`npm install --no-save ...`).
+2. Criar um `vitest.config.ts` mínimo com `environment: 'jsdom'`.
+3. Renderizar cada componente alterado dentro de `<AppProvider>` real
+   (contexto de verdade, dados mock reais), trocando `currentUser` para
+   cada um dos 4 perfis via um wrapper `AsProfile` que usa
+   `collaborators.find(c => c.perfilAcessoId === profileId)` +
+   `setCurrentUser`.
+4. Capturar qualquer exceção lançada durante o render com try/catch.
+5. Remover os arquivos de teste ao final (não fazem parte do entregável).
+
+Isso pega bugs de runtime que `tsc`/build não pegam, mas **não** substitui
+uma inspeção visual real em navegador (jsdom não tem layout engine nem
+computa CSS) — o ideal é complementar com Playwright quando a rede
+permitir baixar o browser (não foi possível nesta sessão por restrição de
+domínios permitidos no ambiente de execução).
+
 
 O usuário reportou que clicar em "Dimensionamento" no menu lateral deixava a
 tela toda preta. `tsc --noEmit` e `npm run build:web` não acusavam nada

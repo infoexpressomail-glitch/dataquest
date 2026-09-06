@@ -444,7 +444,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
 
       <aside
         id="app-sidebar"
-        className={`fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col border-r border-slate-800/80 bg-[#111218] pt-16 md:pt-0 transition-transform duration-200 ease-in-out shadow-2xl md:static md:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col border-r border-slate-800/80 bg-[#111218] pt-16 md:pt-0 transition-transform duration-200 ease-in-out shadow-2xl md:sticky md:top-16 md:bottom-auto md:h-[calc(100vh-4rem)] md:translate-x-0 ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

@@ -10,6 +10,9 @@ import {
   Check,
   AlertCircle,
   HelpCircle,
+  Search,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import { AccessProfile, AccessPolicyPermissions } from '../../types';
 
@@ -232,13 +235,23 @@ export const AccessPolicies: React.FC = () => {
     profiles.find((p) => p.id === selectedProfileId) || profiles[0]
   );
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  // Por padrão, grupos totalmente vazios ficam recolhidos — reduz a "parede de
+  // checkboxes" e ajuda a responder rápido "o que este perfil PODE fazer?"
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
   const handleSelectProfile = (id: string) => {
     setSelectedProfileId(id);
     const found = profiles.find((p) => p.id === id);
     if (found) {
       setActiveProfile(JSON.parse(JSON.stringify(found)));
+      setCollapsedGroups({});
+      setSearchTerm('');
     }
+  };
+
+  const toggleGroupCollapse = (category: string) => {
+    setCollapsedGroups((prev) => ({ ...prev, [category]: !prev[category] }));
   };
 
   const handleTogglePermission = (key: keyof AccessPolicyPermissions) => {
@@ -268,6 +281,42 @@ export const AccessPolicies: React.FC = () => {
     updateProfile(activeProfile);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
+  };
+
+  // Filtra os grupos/itens pelo termo de busca (nome do módulo, permissão ou descrição).
+  // Facilita achar uma permissão específica sem rolar pela lista inteira.
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const visibleGroups = normalizedSearch
+    ? PERMISSION_GROUPS.map((group) => ({
+        ...group,
+        items: group.items.filter(
+          (item) =>
+            item.label.toLowerCase().includes(normalizedSearch) ||
+            item.description.toLowerCase().includes(normalizedSearch) ||
+            group.moduleName.toLowerCase().includes(normalizedSearch)
+        ),
+      })).filter((group) => group.items.length > 0)
+    : PERMISSION_GROUPS;
+
+  // Resumo geral do perfil: quantos módulos têm acesso total, parcial ou nenhum.
+  // Responde de forma imediata "o que este perfil pode fazer?" sem precisar
+  // abrir cada grupo individualmente.
+  const groupStatusCounts = PERMISSION_GROUPS.reduce(
+    (acc, group) => {
+      const active = group.items.filter((i) => activeProfile.permissions[i.key]).length;
+      if (active === 0) acc.none += 1;
+      else if (active === group.items.length) acc.full += 1;
+      else acc.partial += 1;
+      return acc;
+    },
+    { full: 0, partial: 0, none: 0 }
+  );
+
+  const getGroupStatus = (group: PermissionGroup) => {
+    const active = group.items.filter((i) => activeProfile.permissions[i.key]).length;
+    if (active === 0) return { label: 'Nenhum acesso', tone: 'none' as const, active };
+    if (active === group.items.length) return { label: 'Acesso total', tone: 'full' as const, active };
+    return { label: 'Acesso parcial', tone: 'partial' as const, active };
   };
 
   return (
@@ -321,7 +370,7 @@ export const AccessPolicies: React.FC = () => {
       </div>
 
       {/* Selected Profile Summary Info */}
-      <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+      <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400">
@@ -368,83 +417,151 @@ export const AccessPolicies: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Resumo geral: "O que este perfil pode fazer?" de forma imediata */}
+        <div className="flex flex-wrap items-center gap-2 border-t border-slate-800 pt-3">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mr-1">
+            Resumo de {PERMISSION_GROUPS.length} módulos:
+          </span>
+          <span className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            {groupStatusCounts.full} com acesso total
+          </span>
+          <span className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+            {groupStatusCounts.partial} com acesso parcial
+          </span>
+          <span className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1 text-[11px] font-bold text-slate-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
+            {groupStatusCounts.none} sem acesso
+          </span>
+        </div>
+
+        {/* Busca rápida por permissão */}
+        <div className="relative border-t border-slate-800 pt-3">
+          <Search className="pointer-events-none absolute left-3 top-1/2 mt-1.5 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por permissão, módulo ou descrição..."
+            className="w-full rounded-lg border border-slate-800 bg-[#111218] py-2 pl-9 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+          />
+        </div>
       </div>
+
+      {searchTerm && visibleGroups.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-slate-800 bg-[#16171d] p-6 text-center text-xs text-slate-400">
+          Nenhuma permissão encontrada para "{searchTerm}".
+        </div>
+      )}
 
       {/* Permission Matrix by Module */}
       <div className="space-y-4">
-        {PERMISSION_GROUPS.map((group) => {
+        {visibleGroups.map((group) => {
           const totalInGroup = group.items.length;
-          const activeInGroup = group.items.filter(
-            (i) => activeProfile.permissions[i.key]
-          ).length;
-          const isAllChecked = activeInGroup === totalInGroup;
+          const status = getGroupStatus(group);
+          const isCollapsed = Boolean(collapsedGroups[group.category]) && !normalizedSearch;
+
+          const toneClasses = {
+            full: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
+            partial: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
+            none: 'border-slate-700 bg-slate-800/60 text-slate-400',
+          }[status.tone];
+
+          const dotClasses = {
+            full: 'bg-emerald-400',
+            partial: 'bg-amber-400',
+            none: 'bg-slate-500',
+          }[status.tone];
 
           return (
             <div
               key={group.category}
               className="overflow-hidden rounded-2xl border border-slate-800 bg-[#16171d] shadow-xl"
             >
-              {/* Group header */}
-              <div className="flex items-center justify-between border-b border-slate-800 bg-[#111218] px-5 py-3">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-blue-500" />
+              {/* Group header — clicável para recolher/expandir */}
+              <button
+                type="button"
+                onClick={() => toggleGroupCollapse(group.category)}
+                className="flex w-full items-center justify-between gap-3 border-b border-slate-800 bg-[#111218] px-5 py-3 text-left transition-colors hover:bg-[#16171d]"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  {isCollapsed ? (
+                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                  ) : (
+                    <ChevronDown className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                  )}
                   <h4 className="text-xs font-bold uppercase tracking-wider text-white">
                     {group.moduleName}
                   </h4>
-                  <span className="rounded-md border border-slate-800 bg-[#16171d] px-2 py-0.5 text-[10px] font-bold text-slate-300">
-                    {activeInGroup} de {totalInGroup} ativas
+                  <span
+                    className={`flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-bold ${toneClasses}`}
+                  >
+                    <span className={`h-1.5 w-1.5 rounded-full ${dotClasses}`} />
+                    {status.label} ({status.active}/{totalInGroup})
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleCategory(group, !isAllChecked)}
-                    className="text-[11px] font-semibold text-blue-400 hover:underline"
-                  >
-                    {isAllChecked ? 'Desmarcar grupo' : 'Marcar todas do grupo'}
-                  </button>
-                </div>
-              </div>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleCategory(group, status.active !== totalInGroup);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.stopPropagation();
+                      handleToggleCategory(group, status.active !== totalInGroup);
+                    }
+                  }}
+                  className="shrink-0 text-[11px] font-semibold text-blue-400 hover:underline cursor-pointer"
+                >
+                  {status.active === totalInGroup ? 'Desmarcar grupo' : 'Marcar todas do grupo'}
+                </span>
+              </button>
 
               {/* Group checkboxes */}
-              <div className="grid grid-cols-1 gap-2.5 p-4 sm:grid-cols-2 lg:grid-cols-3">
-                {group.items.map((item) => {
-                  const isChecked = Boolean(activeProfile.permissions[item.key]);
+              {!isCollapsed && (
+                <div className="grid grid-cols-1 gap-2.5 p-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.items.map((item) => {
+                    const isChecked = Boolean(activeProfile.permissions[item.key]);
 
-                  return (
-                    <label
-                      key={item.key}
-                      className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
-                        isChecked
-                          ? 'border-blue-500/60 bg-blue-600/10 shadow-sm shadow-blue-950/40'
-                          : 'border-slate-800 bg-[#111218] hover:bg-slate-800/40'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => handleTogglePermission(item.key)}
-                        className="mt-0.5 h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
-                      />
-                      <div className="flex-1">
-                        <div
-                          className={`text-xs font-bold ${
-                            isChecked
-                              ? 'text-blue-300'
-                              : 'text-slate-200'
-                          }`}
-                        >
-                          {item.label}
+                    return (
+                      <label
+                        key={item.key}
+                        className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
+                          isChecked
+                            ? 'border-blue-500/60 bg-blue-600/10 shadow-sm shadow-blue-950/40'
+                            : 'border-slate-800 bg-[#111218] hover:bg-slate-800/40'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleTogglePermission(item.key)}
+                          className="mt-0.5 h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+                        />
+                        <div className="flex-1">
+                          <div
+                            className={`text-xs font-bold ${
+                              isChecked
+                                ? 'text-blue-300'
+                                : 'text-slate-200'
+                            }`}
+                          >
+                            {item.label}
+                          </div>
+                          <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">
+                            {item.description}
+                          </p>
                         </div>
-                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">
-                          {item.description}
-                        </p>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}
