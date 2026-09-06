@@ -657,7 +657,7 @@ export const TeamSizingModule: React.FC = () => {
                 <Percent className="h-3 w-3 text-blue-500" />
                 <span>Confiança: <strong>{nivelConfiancaInput}%</strong></span>
               </div>
-              <span>Margem de erro: <strong>±{currentEstimatedMarginOfError}%</strong></span>
+              <span>Margem de erro: <strong>±{currentEstimatedMarginOfError.marginOfErrorPercent}%</strong></span>
             </div>
 
             {/* Presets Rápidos */}

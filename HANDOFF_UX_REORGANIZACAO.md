@@ -237,7 +237,59 @@ src/components/simulator/CollectionSimulator.tsx         (removida aba de amostr
 src/components/simulator/PopulationSampleScatterSimulator.tsx  (ARQUIVO EXCLUÍDO)
 ```
 
-## Item extra concluído: remoção de tela de bastidor de desenvolvimento
+## Item extra: bug real encontrado e corrigido (tela preta em Dimensionamento)
+
+O usuário reportou que clicar em "Dimensionamento" no menu lateral deixava a
+tela toda preta. `tsc --noEmit` e `npm run build:web` não acusavam nada
+(ambos passam limpo), porque é um erro de **runtime do React**, não de
+tipagem — o TypeScript não detecta esse padrão específico.
+
+**Causa raiz:** em `TeamSizingModule.tsx`, a variável
+`currentEstimatedMarginOfError` (resultado de
+`calculateMarginOfErrorFromSample(...)`) é um **objeto**
+(`SampleCalculationResult`, com `marginOfErrorPercent`, `zScore`,
+`confidencePercent`, `sampleSize`), mas estava sendo renderizado
+diretamente como filho JSX (`{currentEstimatedMarginOfError}`) em vez de
+`{currentEstimatedMarginOfError.marginOfErrorPercent}`. O React lança
+"Objects are not valid as a React child" e, como o projeto não tem nenhum
+`ErrorBoundary`, isso derruba a árvore inteira — daí a tela ficar preta.
+
+**Confirmado como bug pré-existente**, não introduzido pelas mudanças desta
+tarefa (o código teve exatamente essa linha antes de qualquer edição minha
+em `TeamSizingModule.tsx`).
+
+**Correção aplicada** (linha ~660 de `TeamSizingModule.tsx`):
+```diff
+- <span>Margem de erro: <strong>±{currentEstimatedMarginOfError}%</strong></span>
++ <span>Margem de erro: <strong>±{currentEstimatedMarginOfError.marginOfErrorPercent}%</strong></span>
+```
+
+**Como foi encontrado:** como `tsc`/`build` não pegam esse tipo de erro,
+montei um harness de teste real com Vitest + jsdom +
+`@testing-library/react`, renderizando cada componente alterado dentro do
+`AppProvider` de verdade (contexto real, dados mock reais) para os 4 perfis
+reais, capturando qualquer exceção lançada durante o render. Isso reproduziu
+o erro exato do usuário na primeira tentativa. Depois da correção, criei uma
+segunda bateria cobrindo **todos os 8 componentes alterados × 4 perfis (32
+combinações)** — todas passaram sem exceção.
+
+Os arquivos de teste (`teamsizing.test.tsx`, `full_render.test.tsx`,
+`vitest.config.ts`) foram temporários e removidos ao final — não fazem
+parte do entregável. Se quiser manter esse tipo de teste no repositório
+permanentemente (recomendado, dado que pegou um bug real que `tsc`/build não
+pegam), a receita é:
+```
+npm install --save-dev vitest jsdom @testing-library/react @vitejs/plugin-react
+```
+e recriar um `vitest.config.ts` com `environment: 'jsdom'`, renderizando
+cada módulo dentro de `<AppProvider>` real.
+
+**Recomendação para a próxima sessão:** vale rodar essa mesma bateria de
+teste contra os módulos ainda não cobertos (`SurveyList`, `SurveyWizard`,
+`ResponsesModule`, `ExternalImportModule`, `ActionHistory`,
+`AccessPolicies`, `CollaboratorForm` em modo de edição com dados
+preenchidos) para descartar bugs semelhantes em áreas que só foram
+auditadas por leitura de código nesta sessão.
 
 A pedido do usuário, foi removida a tela "Simulador de Amostragem
 Probabilística & Dispersão" que abria por padrão dentro do **Simulador de
