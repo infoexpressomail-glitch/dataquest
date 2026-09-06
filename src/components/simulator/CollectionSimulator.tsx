@@ -24,13 +24,11 @@ import {
   X,
   AlertTriangle,
   Flag,
-  Calculator,
   Zap,
 } from 'lucide-react';
 import { Survey, Question, InterviewSubmission, AnswerItem } from '../../types';
 import { generatePlayableWavBlob, formatAudioDuration } from '../../utils/audioUtils';
 import { saveOfflineSubmissionToDB } from '../../utils/indexedDBStorage';
-import { PopulationSampleScatterSimulator } from './PopulationSampleScatterSimulator';
 import {
   STANDARD_CONFIDENCE_LEVELS,
   calculateSampleSize,
@@ -69,7 +67,6 @@ export const CollectionSimulator: React.FC = () => {
     (editingSurvey && availableSurveys.some((s) => s.id === editingSurvey.id) ? editingSurvey : undefined) ||
     availableSurveys[0];
 
-  const [simulatorTab, setSimulatorTab] = useState<'amostragem' | 'coleta'>('amostragem');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
@@ -290,37 +287,12 @@ export const CollectionSimulator: React.FC = () => {
   };
 
   return (
-    <div className={`mx-auto space-y-5 ${simulatorTab === 'amostragem' ? 'max-w-5xl' : 'max-w-2xl'}`}>
-      {/* Top Segmented Navigation Tabs */}
+    <div className="mx-auto max-w-2xl space-y-5">
+      {/* Cabeçalho do Simulador de Coleta */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-        <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-900 border border-slate-800">
-          <button
-            type="button"
-            id="tab-simulador-amostragem"
-            onClick={() => setSimulatorTab('amostragem')}
-            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-all ${
-              simulatorTab === 'amostragem'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-900/40'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Calculator className="h-4 w-4" />
-            <span>Calculadora Amostral & Gráfico de Dispersão</span>
-          </button>
-
-          <button
-            type="button"
-            id="tab-simulador-coleta-mobile"
-            onClick={() => setSimulatorTab('coleta')}
-            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-all ${
-              simulatorTab === 'coleta'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-900/40'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Smartphone className="h-4 w-4" />
-            <span>Simulador de Coleta Mobile</span>
-          </button>
+        <div className="flex items-center gap-2 px-1">
+          <Smartphone className="h-4 w-4 text-blue-400" />
+          <span className="text-xs font-bold text-white">Simulador de Coleta Mobile</span>
         </div>
 
         {activeSurvey && (
@@ -376,18 +348,6 @@ export const CollectionSimulator: React.FC = () => {
                 </button>
               );
             })}
-
-            {simulatorTab === 'coleta' && (
-              <button
-                type="button"
-                id="btn-ver-grafico-dispersao-quick"
-                onClick={() => setSimulatorTab('amostragem')}
-                className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition-colors ml-1"
-              >
-                <Calculator className="h-3.5 w-3.5" />
-                <span>Ver Dispersão</span>
-              </button>
-            )}
           </div>
         </div>
       )}
@@ -400,9 +360,7 @@ export const CollectionSimulator: React.FC = () => {
         </div>
       )}
 
-      {simulatorTab === 'amostragem' ? (
-        <PopulationSampleScatterSimulator activeSurvey={activeSurvey} />
-      ) : !activeSurvey || !hasValidQuestions ? (
+      {!activeSurvey || !hasValidQuestions ? (
         <div className="rounded-2xl border border-dashed border-slate-800 bg-[#16171d] p-8 text-center shadow-xl space-y-4">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800 text-slate-400">
             <Smartphone className="h-6 w-6" />
@@ -411,16 +369,9 @@ export const CollectionSimulator: React.FC = () => {
             Nenhuma pergunta configurada para esta pesquisa
           </h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            Utilize a Calculadora Amostral para planejar o tamanho ideal da amostragem ou configure as perguntas no módulo de questionário.
+            Configure as perguntas no módulo de questionário para simular a coleta em campo.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <button
-              onClick={() => setSimulatorTab('amostragem')}
-              className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
-            >
-              <Calculator className="h-4 w-4" />
-              <span>Abrir Calculadora Amostral & Dispersão</span>
-            </button>
             <button
               onClick={() => setActiveModule('pesquisas')}
               className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
@@ -447,15 +398,6 @@ export const CollectionSimulator: React.FC = () => {
 
             {/* Live status indicators */}
             <div className="flex items-center gap-2.5">
-              <button
-                type="button"
-                onClick={() => setSimulatorTab('amostragem')}
-                className="hidden sm:flex items-center gap-1 rounded-lg border border-blue-500/30 bg-blue-600/10 px-2 py-1 text-[11px] font-semibold text-blue-400 hover:bg-blue-600/20 transition-colors"
-              >
-                <Calculator className="h-3 w-3" />
-                <span>Calcular Amostra (n)</span>
-              </button>
-
               <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-1 text-[11px] font-semibold text-slate-300 shadow-xs">
                 <MapPin className="h-3.5 w-3.5 text-emerald-400" />
                 <span>GPS Ativo</span>

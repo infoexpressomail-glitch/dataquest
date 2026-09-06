@@ -233,4 +233,36 @@ src/components/analytics/AnalyticsModule.tsx             (seletor unificado)
 src/components/researcher/ResearcherEnvironment.tsx      (rótulos de aba)
 src/components/metas/MetasModule.tsx                     (abas por perfil + effectiveTab)
 src/components/team/TeamSizingModule.tsx                 (gate de permissão no salvar)
+src/components/simulator/CollectionSimulator.tsx         (removida aba de amostragem/dispersão)
+src/components/simulator/PopulationSampleScatterSimulator.tsx  (ARQUIVO EXCLUÍDO)
 ```
+
+## Item extra concluído: remoção de tela de bastidor de desenvolvimento
+
+A pedido do usuário, foi removida a tela "Simulador de Amostragem
+Probabilística & Dispersão" que abria por padrão dentro do **Simulador de
+Coleta** (`CollectionSimulator.tsx`). Essa tela expunha botões de download
+dos próprios arquivos-fonte do sistema (`samplingUtils.ts`,
+`PopulationSampleScatterSimulator.tsx`, `CollectionSimulator.tsx`) — algo que
+só fazia sentido durante o desenvolvimento e nunca deveria aparecer em
+produção. O usuário confirmou que a funcionalidade equivalente já existe em
+outro lugar do sistema.
+
+O que foi feito:
+- Arquivo `src/components/simulator/PopulationSampleScatterSimulator.tsx`
+  **excluído** (nenhuma outra referência a ele restava no código).
+- `CollectionSimulator.tsx`: removida a aba/toggle
+  `simulatorTab: 'amostragem' | 'coleta'` e todo o conteúdo condicional
+  associado (botões "Ver Dispersão", "Calcular Amostra (n)", "Abrir
+  Calculadora Amostral & Dispersão"). O Simulador de Coleta agora abre
+  direto na tela de coleta mobile.
+- **Preservado**: o seletor rápido "Níveis de Confiança Padrão" (Z-score)
+  que já vivia dentro do próprio `CollectionSimulator` e atualiza a meta da
+  pesquisa (`handleQuickStandardConfidence`) — isso não depende do
+  componente removido e continua funcionando exatamente como antes.
+- **Preservado**: `ConfidenceSampleCalculator.tsx` e seu uso em
+  `TeamSizingModule`/`FieldTeamSizingCard` (módulo de Dimensionamento) —
+  é a funcionalidade real e equivalente à que foi removida, e não foi
+  tocada.
+- Validado com `tsc --noEmit` (limpo) e `npm run build:web` (build ~50KB
+  menor, sem erros).
