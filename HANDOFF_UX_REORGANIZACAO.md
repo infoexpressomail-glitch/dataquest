@@ -96,63 +96,85 @@ concluído com sucesso ao final da primeira leva de mudanças.
 
 ## Pendente (para a próxima sessão)
 
-Seguir a ordem do prompt mestre a partir daqui:
-
-### A. `ExternalImportModule.tsx` (§27 do prompt mestre)
-- **Achado a investigar primeiro:** o componente usa
-  `hasPermission('importacao_pesquisa_externa')` e
-  `hasPermission('importacao_resposta_externa')` — essas duas chaves **não
+### A. `ExternalImportModule.tsx` — investigado, achado documentado, não corrigido
+- **Bug pré-existente confirmado (fora do escopo desta tarefa):** o componente
+  usa `hasPermission('importacao_pesquisa_externa')` e
+  `hasPermission('importacao_resposta_externa')`. Essas duas chaves **não
   existem** em `AccessPolicyPermissions` (`src/types.ts`), que só define
   `importacao_importar_planilha`, `importacao_excluir` e `importacao_acesso`.
-  - Isso é um bug pré-existente de tipagem/regra de negócio, **fora do
-    escopo desta tarefa de UX** (o prompt mestre proíbe alterar regras de
-    permissão). Estranhamente `tsc --noEmit` não acusa erro nisso — vale
-    entender por que antes de decidir o que fazer.
-  - **Não corrigir sem autorização explícita do usuário.** Se for
-    mencionar, expor como observação separada no relatório final, não como
-    mudança já feita.
-- Reorganizar visualmente em: Arquivo → Mapeamento → Processamento →
-  Resultado, **somente se** essas etapas já estiverem representadas no fluxo
-  atual (não inventar um novo fluxo de importação).
+  - Efeito prático: `canImportSurvey` e `canImportResponse` são sempre
+    `false` em runtime (a propriedade nunca existe no objeto de permissões),
+    então **nenhum perfil consegue ver os botões de modo de importação** —
+    o módulo fica com a área de upload visível, mas sem nenhuma aba de modo
+    selecionável. Isso não foi causado por esta tarefa; já estava assim.
+  - `tsc --noEmit` não acusa erro nisso (seguimos sem entender por quê —
+    possivelmente widening de tipo em algum ponto da cadeia de tipos).
+  - **Não corrigir sem autorização explícita do usuário** — corrigir a
+    regra de permissão está fora do mandato de "só UX/reorganização". Se for
+    resolvido futuramente, a correção mínima seria trocar essas duas chaves
+    por `importacao_acesso` (a permissão real e já existente que controla
+    a visibilidade do módulo no Sidebar), mas isso é uma decisão de regra de
+    negócio que deve ser validada com o time antes de aplicar.
+- Fluxo visual (Arquivo → Mapeamento → Processamento → Resultado): já está
+  coberto pelo fluxo atual (seleção de tipo → destino se respostas → upload
+  → pré-visualização → confirmar → status). Não precisou de reorganização.
 
-### B. `ActionHistory.tsx` — Auditoria (§28 do prompt mestre)
-- Ainda não auditado nesta sessão (arquivo tem ~700 linhas).
-- Organizar: data, usuário, ação, registro, informações existentes.
-- Não alterar o mecanismo de auditoria, não remover informações, não
-  inventar novos eventos.
-- Verificar se há algum gate de permissão faltando (mesmo padrão do que foi
-  encontrado no TeamSizingModule) — por exemplo, se qualquer perfil consegue
-  ver/exportar auditoria sem checagem adequada.
+### B. `ActionHistory.tsx` — Auditoria — revisado, sem mudanças necessárias
+- Já transmite segurança/rastreabilidade: badges de conformidade (LGPD/ISO
+  27001), KPIs (total de ações, edições em respostas, edições em pesquisas,
+  operadores auditados), exportação CSV/JSON com hash de integridade,
+  filtros por categoria/tipo de alvo/usuário/período.
+- Módulo é intencionalmente acessível a todos os perfis (trilha de
+  conformidade não é restrita por `hasPermission` — isso é esperado, não é
+  uma brecha).
+- Nenhuma alteração aplicada.
 
-### C. Ainda não revisados nesta rodada (auditoria + reorganização pendente)
-- `SurveyList.tsx` (§21 — filtros existentes, sem inventar novos)
-- `SurveyWizard.tsx` (§22 — não recriar o wizard, só hierarquia/espaçamento)
-- `ResponsesModule.tsx` (§23 — orientado à consulta, sem novos recursos de
-  edição)
-- `CollectionSimulator.tsx` (§29 — só navegação/apresentação)
-- `AccessPolicies.tsx` — **já revisado e considerado adequado** ao prompt
-  (grupos por módulo, "Marcar todos"/"Desmarcar todos", em PT-BR); não
-  precisou de mudança.
-- `Header.tsx` — revisado superficialmente, parece adequado; não houve
-  necessidade de alteração até agora.
+### C. Módulos revisados nesta rodada — sem necessidade de mudança
+- `SurveyList.tsx` (§21): já bem gated por permissões
+  (`pesquisa_criar/alterar/excluir/replicar/desativar/...`), organizado em
+  abas Ativas/Inativas/Excluídas, cards com código/ciclo/status/pesquisadores
+  vinculados/ações. Adequado ao prompt mestre, não precisou de mudança.
+- `SurveyWizard.tsx` (§22): não foi tocado, por instrução explícita do
+  prompt mestre ("não recrie o wizard, não altere sua lógica"). A navegação
+  até ele já é protegida na origem (`SurveyList` só mostra o botão de
+  criar/editar quando `canCreate`/`canEdit` são verdadeiros).
+- `ResponsesModule.tsx` (§23): bem gated
+  (`respostas_alterar`, `pesquisa_alteracao_resposta_espontanea`,
+  `analise_criar_alterar_excluir_resposta`, `pesquisa_excluir`,
+  `pesquisa_exportar_resultados`, `pesquisa_ouvir_audio`,
+  `pesquisa_visualizar_georeferenciamento`), filtros existentes preservados,
+  nenhum novo recurso de edição. Não precisou de mudança.
+- `CollectionSimulator.tsx` (§29): sem `hasPermission` interno, mas a
+  navegação até ele já é protegida pelo Sidebar/permissão de módulo. É a
+  própria ferramenta de coleta — comportamento correto, não precisou de
+  mudança.
+- `AccessPolicies.tsx`: já adequado (grupos por módulo, "Marcar
+  todos"/"Desmarcar todos", PT-BR). Não precisou de mudança.
+- `Header.tsx`: revisado, adequado. Não precisou de mudança.
 
-### D. Revisão transversal (fases finais do prompt mestre, §58-§60)
-- Teste de perfis: simular cada um dos 4 perfis reais
-  (`prof_admin`, `prof_coord`, `prof_pesq`, `prof_analista`) e confirmar
-  que Sidebar/Dashboard/módulos aparecem corretamente para cada um.
+### D. Revisão transversal (§58-§60 do prompt mestre) — ainda não feita
+- Teste de perfis: simular login como cada um dos 4 perfis reais
+  (`prof_admin`, `prof_coord`, `prof_pesq`, `prof_analista`) na aplicação
+  rodando (`npm run dev` ou `npm run preview` após build) e confirmar
+  visualmente que Sidebar/Dashboard/Metas aparecem como esperado para cada
+  um. Isto ainda não foi feito com o app rodando de fato — toda a validação
+  até agora foi por leitura de código + `tsc`/build.
 - Teste do pesquisador: login, ambiente do pesquisador, pesquisas
   vinculadas, coleta, metas, histórico, offline, sincronização, GPS, áudio —
-  nada disso foi tocado nesta tarefa, mas vale confirmar que a reorganização
-  visual não quebrou nenhum fluxo.
-- Teste mobile: viewport pequeno, sem overflow horizontal.
-- Build final: `npx tsc --noEmit` + `npm run build:web` novamente depois de
-  todas as mudanças pendentes.
+  nenhum desses fluxos foi tocado nesta tarefa, mas vale confirmar em
+  runtime que a reorganização visual não quebrou nada.
+- Teste mobile: viewport pequeno, sem overflow horizontal. Ainda não
+  verificado visualmente.
+- Build final: já validado (`tsc --noEmit` limpo + `npm run build:web`
+  concluído com sucesso, chunk warning é pré-existente e não relacionado).
 
-### E. Relatório final (§70 do prompt mestre)
-Ao concluir os itens pendentes, montar o relatório final cobrindo:
+### E. Relatório final (§70 do prompt mestre) — ainda não escrito
+Ao concluir o item D (testes em runtime), montar o relatório final cobrindo:
 Navegação, Perfis, Dashboard, Mobile, Idioma, Permissões, Segurança,
 Funcionalidades (confirmar nada removido), Infraestrutura (Supabase/Vercel/
-API/PWA/sincronização preservados).
+API/PWA/sincronização preservados). Este handoff já reúne praticamente todo
+o conteúdo necessário para escrever esse relatório — falta apenas a
+confirmação visual em runtime (item D) antes de fechar.
 
 ---
 
