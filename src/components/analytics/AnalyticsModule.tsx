@@ -109,6 +109,25 @@ export const AnalyticsModule: React.FC = () => {
         </div>
       </div>
 
+      {/* Pesquisa selecionada — informação principal, comum a todas as abas */}
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl sm:flex-row sm:items-center">
+        <label className="text-xs font-bold text-slate-300 shrink-0">
+          Pesquisa em Análise:
+        </label>
+        <select
+          value={selectedSurveyId}
+          onChange={(e) => setSelectedSurveyId(e.target.value)}
+          className="w-full rounded-lg border border-slate-800 bg-[#111218] px-3 py-1.5 text-xs text-slate-200 focus:border-blue-500 focus:outline-none sm:w-auto"
+        >
+          <option value="all">Visão Consolidada (Todas as Pesquisas)</option>
+          {surveys.map((s) => (
+            <option key={s.id} value={s.id}>
+              [{s.codigo}] {s.nome}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Navegação entre Abas do Módulo de Análise */}
       <div className="flex items-center gap-2 border-b border-slate-800 pb-1">
         <button
@@ -165,23 +184,6 @@ export const AnalyticsModule: React.FC = () => {
       {/* Conteúdo da Aba 2: Dimensionamento de Equipe em Campo */}
       {activeTab === 'dimensionamento' && selectedSurvey && (
         <div className="space-y-6">
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
-            <label className="text-xs font-bold text-slate-300">
-              Selecione a Pesquisa para Dimensionamento:
-            </label>
-            <select
-              value={selectedSurvey.id}
-              onChange={(e) => setSelectedSurveyId(e.target.value)}
-              className="rounded-lg border border-slate-800 bg-[#111218] px-3 py-1.5 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
-            >
-              {surveys.map((s) => (
-                <option key={s.id} value={s.id}>
-                  [{s.codigo}] {s.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <FieldTeamSizingCard
             survey={selectedSurvey}
             submissions={currentSubs}
@@ -198,25 +200,6 @@ export const AnalyticsModule: React.FC = () => {
       {/* Conteúdo da Aba 3: Distribuição por Pergunta & NPS */}
       {activeTab === 'perguntas' && (
         <div className="space-y-6">
-          {/* Survey selector */}
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
-            <label className="text-xs font-bold text-slate-300">
-              Selecione a Pesquisa:
-            </label>
-            <select
-              value={selectedSurveyId}
-              onChange={(e) => setSelectedSurveyId(e.target.value)}
-              className="rounded-lg border border-slate-800 bg-[#111218] px-3 py-1.5 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
-            >
-              <option value="all">Visão Consolidada (Todas as Pesquisas)</option>
-              {surveys.map((s) => (
-                <option key={s.id} value={s.id}>
-                  [{s.codigo}] {s.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* KPI Cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {/* Total Coletas */}

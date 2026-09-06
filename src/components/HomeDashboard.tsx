@@ -40,6 +40,16 @@ export const HomeDashboard: React.FC = () => {
 
   const canViewPaineis = hasPermission('home_visualiza_paineis_superiores');
   const canViewConexoes = hasPermission('home_visualiza_conexoes_recentes');
+  const canViewEquipe = hasPermission('colaboradores_acesso');
+
+  // Grade de cards do topo é dinâmica: só entra o que o perfil pode agir sobre.
+  // Isso evita "dashboard showcase" (mostrar tudo que existe) para perfis
+  // como o Analista, que não administra colaboradores/licenças.
+  const painelCardCount = 3 + (canViewEquipe ? 1 : 0);
+  const painelGridClass =
+    painelCardCount === 4
+      ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'
+      : 'grid grid-cols-1 gap-4 sm:grid-cols-3';
 
   return (
     <div className="space-y-6">
@@ -88,7 +98,7 @@ export const HomeDashboard: React.FC = () => {
 
       {/* Paineis Superiores com quantidades de todas as pesquisas, entrevistas e licenças */}
       {canViewPaineis && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className={painelGridClass}>
           {/* Card 1: Total de Pesquisas */}
           <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl transition-all hover:border-slate-700">
             <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-xl pointer-events-none" />
@@ -165,29 +175,31 @@ export const HomeDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 4: Colaboradores Ativos */}
-          <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl transition-all hover:border-slate-700">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl pointer-events-none" />
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Equipe em Campo
-              </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600/10 text-indigo-400 border border-indigo-500/20">
-                <Users className="h-5 w-5" />
+          {/* Card 4: Colaboradores Ativos — só para quem administra a equipe */}
+          {canViewEquipe && (
+            <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl transition-all hover:border-slate-700">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl pointer-events-none" />
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  Equipe em Campo
+                </span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600/10 text-indigo-400 border border-indigo-500/20">
+                  <Users className="h-5 w-5" />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="text-3xl font-bold tracking-tight text-white">
+                  {collaborators.length}
+                </span>
+                <span className="text-xs font-medium text-slate-400">
+                  colaboradores
+                </span>
+              </div>
+              <div className="mt-2 text-xs text-slate-500">
+                Pesquisadores, coordenadores e analistas
               </div>
             </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight text-white">
-                {collaborators.length}
-              </span>
-              <span className="text-xs font-medium text-slate-400">
-                colaboradores
-              </span>
-            </div>
-            <div className="mt-2 text-xs text-slate-500">
-              Pesquisadores, coordenadores e analistas
-            </div>
-          </div>
+          )}
         </div>
       )}
 

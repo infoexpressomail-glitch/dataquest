@@ -28,6 +28,10 @@ export const MetasModule: React.FC = () => {
   const activeSurvey = surveys.find((s) => s.id === selectedSurveyId) || surveys[0];
 
   const canManageMetas = hasPermission('meta_criar_alterar_excluir');
+  // Pesquisador de campo enxerga apenas o próprio progresso: as demais abas (gestão de
+  // metas globais, dimensionamento de equipe e metas por questão) são de uso
+  // administrativo/analítico e não fazem parte do trabalho de coleta.
+  const isFieldResearcher = !canManageMetas && !hasPermission('analise_acesso');
 
   // Se o usuário for pesquisador (sem permissão de gestão), abre por padrão no progresso individual
   const [activeTab, setActiveTab] = useState<'globais' | 'dimensionamento' | 'individual' | 'mobile' | 'questoes'>(
@@ -83,6 +87,12 @@ export const MetasModule: React.FC = () => {
   const totalMetasGlobais = activeSurvey?.metasGlobais?.length || 0;
   const totalMetasQuestoes = activeSurvey?.metas?.length || 0;
 
+  // Proteção de navegação: mesmo que activeTab aponte para uma aba administrativa,
+  // o pesquisador de campo é redirecionado para o seu progresso individual.
+  const restrictedTabsForResearcher: Array<typeof activeTab> = ['globais', 'dimensionamento', 'questoes'];
+  const effectiveTab =
+    isFieldResearcher && restrictedTabsForResearcher.includes(activeTab) ? 'individual' : activeTab;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -123,51 +133,55 @@ export const MetasModule: React.FC = () => {
 
       {/* Modern Navigation Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-800 pb-1 overflow-x-auto no-scrollbar">
-        <button
-          type="button"
-          onClick={() => setActiveTab('globais')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
-            activeTab === 'globais'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-          }`}
-        >
-          <Globe2 className="h-4 w-4" />
-          <span>Gerenciamento de Metas Globais</span>
-          <span
-            className={`rounded-full px-2 py-0.5 text-[10px] ${
+        {!isFieldResearcher && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('globais')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
               activeTab === 'globais'
-                ? 'bg-blue-800 text-blue-100'
-                : 'bg-slate-800 text-slate-400'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
             }`}
           >
-            {totalMetasGlobais}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('dimensionamento')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
-            activeTab === 'dimensionamento'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-          }`}
-        >
-          <Users className="h-4 w-4" />
-          <span>Dimensionamento de Pesquisadores</span>
-          {teamSizing && (
+            <Globe2 className="h-4 w-4" />
+            <span>Gerenciamento de Metas Globais</span>
             <span
               className={`rounded-full px-2 py-0.5 text-[10px] ${
-                activeTab === 'dimensionamento'
+                activeTab === 'globais'
                   ? 'bg-blue-800 text-blue-100'
-                  : 'bg-slate-800 text-slate-300'
+                  : 'bg-slate-800 text-slate-400'
               }`}
             >
-              Min: {teamSizing.minPesquisadores}
+              {totalMetasGlobais}
             </span>
-          )}
-        </button>
+          </button>
+        )}
+
+        {!isFieldResearcher && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('dimensionamento')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
+              activeTab === 'dimensionamento'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Users className="h-4 w-4" />
+            <span>Dimensionamento de Pesquisadores</span>
+            {teamSizing && (
+              <span
+                className={`rounded-full px-2 py-0.5 text-[10px] ${
+                  activeTab === 'dimensionamento'
+                    ? 'bg-blue-800 text-blue-100'
+                    : 'bg-slate-800 text-slate-300'
+                }`}
+              >
+                Min: {teamSizing.minPesquisadores}
+              </span>
+            )}
+          </button>
+        )}
 
         <button
           type="button"
@@ -196,36 +210,38 @@ export const MetasModule: React.FC = () => {
           <span>Painel de Metas Mobile</span>
         </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('questoes')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
-            activeTab === 'questoes'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-          }`}
-        >
-          <Target className="h-4 w-4" />
-          <span>Metas por Questão</span>
-          <span
-            className={`rounded-full px-2 py-0.5 text-[10px] ${
+        {!isFieldResearcher && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('questoes')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
               activeTab === 'questoes'
-                ? 'bg-blue-800 text-blue-100'
-                : 'bg-slate-800 text-slate-400'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
             }`}
           >
-            {totalMetasQuestoes}
-          </span>
-        </button>
+            <Target className="h-4 w-4" />
+            <span>Metas por Questão</span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] ${
+                activeTab === 'questoes'
+                  ? 'bg-blue-800 text-blue-100'
+                  : 'bg-slate-800 text-slate-400'
+              }`}
+            >
+              {totalMetasQuestoes}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Submodule View 1: Gerenciamento de Metas Globais */}
-      {activeTab === 'globais' && activeSurvey && (
+      {effectiveTab === 'globais' && activeSurvey && (
         <GlobalMetasManager activeSurvey={activeSurvey} canManageMetas={canManageMetas} />
       )}
 
       {/* Submodule View: Dimensionamento de Equipe em Campo */}
-      {activeTab === 'dimensionamento' && activeSurvey && (
+      {effectiveTab === 'dimensionamento' && activeSurvey && (
         <div className="space-y-4">
           <div className="p-4 rounded-xl bg-blue-600/10 border border-blue-500/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
@@ -261,17 +277,17 @@ export const MetasModule: React.FC = () => {
       )}
 
       {/* Submodule View 2: Meu Progresso Individual em Tempo Real */}
-      {activeTab === 'individual' && activeSurvey && (
+      {effectiveTab === 'individual' && activeSurvey && (
         <ResearcherIndividualGoalsView activeSurvey={activeSurvey} />
       )}
 
       {/* Submodule View 3: Painel de Metas Mobile */}
-      {activeTab === 'mobile' && activeSurvey && (
+      {effectiveTab === 'mobile' && activeSurvey && (
         <MobileMetasDashboard activeSurvey={activeSurvey} />
       )}
 
       {/* Submodule View 4: Metas Tradicionais por Questão */}
-      {activeTab === 'questoes' && activeSurvey && (
+      {effectiveTab === 'questoes' && activeSurvey && (
         <div className="space-y-6">
           <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 text-xs text-slate-400">
             <div className="flex items-center gap-2 text-slate-200 font-bold mb-1">

@@ -46,7 +46,12 @@ export const TeamSizingModule: React.FC = () => {
     addAuditLog,
     currentUser,
     currentProfile,
+    hasPermission,
   } = useApp();
+
+  // Consulta é aberta a todos os perfis; gravar os parâmetros na pesquisa é uma
+  // alteração de planejamento e segue a mesma permissão do módulo de Metas.
+  const canSaveSizing = hasPermission('meta_criar_alterar_excluir');
 
   // Seleção de Pesquisa
   const activeSurveys = useMemo(() => surveys.filter((s) => s.status !== 'excluida'), [surveys]);
@@ -213,7 +218,7 @@ export const TeamSizingModule: React.FC = () => {
 
   // Salvar Parâmetros na Pesquisa Oficial
   const handleSaveToSurvey = () => {
-    if (!currentSurvey) return;
+    if (!currentSurvey || !canSaveSizing) return;
 
     const updated: Survey = {
       ...currentSurvey,
@@ -394,16 +399,18 @@ export const TeamSizingModule: React.FC = () => {
               <span>Excel</span>
             </button>
 
-            {/* Salvar na Pesquisa */}
-            <button
-              id="btn-save-dimensionamento"
-              onClick={handleSaveToSurvey}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-md shadow-blue-600/30 hover:bg-blue-500 transition-colors"
-              title="Gravar estes parâmetros na pesquisa selecionada"
-            >
-              <Save className="h-3.5 w-3.5" />
-              <span>Salvar na Pesquisa</span>
-            </button>
+            {/* Salvar na Pesquisa — apenas para quem administra metas/planejamento */}
+            {canSaveSizing && (
+              <button
+                id="btn-save-dimensionamento"
+                onClick={handleSaveToSurvey}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-md shadow-blue-600/30 hover:bg-blue-500 transition-colors"
+                title="Gravar estes parâmetros na pesquisa selecionada"
+              >
+                <Save className="h-3.5 w-3.5" />
+                <span>Salvar na Pesquisa</span>
+              </button>
+            )}
           </div>
         </div>
 

@@ -223,7 +223,7 @@ export const ResearcherEnvironment: React.FC = () => {
           }`}
         >
           <Layers className="h-4 w-4" />
-          <span>Minhas Pesquisas Atribuídas ({researcherSurveys.length})</span>
+          <span>Minhas Pesquisas ({researcherSurveys.length})</span>
         </button>
 
         <button
@@ -241,7 +241,7 @@ export const ResearcherEnvironment: React.FC = () => {
           }`}
         >
           <Smartphone className="h-4 w-4 text-emerald-400" />
-          <span>Coleta em Campo (Formulário)</span>
+          <span>Coleta</span>
         </button>
 
         <button
@@ -265,7 +265,7 @@ export const ResearcherEnvironment: React.FC = () => {
           }`}
         >
           <FileCheck className="h-4 w-4" />
-          <span>Minhas Coletas ({researcherSubmissions.length})</span>
+          <span>Histórico ({researcherSubmissions.length})</span>
         </button>
 
         <button
