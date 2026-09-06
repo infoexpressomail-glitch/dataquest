@@ -253,6 +253,15 @@ html:not(.dark) .bg-\[\#16171d\]\/90 {
   background-color: #ffffff !important;
 }
 
+/* Botões utilitários do Header (idioma, tema, perfil) usam o mesmo tom de
+   fundo branco do cabeçalho no tema claro, o que deixa a borda fina como
+   único indício visual do botão. Aqui reforçamos com um cinza sutil para
+   que fiquem claramente destacáveis como controles clicáveis. */
+html.light header .bg-\[\#16171d\],
+html:not(.dark) header .bg-\[\#16171d\] {
+  background-color: #f1f5f9 !important;
+}
+
 html.light .bg-\[\#1b1c24\],
 html.light .bg-\[\#1e2029\],
 html:not(.dark) .bg-\[\#1b1c24\],

@@ -237,9 +237,55 @@ src/components/simulator/CollectionSimulator.tsx         (removida aba de amostr
 src/components/simulator/PopulationSampleScatterSimulator.tsx  (ARQUIVO EXCLUÍDO)
 src/components/registrations/AccessPolicies.tsx          (resumo geral + colapso + busca)
 src/index.css                                            (cobertura de tema claro ampliada)
+src/components/Header.tsx                                (removida barra de métricas fixa + fix contraste botões)
 ```
 
-## Item extra — rodada 3: tema claro, Políticas de Acesso e Sidebar fixo
+## Item extra — rodada 4: refinamentos de contraste e remoção da barra fixa de métricas do Header
+
+Feedback do usuário com screenshot mostrando: botões pill do Header (idioma,
+tema) com contraste fraco no tema claro, e pedido para não exibir mais a
+barra de métricas (Total Pesquisas / Entrevistas / Licenças) fixa no topo.
+
+### 1. Contraste dos botões utilitários do Header (`src/index.css`, `src/components/Header.tsx`)
+- Adicionada uma regra específica `header .bg-\[\#16171d\]` no tema claro:
+  antes esses botões (idioma, dark mode) ficavam brancos sobre um header
+  também branco, dependendo só de uma borda fina de 1px para se
+  distinguirem. Agora recebem um fundo cinza sutil (`#f1f5f9`) que os
+  destaca claramente como controles clicáveis.
+- O ícone `Moon` (alternância de tema) não tinha nenhuma classe de cor
+  própria — dependia 100% de herança `currentColor` do botão pai. Adicionei
+  `text-slate-400` diretamente nele para reforçar contra qualquer contexto
+  de herança quebrada.
+
+### 2. Remoção da barra de métricas fixa do Header (`src/components/Header.tsx`)
+A barra "Total Pesquisas / Entrevistas / Licenças" ficava permanentemente
+visível no cabeçalho em todas as telas do sistema (visível só em telas
+grandes, `hidden lg:flex`). Essa mesma informação já existe na tela inicial
+(`HomeDashboard`), então mantê-la fixa no Header duplicava informação e
+ocupava espaço de forma permanente — indo contra o princípio de "menos
+informação irrelevante" do prompt mestre original.
+- Removida a `<div>` da barra de métricas do `Header.tsx`.
+- Removidas as variáveis `activeSurveys`/`activeCollaborators` que só
+  alimentavam essa barra, e os campos `surveys`/`submissions` da
+  desestruturação de `useApp()` que ficaram órfãos.
+- `collaborators` foi mantido (ainda usado no dropdown "Alternar Usuário
+  para Testes").
+- As métricas continuam disponíveis normalmente na tela inicial — nada foi
+  removido do sistema, apenas duplicação de header.
+
+**Validação:** `tsc --noEmit` e `npm run build:web` limpos; suite de 24
+testes de render (Header + Sidebar + AccessPolicies × 4 perfis × 2 temas)
+via Vitest, todos passando sem exceção.
+
+**Observação sobre limitação de verificação visual:** como não há
+navegador disponível neste ambiente (rede bloqueia download do Chromium
+para Playwright), as correções de contraste desta e das rodadas anteriores
+foram guiadas por análise de código + a screenshot que o usuário enviou,
+não por inspeção visual direta minha. Se ainda sobrar algum elemento
+específico ilegível no tema claro depois de aplicar esta rodada, uma nova
+screenshot com a área exata ajuda a fechar rapidamente.
+
+
 
 ### 1. Tema claro ilegível (`src/index.css`)
 

@@ -37,8 +37,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
     currentProfile,
     twoFactorVerified,
     collaborators,
-    surveys,
-    submissions,
     setActiveModule,
     setEditingSurvey,
     hasPermission,
@@ -60,9 +58,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
     setEditingSurvey(null);
     setActiveModule('wizard');
   };
-
-  const activeSurveys = surveys.filter((s) => s.status !== 'excluida').length;
-  const activeCollaborators = collaborators.filter((c) => c.ativo).length;
 
   const isResearcher =
     currentProfile?.id === 'prof_pesq' ||
@@ -90,24 +85,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
             </span>
             <span className="ml-2 hidden text-xs font-medium text-slate-500 sm:inline-block">
               Gestão de Questionários
-            </span>
-          </div>
-        </div>
-
-        {/* Header Metrics Bar (Immersive UI) */}
-        <div className="hidden lg:flex items-center gap-8 pl-6 border-l border-slate-800/80">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Total Pesquisas</span>
-            <span className="text-sm font-bold text-white">{activeSurveys}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Entrevistas</span>
-            <span className="text-sm font-bold text-white">{submissions.length}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Licenças</span>
-            <span className="text-sm font-bold text-white">
-              {activeCollaborators} <span className="text-slate-600 font-normal">/ 50</span>
             </span>
           </div>
         </div>
@@ -241,7 +218,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           aria-label="Alternar modo escuro"
           className="rounded-lg border border-slate-800 bg-[#16171d] p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition"
         >
-          {darkMode ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
+          {darkMode ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-slate-400" />}
         </button>
 
         {/* User Profile Switcher */}
