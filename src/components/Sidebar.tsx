@@ -8,11 +8,9 @@ import {
   BarChart3,
   Target,
   FileSpreadsheet,
-  FolderCog,
   ShieldCheck,
   Users,
   Calculator,
-  UserCheck,
   ChevronDown,
   ChevronRight,
   Smartphone,
@@ -20,11 +18,28 @@ import {
   RotateCcw,
   History,
   LogOut,
+  Download,
 } from 'lucide-react';
 
 interface SidebarProps {
   isOpenMobile: boolean;
   onCloseMobile: () => void;
+}
+
+/** Item de navegação de uma seção do Sidebar. */
+interface NavLeaf {
+  id: string;
+  module: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconClassName?: string;
+  badge?: number;
+}
+
+/** Bloco de tarefas do Sidebar (agrupamento contextual, não um módulo novo). */
+interface NavSection {
+  title: string;
+  items: NavLeaf[];
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile }) => {
@@ -40,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
     logout,
   } = useApp();
 
-  const [cadastrosOpen, setCadastrosOpen] = useState(true);
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
   const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key);
 
@@ -51,24 +66,371 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
         : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
     }`;
 
-  const subNavItemClass = (isActive: boolean) =>
-    `flex items-center gap-2.5 w-full pl-6 pr-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-      isActive
-        ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20 font-semibold'
-        : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
-    }`;
-
   const handleNavigate = (module: string) => {
     setActiveModule(module);
     onCloseMobile();
   };
 
-  const showCadastros =
-    hasPermission('politicas_acesso') || hasPermission('colaboradores_acesso');
+  const toggleSection = (title: string) =>
+    setCollapsedSections((prev) => ({ ...prev, [title]: !prev[title] }));
 
   const isResearcher =
     currentProfile?.id === 'prof_pesq' ||
     currentProfile?.name.toLowerCase().includes('pesquisador');
+
+  // Analista: perfil orientado a dados (pesquisas, respostas, análise e exportações),
+  // sem administração de colaboradores/políticas. Identificado pelas permissões reais,
+  // não por um novo campo — preserva o RBAC existente.
+  const isAnalyst =
+    !isResearcher &&
+    (currentProfile?.id === 'prof_analista' ||
+      (!hasPermission('colaboradores_acesso') &&
+        !hasPermission('politicas_acesso') &&
+        hasPermission('analise_acesso')));
+
+  const isActiveIn = (modules: string[]) => modules.includes(activeModule);
+
+  /** Renderiza um item simples de navegação. */
+  const renderLeaf = (leaf: NavLeaf, active: boolean) => (
+    <button
+      key={leaf.id}
+      id={leaf.id}
+      onClick={() => handleNavigate(leaf.module)}
+      className={
+        leaf.badge !== undefined
+          ? `flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
+              active
+                ? 'bg-blue-600/15 text-blue-400 border border-blue-600/25 shadow-xs font-bold'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`
+          : navItemClass(active)
+      }
+    >
+      <div className="flex items-center gap-3">
+        <leaf.icon className={`h-4 w-4 shrink-0 ${leaf.iconClassName || ''}`} />
+        <span>{leaf.label}</span>
+      </div>
+      {leaf.badge !== undefined && (
+        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+          {leaf.badge}
+        </span>
+      )}
+    </button>
+  );
+
+  /** Renderiza um bloco de tarefas com título de seção, recolhível. */
+  const renderSection = (section: NavSection, index: number) => {
+    if (section.items.length === 0) return null;
+    const isCollapsed = collapsedSections[section.title];
+
+    return (
+      <div key={section.title} className={index === 0 ? '' : 'pt-3'}>
+        <button
+          type="button"
+          onClick={() => toggleSection(section.title)}
+          className="flex w-full items-center justify-between px-2 pb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-slate-300 transition-colors"
+        >
+          <span>{section.title}</span>
+          {isCollapsed ? (
+            <ChevronRight className="h-3 w-3" />
+          ) : (
+            <ChevronDown className="h-3 w-3" />
+          )}
+        </button>
+        {!isCollapsed && (
+          <div className="space-y-1">
+            {section.items.map((leaf) => renderLeaf(leaf, isActiveIn([leaf.module])))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ---------------------------------------------------------------------
+  // PORTAL DO PESQUISADOR — ambiente próprio, focado em coleta e metas.
+  // ---------------------------------------------------------------------
+  const researcherSections: NavSection[] = [
+    {
+      title: 'Início',
+      items: [
+        {
+          id: 'menu-item-pesquisador-home',
+          module: 'pesquisador',
+          label: 'Ambiente do Pesquisador',
+          icon: Sparkles,
+          iconClassName: 'text-emerald-400',
+        },
+      ],
+    },
+    {
+      title: 'Coleta',
+      items: [
+        {
+          id: 'menu-item-pesquisador-pesquisas',
+          module: 'pesquisas',
+          label: 'Minhas Pesquisas',
+          icon: FileQuestion,
+        },
+        {
+          id: 'menu-item-pesquisador-coleta',
+          module: 'simulador',
+          label: 'Formulário de Coleta',
+          icon: Smartphone,
+          iconClassName: 'text-blue-400',
+        },
+      ],
+    },
+    {
+      title: 'Desempenho',
+      items: [
+        {
+          id: 'menu-item-pesquisador-metas',
+          module: 'metas',
+          label: 'Minhas Metas & Cotas',
+          icon: Target,
+        },
+        {
+          id: 'menu-item-pesquisador-dimensionamento',
+          module: 'dimensionamento',
+          label: t('teamSizing'),
+          icon: Calculator,
+          iconClassName: 'text-blue-400',
+        },
+      ],
+    },
+    {
+      title: 'Conformidade',
+      items: [
+        {
+          id: 'menu-item-pesquisador-auditoria',
+          module: 'historico_acoes',
+          label: 'Trilha de Conformidade',
+          icon: History,
+          iconClassName: 'text-blue-400',
+        },
+      ],
+    },
+  ];
+
+  // ---------------------------------------------------------------------
+  // ANALISTA — interface orientada a dados: pesquisas, respostas, análise
+  // e exportações. Sem menus administrativos.
+  // ---------------------------------------------------------------------
+  const analystSections: NavSection[] = [
+    {
+      title: 'Visão Geral',
+      items: hasPermission('home_acesso')
+        ? [
+            {
+              id: 'menu-item-home',
+              module: 'home',
+              label: t('home'),
+              icon: LayoutDashboard,
+            },
+          ]
+        : [],
+    },
+    {
+      title: 'Dados',
+      items: [
+        ...(hasPermission('pesquisa_acesso')
+          ? [
+              {
+                id: 'menu-item-pesquisas',
+                module: 'pesquisas',
+                label: t('surveys'),
+                icon: FileQuestion,
+              },
+            ]
+          : []),
+        ...(hasPermission('respostas_acesso')
+          ? [
+              {
+                id: 'menu-item-respostas',
+                module: 'respostas',
+                label: t('responses'),
+                icon: MessageSquare,
+              },
+            ]
+          : []),
+      ],
+    },
+    {
+      title: 'Análise',
+      items: hasPermission('analise_acesso')
+        ? [
+            {
+              id: 'menu-item-analise',
+              module: 'analise',
+              label: t('analytics'),
+              icon: BarChart3,
+            },
+          ]
+        : [],
+    },
+    {
+      title: 'Exportação',
+      items: hasPermission('pesquisa_exportar_resultados')
+        ? [
+            {
+              id: 'menu-item-analise-exportacao',
+              module: 'analise',
+              label: 'Exportações (CSV / PDF)',
+              icon: Download,
+            },
+          ]
+        : [],
+    },
+  ];
+
+  // ---------------------------------------------------------------------
+  // GESTÃO / ADMINISTRAÇÃO — organizado por blocos de tarefas (não por
+  // lista plana de módulos). Cobre Administrador Master e Coordenador de
+  // Campo, cada bloco continua condicionado às permissões reais.
+  // ---------------------------------------------------------------------
+  const managementSections: NavSection[] = [
+    {
+      title: 'Visão Geral',
+      items: hasPermission('home_acesso')
+        ? [
+            {
+              id: 'menu-item-home',
+              module: 'home',
+              label: t('home'),
+              icon: LayoutDashboard,
+            },
+          ]
+        : [],
+    },
+    {
+      title: 'Pesquisa',
+      items: hasPermission('pesquisa_acesso')
+        ? [
+            {
+              id: 'menu-item-pesquisas',
+              module: 'pesquisas',
+              label: t('surveys'),
+              icon: FileQuestion,
+            },
+          ]
+        : [],
+    },
+    {
+      title: 'Coleta',
+      items: [
+        ...(hasPermission('respostas_acesso')
+          ? [
+              {
+                id: 'menu-item-respostas',
+                module: 'respostas',
+                label: t('responses'),
+                icon: MessageSquare,
+              },
+            ]
+          : []),
+        {
+          id: 'menu-item-simulator',
+          module: 'simulador',
+          label: 'Simulador de Coleta',
+          icon: Smartphone,
+          iconClassName: 'text-blue-400',
+        },
+      ],
+    },
+    {
+      title: 'Análise',
+      items: hasPermission('analise_acesso')
+        ? [
+            {
+              id: 'menu-item-analise',
+              module: 'analise',
+              label: t('analytics'),
+              icon: BarChart3,
+            },
+          ]
+        : [],
+    },
+    {
+      title: 'Metas e Planejamento',
+      items: hasPermission('meta_acesso')
+        ? [
+            {
+              id: 'menu-item-metas',
+              module: 'metas',
+              label: t('metas'),
+              icon: Target,
+            },
+            {
+              id: 'menu-item-dimensionamento',
+              module: 'dimensionamento',
+              label: t('teamSizing'),
+              icon: Calculator,
+              iconClassName: 'text-blue-400',
+            },
+          ]
+        : [],
+    },
+    {
+      title: 'Operação',
+      items: [
+        ...(hasPermission('importacao_acesso')
+          ? [
+              {
+                id: 'menu-item-importacao',
+                module: 'importacao',
+                label: t('imports'),
+                icon: FileSpreadsheet,
+              },
+            ]
+          : []),
+        ...(hasPermission('colaboradores_acesso')
+          ? [
+              {
+                id: 'menu-submenu-cadastro-colaboradores',
+                module: 'colaboradores',
+                label: t('collaborators'),
+                icon: Users,
+              },
+            ]
+          : []),
+      ],
+    },
+    {
+      title: 'Segurança e Controle',
+      items: [
+        ...(hasPermission('politicas_acesso')
+          ? [
+              {
+                id: 'menu-submenu-politicas-acesso',
+                module: 'politicas_acesso',
+                label: t('accessPolicies'),
+                icon: ShieldCheck,
+              },
+            ]
+          : []),
+        {
+          id: 'menu-item-historico-acoes',
+          module: 'historico_acoes',
+          label: 'Histórico de Ações',
+          icon: History,
+          iconClassName: 'text-blue-400',
+          badge: auditLogs.length,
+        },
+      ],
+    },
+  ];
+
+  const sections = isResearcher
+    ? researcherSections
+    : isAnalyst
+    ? analystSections
+    : managementSections;
+
+  const portalLabel = isResearcher
+    ? 'Portal do Pesquisador'
+    : isAnalyst
+    ? 'Portal do Analista'
+    : 'Navegação Principal';
 
   return (
     <>
@@ -87,253 +449,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
         }`}
       >
         <div className="flex-1 overflow-y-auto px-4 py-5 space-y-1">
-          {isResearcher ? (
-            /* Dedicated Researcher Environment Navigation */
-            <>
-              <div className="pt-2 pb-2 px-2 text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Portal do Pesquisador
-              </div>
-
-              <button
-                id="menu-item-pesquisador-home"
-                onClick={() => handleNavigate('pesquisador')}
-                className={navItemClass(activeModule === 'pesquisador' || activeModule === 'home')}
-              >
-                <Sparkles className="h-4 w-4 shrink-0 text-emerald-400" />
-                <span>Ambiente do Pesquisador</span>
-              </button>
-
-              <button
-                id="menu-item-pesquisador-pesquisas"
-                onClick={() => handleNavigate('pesquisas')}
-                className={navItemClass(activeModule === 'pesquisas')}
-              >
-                <FileQuestion className="h-4 w-4 shrink-0" />
-                <span>Pesquisas Liberadas</span>
-              </button>
-
-              <button
-                id="menu-item-pesquisador-coleta"
-                onClick={() => handleNavigate('simulador')}
-                className={navItemClass(activeModule === 'simulador')}
-              >
-                <Smartphone className="h-4 w-4 shrink-0 text-blue-400" />
-                <span>Formulário de Coleta</span>
-              </button>
-
-              <button
-                id="menu-item-pesquisador-metas"
-                onClick={() => handleNavigate('metas')}
-                className={navItemClass(activeModule === 'metas')}
-              >
-                <Target className="h-4 w-4 shrink-0" />
-                <span>Minhas Metas & Cotas</span>
-              </button>
-
-              <button
-                id="menu-item-pesquisador-dimensionamento"
-                onClick={() => handleNavigate('dimensionamento')}
-                className={navItemClass(activeModule === 'dimensionamento')}
-              >
-                <Calculator className="h-4 w-4 shrink-0 text-blue-400" />
-                <span>{t('teamSizing')}</span>
-              </button>
-
-              <button
-                id="menu-item-pesquisador-auditoria"
-                onClick={() => handleNavigate('historico_acoes')}
-                className={navItemClass(activeModule === 'historico_acoes')}
-              >
-                <History className="h-4 w-4 shrink-0 text-blue-400" />
-                <span>Trilha de Conformidade</span>
-              </button>
-            </>
-          ) : (
-            /* General / Administrator Navigation */
-            <>
-              <div className="pt-2 pb-2 px-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Navegação Principal
-              </div>
-
-              {/* Módulo Home */}
-              {hasPermission('home_acesso') && (
-                <button
-                  id="menu-item-home"
-                  onClick={() => handleNavigate('home')}
-                  className={navItemClass(activeModule === 'home')}
-                >
-                  <LayoutDashboard className="h-4 w-4 shrink-0" />
-                  <span>{t('home')}</span>
-                </button>
-              )}
-
-          {/* Módulo de Pesquisa */}
-          {hasPermission('pesquisa_acesso') && (
-            <button
-              id="menu-item-pesquisas"
-              onClick={() => handleNavigate('pesquisas')}
-              className={navItemClass(activeModule === 'pesquisas' || activeModule === 'wizard')}
-            >
-              <FileQuestion className="h-4 w-4 shrink-0" />
-              <span>{t('surveys')}</span>
-            </button>
-          )}
-
-          {/* Módulo de Visualização de Respostas */}
-          {hasPermission('respostas_acesso') && (
-            <button
-              id="menu-item-respostas"
-              onClick={() => handleNavigate('respostas')}
-              className={navItemClass(activeModule === 'respostas')}
-            >
-              <MessageSquare className="h-4 w-4 shrink-0" />
-              <span>{t('responses')}</span>
-            </button>
-          )}
-
-          {/* Módulo de Análise de Resultados */}
-          {hasPermission('analise_acesso') && (
-            <button
-              id="menu-item-analise"
-              onClick={() => handleNavigate('analise')}
-              className={navItemClass(activeModule === 'analise')}
-            >
-              <BarChart3 className="h-4 w-4 shrink-0" />
-              <span>{t('analytics')}</span>
-            </button>
-          )}
-
-          {/* Módulo de Meta */}
-          {hasPermission('meta_acesso') && (
-            <button
-              id="menu-item-metas"
-              onClick={() => handleNavigate('metas')}
-              className={navItemClass(activeModule === 'metas')}
-            >
-              <Target className="h-4 w-4 shrink-0" />
-              <span>{t('metas')}</span>
-            </button>
-          )}
-
-          {/* Módulo de Dimensionamento de Equipe */}
-          {hasPermission('meta_acesso') && (
-            <button
-              id="menu-item-dimensionamento"
-              onClick={() => handleNavigate('dimensionamento')}
-              className={navItemClass(activeModule === 'dimensionamento')}
-            >
-              <Calculator className="h-4 w-4 shrink-0 text-blue-400" />
-              <span>{t('teamSizing')}</span>
-            </button>
-          )}
-
-          {/* Módulo de Importação Externa */}
-          {hasPermission('importacao_acesso') && (
-            <button
-              id="menu-item-importacao"
-              onClick={() => handleNavigate('importacao')}
-              className={navItemClass(activeModule === 'importacao')}
-            >
-              <FileSpreadsheet className="h-4 w-4 shrink-0" />
-              <span>{t('imports')}</span>
-            </button>
-          )}
-
-          {/* Módulo de Histórico de Ações / Auditoria e Conformidade */}
-          <button
-            id="menu-item-historico-acoes"
-            onClick={() => handleNavigate('historico_acoes')}
-            className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
-              activeModule === 'historico_acoes'
-                ? 'bg-blue-600/15 text-blue-400 border border-blue-600/25 shadow-xs font-bold'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+          <div
+            className={`pt-2 pb-2 px-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
+              isResearcher ? 'text-emerald-400' : 'text-slate-500'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <History className="h-4 w-4 shrink-0 text-blue-400" />
-              <span>Histórico de Ações</span>
-            </div>
-            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-              {auditLogs.length}
-            </span>
-          </button>
-
-          {/* Menu Cadastros com os dois submenus: Políticas de Acesso e Cadastro de Colaboradores */}
-          {showCadastros && (
-            <div className="pt-3">
-              <div className="px-2 pb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Gestão & Acesso
-              </div>
-              <button
-                id="menu-item-cadastros-dropdown"
-                onClick={() => setCadastrosOpen(!cadastrosOpen)}
-                className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <FolderCog className="h-4 w-4 shrink-0 text-slate-400" />
-                  <span>{t('registrations')}</span>
-                </div>
-                {cadastrosOpen ? (
-                  <ChevronDown className="h-3.5 w-3.5" />
-                ) : (
-                  <ChevronRight className="h-3.5 w-3.5" />
-                )}
-              </button>
-
-              {cadastrosOpen && (
-                <div className="mt-1 space-y-1 pl-2 border-l border-slate-800/80 ml-4">
-                  {hasPermission('politicas_acesso') && (
-                    <button
-                      id="menu-submenu-politicas-acesso"
-                      onClick={() => handleNavigate('politicas_acesso')}
-                      className={subNavItemClass(activeModule === 'politicas_acesso')}
-                    >
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
-                      <span>{t('accessPolicies')}</span>
-                    </button>
-                  )}
-
-                  {hasPermission('colaboradores_acesso') && (
-                    <button
-                      id="menu-submenu-cadastro-colaboradores"
-                      onClick={() => handleNavigate('colaboradores')}
-                      className={subNavItemClass(activeModule === 'colaboradores')}
-                    >
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
-                      <span>{t('collaborators')}</span>
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Quick simulator & researcher shortcuts */}
-          <div className="pt-4 mt-4 border-t border-slate-800/80 space-y-1">
-            <div className="px-2 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-              Coleta em Campo
-            </div>
-            <button
-              id="menu-item-pesquisador-view"
-              onClick={() => handleNavigate('pesquisador')}
-              className={navItemClass(activeModule === 'pesquisador')}
-            >
-              <Sparkles className="h-4 w-4 shrink-0 text-emerald-400" />
-              <span>Ambiente Pesquisador</span>
-            </button>
-            <button
-              id="menu-item-simulator"
-              onClick={() => handleNavigate('simulador')}
-              className={navItemClass(activeModule === 'simulador')}
-            >
-              <Smartphone className="h-4 w-4 shrink-0 text-blue-400" />
-              <span>Simulador de Campo</span>
-            </button>
+            {isResearcher && (
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            )}
+            {portalLabel}
           </div>
-        </>
-      )}
-    </div>
+
+          {sections.map((section, index) => renderSection(section, index))}
+        </div>
 
         {/* Profile info footer (Immersive UI style) */}
         <div className="border-t border-slate-800/80 p-4 space-y-3 bg-[#0d0e14]">

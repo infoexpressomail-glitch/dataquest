@@ -504,10 +504,10 @@ export const CollaboratorForm: React.FC = () => {
             </div>
 
             <form onSubmit={handleSave} className="flex-1 overflow-y-auto py-4 space-y-5 pr-2">
-              {/* Seção 1: Dados Pessoais */}
+              {/* Seção 1: Identificação */}
               <div className="rounded-xl border border-slate-800 bg-[#111218] p-4">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  1. Dados Pessoais
+                  1. Identificação
                 </h4>
 
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -583,10 +583,75 @@ export const CollaboratorForm: React.FC = () => {
                 </div>
               </div>
 
-              {/* Seção 2: Dados de Acesso */}
+              {/* Seção 2: Contato */}
               <div className="rounded-xl border border-slate-800 bg-[#111218] p-4">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  2. Dados de Acesso e Perfil
+                  2. Contato
+                </h4>
+
+                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300">
+                      Telefone Celular / WhatsApp
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.celular || ''}
+                      onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
+                      placeholder="(11) 98765-4321"
+                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300">
+                      Nome Contato Celular
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.nomeContatoCelular || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, nomeContatoCelular: e.target.value })
+                      }
+                      placeholder="Próprio / Contato emergencial"
+                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300">
+                      Telefone Fixo
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.telefoneFixo || ''}
+                      onChange={(e) => setFormData({ ...formData, telefoneFixo: e.target.value })}
+                      placeholder="(11) 3456-7890"
+                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300">
+                      Nome Contato Fixo
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.nomeContatoFixo || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, nomeContatoFixo: e.target.value })
+                      }
+                      placeholder="Ex: Residência / Escritório"
+                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Seção 3: Acesso */}
+              <div className="rounded-xl border border-slate-800 bg-[#111218] p-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  3. Acesso
                 </h4>
 
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -653,75 +718,10 @@ export const CollaboratorForm: React.FC = () => {
                 </div>
               </div>
 
-              {/* Seção 3: Telefones de Contato */}
+              {/* Seção 4: Pesquisas Vinculadas */}
               <div className="rounded-xl border border-slate-800 bg-[#111218] p-4">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  3. Telefones de Contato
-                </h4>
-
-                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-300">
-                      Telefone Celular / WhatsApp
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.celular || ''}
-                      onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
-                      placeholder="(11) 98765-4321"
-                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-300">
-                      Nome Contato Celular
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.nomeContatoCelular || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, nomeContatoCelular: e.target.value })
-                      }
-                      placeholder="Próprio / Contato emergencial"
-                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-300">
-                      Telefone Fixo
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.telefoneFixo || ''}
-                      onChange={(e) => setFormData({ ...formData, telefoneFixo: e.target.value })}
-                      placeholder="(11) 3456-7890"
-                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-300">
-                      Nome Contato Fixo
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.nomeContatoFixo || ''}
-                      onChange={(e) =>
-                        setFormData({ ...formData, nomeContatoFixo: e.target.value })
-                      }
-                      placeholder="Ex: Residência / Escritório"
-                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Seção 4: Vínculo de Formulários e Pesquisas */}
-              <div className="rounded-xl border border-slate-800 bg-[#111218] p-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  4. Vínculo a Formulários e Áreas de Atuação
+                  4. Pesquisas Vinculadas
                 </h4>
                 <p className="mt-1 text-[11px] text-slate-400">
                   Defina a quais pesquisas este pesquisador terá permissão operacional de campo:
