@@ -152,21 +152,54 @@ concluído com sucesso ao final da primeira leva de mudanças.
   todos"/"Desmarcar todos", PT-BR). Não precisou de mudança.
 - `Header.tsx`: revisado, adequado. Não precisou de mudança.
 
-### D. Revisão transversal (§58-§60 do prompt mestre) — ainda não feita
-- Teste de perfis: simular login como cada um dos 4 perfis reais
-  (`prof_admin`, `prof_coord`, `prof_pesq`, `prof_analista`) na aplicação
-  rodando (`npm run dev` ou `npm run preview` após build) e confirmar
-  visualmente que Sidebar/Dashboard/Metas aparecem como esperado para cada
-  um. Isto ainda não foi feito com o app rodando de fato — toda a validação
-  até agora foi por leitura de código + `tsc`/build.
-- Teste do pesquisador: login, ambiente do pesquisador, pesquisas
-  vinculadas, coleta, metas, histórico, offline, sincronização, GPS, áudio —
-  nenhum desses fluxos foi tocado nesta tarefa, mas vale confirmar em
-  runtime que a reorganização visual não quebrou nada.
-- Teste mobile: viewport pequeno, sem overflow horizontal. Ainda não
-  verificado visualmente.
+### D. Revisão transversal (§58-§60 do prompt mestre) — simulação estática concluída, teste manual em runtime ainda pendente
+- **Simulação estática por perfil (feita via script cruzando `mockData.ts` com
+  a lógica de cada componente) — todos os resultados bateram com o
+  esperado:**
+
+  | Perfil | Sidebar | Cards do Dashboard | Abas de Metas | Pode salvar Dimensionamento |
+  |---|---|---|---|---|
+  | Administrador Master | Gestão (7 blocos, com Políticas de Acesso) | 4 (todos) | 5 (todas) | Sim |
+  | Coordenador de Campo | Gestão (7 blocos, sem Políticas de Acesso) | 4 (todos) | 5 (todas) | Sim |
+  | Pesquisador de Campo | Portal do Pesquisador (4 blocos) | — (usa `ResearcherEnvironment`) | 2 (só as suas) | Não |
+  | Analista Estatístico | Portal do Analista (4 blocos) | 3 (sem "Equipe em Campo") | 5 (todas, pois tem `analise_acesso`) | Não |
+
+  Os scripts de simulação ficaram em `/tmp` desta sessão (não fazem parte do
+  entregável) — se quiser reproduzir, a lógica é: ler `initialProfiles` de
+  `src/mockData.ts` e aplicar as mesmas condições booleanas usadas em
+  `Sidebar.tsx` (`isResearcher`/`isAnalyst`), `MetasModule.tsx`
+  (`isFieldResearcher`), `TeamSizingModule.tsx` (`canSaveSizing`) e
+  `HomeDashboard.tsx` (`canViewEquipe`).
+
+- **Investigação sobre o `ExternalImportModule` (§ A):** confirmei que, em
+  isolamento, o TypeScript rejeita corretamente as chaves inválidas
+  (`importacao_pesquisa_externa`/`importacao_resposta_externa`) — o erro
+  aparece com `tsc` puro sobre uma reprodução mínima. No entanto,
+  `npx tsc --noEmit -p tsconfig.json` sobre o projeto completo não acusa
+  esse erro nem mesmo forçando a compilação isolada do arquivo com todas as
+  flags do `tsconfig.json`. Não identifiquei a causa exata (possivelmente
+  cache incremental do `tsc`, ou alguma interação com `isolatedModules`/
+  `moduleDetection: force`). Isso não bloqueia a entrega — o bug de runtime
+  (bugs sempre `false`, módulo de importação achatado sem abas de modo)
+  já está documentado no item A e é anterior a esta tarefa.
+
+- **Servidor de preview**: subi `npm run build:web && npm run preview` neste
+  ambiente e confirmei `HTTP 200` na raiz — a aplicação builda e serve
+  normalmente após todas as mudanças. Não há navegador disponível neste
+  ambiente de execução para clicar na UI de fato (login, navegação, mobile
+  viewport), então os itens abaixo ainda dependem de um teste manual seu:
+  - Login como cada um dos 4 perfis na aplicação rodando e confirmar
+    visualmente que a experiência bate com a tabela acima.
+  - Fluxo do pesquisador: login → `ResearcherEnvironment` → pesquisas
+    vinculadas → coleta → metas → histórico → offline → sincronização → GPS
+    → áudio. Nenhum desses fluxos foi alterado nesta tarefa, mas vale
+    confirmar em runtime que a reorganização visual não quebrou nada.
+  - Viewport mobile (DevTools ou dispositivo real): sem overflow horizontal
+    no Sidebar, Dashboard, tabelas, modais e formulários.
+
 - Build final: já validado (`tsc --noEmit` limpo + `npm run build:web`
-  concluído com sucesso, chunk warning é pré-existente e não relacionado).
+  concluído com sucesso; chunk-size warning é pré-existente e não
+  relacionado a esta tarefa).
 
 ### E. Relatório final (§70 do prompt mestre) — ainda não escrito
 Ao concluir o item D (testes em runtime), montar o relatório final cobrindo:
