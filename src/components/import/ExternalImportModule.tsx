@@ -11,6 +11,11 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { Survey, InterviewSubmission } from '../../types';
+import {
+  parseStructuredQuestionnaire,
+  generateStructuredImportTemplate,
+  StructuredImportError,
+} from '../../utils/questionnaireImportStandard';
 
 export const ExternalImportModule: React.FC = () => {
   const { surveys, saveSurvey, addSubmission, hasPermission } = useApp();
@@ -22,8 +27,12 @@ export const ExternalImportModule: React.FC = () => {
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>(surveys[0]?.id || '');
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [fileRawText, setFileRawText] = useState<string>('');
   const [previewRows, setPreviewRows] = useState<string[][]>([]);
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [novaPesquisaNome, setNovaPesquisaNome] = useState<string>('');
+  const [structuredErrors, setStructuredErrors] = useState<StructuredImportError[]>([]);
+  const [parsedQuestionCount, setParsedQuestionCount] = useState<number>(0);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -53,74 +62,83 @@ export const ExternalImportModule: React.FC = () => {
   const processFile = (selectedFile: File) => {
     setFile(selectedFile);
     setImportStatus(null);
+    setStructuredErrors([]);
 
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = (e.target?.result as string) || '';
-      const lines = text
-        .split('\n')
-        .map((l) => l.trim())
-        .filter(Boolean);
+      setFileRawText(text);
 
-      const parsed = lines.slice(0, 8).map((line) => {
-        // Handle comma or semicolon separated
-        const separator = line.includes(';') ? ';' : ',';
-        return line.split(separator).map((c) => c.replace(/^"|"$/g, '').trim());
-      });
+      if (importType === 'pesquisa') {
+        const result = parseStructuredQuestionnaire(text);
+        setParsedQuestionCount(result.questions.length);
+        setStructuredErrors(result.errors);
+        setPreviewRows([
+          ['Código', 'Enunciado', 'Tipo', 'Obrigatória'],
+          ...result.questions
+            .slice(0, 8)
+            .map((q) => [q.codigo, q.enunciado, q.tipo, q.obrigatoria ? 'SIM' : 'NAO']),
+        ]);
+        if (!novaPesquisaNome) {
+          setNovaPesquisaNome(selectedFile.name.replace(/\.[^/.]+$/, '').toUpperCase());
+        }
+      } else {
+        const lines = text
+          .split('\n')
+          .map((l) => l.trim())
+          .filter(Boolean);
 
-      setPreviewRows(parsed);
+        const parsed = lines.slice(0, 8).map((line) => {
+          const separator = line.includes(';') ? ';' : ',';
+          return line.split(separator).map((c) => c.replace(/^"|"$/g, '').trim());
+        });
+
+        setPreviewRows(parsed);
+      }
     };
     reader.readAsText(selectedFile);
   };
+
+  const handleDownloadTemplate = () => {
+    const content = generateStructuredImportTemplate();
+    const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'modelo-importacao-questionario.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const blockingErrorCount = structuredErrors.filter((e) => e.bloqueante).length;
 
   const handleExecuteImport = () => {
     if (!file) return;
 
     if (importType === 'pesquisa') {
-      // Create a survey from the imported file
+      const result = parseStructuredQuestionnaire(fileRawText);
+      if (result.questions.length === 0) {
+        setImportStatus(
+          'Nenhuma pergunta válida foi encontrada no arquivo. Corrija os erros de validação e tente novamente.'
+        );
+        return;
+      }
+
+      const nome = novaPesquisaNome.trim() || file.name.replace(/\.[^/.]+$/, '').toUpperCase();
       const newSurvey: Survey = {
         id: `imp_srv_${Date.now()}`,
         codigo: `IMP-${Math.floor(100 + Math.random() * 900)}`,
-        nome: file.name.replace(/\.[^/.]+$/, '').toUpperCase(),
-        descricao: `Pesquisa importada externamente em ${new Date().toLocaleDateString('pt-BR')} via arquivo ${file.name}`,
+        nome,
+        descricao: `Pesquisa importada externamente em ${new Date().toLocaleDateString('pt-BR')} via arquivo ${file.name} (padrão mínimo de importação).`,
         status: 'ativa',
         cicloAtual: 1,
         versao: 1,
-        perguntas: [
-          {
-            id: `q_imp_1`,
-            codigo: 'Q01',
-            enunciado: 'Qual a sua avaliação geral sobre os serviços prestados?',
-            tipo: 'multipla_escolha',
-            obrigatoria: true,
-            ordem: 1,
-            opcoes: [
-              { id: '1', label: 'Excelente', value: 'Excelente' },
-              { id: '2', label: 'Bom', value: 'Bom' },
-              { id: '3', label: 'Regular', value: 'Regular' },
-              { id: '4', label: 'Ruim', value: 'Ruim' },
-            ],
-          },
-          {
-            id: `q_imp_2`,
-            codigo: 'Q02',
-            enunciado: 'Indique o principal benefício percebido:',
-            tipo: 'texto_aberto',
-            obrigatoria: false,
-            ordem: 2,
-          },
-          {
-            id: `q_imp_3`,
-            codigo: 'Q03',
-            enunciado: 'De 0 a 10, qual a probabilidade de recomendação?',
-            tipo: 'nps',
-            obrigatoria: true,
-            ordem: 3,
-          },
-        ],
+        perguntas: result.questions,
         regras: [],
         metas: [],
-        pesquisadoresIds: ['colab_1'],
+        pesquisadoresIds: [],
         habilitarColetaWeb: true,
         tipoColetaWeb: 'publico',
         criadaEm: new Date().toISOString(),
@@ -129,51 +147,57 @@ export const ExternalImportModule: React.FC = () => {
 
       saveSurvey(newSurvey);
       setImportStatus(
-        `Pesquisa "${newSurvey.nome}" criada com sucesso contendo 3 perguntas importadas!`
+        `Pesquisa "${nome}" importada com sucesso! ${result.questions.length} pergunta(s) reconhecida(s)${
+          result.errors.length > 0 ? ` (${result.errors.length} observação(ões) — ver detalhes acima)` : ''
+        }.`
       );
-    } else {
-      // Import responses for the selected survey
-      const targetSurvey = surveys.find((s) => s.id === selectedSurveyId);
-      if (!targetSurvey) {
-        alert('Selecione uma pesquisa de destino para associar as respostas importadas.');
-        return;
-      }
-
-      // Simulate creating 5 imported submissions
-      for (let i = 1; i <= 5; i++) {
-        const sub: InterviewSubmission = {
-          id: `imp_sub_${Date.now()}_${i}`,
-          pesquisaId: targetSurvey.id,
-          codigoPesquisa: `${targetSurvey.codigo}-IMP-${i}`,
-          pesquisaNome: targetSurvey.nome,
-          pesquisadorId: 'colab_1',
-          pesquisadorNome: 'Admin Master (Importação CSV/Excel)',
-          dataHora: new Date().toISOString(),
-          status: 'concluida',
-          respostas: targetSurvey.perguntas.map((p, idx) => ({
-            perguntaId: p.id,
-            perguntaCodigo: p.codigo,
-            perguntaEnunciado: p.enunciado,
-            resposta:
-              p.tipo === 'nps'
-                ? '9'
-                : p.opcoes && p.opcoes.length > 0
-                ? p.opcoes[idx % p.opcoes.length].value
-                : 'Resposta importada via arquivo externo',
-          })),
-          geolocalizacao: {
-            latitude: -23.55052 + (Math.random() - 0.5) * 0.05,
-            longitude: -46.633308 + (Math.random() - 0.5) * 0.05,
-            bairro: 'Centro / Base Importada',
-            cidade: 'São Paulo',
-          },
-        };
-        addSubmission(sub);
-      }
-
-      setImportStatus(`5 respostas importadas e indexadas com sucesso à pesquisa "${targetSurvey.nome}"!`);
+      setFile(null);
+      setFileRawText('');
+      setPreviewRows([]);
+      setNovaPesquisaNome('');
+      return;
     }
 
+    // Import responses for the selected survey
+    const targetSurvey = surveys.find((s) => s.id === selectedSurveyId);
+    if (!targetSurvey) {
+      alert('Selecione uma pesquisa de destino para associar as respostas importadas.');
+      return;
+    }
+
+    // Simulate creating 5 imported submissions
+    for (let i = 1; i <= 5; i++) {
+      const sub: InterviewSubmission = {
+        id: `imp_sub_${Date.now()}_${i}`,
+        pesquisaId: targetSurvey.id,
+        codigoPesquisa: `${targetSurvey.codigo}-IMP-${i}`,
+        pesquisaNome: targetSurvey.nome,
+        pesquisadorId: 'colab_1',
+        pesquisadorNome: 'Admin Master (Importação CSV/Excel)',
+        dataHora: new Date().toISOString(),
+        status: 'concluida',
+        respostas: targetSurvey.perguntas.map((p, idx) => ({
+          perguntaId: p.id,
+          perguntaCodigo: p.codigo,
+          perguntaEnunciado: p.enunciado,
+          resposta:
+            p.tipo === 'nps'
+              ? '9'
+              : p.opcoes && p.opcoes.length > 0
+              ? p.opcoes[idx % p.opcoes.length].value
+              : 'Resposta importada via arquivo externo',
+        })),
+        geolocalizacao: {
+          latitude: -23.55052 + (Math.random() - 0.5) * 0.05,
+          longitude: -46.633308 + (Math.random() - 0.5) * 0.05,
+          bairro: 'Centro / Base Importada',
+          cidade: 'São Paulo',
+        },
+      };
+      addSubmission(sub);
+    }
+
+    setImportStatus(`5 respostas importadas e indexadas com sucesso à pesquisa "${targetSurvey.nome}"!`);
     setFile(null);
     setPreviewRows([]);
   };
@@ -219,6 +243,42 @@ export const ExternalImportModule: React.FC = () => {
         )}
       </div>
 
+      {/* Nome da Pesquisa + Modelo Padrão (apenas para importação de pesquisa) */}
+      {importType === 'pesquisa' && (
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl space-y-3">
+          <div>
+            <label className="text-xs font-bold text-secondary">
+              Nome da Pesquisa a ser Criada
+            </label>
+            <input
+              type="text"
+              value={novaPesquisaNome}
+              onChange={(e) => setNovaPesquisaNome(e.target.value)}
+              placeholder="Ex: PESQUISA DE SATISFAÇÃO - IMPORTAÇÃO EXTERNA"
+              className="mt-1 w-full max-w-md rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+            />
+            <p className="mt-1 text-[11px] text-muted">
+              Se deixado em branco, o nome do arquivo é usado automaticamente.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border border-accent-primary-soft-border bg-accent-primary-soft px-3 py-2">
+            <p className="text-[11px] text-accent-primary pr-3">
+              O arquivo precisa seguir o <strong>padrão mínimo de colunas</strong> do sistema
+              (<code>codigo;enunciado;tipo;obrigatoria;ordem;opcoes;...</code>). Baixe o modelo
+              para preencher ou basear a exportação do seu instrumento de coleta externo.
+            </p>
+            <button
+              onClick={handleDownloadTemplate}
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-accent-primary-soft-border bg-surface px-3 py-1.5 text-xs font-bold text-accent-primary hover:bg-accent-primary-solid-hover hover:text-on-accent transition-colors"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Baixar Modelo (.csv)</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Target Survey selection if importing responses */}
       {importType === 'respostas' && (
         <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
@@ -256,7 +316,9 @@ export const ExternalImportModule: React.FC = () => {
           Arraste e solte o arquivo CSV ou Excel aqui
         </h3>
         <p className="mt-1 text-xs text-muted">
-          Suporte completo para codificação UTF-8, ponto-e-vírgula (;) e vírgula (,).
+          {importType === 'pesquisa'
+            ? 'O arquivo deve seguir o padrão mínimo de colunas do sistema (.csv, UTF-8, ; ou ,).'
+            : 'Suporte completo para codificação UTF-8, ponto-e-vírgula (;) e vírgula (,).'}
         </p>
 
         {/* Input file manual click */}
@@ -285,6 +347,27 @@ export const ExternalImportModule: React.FC = () => {
         <div className="flex items-center gap-2 rounded-2xl border border-accent-success-soft-border bg-accent-success-soft p-4 text-xs font-bold text-accent-success">
           <CheckCircle2 className="h-5 w-5 text-accent-success" />
           <span>{importStatus}</span>
+        </div>
+      )}
+
+      {/* Validation Errors Panel (padrão estruturado de pesquisa) */}
+      {importType === 'pesquisa' && structuredErrors.length > 0 && (
+        <div className="rounded-2xl border border-accent-warning-soft-border bg-accent-warning-soft p-4 space-y-2">
+          <div className="flex items-center gap-2 text-xs font-bold text-accent-warning">
+            <AlertCircle className="h-4 w-4" />
+            <span>
+              {structuredErrors.filter((e) => e.bloqueante).length} linha(s) com erro bloqueante •{' '}
+              {structuredErrors.filter((e) => !e.bloqueante).length} aviso(s) • {parsedQuestionCount} pergunta(s) válida(s)
+            </span>
+          </div>
+          <ul className="max-h-40 overflow-y-auto space-y-1 text-[11px]">
+            {structuredErrors.map((err, i) => (
+              <li key={i} className={err.bloqueante ? 'text-accent-danger' : 'text-accent-warning'}>
+                Linha {err.linha}
+                {err.campo ? ` (${err.campo})` : ''}: {err.mensagem}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -328,10 +411,15 @@ export const ExternalImportModule: React.FC = () => {
           <div className="flex justify-end pt-3">
             <button
               onClick={handleExecuteImport}
-              className="flex items-center gap-1.5 rounded-lg bg-accent-success-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-success-solid-hover transition-colors"
+              disabled={importType === 'pesquisa' && parsedQuestionCount === 0}
+              className="flex items-center gap-1.5 rounded-lg bg-accent-success-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-success-solid-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent-success-solid"
             >
               <FileCheck2 className="h-4 w-4" />
-              <span>Confirmar e Efetivar Importação</span>
+              <span>
+                {importType === 'pesquisa'
+                  ? `Confirmar e Criar Pesquisa (${parsedQuestionCount} pergunta(s))`
+                  : 'Confirmar e Efetivar Importação'}
+              </span>
             </button>
           </div>
         </div>

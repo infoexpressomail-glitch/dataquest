@@ -21,6 +21,11 @@ import {
   parseQuestionnaireText,
   QUESTIONNAIRE_TEMPLATES,
 } from '../../utils/questionnaireParser';
+import {
+  parseStructuredQuestionnaire,
+  generateStructuredImportTemplate,
+  StructuredImportError,
+} from '../../utils/questionnaireImportStandard';
 
 interface QuestionnaireImportModalProps {
   isOpen: boolean;
@@ -41,12 +46,53 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
   const [importMode, setImportMode] = useState<'append' | 'replace'>('append');
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+  const [structuredErrors, setStructuredErrors] = useState<StructuredImportError[]>([]);
 
   if (!isOpen) return null;
+
+  const looksLikeStructuredStandard = (text: string): boolean => {
+    const firstLine = text.split(/\r?\n/).find((l) => l.trim().length > 0) || '';
+    const normalized = firstLine
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+    return normalized.includes('enunciado') && normalized.includes('tipo');
+  };
+
+  const handleDownloadTemplate = () => {
+    const content = generateStructuredImportTemplate();
+    const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'modelo-importacao-questionario.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleParse = () => {
     if (!inputText.trim()) {
       alert('Por favor, digite, cole ou carregue o conteúdo do questionário.');
+      return;
+    }
+
+    setStructuredErrors([]);
+
+    if (looksLikeStructuredStandard(inputText)) {
+      // Formato padrão estruturado (colunas fixas: codigo;enunciado;tipo;...)
+      const result = parseStructuredQuestionnaire(inputText);
+      if (result.questions.length === 0) {
+        setStructuredErrors(result.errors);
+        alert(
+          'Nenhuma pergunta válida foi encontrada no arquivo do padrão estruturado. Verifique os erros de validação exibidos abaixo do campo de texto.'
+        );
+        return;
+      }
+      setParsedQuestions(result.questions);
+      setStructuredErrors(result.errors);
+      setActiveStep('review');
       return;
     }
 
@@ -345,6 +391,15 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
                     Texto ou Conteúdo do Questionário
                   </label>
                   <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleDownloadTemplate}
+                      className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-accent-primary-soft-border bg-accent-primary-soft px-3 py-1.5 text-xs font-bold text-accent-primary hover:bg-accent-primary-solid-hover hover:text-on-accent transition"
+                      title="Baixa o modelo .csv com o padrão mínimo de colunas aceito pelo sistema"
+                    >
+                      <FileText className="h-3.5 w-3.5" />
+                      <span>Baixar Modelo Padrão (.csv)</span>
+                    </button>
                     <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-medium text-secondary hover:bg-surface-raised hover:text-primary transition">
                       <Upload className="h-3.5 w-3.5 text-accent-primary" />
                       <span>Carregar Arquivo (.txt, .csv)</span>
@@ -361,6 +416,7 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
                         setInputText('');
                         setSelectedTemplate('');
                         setFeedbackMsg(null);
+                        setStructuredErrors([]);
                       }}
                       className="text-xs text-muted hover:text-secondary"
                     >
@@ -408,9 +464,32 @@ D) 60 anos ou mais
                 <div className="flex items-center gap-2 text-[11px] text-muted mt-1">
                   <HelpCircle className="h-3.5 w-3.5 text-accent-primary shrink-0" />
                   <span>
-                    O analisador inteligente reconhece números de questões (1., 02-, Q3), letras de alternativas (A), B), a., b.), marcadores (-, •) e sugere automaticamente tipos como Múltipla Escolha, Sim/Não, Escala ou NPS.
+                    O analisador inteligente reconhece números de questões (1., 02-, Q3), letras de alternativas (A), B), a., b.), marcadores (-, •) e sugere automaticamente tipos como Múltipla Escolha, Sim/Não, Escala ou NPS. Para importações mais confiáveis, use o <strong className="text-secondary">Modelo Padrão (.csv)</strong> acima — quando o cabeçalho <code className="text-accent-primary">codigo;enunciado;tipo;...</code> é detectado, cada linha é validada individualmente contra o padrão mínimo do sistema.
                   </span>
                 </div>
+
+                {structuredErrors.length > 0 && (
+                  <div className="mt-2 rounded-xl border border-accent-warning-soft-border bg-accent-warning-soft p-3 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-accent-warning">
+                      <HelpCircle className="h-3.5 w-3.5" />
+                      <span>
+                        {structuredErrors.filter((e) => e.bloqueante).length} linha(s) com erro bloqueante,{' '}
+                        {structuredErrors.filter((e) => !e.bloqueante).length} aviso(s) — revise o arquivo ou ajuste as perguntas na próxima etapa
+                      </span>
+                    </div>
+                    <ul className="max-h-32 overflow-y-auto space-y-1 text-[11px]">
+                      {structuredErrors.map((err, i) => (
+                        <li
+                          key={i}
+                          className={err.bloqueante ? 'text-accent-danger' : 'text-accent-warning'}
+                        >
+                          Linha {err.linha}
+                          {err.campo ? ` (${err.campo})` : ''}: {err.mensagem}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
