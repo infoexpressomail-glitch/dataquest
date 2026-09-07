@@ -160,25 +160,25 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto">
-      <div className="w-full max-w-4xl rounded-2xl border border-slate-800 bg-[#16171d] shadow-2xl overflow-hidden my-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay-modal backdrop-blur-sm p-3 sm:p-5 overflow-y-auto">
+      <div className="w-full max-w-4xl rounded-2xl border border-ui bg-surface shadow-2xl overflow-hidden my-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4 bg-[#111218]">
+        <div className="flex items-center justify-between border-b border-ui px-6 py-4 bg-surface-card">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/30">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-purple-soft text-accent-purple border border-accent-purple-soft-border">
               <FileArchive className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-primary">
                   Central de Exportação de Gravações de Áudio
                 </h3>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent-success-soft border border-accent-success-soft-border px-2 py-0.5 text-[10px] font-bold text-accent-success">
                   <ShieldCheck className="h-3 w-3" />
                   Isolamento por Pesquisa
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted">
                 Exporte gravações de campo individualmente ou em lote (.ZIP), com separação estrita por pesquisa.
               </p>
             </div>
@@ -186,7 +186,7 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
 
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-primary transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -198,7 +198,7 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
             <div className="md:col-span-2 space-y-1.5">
               <label
                 htmlFor="select-export-survey"
-                className="block text-xs font-bold text-slate-300"
+                className="block text-xs font-bold text-secondary"
               >
                 Selecione a Pesquisa Desejada:
               </label>
@@ -210,7 +210,7 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
                   setSuccessMessage(null);
                   setErrorMessage(null);
                 }}
-                className="w-full rounded-lg border border-slate-800 bg-[#111218] px-3.5 py-2.5 text-xs font-medium text-white shadow-xs focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                className="w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2.5 text-xs font-medium text-primary shadow-xs focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               >
                 {activeSurveysList.map((s) => {
                   const count = submissions.filter(
@@ -225,10 +225,10 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
               </select>
             </div>
 
-            <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 flex items-start gap-2.5">
-              <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
-              <div className="text-[11px] text-blue-300/90 leading-relaxed">
-                <strong className="text-blue-200">Garantia Anti-Mistura:</strong> As exportações
+            <div className="rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft p-3 flex items-start gap-2.5">
+              <ShieldCheck className="h-4 w-4 text-accent-primary shrink-0 mt-0.5" />
+              <div className="text-[11px] text-accent-primary/90 leading-relaxed">
+                <strong className="text-accent-primary-soft-text">Garantia Anti-Mistura:</strong> As exportações
                 filtram rigorosamente apenas os registros da pesquisa ativa.
               </div>
             </div>
@@ -237,33 +237,33 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
           {/* Survey Audio Settings Summary */}
           {selectedSurvey && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="rounded-xl border border-slate-800 bg-[#111218] p-3">
-                <div className="text-[11px] text-slate-400">Total de Áudios</div>
-                <div className="mt-1 text-lg font-bold text-white flex items-center gap-1.5">
-                  <Volume2 className="h-4 w-4 text-purple-400" />
+              <div className="rounded-xl border border-ui bg-surface-card p-3">
+                <div className="text-[11px] text-muted">Total de Áudios</div>
+                <div className="mt-1 text-lg font-bold text-primary flex items-center gap-1.5">
+                  <Volume2 className="h-4 w-4 text-accent-purple" />
                   {stats.totalCount}
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-[#111218] p-3">
-                <div className="text-[11px] text-slate-400">Duração Somada</div>
-                <div className="mt-1 text-lg font-bold text-white flex items-center gap-1.5">
-                  <Clock className="h-4 w-4 text-cyan-400" />
+              <div className="rounded-xl border border-ui bg-surface-card p-3">
+                <div className="text-[11px] text-muted">Duração Somada</div>
+                <div className="mt-1 text-lg font-bold text-primary flex items-center gap-1.5">
+                  <Clock className="h-4 w-4 text-accent-info" />
                   {formatAudioDuration(stats.totalSeconds)}
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-[#111218] p-3">
-                <div className="text-[11px] text-slate-400">Limite da Pesquisa</div>
-                <div className="mt-1 text-sm font-bold text-white flex items-center gap-1.5">
-                  <Mic className="h-4 w-4 text-emerald-400" />
+              <div className="rounded-xl border border-ui bg-surface-card p-3">
+                <div className="text-[11px] text-muted">Limite da Pesquisa</div>
+                <div className="mt-1 text-sm font-bold text-primary flex items-center gap-1.5">
+                  <Mic className="h-4 w-4 text-accent-success" />
                   {selectedSurvey.tempoLimiteGravacaoMinutos || 2} minutos
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-[#111218] p-3">
-                <div className="text-[11px] text-slate-400">Início da Gravação</div>
-                <div className="mt-1 text-xs font-bold text-slate-300 truncate" title={initialQuestionText}>
+              <div className="rounded-xl border border-ui bg-surface-card p-3">
+                <div className="text-[11px] text-muted">Início da Gravação</div>
+                <div className="mt-1 text-xs font-bold text-secondary truncate" title={initialQuestionText}>
                   {selectedSurvey.gravarAudioAPartirPerguntaId ? 'Pergunta Específica' : 'Pergunta 1 (Início)'}
                 </div>
               </div>
@@ -272,14 +272,14 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
 
           {/* Feedback messages */}
           {successMessage && (
-            <div className="flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-400">
+            <div className="flex items-center gap-2.5 rounded-xl border border-accent-success-soft-border bg-accent-success-soft p-3 text-xs text-accent-success">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
               <span>{successMessage}</span>
             </div>
           )}
 
           {errorMessage && (
-            <div className="flex items-center gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
+            <div className="flex items-center gap-2.5 rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft p-3 text-xs text-accent-danger">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -287,14 +287,14 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
 
           {/* Export Zip Progress */}
           {isExportingZip && (
-            <div className="space-y-2 rounded-xl border border-purple-500/30 bg-purple-500/10 p-4">
-              <div className="flex justify-between text-xs text-purple-300 font-bold">
+            <div className="space-y-2 rounded-xl border border-accent-purple-soft-border bg-accent-purple-soft p-4">
+              <div className="flex justify-between text-xs text-accent-purple font-bold">
                 <span>{zipStatusText}</span>
                 <span>{zipProgress}%</span>
               </div>
-              <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-surface-raised overflow-hidden">
                 <div
-                  className="h-full bg-purple-500 transition-all duration-300"
+                  className="h-full bg-accent-purple-solid transition-all duration-300"
                   style={{ width: `${zipProgress}%` }}
                 />
               </div>
@@ -304,13 +304,13 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
           {/* Action Bar: Search & Batch Export Button */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
             <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por protocolo ou pesquisador..."
-                className="w-full rounded-lg border border-slate-800 bg-[#111218] pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
+                className="w-full rounded-lg border border-ui bg-surface-card pl-9 pr-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-purple-500 focus:outline-none"
               />
             </div>
 
@@ -318,7 +318,7 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
               id="btn-export-survey-audios-zip"
               onClick={handleExportZip}
               disabled={isExportingZip || surveyAudioSubmissions.length === 0}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-900/40 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-accent-purple-solid px-5 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-purple-900/40 hover:bg-accent-purple-solid-hover disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95"
             >
               <FileArchive className="h-4 w-4" />
               <span>Exportar Lote desta Pesquisa (.ZIP)</span>
@@ -326,10 +326,10 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
           </div>
 
           {/* Audios Table */}
-          <div className="rounded-xl border border-slate-800 bg-[#111218] overflow-hidden">
+          <div className="rounded-xl border border-ui bg-surface-card overflow-hidden">
             <div className="max-h-72 overflow-y-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="sticky top-0 bg-[#0d0e14] border-b border-slate-800 text-[11px] font-bold text-slate-400">
+              <table className="w-full text-left text-xs text-secondary">
+                <thead className="sticky top-0 bg-surface-app border-b border-ui text-[11px] font-bold text-muted">
                   <tr>
                     <th className="px-4 py-3">Protocolo</th>
                     <th className="px-4 py-3">Pesquisador</th>
@@ -339,10 +339,10 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
                     <th className="px-4 py-3 text-right">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-ui/60">
                   {filteredSubmissions.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-slate-500">
+                      <td colSpan={6} className="py-8 text-center text-muted">
                         {surveyAudioSubmissions.length === 0
                           ? 'Nenhuma gravação de áudio encontrada para esta pesquisa.'
                           : 'Nenhuma gravação corresponde ao filtro de busca.'}
@@ -352,22 +352,22 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
                     filteredSubmissions.map((sub) => {
                       const audio = sub.audioGravacao!;
                       return (
-                        <tr key={sub.id} className="hover:bg-slate-800/40 transition-colors">
-                          <td className="px-4 py-3 font-mono font-bold text-white">
+                        <tr key={sub.id} className="hover:bg-surface-raised transition-colors">
+                          <td className="px-4 py-3 font-mono font-bold text-primary">
                             {sub.codigoPesquisa}
                           </td>
-                          <td className="px-4 py-3 text-slate-300">
+                          <td className="px-4 py-3 text-secondary">
                             {sub.pesquisadorNome}
                           </td>
-                          <td className="px-4 py-3 text-slate-400">
+                          <td className="px-4 py-3 text-muted">
                             {new Date(sub.dataHora).toLocaleString('pt-BR')}
                           </td>
-                          <td className="px-4 py-3 font-mono text-cyan-400">
+                          <td className="px-4 py-3 font-mono text-accent-info">
                             {formatAudioDuration(audio.duracaoSegundos)}
                           </td>
                           <td className="px-4 py-3">
-                            <span className="inline-flex items-center gap-1 rounded bg-slate-800 px-2 py-0.5 text-[10px] font-medium text-slate-300">
-                              <Mic className="h-3 w-3 text-emerald-400" />
+                            <span className="inline-flex items-center gap-1 rounded bg-surface-raised px-2 py-0.5 text-[10px] font-medium text-secondary">
+                              <Mic className="h-3 w-3 text-accent-success" />
                               {audio.iniciouNaPerguntaCodigo || 'Início'}
                             </span>
                           </td>
@@ -377,7 +377,7 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
                                 <button
                                   onClick={() => onPlayAudio(sub)}
                                   title="Ouvir gravação"
-                                  className="rounded-lg p-1.5 text-blue-400 hover:bg-blue-600/20 transition-colors"
+                                  className="rounded-lg p-1.5 text-accent-primary hover:bg-accent-primary-soft transition-colors"
                                 >
                                   <Play className="h-4 w-4" />
                                 </button>
@@ -385,9 +385,9 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
                               <button
                                 onClick={() => handleDownloadSingle(sub)}
                                 title="Exportar este áudio individualmente (.wav)"
-                                className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
+                                className="flex items-center gap-1 rounded-lg border border-ui bg-surface-raised px-2.5 py-1 text-[11px] font-bold text-primary hover:bg-surface-hover hover:text-primary transition-colors"
                               >
-                                <Download className="h-3.5 w-3.5 text-purple-400" />
+                                <Download className="h-3.5 w-3.5 text-accent-purple" />
                                 <span>Baixar .WAV</span>
                               </button>
                             </div>
@@ -403,13 +403,13 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between border-t border-slate-800 px-6 py-3.5 bg-[#111218]">
-          <span className="text-xs text-slate-400">
+        <div className="flex items-center justify-between border-t border-ui px-6 py-3.5 bg-surface-card">
+          <span className="text-xs text-muted">
             {filteredSubmissions.length} de {surveyAudioSubmissions.length} gravações listadas
           </span>
           <button
             onClick={onClose}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
+            className="rounded-lg border border-ui bg-surface-raised px-4 py-2 text-xs font-bold text-primary hover:bg-surface-hover hover:text-primary transition-colors"
           >
             Fechar
           </button>

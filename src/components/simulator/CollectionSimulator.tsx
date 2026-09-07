@@ -289,35 +289,35 @@ export const CollectionSimulator: React.FC = () => {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       {/* Cabeçalho do Simulador de Coleta */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-ui pb-3">
         <div className="flex items-center gap-2 px-1">
-          <Smartphone className="h-4 w-4 text-blue-400" />
-          <span className="text-xs font-bold text-white">Simulador de Coleta Mobile</span>
+          <Smartphone className="h-4 w-4 text-accent-primary" />
+          <span className="text-xs font-bold text-primary">Simulador de Coleta Mobile</span>
         </div>
 
         {activeSurvey && (
-          <div className="text-xs text-slate-400 flex items-center gap-1.5 self-end sm:self-center">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            <span>Pesquisa Ativa: <strong className="text-slate-200">{activeSurvey.nome}</strong></span>
+          <div className="text-xs text-muted flex items-center gap-1.5 self-end sm:self-center">
+            <span className="h-2 w-2 rounded-full bg-accent-success-solid" />
+            <span>Pesquisa Ativa: <strong className="text-primary">{activeSurvey.nome}</strong></span>
           </div>
         )}
       </div>
 
       {/* Barra de Níveis de Confiança Padrão com Preenchimento de Z-score */}
       {activeSurvey && (
-        <div className="rounded-xl border border-slate-800 bg-[#16171d] p-3 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="rounded-xl border border-ui bg-surface p-3 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border shrink-0">
               <Zap className="h-4 w-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-white">Níveis de Confiança Padrão</span>
-                <span className="text-[10px] text-blue-400 font-mono">
+                <span className="text-xs font-bold text-primary">Níveis de Confiança Padrão</span>
+                <span className="text-[10px] text-accent-primary font-mono">
                   (Atual: {activeSurvey.nivelConfiancaPercentual || 95}%)
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-muted">
                 Seletor rápido com preenchimento automático de Z-score para o pesquisador.
               </p>
             </div>
@@ -335,13 +335,13 @@ export const CollectionSimulator: React.FC = () => {
                   title={`${std.title} - Z=${std.zScore.toFixed(3)}`}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                     isSelected
-                      ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-400/40'
-                      : 'bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                      ? 'bg-accent-primary-solid text-on-accent shadow-sm ring-1 ring-blue-400/40'
+                      : 'bg-surface-raised border border-ui text-secondary hover:border-ui hover:text-primary'
                   }`}
                 >
                   <span>{std.label}</span>
                   <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                    isSelected ? 'bg-blue-700 text-white' : 'bg-slate-800 text-blue-400'
+                    isSelected ? 'bg-accent-primary-solid text-on-accent' : 'bg-surface-raised text-accent-primary'
                   }`}>
                     Z = {std.zScore.toFixed(3).replace('.', ',')}
                   </span>
@@ -354,27 +354,27 @@ export const CollectionSimulator: React.FC = () => {
 
       {/* Alerta de Feedback de Confiança Rápida */}
       {quickConfidenceFeedback && (
-        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-medium text-emerald-300 animate-in fade-in duration-200">
-          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+        <div className="flex items-center gap-2 rounded-xl border border-accent-success-soft-border bg-accent-success-soft px-3.5 py-2 text-xs font-medium text-accent-success animate-in fade-in duration-200">
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-accent-success" />
           <span>{quickConfidenceFeedback}</span>
         </div>
       )}
 
       {!activeSurvey || !hasValidQuestions ? (
-        <div className="rounded-2xl border border-dashed border-slate-800 bg-[#16171d] p-8 text-center shadow-xl space-y-4">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800 text-slate-400">
+        <div className="rounded-2xl border border-dashed border-ui bg-surface p-8 text-center shadow-xl space-y-4">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-raised text-muted">
             <Smartphone className="h-6 w-6" />
           </div>
-          <h3 className="text-sm font-bold text-white">
+          <h3 className="text-sm font-bold text-primary">
             Nenhuma pergunta configurada para esta pesquisa
           </h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-muted max-w-sm mx-auto">
             Configure as perguntas no módulo de questionário para simular a coleta em campo.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => setActiveModule('pesquisas')}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+              className="rounded-lg border border-ui bg-surface-raised px-4 py-2 text-xs font-bold text-secondary hover:bg-surface-hover hover:text-primary transition-colors"
             >
               Voltar para Pesquisas
             </button>
@@ -385,60 +385,60 @@ export const CollectionSimulator: React.FC = () => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="rounded-md bg-blue-600/20 border border-blue-500/30 px-2.5 py-1 text-xs font-bold text-blue-400">
+              <span className="rounded-md bg-accent-primary-soft border border-accent-primary-soft-border px-2.5 py-1 text-xs font-bold text-accent-primary">
                 Coleta em Tempo Real & Coleta Web
               </span>
-              <h1 className="mt-1 text-lg font-bold text-white">
+              <h1 className="mt-1 text-lg font-bold text-primary">
                 {activeSurvey.nome}
               </h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted">
                 Ciclo {activeSurvey.cicloAtual} (v{activeSurvey.versao}) • Cód: {activeSurvey.codigo}
               </p>
             </div>
 
             {/* Live status indicators */}
             <div className="flex items-center gap-2.5">
-              <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-1 text-[11px] font-semibold text-slate-300 shadow-xs">
-                <MapPin className="h-3.5 w-3.5 text-emerald-400" />
+              <div className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface px-2.5 py-1 text-[11px] font-semibold text-secondary shadow-xs">
+                <MapPin className="h-3.5 w-3.5 text-accent-success" />
                 <span>GPS Ativo</span>
               </div>
 
           {!isAudioEnabled ? (
-            <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 px-2.5 py-1 text-[11px] font-medium text-slate-500">
+            <div className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-2.5 py-1 text-[11px] font-medium text-muted">
               <MicOff className="h-3.5 w-3.5" />
               <span>Áudio Desativado</span>
             </div>
           ) : !hasAudioStarted ? (
             <div
-              className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300"
+              className="flex items-center gap-1.5 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-2.5 py-1 text-[11px] font-semibold text-accent-warning"
               title={`A gravação será iniciada a partir da pergunta ${
                 activeSurvey.perguntas[audioStartQuestionIndex]?.codigo || 'configurada'
               }`}
             >
-              <Clock className="h-3.5 w-3.5 animate-pulse text-amber-400" />
+              <Clock className="h-3.5 w-3.5 animate-pulse text-accent-warning" />
               <span>Inicia na {activeSurvey.perguntas[audioStartQuestionIndex]?.codigo || 'Ponto'}</span>
             </div>
           ) : (
             <div
               className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold shadow-xs ${
                 isAudioAtLimit
-                  ? 'border-amber-500/30 bg-amber-500/10 text-amber-300'
-                  : 'border-purple-500/30 bg-purple-600/20 text-purple-300'
+                  ? 'border-accent-warning-soft-border bg-accent-warning-soft text-accent-warning'
+                  : 'border-accent-purple-soft-border bg-accent-purple-soft text-accent-purple'
               }`}
               title={`Gravação de áudio em andamento (limite: ${configuredMinutes} min)`}
             >
               <span
                 className={`h-2 w-2 rounded-full ${
                   isAudioAtLimit
-                    ? 'bg-amber-400'
-                    : 'bg-red-500 animate-pulse'
+                    ? 'bg-accent-warning-solid'
+                    : 'bg-accent-danger-solid animate-pulse'
                 }`}
               />
               <Mic className="h-3.5 w-3.5" />
               <span className="font-mono">
                 {formatAudioDuration(audioSeconds)} / {configuredMinutes}m
               </span>
-              {isAudioAtLimit && <span className="text-[10px] text-amber-400 font-bold">(Máx)</span>}
+              {isAudioAtLimit && <span className="text-[10px] text-accent-warning font-bold">(Máx)</span>}
             </div>
           )}
         </div>
@@ -446,40 +446,40 @@ export const CollectionSimulator: React.FC = () => {
 
       {/* Modal: Finalizar Formulário - Gravar ou Descartar */}
       {confirmFinalizeModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-2xl border border-slate-700 bg-[#16171d] p-6 shadow-2xl space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay-modal backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-2xl border border-ui bg-surface p-6 shadow-2xl space-y-5">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-warning-soft text-accent-warning border border-accent-warning-soft-border">
                   <CheckSquare className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Finalizar Formulário</h3>
-                  <p className="text-xs text-slate-400">Status da entrevista em andamento</p>
+                  <h3 className="text-base font-bold text-primary">Finalizar Formulário</h3>
+                  <p className="text-xs text-muted">Status da entrevista em andamento</p>
                 </div>
               </div>
               <button
                 onClick={() => setConfirmFinalizeModalOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-primary transition"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-[#111218] p-4 space-y-2.5">
-              <p className="text-sm font-semibold text-slate-200">
+            <div className="rounded-xl border border-ui bg-surface-card p-4 space-y-2.5">
+              <p className="text-sm font-semibold text-primary">
                 Deseja gravar o formulário atual ou descartá-lo?
               </p>
-              <div className="grid grid-cols-2 gap-2 text-xs text-slate-400 pt-1">
-                <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800/80">
-                  <span className="block text-[10px] text-slate-500 uppercase font-bold">Respondidas</span>
-                  <span className="text-sm font-bold text-blue-400">
+              <div className="grid grid-cols-2 gap-2 text-xs text-muted pt-1">
+                <div className="rounded-lg bg-surface-raised p-2.5 border border-ui/80">
+                  <span className="block text-[10px] text-muted uppercase font-bold">Respondidas</span>
+                  <span className="text-sm font-bold text-accent-primary">
                     {Object.keys(answers).length} de {activeSurvey.perguntas.length}
                   </span>
                 </div>
-                <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800/80">
-                  <span className="block text-[10px] text-slate-500 uppercase font-bold">Áudio de Campo</span>
-                  <span className="text-sm font-bold text-purple-400">
+                <div className="rounded-lg bg-surface-raised p-2.5 border border-ui/80">
+                  <span className="block text-[10px] text-muted uppercase font-bold">Áudio de Campo</span>
+                  <span className="text-sm font-bold text-accent-purple">
                     {formatAudioDuration(audioSeconds)}
                   </span>
                 </div>
@@ -494,7 +494,7 @@ export const CollectionSimulator: React.FC = () => {
                   setConfirmFinalizeModalOpen(false);
                   setIsReviewStep(true);
                 }}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition active:scale-[0.99]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-success-solid px-4 py-3 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-success-solid-hover transition active:scale-[0.99]"
               >
                 <Save className="h-4 w-4" />
                 <span>Gravar Formulário Atual</span>
@@ -504,7 +504,7 @@ export const CollectionSimulator: React.FC = () => {
                 id="btn-descartar-formulario"
                 type="button"
                 onClick={handleDiscardForm}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition active:scale-[0.99]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft px-4 py-2.5 text-xs font-bold text-accent-danger hover:bg-accent-danger-soft transition active:scale-[0.99]"
               >
                 <Trash2 className="h-4 w-4" />
                 <span>Descartar Formulário</span>
@@ -514,7 +514,7 @@ export const CollectionSimulator: React.FC = () => {
                 id="btn-continuar-preenchendo"
                 type="button"
                 onClick={() => setConfirmFinalizeModalOpen(false)}
-                className="flex w-full items-center justify-center rounded-xl bg-slate-800 px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition"
+                className="flex w-full items-center justify-center rounded-xl bg-surface-raised px-4 py-2 text-xs font-medium text-secondary hover:bg-surface-hover hover:text-primary transition"
               >
                 Continuar Preenchendo
               </button>
@@ -524,33 +524,33 @@ export const CollectionSimulator: React.FC = () => {
       )}
 
       {isCompleted ? (
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-8 text-center shadow-xl space-y-4">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400">
+        <div className="rounded-2xl border border-ui bg-surface p-8 text-center shadow-xl space-y-4">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent-success-soft border border-accent-success-soft-border text-accent-success">
             <CheckCircle2 className="h-10 w-10" />
           </div>
-          <h2 className="text-xl font-bold text-white">
+          <h2 className="text-xl font-bold text-primary">
             {wasSavedOffline
               ? 'Pesquisa Finalizada e Armazenada no Navegador!'
               : 'Pesquisa Finalizada e Sincronizada!'}
           </h2>
 
           {wasSavedOffline ? (
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-left space-y-2">
-              <div className="flex items-center gap-2 text-amber-300 font-bold text-xs">
-                <WifiOff className="h-4 w-4 shrink-0 text-amber-400" />
+            <div className="rounded-xl border border-accent-warning-soft-border bg-accent-warning-soft p-4 text-left space-y-2">
+              <div className="flex items-center gap-2 text-accent-warning font-bold text-xs">
+                <WifiOff className="h-4 w-4 shrink-0 text-accent-warning" />
                 <span>Armazenado Offline com Sucesso</span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-secondary leading-relaxed">
                 Você está sem conexão de internet no momento. Todo o progresso foi salvo com segurança no seu navegador (IndexedDB) e será sincronizado automaticamente quando o sinal de internet for reestabelecido.
               </p>
-              <div className="text-[11px] text-slate-400 pt-1 border-t border-amber-500/20 flex flex-wrap justify-between gap-2">
-                <span>Pesquisador: <strong className="text-slate-200">{currentUser.nome}</strong></span>
+              <div className="text-[11px] text-muted pt-1 border-t border-accent-warning-soft-border flex flex-wrap justify-between gap-2">
+                <span>Pesquisador: <strong className="text-primary">{currentUser.nome}</strong></span>
                 <span>Armazenamento local persistido</span>
               </div>
             </div>
           ) : (
-            <p className="text-xs text-slate-400">
-              Os dados coletados pelo pesquisador <strong className="text-slate-200">{currentUser.nome}</strong>, coordenadas GPS e gravação de áudio foram registrados e sincronizados com sucesso nos servidores.
+            <p className="text-xs text-muted">
+              Os dados coletados pelo pesquisador <strong className="text-primary">{currentUser.nome}</strong>, coordenadas GPS e gravação de áudio foram registrados e sincronizados com sucesso nos servidores.
             </p>
           )}
 
@@ -558,7 +558,7 @@ export const CollectionSimulator: React.FC = () => {
             <button
               id="btn-nova-coleta"
               onClick={handleReset}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 shadow-sm hover:bg-slate-700 hover:text-white transition-colors"
+              className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-4 py-2.5 text-xs font-bold text-primary shadow-sm hover:bg-surface-hover hover:text-primary transition-colors"
             >
               <RotateCcw className="h-4 w-4" />
               <span>Realizar Nova Coleta</span>
@@ -566,7 +566,7 @@ export const CollectionSimulator: React.FC = () => {
             <button
               id="btn-ver-respostas-coletadas"
               onClick={() => setActiveModule('respostas')}
-              className="rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+              className="rounded-lg bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
             >
               Ver Respostas Registradas
             </button>
@@ -574,44 +574,44 @@ export const CollectionSimulator: React.FC = () => {
         </div>
       ) : isReviewStep ? (
         /* Finalization Step: Review before final submission */
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-xl space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="rounded-2xl border border-ui bg-surface p-6 shadow-xl space-y-6">
+          <div className="flex items-center justify-between border-b border-ui pb-4">
             <div>
-              <span className="rounded-md bg-blue-600/20 border border-blue-500/30 px-2.5 py-0.5 text-xs font-bold text-blue-400">
+              <span className="rounded-md bg-accent-primary-soft border border-accent-primary-soft-border px-2.5 py-0.5 text-xs font-bold text-accent-primary">
                 Etapa Final
               </span>
-              <h2 className="text-lg font-bold text-white mt-1">Finalizar Pesquisa de Campo</h2>
-              <p className="text-xs text-slate-400">
+              <h2 className="text-lg font-bold text-primary mt-1">Finalizar Pesquisa de Campo</h2>
+              <p className="text-xs text-muted">
                 Confirme os dados antes de gravar e encerrar oficialmente o formulário.
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
               <CheckSquare className="h-5 w-5" />
             </div>
           </div>
 
           {/* Nome do pesquisador atualmente logado marcado como padrão */}
-          <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4">
+          <div className="rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft p-4">
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
                   Pesquisador Responsável da Coleta
                 </span>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-base font-bold text-white">{currentUser.nome}</span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400 shadow-xs">
+                  <span className="text-base font-bold text-primary">{currentUser.nome}</span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-accent-success-soft border border-accent-success-soft-border px-2 py-0.5 text-[10px] font-bold text-accent-success shadow-xs">
                     <CheckCircle2 className="h-3 w-3" /> Padrão (Usuário Logado)
                   </span>
                 </div>
-                <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-400">
-                  <span>Login: <strong className="font-mono text-slate-300">@{currentUser.login || currentUser.email}</strong></span>
+                <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
+                  <span>Login: <strong className="font-mono text-secondary">@{currentUser.login || currentUser.email}</strong></span>
                   <span>•</span>
-                  <span>ID: <strong className="font-mono text-slate-300">{currentUser.id}</strong></span>
+                  <span>ID: <strong className="font-mono text-secondary">{currentUser.id}</strong></span>
                   <span>•</span>
-                  <span>Perfil: <strong className="text-slate-300">{currentProfile?.name || 'Pesquisador'}</strong></span>
+                  <span>Perfil: <strong className="text-secondary">{currentProfile?.name || 'Pesquisador'}</strong></span>
                 </div>
               </div>
-              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md">
+              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-xs font-bold text-primary shrink-0 shadow-md">
                 {currentUser.nome.slice(0, 2).toUpperCase()}
               </div>
             </div>
@@ -619,48 +619,48 @@ export const CollectionSimulator: React.FC = () => {
 
           {/* Resumo da Coleta */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="rounded-xl border border-slate-800 bg-[#111218] p-3.5">
-              <span className="block text-[10px] uppercase font-bold text-slate-500">Questões</span>
-              <span className="text-base font-bold text-white mt-0.5 block">
+            <div className="rounded-xl border border-ui bg-surface-card p-3.5">
+              <span className="block text-[10px] uppercase font-bold text-muted">Questões</span>
+              <span className="text-base font-bold text-primary mt-0.5 block">
                 {Object.keys(answers).length} de {activeSurvey.perguntas.length}
               </span>
-              <span className="text-[10px] text-slate-400">Respostas preenchidas</span>
+              <span className="text-[10px] text-muted">Respostas preenchidas</span>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-[#111218] p-3.5">
-              <span className="block text-[10px] uppercase font-bold text-slate-500">Áudio Gravado</span>
-              <span className="text-base font-bold text-purple-400 mt-0.5 block font-mono">
+            <div className="rounded-xl border border-ui bg-surface-card p-3.5">
+              <span className="block text-[10px] uppercase font-bold text-muted">Áudio Gravado</span>
+              <span className="text-base font-bold text-accent-purple mt-0.5 block font-mono">
                 {formatAudioDuration(audioSeconds)}
               </span>
-              <span className="text-[10px] text-slate-400">Gravação de campo</span>
+              <span className="text-[10px] text-muted">Gravação de campo</span>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-[#111218] p-3.5">
-              <span className="block text-[10px] uppercase font-bold text-slate-500">Geolocalização</span>
-              <span className="text-base font-bold text-emerald-400 mt-0.5 block flex items-center gap-1">
+            <div className="rounded-xl border border-ui bg-surface-card p-3.5">
+              <span className="block text-[10px] uppercase font-bold text-muted">Geolocalização</span>
+              <span className="text-base font-bold text-accent-success mt-0.5 block flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5" /> GPS Registrado
               </span>
-              <span className="text-[10px] text-slate-400">Coordenadas fixadas</span>
+              <span className="text-[10px] text-muted">Coordenadas fixadas</span>
             </div>
           </div>
 
           {/* Status de Conectividade com a Internet */}
           {effectiveOnline ? (
-            <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-300">
-              <Wifi className="h-5 w-5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-3 rounded-xl border border-accent-success-soft-border bg-accent-success-soft p-3.5 text-xs text-accent-success">
+              <Wifi className="h-5 w-5 text-accent-success shrink-0" />
               <div>
-                <p className="font-bold text-emerald-300">Conexão com a Internet Ativa</p>
-                <p className="text-[11px] text-emerald-400/80 mt-0.5">
+                <p className="font-bold text-accent-success">Conexão com a Internet Ativa</p>
+                <p className="text-[11px] text-accent-success/80 mt-0.5">
                   A pesquisa será sincronizada imediatamente com os servidores centrais.
                 </p>
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-300">
-              <WifiOff className="h-5 w-5 text-amber-400 shrink-0" />
+            <div className="flex items-center gap-3 rounded-xl border border-accent-warning-soft-border bg-accent-warning-soft p-3.5 text-xs text-accent-warning">
+              <WifiOff className="h-5 w-5 text-accent-warning shrink-0" />
               <div>
-                <p className="font-bold text-amber-300">Sem Sinal de Internet (Modo Offline)</p>
-                <p className="text-[11px] text-amber-400/80 mt-0.5">
+                <p className="font-bold text-accent-warning">Sem Sinal de Internet (Modo Offline)</p>
+                <p className="text-[11px] text-accent-warning/80 mt-0.5">
                   Todo o progresso será armazenado de forma segura no seu navegador (IndexedDB) e sincronizado automaticamente quando o sinal retornar.
                 </p>
               </div>
@@ -668,11 +668,11 @@ export const CollectionSimulator: React.FC = () => {
           )}
 
           {/* Ações da Etapa Final */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-800 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-ui pt-4">
             <button
               type="button"
               onClick={() => setIsReviewStep(false)}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition w-full sm:w-auto justify-center"
+              className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-4 py-2 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition w-full sm:w-auto justify-center"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Voltar às Perguntas</span>
@@ -683,7 +683,7 @@ export const CollectionSimulator: React.FC = () => {
               type="button"
               disabled={isSaving}
               onClick={handleSubmitFinal}
-              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition active:scale-95 disabled:opacity-50 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition active:scale-95 disabled:opacity-50 w-full sm:w-auto"
             >
               <CheckCircle2 className="h-4 w-4" />
               <span>{isSaving ? 'Gravando progresso...' : 'Finalizar Pesquisa'}</span>
@@ -692,14 +692,14 @@ export const CollectionSimulator: React.FC = () => {
         </div>
       ) : (
         /* Active Question Card */
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-6 shadow-xl">
           {/* Progress header & Finalizar formulário button */}
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 text-xs text-slate-400">
+          <div className="flex items-center justify-between border-b border-ui pb-3 text-xs text-muted">
             <div className="flex items-center gap-2">
               <span>
                 Pergunta {currentQuestionIndex + 1} de {activeSurvey.perguntas.length}
               </span>
-              <span className="font-bold text-blue-400">
+              <span className="font-bold text-accent-primary">
                 ({currentQuestion?.codigo || 'Q'})
               </span>
             </div>
@@ -709,7 +709,7 @@ export const CollectionSimulator: React.FC = () => {
               id="btn-finalizar-formulario"
               onClick={() => setConfirmFinalizeModalOpen(true)}
               type="button"
-              className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition-colors shadow-xs"
+              className="flex items-center gap-1.5 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-2.5 py-1 text-xs font-bold text-accent-warning hover:bg-accent-warning-soft transition-colors shadow-xs"
               title="Finalizar o formulário agora (gravar ou descartar)"
             >
               <CheckSquare className="h-3.5 w-3.5" />
@@ -719,10 +719,10 @@ export const CollectionSimulator: React.FC = () => {
 
           {currentQuestion && (
             <div className="mt-4">
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-bold text-primary">
                 {currentQuestion.enunciado}
                 {currentQuestion.obrigatoria && (
-                  <span className="ml-1 text-blue-400">*</span>
+                  <span className="ml-1 text-accent-primary">*</span>
                 )}
               </h3>
 
@@ -735,8 +735,8 @@ export const CollectionSimulator: React.FC = () => {
                       key={opt.id}
                       className={`flex cursor-pointer items-center justify-between rounded-xl border p-3.5 text-xs transition ${
                         answers[currentQuestion.id] === opt.value
-                          ? 'border-blue-500 bg-blue-600/20 text-white font-bold'
-                          : 'border-slate-800 bg-[#111218] text-slate-300 hover:bg-slate-800/60'
+                          ? 'border-blue-500 bg-accent-primary-soft text-primary font-bold'
+                          : 'border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                       }`}
                     >
                       <span>{opt.label}</span>
@@ -748,7 +748,7 @@ export const CollectionSimulator: React.FC = () => {
                         onChange={() =>
                           setAnswers({ ...answers, [currentQuestion.id]: opt.value })
                         }
-                        className="text-blue-600 focus:ring-blue-500"
+                        className="text-accent-primary-solid focus:ring-blue-500"
                       />
                     </label>
                   ))}
@@ -766,8 +766,8 @@ export const CollectionSimulator: React.FC = () => {
                         key={opt.id}
                         className={`flex cursor-pointer items-center justify-between rounded-xl border p-3.5 text-xs transition ${
                           isChecked
-                            ? 'border-blue-500 bg-blue-600/20 text-white font-bold'
-                            : 'border-slate-800 bg-[#111218] text-slate-300 hover:bg-slate-800/60'
+                            ? 'border-blue-500 bg-accent-primary-soft text-primary font-bold'
+                            : 'border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                         }`}
                       >
                         <span>{opt.label}</span>
@@ -780,7 +780,7 @@ export const CollectionSimulator: React.FC = () => {
                               : [...currentSelected, opt.value];
                             setAnswers({ ...answers, [currentQuestion.id]: updated });
                           }}
-                          className="rounded text-blue-600 focus:ring-blue-500"
+                          className="rounded text-accent-primary-solid focus:ring-blue-500"
                         />
                       </label>
                     );
@@ -796,8 +796,8 @@ export const CollectionSimulator: React.FC = () => {
                         onClick={() => setAnswers({ ...answers, [currentQuestion.id]: opt })}
                         className={`rounded-xl border p-3.5 text-xs font-bold transition ${
                           answers[currentQuestion.id] === opt
-                            ? 'border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-900/40'
-                            : 'border-slate-800 bg-[#111218] text-slate-300 hover:bg-slate-800'
+                            ? 'border-blue-500 bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40'
+                            : 'border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                         }`}
                       >
                         {opt}
@@ -819,15 +819,15 @@ export const CollectionSimulator: React.FC = () => {
                           }
                           className={`flex h-10 w-10 items-center justify-center rounded-lg font-bold text-xs transition ${
                             answers[currentQuestion.id] === String(n)
-                              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
-                              : 'border border-slate-800 bg-[#111218] text-slate-300 hover:bg-slate-800'
+                              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40'
+                              : 'border border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                           }`}
                         >
                           {n}
                         </button>
                       ))}
                     </div>
-                    <div className="mt-2 flex justify-between text-[10px] text-slate-400">
+                    <div className="mt-2 flex justify-between text-[10px] text-muted">
                       <span>0 = Jamais recomendaria</span>
                       <span>10 = Recomendaria com certeza</span>
                     </div>
@@ -843,7 +843,7 @@ export const CollectionSimulator: React.FC = () => {
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
                     placeholder="Digite a resposta do entrevistado..."
-                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                   />
                 )}
 
@@ -856,7 +856,7 @@ export const CollectionSimulator: React.FC = () => {
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
                     placeholder="Informe o valor numérico..."
-                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                   />
                 )}
 
@@ -868,7 +868,7 @@ export const CollectionSimulator: React.FC = () => {
                     onChange={(e) =>
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
-                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary focus:border-blue-500 focus:outline-none"
                   />
                 )}
               </div>
@@ -876,12 +876,12 @@ export const CollectionSimulator: React.FC = () => {
           )}
 
           {/* Navigation controls */}
-          <div className="mt-8 flex items-center justify-between border-t border-slate-800 pt-4">
+          <div className="mt-8 flex items-center justify-between border-t border-ui pt-4">
             <button
               type="button"
               onClick={handlePrev}
               disabled={currentQuestionIndex === 0}
-              className="flex items-center gap-1 rounded-lg px-3.5 py-2 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-40 transition-colors"
+              className="flex items-center gap-1 rounded-lg px-3.5 py-2 text-xs font-semibold text-muted hover:bg-surface-raised hover:text-primary disabled:opacity-40 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Anterior</span>
@@ -891,7 +891,7 @@ export const CollectionSimulator: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setConfirmFinalizeModalOpen(true)}
-                className="flex items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 transition-colors"
+                className="flex items-center gap-1 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-3 py-2 text-xs font-semibold text-accent-warning hover:bg-accent-warning-soft transition-colors"
               >
                 <CheckSquare className="h-3.5 w-3.5" />
                 <span>Finalizar formulário</span>
@@ -900,7 +900,7 @@ export const CollectionSimulator: React.FC = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
               >
                 <span>
                   {currentQuestionIndex === activeSurvey.perguntas.length - 1

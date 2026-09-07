@@ -42,7 +42,6 @@ export const TeamSizingModule: React.FC = () => {
     saveSurvey,
     collaborators,
     submissions,
-    darkMode,
     addAuditLog,
     currentUser,
     currentProfile,
@@ -299,31 +298,29 @@ export const TeamSizingModule: React.FC = () => {
       {/* 1. Header do Módulo */}
       <div
         className={`p-6 rounded-2xl border transition-all ${
-          darkMode
-            ? 'bg-[#16171d] border-slate-800 shadow-xl'
-            : 'bg-white border-slate-200 shadow-sm'
+          'bg-surface border-ui shadow-xl'
         }`}
       >
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5 mb-1.5">
-              <div className="p-2 rounded-xl bg-blue-600/10 text-blue-500 border border-blue-500/20">
+              <div className="p-2 rounded-xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
                 <Calculator className="h-5 w-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1
                     className={`text-xl font-bold tracking-tight ${
-                      darkMode ? 'text-white' : 'text-slate-900'
+                      'text-primary'
                     }`}
                   >
                     Dimensionamento de Equipe em Campo
                   </h1>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
                     Planejamento & Amostragem
                   </span>
                 </div>
-                <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                <p className={`text-xs mt-0.5 text-muted`}>
                   Cálculo técnico da quantidade mínima de pesquisadores necessária para cobrir a amostra com base na meta de entrevistas e produtividade esperada.
                 </p>
               </div>
@@ -338,9 +335,7 @@ export const TeamSizingModule: React.FC = () => {
                 value={selectedSurveyId}
                 onChange={(e) => setSelectedSurveyId(e.target.value)}
                 className={`w-full text-xs font-semibold px-3 py-2 rounded-lg border appearance-none pr-8 transition-colors ${
-                  darkMode
-                    ? 'bg-slate-900/80 border-slate-700 text-white focus:border-blue-500'
-                    : 'bg-slate-50 border-slate-300 text-slate-800 focus:border-blue-600'
+                  'bg-surface-raised border-ui text-primary focus:border-blue-500'
                 }`}
               >
                 {activeSurveys.map((s) => (
@@ -349,7 +344,7 @@ export const TeamSizingModule: React.FC = () => {
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-muted">
                 <Sliders className="h-3.5 w-3.5" />
               </div>
             </div>
@@ -367,13 +362,11 @@ export const TeamSizingModule: React.FC = () => {
                 )
               }
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border transition-colors ${
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white'
-                  : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs'
+                'bg-surface-raised border-ui text-primary hover:bg-surface-hover hover:text-primary'
               }`}
               title="Exportar Relatório Executivo em PDF"
             >
-              <FileText className="h-3.5 w-3.5 text-rose-500" />
+              <FileText className="h-3.5 w-3.5 text-accent-danger" />
               <span>PDF</span>
             </button>
 
@@ -389,13 +382,11 @@ export const TeamSizingModule: React.FC = () => {
                 )
               }
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border transition-colors ${
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white'
-                  : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs'
+                'bg-surface-raised border-ui text-primary hover:bg-surface-hover hover:text-primary'
               }`}
               title="Exportar Planilha Excel com Abas"
             >
-              <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-500" />
+              <FileSpreadsheet className="h-3.5 w-3.5 text-accent-success" />
               <span>Excel</span>
             </button>
 
@@ -404,7 +395,7 @@ export const TeamSizingModule: React.FC = () => {
               <button
                 id="btn-save-dimensionamento"
                 onClick={handleSaveToSurvey}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-md shadow-blue-600/30 hover:bg-blue-500 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-accent-primary-solid text-on-accent shadow-md shadow-blue-600/30 hover:bg-accent-primary-solid-hover transition-colors"
                 title="Gravar estes parâmetros na pesquisa selecionada"
               >
                 <Save className="h-3.5 w-3.5" />
@@ -416,8 +407,8 @@ export const TeamSizingModule: React.FC = () => {
 
         {/* Mensagem de sucesso ao salvar */}
         {saveSuccessMsg && (
-          <div className="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+          <div className="mt-4 p-3 rounded-xl bg-accent-success-soft border border-accent-success-soft-border text-accent-success text-xs font-semibold flex items-center gap-2 animate-fadeIn">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-accent-success" />
             <span>{saveSuccessMsg}</span>
           </div>
         )}
@@ -428,33 +419,31 @@ export const TeamSizingModule: React.FC = () => {
         {/* Card 1: Quantidade Mínima Necessária */}
         <div
           className={`p-5 rounded-2xl border transition-all ${
-            darkMode
-              ? 'bg-[#16171d] border-blue-500/30 shadow-lg shadow-blue-950/20'
-              : 'bg-white border-blue-200 shadow-sm'
+            'bg-surface border-accent-primary-soft-border shadow-lg shadow-blue-950/20'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>
+            <span className={`text-xs font-bold uppercase tracking-wider text-accent-primary`}>
               Equipe Mínima Necessária
             </span>
-            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20">
+            <div className="p-2 rounded-xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
               <Calculator className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className={`text-3xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            <span className={`text-3xl font-extrabold tracking-tight text-primary`}>
               {sizing.minPesquisadores}
             </span>
-            <span className={`text-xs font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+            <span className={`text-xs font-semibold text-muted`}>
               pesquisadores em campo
             </span>
           </div>
-          <p className={`mt-2 text-[11px] leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+          <p className={`mt-2 text-[11px] leading-relaxed text-muted`}>
             Cálculo: <span className="font-mono font-bold">teto({sizing.totalMetaColetas} / ({sizing.diasCampo}d × {sizing.mediaDiaPesquisador}))</span>
           </p>
-          <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-            <span className={darkMode ? 'text-slate-500' : 'text-slate-600'}>Com reserva técnica (+{reservaTecnicaPercent}%):</span>
-            <span className="font-bold text-blue-500">{sizing.pesquisadoresRecomendados} pesquisadores</span>
+          <div className="mt-3 pt-3 border-t border-ui/80 flex items-center justify-between text-[10px]">
+            <span className="text-muted">Com reserva técnica (+{reservaTecnicaPercent}%):</span>
+            <span className="font-bold text-accent-primary">{sizing.pesquisadoresRecomendados} pesquisadores</span>
           </div>
         </div>
 
@@ -462,18 +451,14 @@ export const TeamSizingModule: React.FC = () => {
         <div
           className={`p-5 rounded-2xl border transition-all ${
             sizing.isSuficiente
-              ? darkMode
-                ? 'bg-[#16171d] border-emerald-500/30'
-                : 'bg-white border-emerald-200 shadow-sm'
-              : darkMode
-              ? 'bg-[#16171d] border-amber-500/40 shadow-lg shadow-amber-950/20'
-              : 'bg-white border-amber-300 shadow-sm'
+              ? 'bg-surface border-accent-success-soft-border'
+              : 'bg-surface border-accent-warning-soft-border shadow-lg shadow-amber-950/20'
           }`}
         >
           <div className="flex items-center justify-between">
             <span
               className={`text-xs font-bold uppercase tracking-wider ${
-                sizing.isSuficiente ? 'text-emerald-500' : 'text-amber-500'
+                sizing.isSuficiente ? 'text-accent-success' : 'text-accent-warning'
               }`}
             >
               Equipe Atual Alocada
@@ -481,35 +466,35 @@ export const TeamSizingModule: React.FC = () => {
             <div
               className={`p-2 rounded-xl border ${
                 sizing.isSuficiente
-                  ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                  : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                  ? 'bg-accent-success-soft text-accent-success border-accent-success-soft-border'
+                  : 'bg-accent-warning-soft text-accent-warning border-accent-warning-soft-border'
               }`}
             >
               {sizing.isSuficiente ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className={`text-3xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            <span className={`text-3xl font-extrabold tracking-tight text-primary`}>
               {sizing.pesquisadoresAlocados}
             </span>
-            <span className={`text-xs font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+            <span className={`text-xs font-semibold text-muted`}>
               pesquisadores escalados
             </span>
           </div>
           <div className="mt-2 flex items-center gap-1.5">
             {sizing.isSuficiente ? (
-              <span className="text-[11px] font-bold text-emerald-500 flex items-center gap-1">
+              <span className="text-[11px] font-bold text-accent-success flex items-center gap-1">
                 <CheckCircle2 className="h-3.5 w-3.5" /> Cobertura suficiente para o prazo
               </span>
             ) : (
-              <span className="text-[11px] font-bold text-amber-500 flex items-center gap-1">
+              <span className="text-[11px] font-bold text-accent-warning flex items-center gap-1">
                 <AlertTriangle className="h-3.5 w-3.5" /> Déficit de {sizing.deficit} pesquisador(es)
               </span>
             )}
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-            <span className={darkMode ? 'text-slate-500' : 'text-slate-600'}>Meta por pesquisador:</span>
-            <span className="font-bold text-slate-300">
+          <div className="mt-3 pt-3 border-t border-ui/80 flex items-center justify-between text-[10px]">
+            <span className="text-muted">Meta por pesquisador:</span>
+            <span className="font-bold text-secondary">
               {sizing.pesquisadoresAlocados > 0
                 ? `${Math.ceil(sizing.totalMetaColetas / sizing.pesquisadoresAlocados)} coletas`
                 : 'Nenhum alocado'}
@@ -520,72 +505,72 @@ export const TeamSizingModule: React.FC = () => {
         {/* Card 3: Capacidade Operacional do Período */}
         <div
           className={`p-5 rounded-2xl border transition-all ${
-            darkMode ? 'bg-[#16171d] border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            'bg-surface border-ui'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-700'}`}>
+            <span className={`text-xs font-bold uppercase tracking-wider text-muted`}>
               Capacidade Individual
             </span>
-            <div className="p-2 rounded-xl bg-slate-800/60 text-slate-400 border border-slate-700/50">
+            <div className="p-2 rounded-xl bg-surface-raised text-muted border border-ui/50">
               <TrendingUp className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className={`text-3xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            <span className={`text-3xl font-extrabold tracking-tight text-primary`}>
               {sizing.capacidadeIndividualPeriodo}
             </span>
-            <span className={`text-xs font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+            <span className={`text-xs font-semibold text-muted`}>
               coletas por pesquisador
             </span>
           </div>
-          <p className={`mt-2 text-[11px] leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+          <p className={`mt-2 text-[11px] leading-relaxed text-muted`}>
             {sizing.mediaDiaPesquisador} coletas/dia ao longo de {sizing.diasCampo} dias de campo.
           </p>
-          <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-            <span className={darkMode ? 'text-slate-500' : 'text-slate-600'}>Tempo útil/entrevista:</span>
-            <span className="font-bold text-slate-300">{tempoMinutosEntrevista} minutos</span>
+          <div className="mt-3 pt-3 border-t border-ui/80 flex items-center justify-between text-[10px]">
+            <span className="text-muted">Tempo útil/entrevista:</span>
+            <span className="font-bold text-secondary">{tempoMinutosEntrevista} minutos</span>
           </div>
         </div>
 
         {/* Card 4: Progresso de Coleta em Campo */}
         <div
           className={`p-5 rounded-2xl border transition-all ${
-            darkMode ? 'bg-[#16171d] border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            'bg-surface border-ui'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-700'}`}>
+            <span className={`text-xs font-bold uppercase tracking-wider text-muted`}>
               Coletas em Tempo Real
             </span>
-            <div className="p-2 rounded-xl bg-slate-800/60 text-slate-400 border border-slate-700/50">
+            <div className="p-2 rounded-xl bg-surface-raised text-muted border border-ui/50">
               <Target className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className={`text-3xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            <span className={`text-3xl font-extrabold tracking-tight text-primary`}>
               {sizing.coletasRealizadas}
             </span>
-            <span className={`text-xs font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+            <span className={`text-xs font-semibold text-muted`}>
               de {sizing.totalMetaColetas} ({sizing.percentualConcluido}%)
             </span>
           </div>
           {/* Barra de Progresso */}
-          <div className="mt-2.5 h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+          <div className="mt-2.5 h-2 w-full bg-surface-raised rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-500 ${
                 sizing.percentualConcluido >= 100
-                  ? 'bg-emerald-500'
+                  ? 'bg-accent-success-solid'
                   : sizing.percentualConcluido >= 50
-                  ? 'bg-blue-500'
-                  : 'bg-amber-500'
+                  ? 'bg-accent-primary-solid'
+                  : 'bg-accent-warning-solid'
               }`}
               style={{ width: `${Math.min(100, sizing.percentualConcluido)}%` }}
             />
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-            <span className={darkMode ? 'text-slate-500' : 'text-slate-600'}>Restante para a meta:</span>
-            <span className="font-bold text-slate-300">{sizing.coletasRestantes} entrevistas</span>
+          <div className="mt-3 pt-3 border-t border-ui/80 flex items-center justify-between text-[10px]">
+            <span className="text-muted">Restante para a meta:</span>
+            <span className="font-bold text-secondary">{sizing.coletasRestantes} entrevistas</span>
           </div>
         </div>
       </div>
@@ -607,17 +592,17 @@ export const TeamSizingModule: React.FC = () => {
       {/* 3. Painel de Parâmetros Operacionais (Interativo em Tempo Real) */}
       <div
         className={`p-6 rounded-2xl border transition-all ${
-          darkMode ? 'bg-[#16171d] border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+          'bg-surface border-ui'
         }`}
       >
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-6">
+        <div className="flex items-center justify-between pb-4 border-b border-ui/80 mb-6">
           <div className="flex items-center gap-2">
-            <Sliders className="h-4 w-4 text-blue-500" />
-            <h2 className={`text-sm font-bold uppercase tracking-wider ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            <Sliders className="h-4 w-4 text-accent-primary" />
+            <h2 className={`text-sm font-bold uppercase tracking-wider text-primary`}>
               Parâmetros Operacionais da Pesquisa
             </h2>
           </div>
-          <span className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+          <span className={`text-xs text-muted`}>
             Ajuste os valores para recalcular o contingente imediatamente
           </span>
         </div>
@@ -626,10 +611,10 @@ export const TeamSizingModule: React.FC = () => {
           {/* 1. Meta Total de Entrevistas */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              <label className={`text-xs font-bold text-secondary`}>
                 Meta Total de Entrevistas (N Amostral)
               </label>
-              <span className="text-xs font-mono font-bold text-blue-500">{metaTotalInput}</span>
+              <span className="text-xs font-mono font-bold text-accent-primary">{metaTotalInput}</span>
             </div>
             <input
               id="input-meta-total-coletas"
@@ -640,21 +625,17 @@ export const TeamSizingModule: React.FC = () => {
               value={metaTotalInput}
               onChange={(e) => setMetaTotalInput(Math.max(10, parseInt(e.target.value) || 0))}
               className={`w-full text-sm font-semibold px-3 py-2 rounded-lg border transition-colors ${
-                darkMode
-                  ? 'bg-slate-900 border-slate-700 text-white focus:border-blue-500'
-                  : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-600'
+                'bg-surface-raised border-ui text-primary focus:border-blue-500'
               }`}
             />
             {/* Margem de Confiança & Erro em Tempo Real */}
             <div
               className={`px-2.5 py-1.5 rounded-md border flex items-center justify-between text-[11px] ${
-                darkMode
-                  ? 'bg-blue-500/10 border-blue-500/30 text-blue-300'
-                  : 'bg-blue-50 border-blue-200 text-blue-900 font-medium'
+                'bg-accent-primary-soft border-accent-primary-soft-border text-accent-primary'
               }`}
             >
               <div className="flex items-center gap-1">
-                <Percent className="h-3 w-3 text-blue-500" />
+                <Percent className="h-3 w-3 text-accent-primary" />
                 <span>Confiança: <strong>{nivelConfiancaInput}%</strong></span>
               </div>
               <span>Margem de erro: <strong>±{currentEstimatedMarginOfError.marginOfErrorPercent}%</strong></span>
@@ -662,7 +643,7 @@ export const TeamSizingModule: React.FC = () => {
 
             {/* Presets Rápidos */}
             <div className="flex items-center gap-1.5 pt-1">
-              <span className="text-[10px] text-slate-500">Presets:</span>
+              <span className="text-[10px] text-muted">Presets:</span>
               {[200, 400, 600, 800, 1000, 1500].map((val) => (
                 <button
                   key={val}
@@ -670,10 +651,8 @@ export const TeamSizingModule: React.FC = () => {
                   onClick={() => setMetaTotalInput(val)}
                   className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-colors ${
                     metaTotalInput === val
-                      ? 'bg-blue-600 text-white border-blue-500'
-                      : darkMode
-                      ? 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
-                      : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                      ? 'bg-accent-primary-solid text-on-accent border-blue-500'
+                      : 'bg-surface-raised text-muted border-ui hover:text-primary'
                   }`}
                 >
                   {val}
@@ -685,10 +664,10 @@ export const TeamSizingModule: React.FC = () => {
           {/* 2. Produtividade Média Diária Esperada */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              <label className={`text-xs font-bold text-secondary`}>
                 Produtividade Média Esperada (entr./pesquisador/dia)
               </label>
-              <span className="text-xs font-mono font-bold text-blue-500">{produtividadeInput} /dia</span>
+              <span className="text-xs font-mono font-bold text-accent-primary">{produtividadeInput} /dia</span>
             </div>
             <div className="flex items-center gap-3">
               <input
@@ -709,11 +688,11 @@ export const TeamSizingModule: React.FC = () => {
                 value={produtividadeInput}
                 onChange={(e) => setProdutividadeInput(Math.max(1, parseInt(e.target.value) || 1))}
                 className={`w-16 text-center text-xs font-bold px-2 py-1.5 rounded-lg border ${
-                  darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  'bg-surface-raised border-ui text-primary'
                 }`}
               />
             </div>
-            <div className="flex items-center justify-between text-[10px] text-slate-500">
+            <div className="flex items-center justify-between text-[10px] text-muted">
               <span>5 (questionário denso)</span>
               <span>15 (padrão)</span>
               <span>30 (fluxo rápido)</span>
@@ -723,10 +702,10 @@ export const TeamSizingModule: React.FC = () => {
           {/* 3. Prazo Previsto em Dias de Campo */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              <label className={`text-xs font-bold text-secondary`}>
                 Prazo Previsto de Campo (Dias Úteis)
               </label>
-              <span className="text-xs font-mono font-bold text-blue-500">{diasCampoInput} dias</span>
+              <span className="text-xs font-mono font-bold text-accent-primary">{diasCampoInput} dias</span>
             </div>
             <div className="flex items-center gap-3">
               <input
@@ -747,11 +726,11 @@ export const TeamSizingModule: React.FC = () => {
                 value={diasCampoInput}
                 onChange={(e) => setDiasCampoInput(Math.max(1, parseInt(e.target.value) || 1))}
                 className={`w-16 text-center text-xs font-bold px-2 py-1.5 rounded-lg border ${
-                  darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  'bg-surface-raised border-ui text-primary'
                 }`}
               />
             </div>
-            <div className="flex items-center justify-between text-[10px] text-slate-500">
+            <div className="flex items-center justify-between text-[10px] text-muted">
               <span>1 dia (flash)</span>
               <span>3 a 5 dias (típico)</span>
               <span>15+ dias (longo)</span>
@@ -761,10 +740,10 @@ export const TeamSizingModule: React.FC = () => {
           {/* 4. Tempo Médio de Aplicação do Questionário */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              <label className={`text-xs font-bold text-secondary`}>
                 Duração Média da Entrevista (minutos)
               </label>
-              <span className="text-xs font-mono font-bold text-blue-500">{tempoMinutosEntrevista} min</span>
+              <span className="text-xs font-mono font-bold text-accent-primary">{tempoMinutosEntrevista} min</span>
             </div>
             <div className="flex items-center gap-3">
               <input
@@ -785,11 +764,11 @@ export const TeamSizingModule: React.FC = () => {
                 value={tempoMinutosEntrevista}
                 onChange={(e) => setTempoMinutosEntrevista(Math.max(1, parseInt(e.target.value) || 1))}
                 className={`w-16 text-center text-xs font-bold px-2 py-1.5 rounded-lg border ${
-                  darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  'bg-surface-raised border-ui text-primary'
                 }`}
               />
             </div>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-muted">
               Tempo útil de entrevista por dia: {tempoTotalHorasCampoPorPesquisador.horasEntrevistasDia}h
             </p>
           </div>
@@ -797,10 +776,10 @@ export const TeamSizingModule: React.FC = () => {
           {/* 5. Jornada Diária de Trabalho */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              <label className={`text-xs font-bold text-secondary`}>
                 Jornada Diária de Campo (horas/dia)
               </label>
-              <span className="text-xs font-mono font-bold text-blue-500">{jornadaHorasDia}h/dia</span>
+              <span className="text-xs font-mono font-bold text-accent-primary">{jornadaHorasDia}h/dia</span>
             </div>
             <div className="flex items-center gap-3">
               <input
@@ -821,11 +800,11 @@ export const TeamSizingModule: React.FC = () => {
                 value={jornadaHorasDia}
                 onChange={(e) => setJornadaHorasDia(Math.max(1, parseInt(e.target.value) || 1))}
                 className={`w-16 text-center text-xs font-bold px-2 py-1.5 rounded-lg border ${
-                  darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  'bg-surface-raised border-ui text-primary'
                 }`}
               />
             </div>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-muted">
               Deslocamento e abordagem estimados: {tempoTotalHorasCampoPorPesquisador.horasDeslocamentoDia}h/dia
             </p>
           </div>
@@ -833,10 +812,10 @@ export const TeamSizingModule: React.FC = () => {
           {/* 6. Reserva Técnica / Margem de Segurança */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              <label className={`text-xs font-bold text-secondary`}>
                 Margem de Reserva Técnica
               </label>
-              <span className="text-xs font-mono font-bold text-blue-500">+{reservaTecnicaPercent}%</span>
+              <span className="text-xs font-mono font-bold text-accent-primary">+{reservaTecnicaPercent}%</span>
             </div>
             <div className="flex items-center gap-3">
               <input
@@ -857,40 +836,40 @@ export const TeamSizingModule: React.FC = () => {
                 value={reservaTecnicaPercent}
                 onChange={(e) => setReservaTecnicaPercent(Math.max(0, parseInt(e.target.value) || 0))}
                 className={`w-16 text-center text-xs font-bold px-2 py-1.5 rounded-lg border ${
-                  darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  'bg-surface-raised border-ui text-primary'
                 }`}
               />
             </div>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-muted">
               Garante cobertura contra faltas de pesquisadores e rejeições em campo.
             </p>
           </div>
         </div>
 
         {/* Equivalência de Metas por Sexo (100% da Meta Total) */}
-        <div className="mt-6 pt-5 border-t border-slate-800/80">
+        <div className="mt-6 pt-5 border-t border-ui/80">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-emerald-500" />
-              <h3 className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              <ShieldCheck className="h-4 w-4 text-accent-success" />
+              <h3 className={`text-xs font-bold uppercase tracking-wider text-primary`}>
                 Equivalência Amostral por Sexo (Soma = 100% da Meta N)
               </h3>
             </div>
-            <span className="text-[11px] font-bold text-emerald-400">
+            <span className="text-[11px] font-bold text-accent-success">
               Total Sexo: {metaSexoMasc + metaSexoFem} / {metaTotalInput} (100% Amostral)
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
             {/* Masculino */}
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+            <div className={`p-3 rounded-xl border bg-surface-raised border-ui`}>
               <div className="flex items-center justify-between text-xs font-semibold">
-                <span className="text-blue-400 font-bold">Masculino</span>
+                <span className="text-accent-primary font-bold">Masculino</span>
                 <span className="font-mono">{masculinoPercent}%</span>
               </div>
               <div className="mt-1 flex items-baseline justify-between">
-                <span className="text-lg font-bold text-white">{metaSexoMasc}</span>
-                <span className="text-[10px] text-slate-400">coletas alvo</span>
+                <span className="text-lg font-bold text-primary">{metaSexoMasc}</span>
+                <span className="text-[10px] text-muted">coletas alvo</span>
               </div>
             </div>
 
@@ -905,12 +884,12 @@ export const TeamSizingModule: React.FC = () => {
                 onChange={(e) => setMasculinoPercent(parseInt(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-slate-500">
+              <div className="flex justify-between text-[10px] text-muted">
                 <span>Mais Masculino</span>
                 <button
                   type="button"
                   onClick={() => setMasculinoPercent(50)}
-                  className="underline hover:text-blue-400"
+                  className="underline hover:text-accent-primary"
                 >
                   Resetar 50%/50%
                 </button>
@@ -919,14 +898,14 @@ export const TeamSizingModule: React.FC = () => {
             </div>
 
             {/* Feminino */}
-            <div className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+            <div className={`p-3 rounded-xl border bg-surface-raised border-ui`}>
               <div className="flex items-center justify-between text-xs font-semibold">
-                <span className="text-pink-400 font-bold">Feminino</span>
+                <span className="text-accent-danger font-bold">Feminino</span>
                 <span className="font-mono">{100 - masculinoPercent}%</span>
               </div>
               <div className="mt-1 flex items-baseline justify-between">
-                <span className="text-lg font-bold text-white">{metaSexoFem}</span>
-                <span className="text-[10px] text-slate-400">coletas alvo</span>
+                <span className="text-lg font-bold text-primary">{metaSexoFem}</span>
+                <span className="text-[10px] text-muted">coletas alvo</span>
               </div>
             </div>
           </div>
@@ -936,34 +915,34 @@ export const TeamSizingModule: React.FC = () => {
       {/* 4. Matriz de Sensibilidade & Análise de Cenários */}
       <div
         className={`p-6 rounded-2xl border transition-all ${
-          darkMode ? 'bg-[#16171d] border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+          'bg-surface border-ui'
         }`}
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
           <div>
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-blue-500" />
-              <h2 className={`text-sm font-bold uppercase tracking-wider ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              <BarChart3 className="h-4 w-4 text-accent-primary" />
+              <h2 className={`text-sm font-bold uppercase tracking-wider text-primary`}>
                 Matriz de Sensibilidade: Prazo de Campo vs. Produtividade
               </h2>
             </div>
-            <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+            <p className={`text-xs mt-0.5 text-muted`}>
               Quantidade mínima de pesquisadores necessária em cada combinação de prazo e produtividade para a meta de {metaTotalInput} entrevistas. Clique em uma célula para adotar o cenário.
             </p>
           </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-raised text-secondary border border-ui">
             Célula destacada = Cenário Atual
           </span>
         </div>
 
         {/* Tabela da Matriz de Sensibilidade */}
-        <div className="overflow-x-auto rounded-xl border border-slate-800/80">
+        <div className="overflow-x-auto rounded-xl border border-ui/80">
           <table className="w-full text-xs text-left">
-            <thead className={`text-[11px] font-bold uppercase tracking-wider ${darkMode ? 'bg-slate-900 text-slate-300' : 'bg-slate-100 text-slate-700'}`}>
+            <thead className={`text-[11px] font-bold uppercase tracking-wider bg-surface-raised text-secondary`}>
               <tr>
-                <th className="px-4 py-3 border-r border-slate-800">
+                <th className="px-4 py-3 border-r border-ui">
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5 text-blue-400" />
+                    <Calendar className="h-3.5 w-3.5 text-accent-primary" />
                     <span>Prazo (Dias)</span>
                   </div>
                 </th>
@@ -974,7 +953,7 @@ export const TeamSizingModule: React.FC = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-ui/60">
               {diasList.map((dias, dIdx) => {
                 const isCurrentDias = dias === diasCampoInput;
                 return (
@@ -982,16 +961,12 @@ export const TeamSizingModule: React.FC = () => {
                     key={dias}
                     className={`transition-colors ${
                       isCurrentDias
-                        ? darkMode
-                          ? 'bg-blue-600/10'
-                          : 'bg-blue-50'
-                        : darkMode
-                        ? 'hover:bg-slate-800/40'
-                        : 'hover:bg-slate-50'
+                        ? 'bg-accent-primary-soft'
+                        : 'hover:bg-surface-raised'
                     }`}
                   >
-                    <td className="px-4 py-2.5 font-bold border-r border-slate-800 whitespace-nowrap">
-                      <span className={isCurrentDias ? 'text-blue-400 font-extrabold' : darkMode ? 'text-slate-300' : 'text-slate-800'}>
+                    <td className="px-4 py-2.5 font-bold border-r border-ui whitespace-nowrap">
+                      <span className={isCurrentDias ? 'text-accent-primary font-extrabold' : 'text-secondary'}>
                         {dias} dia{dias > 1 ? 's' : ''} de campo
                       </span>
                     </td>
@@ -1009,18 +984,12 @@ export const TeamSizingModule: React.FC = () => {
                             }}
                             className={`w-full py-1.5 px-2 rounded-lg font-bold text-xs transition-all ${
                               isCurrentCell
-                                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/40 ring-2 ring-blue-400'
+                                ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-600/40 ring-2 ring-blue-400'
                                 : count <= 5
-                                ? darkMode
-                                  ? 'bg-emerald-950/30 text-emerald-400 hover:bg-emerald-900/40 border border-emerald-800/30'
-                                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                                ? 'bg-accent-success-soft text-accent-success hover:bg-accent-success-solid/20 border border-emerald-800/30'
                                 : count <= 12
-                                ? darkMode
-                                  ? 'bg-slate-800/60 text-slate-200 hover:bg-slate-800'
-                                  : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
-                                : darkMode
-                                ? 'bg-amber-950/30 text-amber-400 hover:bg-amber-900/40 border border-amber-800/30'
-                                : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                                ? 'bg-surface-raised text-primary hover:bg-surface-raised'
+                                : 'bg-accent-warning-soft text-accent-warning hover:bg-accent-warning-solid/20 border border-amber-800/30'
                             }`}
                             title={`Adotar cenário: ${dias} dias x ${prod} entr./dia = ${count} pesquisadores`}
                           >
@@ -1040,18 +1009,18 @@ export const TeamSizingModule: React.FC = () => {
       {/* 5. Escalação da Equipe & Gestão de Colaboradores de Campo */}
       <div
         className={`p-6 rounded-2xl border transition-all ${
-          darkMode ? 'bg-[#16171d] border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+          'bg-surface border-ui'
         }`}
       >
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-800/80 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-ui/80 mb-4">
           <div>
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-blue-500" />
-              <h2 className={`text-sm font-bold uppercase tracking-wider ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              <Users className="h-4 w-4 text-accent-primary" />
+              <h2 className={`text-sm font-bold uppercase tracking-wider text-primary`}>
                 Escalação da Equipe de Campo ({allocatedCollaborators.length} de {availableResearchers.length} alocados)
               </h2>
             </div>
-            <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+            <p className={`text-xs mt-0.5 text-muted`}>
               Vincule pesquisadores à pesquisa para cobrir a cota mínima de {sizing.minPesquisadores} profissionais.
             </p>
           </div>
@@ -1061,9 +1030,7 @@ export const TeamSizingModule: React.FC = () => {
               type="button"
               onClick={allocateAllAvailable}
               className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
-                  : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                'bg-surface-raised border-ui text-secondary hover:text-primary'
               }`}
             >
               Alocar Todos
@@ -1072,9 +1039,7 @@ export const TeamSizingModule: React.FC = () => {
               type="button"
               onClick={clearAllocation}
               className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
-                  : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                'bg-surface-raised border-ui text-secondary hover:text-primary'
               }`}
             >
               Limpar Equipe
@@ -1083,9 +1048,9 @@ export const TeamSizingModule: React.FC = () => {
         </div>
 
         {/* Tabela de Pesquisadores */}
-        <div className="overflow-x-auto rounded-xl border border-slate-800/80">
+        <div className="overflow-x-auto rounded-xl border border-ui/80">
           <table className="w-full text-xs text-left">
-            <thead className={`text-[11px] font-bold uppercase tracking-wider ${darkMode ? 'bg-slate-900 text-slate-300' : 'bg-slate-100 text-slate-700'}`}>
+            <thead className={`text-[11px] font-bold uppercase tracking-wider bg-surface-raised text-secondary`}>
               <tr>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Pesquisador</th>
@@ -1096,7 +1061,7 @@ export const TeamSizingModule: React.FC = () => {
                 <th className="px-4 py-3 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-ui/60">
               {availableResearchers.map((colab) => {
                 const isAllocated = allocatedIds.includes(colab.id);
                 const cotaIndividual =
@@ -1111,22 +1076,18 @@ export const TeamSizingModule: React.FC = () => {
                     key={colab.id}
                     className={`transition-colors ${
                       isAllocated
-                        ? darkMode
-                          ? 'bg-blue-600/5'
-                          : 'bg-blue-50/50'
-                        : darkMode
-                        ? 'hover:bg-slate-800/30'
-                        : 'hover:bg-slate-50'
+                        ? 'bg-accent-primary-soft'
+                        : 'hover:bg-surface-raised'
                     }`}
                   >
                     {/* Status da Alocação */}
                     <td className="px-4 py-3 whitespace-nowrap">
                       {isAllocated ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-success-soft text-accent-success border border-accent-success-soft-border">
                           <CheckCircle2 className="h-3 w-3" /> Escalado
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-raised text-muted border border-ui">
                           Não Alocado
                         </span>
                       )}
@@ -1138,19 +1099,17 @@ export const TeamSizingModule: React.FC = () => {
                         <div
                           className={`h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs ${
                             isAllocated
-                              ? 'bg-blue-600 text-white'
-                              : darkMode
-                              ? 'bg-slate-800 text-slate-400'
-                              : 'bg-slate-200 text-slate-700'
+                              ? 'bg-accent-primary-solid text-on-accent'
+                              : 'bg-surface-raised text-muted'
                           }`}
                         >
                           {colab.nome.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <div className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                          <div className={`font-bold text-primary`}>
                             {colab.nome}
                           </div>
-                          <div className="text-[10px] text-slate-500">
+                          <div className="text-[10px] text-muted">
                             CPF: {colab.cpf || 'Não informado'}
                           </div>
                         </div>
@@ -1158,25 +1117,25 @@ export const TeamSizingModule: React.FC = () => {
                     </td>
 
                     {/* Contato */}
-                    <td className="px-4 py-3 text-slate-400 font-mono text-[11px]">
+                    <td className="px-4 py-3 text-muted font-mono text-[11px]">
                       <div>@{colab.login}</div>
-                      <div className="text-[10px] text-slate-500">{colab.celular || colab.email}</div>
+                      <div className="text-[10px] text-muted">{colab.celular || colab.email}</div>
                     </td>
 
                     {/* Cota Atribuída */}
                     <td className="px-4 py-3 text-center">
                       {isAllocated ? (
-                        <span className="font-bold text-blue-400 font-mono">
+                        <span className="font-bold text-accent-primary font-mono">
                           {cotaIndividual} entr.
                         </span>
                       ) : (
-                        <span className="text-slate-500">—</span>
+                        <span className="text-muted">—</span>
                       )}
                     </td>
 
                     {/* Realizadas */}
                     <td className="px-4 py-3 text-center">
-                      <span className="font-bold font-mono text-white">
+                      <span className="font-bold font-mono text-primary">
                         {realizadas}
                       </span>
                     </td>
@@ -1186,18 +1145,18 @@ export const TeamSizingModule: React.FC = () => {
                       {isAllocated ? (
                         <div className="w-32">
                           <div className="flex items-center justify-between text-[10px] mb-1">
-                            <span className="text-slate-400 font-semibold">{pct}%</span>
-                            <span className="text-slate-500">{realizadas}/{cotaIndividual}</span>
+                            <span className="text-muted font-semibold">{pct}%</span>
+                            <span className="text-muted">{realizadas}/{cotaIndividual}</span>
                           </div>
-                          <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                          <div className="h-1.5 w-full bg-surface-raised rounded-full overflow-hidden">
                             <div
-                              className={`h-full ${pct >= 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                              className={`h-full ${pct >= 100 ? 'bg-accent-success-solid' : 'bg-accent-primary-solid'}`}
                               style={{ width: `${pct}%` }}
                             />
                           </div>
                         </div>
                       ) : (
-                        <span className="text-slate-500 text-[11px]">Não atribuído</span>
+                        <span className="text-muted text-[11px]">Não atribuído</span>
                       )}
                     </td>
 
@@ -1208,8 +1167,8 @@ export const TeamSizingModule: React.FC = () => {
                         onClick={() => toggleAllocateResearcher(colab.id)}
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                           isAllocated
-                            ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20'
-                            : 'bg-blue-600 text-white shadow-xs hover:bg-blue-500'
+                            ? 'bg-accent-danger-soft text-accent-danger border border-accent-danger-soft-border hover:bg-accent-danger-soft'
+                            : 'bg-accent-primary-solid text-on-accent shadow-xs hover:bg-accent-primary-solid-hover'
                         }`}
                       >
                         {isAllocated ? (

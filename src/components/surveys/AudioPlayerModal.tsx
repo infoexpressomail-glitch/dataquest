@@ -50,18 +50,18 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay-modal backdrop-blur-sm p-4">
+      <div className="w-full max-w-lg rounded-2xl border border-ui bg-surface p-6 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-ui pb-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/20 border border-blue-500/30 text-blue-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-soft border border-accent-primary-soft-border text-accent-primary">
               <Volume2 className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">
+              <h3 className="text-sm font-bold text-primary">
                 Gravação de Áudio da Entrevista
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-muted">
                 Arquivo: {submission.audioGravacao?.nomeArquivo || 'gravacao_audio.wav'}
               </p>
             </div>
@@ -69,32 +69,32 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
 
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-primary transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Metadata info */}
-        <div className="mt-4 rounded-xl bg-[#111218] border border-slate-800 p-3 text-xs">
-          <div className="grid grid-cols-2 gap-2 text-slate-300">
+        <div className="mt-4 rounded-xl bg-surface-card border border-ui p-3 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-secondary">
             <div>
-              <span className="font-semibold text-slate-400">Pesquisa:</span> {submission.pesquisaNome}
+              <span className="font-semibold text-muted">Pesquisa:</span> {submission.pesquisaNome}
             </div>
             <div>
-              <span className="font-semibold text-slate-400">Cód:</span> {submission.codigoPesquisa}
+              <span className="font-semibold text-muted">Cód:</span> {submission.codigoPesquisa}
             </div>
             <div>
-              <span className="font-semibold text-slate-400">Pesquisador:</span> {submission.pesquisadorNome}
+              <span className="font-semibold text-muted">Pesquisador:</span> {submission.pesquisadorNome}
             </div>
             <div>
-              <span className="font-semibold text-slate-400">Data:</span> {new Date(submission.dataHora).toLocaleString('pt-BR')}
+              <span className="font-semibold text-muted">Data:</span> {new Date(submission.dataHora).toLocaleString('pt-BR')}
             </div>
           </div>
         </div>
 
         {/* Audio Waveform visualization */}
-        <div className="mt-6 rounded-xl border border-slate-800 bg-[#0a0b10] p-5 text-white">
+        <div className="mt-6 rounded-xl border border-ui bg-surface-app p-5 text-primary">
           <div className="flex h-16 items-end justify-between gap-1 px-2">
             {Array.from({ length: 36 }).map((_, idx) => {
               const activeRatio = progress / duration;
@@ -107,8 +107,8 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
                   key={idx}
                   className={`w-1.5 rounded-full transition-all duration-300 ${
                     isPassed
-                      ? 'bg-blue-500 shadow-sm shadow-blue-500/50'
-                      : 'bg-slate-800'
+                      ? 'bg-accent-primary-solid shadow-sm shadow-blue-500/50'
+                      : 'bg-surface-raised'
                   }`}
                   style={{ height: `${height}%` }}
                 />
@@ -117,7 +117,7 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
           </div>
 
           {/* Time & Progress bar */}
-          <div className="mt-4 flex items-center justify-between text-xs font-mono text-slate-400">
+          <div className="mt-4 flex items-center justify-between text-xs font-mono text-muted">
             <span>{formatSeconds(progress)}</span>
             <span>{formatSeconds(duration)}</span>
           </div>
@@ -127,20 +127,20 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
             <button
               onClick={() => setProgress(0)}
               title="Reiniciar"
-              className="rounded-full p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+              className="rounded-full p-2 text-muted hover:bg-surface-raised hover:text-primary transition-colors"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
 
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
             >
               {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
             </button>
 
-            <div className="flex items-center gap-1 text-xs text-slate-400">
-              <Mic className="h-3.5 w-3.5 text-emerald-400" />
+            <div className="flex items-center gap-1 text-xs text-muted">
+              <Mic className="h-3.5 w-3.5 text-accent-success" />
               <span>44.1 kHz • WAV</span>
             </div>
           </div>
@@ -148,11 +148,11 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
 
         {/* Transcription snippet */}
         {submission.audioGravacao?.transcricaoTrecho && (
-          <div className="mt-4 rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs">
-            <span className="font-bold text-slate-300">
+          <div className="mt-4 rounded-xl border border-ui bg-surface-card p-3 text-xs">
+            <span className="font-bold text-secondary">
               Transcrição Fonética Registrada:
             </span>
-            <p className="mt-1 italic text-slate-400">
+            <p className="mt-1 italic text-muted">
               "{submission.audioGravacao.transcricaoTrecho}"
             </p>
           </div>
@@ -161,13 +161,13 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
         <div className="mt-6 flex items-center justify-between">
           <button
             onClick={handleDownload}
-            className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+            className="flex items-center gap-1.5 rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3.5 py-2 text-xs font-bold text-accent-purple hover:bg-accent-purple-soft transition-colors shadow-xs"
             title="Exportar esta gravação individualmente (.wav)"
           >
             {downloadSuccess ? (
               <>
-                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                <span className="text-emerald-400">Download Concluído</span>
+                <CheckCircle2 className="h-4 w-4 text-accent-success" />
+                <span className="text-accent-success">Download Concluído</span>
               </>
             ) : (
               <>
@@ -179,7 +179,7 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
 
           <button
             onClick={onClose}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
+            className="rounded-lg border border-ui bg-surface-raised px-4 py-2 text-xs font-bold text-primary hover:bg-surface-hover hover:text-primary transition-colors"
           >
             Fechar
           </button>

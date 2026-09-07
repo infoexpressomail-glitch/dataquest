@@ -182,23 +182,23 @@ export const ExternalImportModule: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+        <h1 className="text-xl font-bold tracking-tight text-primary sm:text-2xl">
           Módulo de Importação Externa
         </h1>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-muted">
           Importe pesquisas completas estruturadas ou lotes de respostas em formato CSV ou Excel.
         </p>
       </div>
 
       {/* Mode selection tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+      <div className="flex items-center gap-2 border-b border-ui pb-3">
         {canImportSurvey && (
           <button
             onClick={() => setImportType('pesquisa')}
             className={`rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
               importType === 'pesquisa'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
-                : 'border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40'
+                : 'border border-ui bg-surface-raised text-secondary hover:bg-surface-hover hover:text-primary'
             }`}
           >
             Importar Estrutura de Pesquisa (CSV/XLSX)
@@ -210,8 +210,8 @@ export const ExternalImportModule: React.FC = () => {
             onClick={() => setImportType('respostas')}
             className={`rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
               importType === 'respostas'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
-                : 'border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40'
+                : 'border border-ui bg-surface-raised text-secondary hover:bg-surface-hover hover:text-primary'
             }`}
           >
             Importar Lote de Respostas Externas
@@ -221,14 +221,14 @@ export const ExternalImportModule: React.FC = () => {
 
       {/* Target Survey selection if importing responses */}
       {importType === 'respostas' && (
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
-          <label className="text-xs font-bold text-slate-300">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
+          <label className="text-xs font-bold text-secondary">
             Selecione a Pesquisa de Destino para as Respostas:
           </label>
           <select
             value={selectedSurveyId}
             onChange={(e) => setSelectedSurveyId(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-800 bg-[#111218] px-3 py-2 text-xs text-slate-200 focus:border-blue-500 focus:outline-none max-w-md"
+            className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none max-w-md"
           >
             {surveys.map((s) => (
               <option key={s.id} value={s.id}>
@@ -247,20 +247,20 @@ export const ExternalImportModule: React.FC = () => {
         onDrop={handleDrop}
         className={`relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 text-center transition ${
           dragActive
-            ? 'border-blue-500 bg-blue-950/20'
-            : 'border-slate-800 bg-[#16171d] hover:border-slate-700'
+            ? 'border-blue-500 bg-accent-primary-soft'
+            : 'border-ui bg-surface hover:border-ui'
         }`}
       >
-        <UploadCloud className="h-12 w-12 text-blue-400" />
-        <h3 className="mt-3 text-sm font-bold text-white">
+        <UploadCloud className="h-12 w-12 text-accent-primary" />
+        <h3 className="mt-3 text-sm font-bold text-primary">
           Arraste e solte o arquivo CSV ou Excel aqui
         </h3>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-muted">
           Suporte completo para codificação UTF-8, ponto-e-vírgula (;) e vírgula (,).
         </p>
 
         {/* Input file manual click */}
-        <label className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors">
+        <label className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors">
           <span>Selecionar Arquivo do Computador</span>
           <input
             type="file"
@@ -271,8 +271,8 @@ export const ExternalImportModule: React.FC = () => {
         </label>
 
         {file && (
-          <div className="mt-4 flex items-center gap-2 rounded-lg border border-slate-800 bg-[#111218] px-3 py-1.5 text-xs font-semibold text-slate-200">
-            <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
+          <div className="mt-4 flex items-center gap-2 rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs font-semibold text-primary">
+            <FileSpreadsheet className="h-4 w-4 text-accent-success" />
             <span>
               {file.name} ({(file.size / 1024).toFixed(1)} KB)
             </span>
@@ -282,27 +282,27 @@ export const ExternalImportModule: React.FC = () => {
 
       {/* Import Status Alert */}
       {importStatus && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-xs font-bold text-emerald-300">
-          <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+        <div className="flex items-center gap-2 rounded-2xl border border-accent-success-soft-border bg-accent-success-soft p-4 text-xs font-bold text-accent-success">
+          <CheckCircle2 className="h-5 w-5 text-accent-success" />
           <span>{importStatus}</span>
         </div>
       )}
 
       {/* File Preview Table */}
       {previewRows.length > 0 && (
-        <div className="space-y-3 rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl">
+        <div className="space-y-3 rounded-2xl border border-ui bg-surface p-5 shadow-xl">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-secondary">
               Pré-visualização das Primeiras Linhas Identificadas
             </h3>
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] text-muted">
               {previewRows.length} linhas lidas
             </span>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-slate-800">
+          <div className="overflow-x-auto rounded-xl border border-ui">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-[#111218] font-bold text-slate-300">
+              <thead className="border-b border-ui bg-surface-card font-bold text-secondary">
                 <tr>
                   {previewRows[0]?.map((col, idx) => (
                     <th key={idx} className="p-3">
@@ -311,11 +311,11 @@ export const ExternalImportModule: React.FC = () => {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-ui">
                 {previewRows.slice(1).map((row, rowIdx) => (
-                  <tr key={rowIdx} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={rowIdx} className="hover:bg-surface-raised transition-colors">
                     {row.map((val, colIdx) => (
-                      <td key={colIdx} className="p-3 text-slate-300">
+                      <td key={colIdx} className="p-3 text-secondary">
                         {val}
                       </td>
                     ))}
@@ -328,7 +328,7 @@ export const ExternalImportModule: React.FC = () => {
           <div className="flex justify-end pt-3">
             <button
               onClick={handleExecuteImport}
-              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition-colors"
+              className="flex items-center gap-1.5 rounded-lg bg-accent-success-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-success-solid-hover transition-colors"
             >
               <FileCheck2 className="h-4 w-4" />
               <span>Confirmar e Efetivar Importação</span>

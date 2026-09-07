@@ -78,21 +78,21 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
   const marginPresets = [2.0, 2.5, 3.0, 3.5, 4.0, 5.0];
 
   return (
-    <div className="rounded-xl bg-[#16171d] border border-slate-700/80 shadow-md overflow-hidden transition-all">
+    <div className="rounded-xl bg-surface border border-ui/80 shadow-md overflow-hidden transition-all">
       {/* Header */}
-      <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-900/30 via-slate-900/50 to-indigo-900/30 border-b border-slate-700/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="p-4 sm:p-5 bg-surface-raised border-b border-ui/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shrink-0">
+          <div className="h-10 w-10 rounded-lg bg-accent-primary-soft border border-accent-primary-soft-border flex items-center justify-center text-accent-primary shrink-0">
             <Calculator className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+            <h3 className="text-sm sm:text-base font-bold text-primary flex items-center gap-2">
               <span>Cálculo da Margem de Confiança & Amostra Mínima Ideal</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/40">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent-primary-soft text-accent-primary border border-blue-400/40">
                 Padrão Estatístico Cochran
               </span>
             </h3>
-            <p className="text-xs text-slate-300 mt-0.5">
+            <p className="text-xs text-secondary mt-0.5">
               Defina a porcentagem de confiança desejada e veja o número exato de coletas mínimas para garantir a precisão ideal.
             </p>
           </div>
@@ -104,8 +104,8 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
             onClick={handleApply}
             className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm shrink-0 ${
               appliedFeedback
-                ? 'bg-emerald-600 text-white'
-                : 'bg-blue-600 hover:bg-blue-500 text-white border border-blue-500'
+                ? 'bg-accent-success-solid text-on-accent'
+                : 'bg-accent-primary-solid hover:bg-accent-primary-solid-hover text-on-accent border border-blue-500'
             }`}
           >
             {appliedFeedback ? (
@@ -127,15 +127,15 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
       <div className="p-4 sm:p-5 space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Nível / Margem de Confiança (%) */}
-          <div className="space-y-3 p-3.5 rounded-xl bg-slate-900/60 border border-slate-700/80">
+          <div className="space-y-3 p-3.5 rounded-xl bg-surface-raised border border-ui/80">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-blue-400" />
+              <label className="text-xs font-bold text-primary flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-accent-primary" />
                 <span>Nível de Confiança da Pesquisa (%)</span>
               </label>
               <div className="flex items-center gap-1">
-                <span className="text-base font-extrabold text-blue-400">{confidencePercent}%</span>
-                <span className="text-[11px] text-slate-400">(Z = {sampleResult.zScore})</span>
+                <span className="text-base font-extrabold text-accent-primary">{confidencePercent}%</span>
+                <span className="text-[11px] text-muted">(Z = {sampleResult.zScore})</span>
               </div>
             </div>
 
@@ -147,12 +147,12 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
               step="0.1"
               value={confidencePercent}
               onChange={(e) => setConfidencePercent(parseFloat(e.target.value))}
-              className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="w-full h-2 bg-surface-raised rounded-lg appearance-none cursor-pointer accent-blue-600"
             />
 
             {/* Presets Rápidos */}
             <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[10px] uppercase font-bold text-slate-400 mr-1">Atalhos:</span>
+              <span className="text-[10px] uppercase font-bold text-muted mr-1">Atalhos:</span>
               {confidencePresets.map((pct) => (
                 <button
                   key={pct}
@@ -160,8 +160,8 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
                   onClick={() => setConfidencePercent(pct)}
                   className={`px-2 py-1 rounded text-xs font-bold transition-all ${
                     confidencePercent === pct
-                      ? 'bg-blue-600 text-white shadow-xs border border-blue-400'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
+                      ? 'bg-accent-primary-solid text-on-accent shadow-xs border border-blue-400'
+                      : 'bg-surface-raised text-secondary hover:bg-surface-hover hover:text-primary border border-ui'
                   }`}
                 >
                   {pct}%
@@ -178,23 +178,23 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
                     const val = parseFloat(e.target.value);
                     if (!isNaN(val)) setConfidencePercent(val);
                   }}
-                  className="w-16 px-1.5 py-0.5 text-xs text-right font-bold rounded bg-slate-950 border border-slate-700 text-white"
+                  className="w-16 px-1.5 py-0.5 text-xs text-right font-bold rounded bg-surface-app border border-ui text-primary"
                 />
-                <span className="text-xs text-slate-400">%</span>
+                <span className="text-xs text-muted">%</span>
               </div>
             </div>
           </div>
 
           {/* Margem de Erro Aceitável (%) */}
-          <div className="space-y-3 p-3.5 rounded-xl bg-slate-900/60 border border-slate-700/80">
+          <div className="space-y-3 p-3.5 rounded-xl bg-surface-raised border border-ui/80">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Percent className="h-4 w-4 text-emerald-400" />
+              <label className="text-xs font-bold text-primary flex items-center gap-1.5">
+                <Percent className="h-4 w-4 text-accent-success" />
                 <span>Margem de Erro Máxima Aceitável (± %)</span>
               </label>
               <div className="flex items-center gap-1">
-                <span className="text-base font-extrabold text-emerald-400">±{marginOfError}%</span>
-                <span className="text-[11px] text-slate-400">pontos percentuais</span>
+                <span className="text-base font-extrabold text-accent-success">±{marginOfError}%</span>
+                <span className="text-[11px] text-muted">pontos percentuais</span>
               </div>
             </div>
 
@@ -206,12 +206,12 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
               step="0.1"
               value={marginOfError}
               onChange={(e) => setMarginOfError(parseFloat(e.target.value))}
-              className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+              className="w-full h-2 bg-surface-raised rounded-lg appearance-none cursor-pointer accent-emerald-600"
             />
 
             {/* Presets Rápidos */}
             <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[10px] uppercase font-bold text-slate-400 mr-1">Padrões:</span>
+              <span className="text-[10px] uppercase font-bold text-muted mr-1">Padrões:</span>
               {marginPresets.map((err) => (
                 <button
                   key={err}
@@ -219,8 +219,8 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
                   onClick={() => setMarginOfError(err)}
                   className={`px-2 py-1 rounded text-xs font-bold transition-all ${
                     marginOfError === err
-                      ? 'bg-emerald-600 text-white shadow-xs border border-emerald-400'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
+                      ? 'bg-accent-success-solid text-on-accent shadow-xs border border-emerald-400'
+                      : 'bg-surface-raised text-secondary hover:bg-surface-hover hover:text-primary border border-ui'
                   }`}
                 >
                   ±{err}%
@@ -237,31 +237,31 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
                     const val = parseFloat(e.target.value);
                     if (!isNaN(val)) setMarginOfError(val);
                   }}
-                  className="w-16 px-1.5 py-0.5 text-xs text-right font-bold rounded bg-slate-950 border border-slate-700 text-white"
+                  className="w-16 px-1.5 py-0.5 text-xs text-right font-bold rounded bg-surface-app border border-ui text-primary"
                 />
-                <span className="text-xs text-slate-400">%</span>
+                <span className="text-xs text-muted">%</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* População Finita Opcional */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg bg-slate-900/40 border border-slate-700/60 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg bg-surface-raised border border-ui/60 text-xs">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={usePopulation}
               onChange={(e) => setUsePopulation(e.target.checked)}
-              className="rounded border-slate-700 text-blue-600 focus:ring-blue-500 h-4 w-4 bg-slate-900"
+              className="rounded border-ui text-accent-primary-solid focus:ring-blue-500 h-4 w-4 bg-surface-raised"
             />
-            <span className="font-semibold text-slate-200">
+            <span className="font-semibold text-primary">
               Aplicar correção para População / Eleitorado Finito (Município/Região)
             </span>
           </label>
 
           {usePopulation && (
             <div className="flex items-center gap-2">
-              <span className="text-slate-400">Total de Habitantes / Eleitores (N):</span>
+              <span className="text-muted">Total de Habitantes / Eleitores (N):</span>
               <input
                 type="number"
                 min="100"
@@ -269,7 +269,7 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
                 step="1000"
                 value={population || 50000}
                 onChange={(e) => setPopulation(parseInt(e.target.value) || 1000)}
-                className="w-28 px-2 py-1 text-xs font-bold rounded bg-slate-950 border border-slate-700 text-white text-right"
+                className="w-28 px-2 py-1 text-xs font-bold rounded bg-surface-app border border-ui text-primary text-right"
               />
             </div>
           )}
@@ -278,64 +278,64 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
         {/* Resultados Calculados em Destaque */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Card 1: Coletas Mínimas Ideais */}
-          <div className="p-4 rounded-xl bg-gradient-to-br from-blue-950/40 to-slate-900 border border-blue-500/40 flex flex-col justify-between">
+          <div className="p-4 rounded-xl bg-accent-primary-soft border border-accent-primary-soft-border flex flex-col justify-between">
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
-                <CheckCircle2 className="h-4 w-4 text-blue-400" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-accent-primary flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-accent-primary" />
                 Número Mínimo Ideal (n)
               </span>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl sm:text-4xl font-black text-white">
+                <span className="text-3xl sm:text-4xl font-black text-primary">
                   {sampleResult.sampleSize.toLocaleString('pt-BR')}
                 </span>
-                <span className="text-xs text-slate-300 font-semibold">entrevistas</span>
+                <span className="text-xs text-secondary font-semibold">entrevistas</span>
               </div>
             </div>
-            <p className="text-[11px] text-slate-300 mt-2 border-t border-slate-700/60 pt-2">
-              Garante o nível de confiança de <strong className="text-white">{sampleResult.confidencePercent}%</strong> com margem máxima de <strong className="text-white">±{sampleResult.marginOfErrorPercent}%</strong>.
+            <p className="text-[11px] text-secondary mt-2 border-t border-ui/60 pt-2">
+              Garante o nível de confiança de <strong className="text-primary">{sampleResult.confidencePercent}%</strong> com margem máxima de <strong className="text-primary">±{sampleResult.marginOfErrorPercent}%</strong>.
             </p>
           </div>
 
           {/* Card 2: Recomendação com Reserva Técnica */}
-          <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-500/40 flex flex-col justify-between">
+          <div className="p-4 rounded-xl bg-accent-purple-soft border border-accent-purple-soft-border flex flex-col justify-between">
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
-                <TrendingUp className="h-4 w-4 text-indigo-400" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-accent-purple flex items-center gap-1.5">
+                <TrendingUp className="h-4 w-4 text-accent-purple" />
                 Recomendado com Reserva (+15%)
               </span>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl sm:text-4xl font-black text-white">
+                <span className="text-3xl sm:text-4xl font-black text-primary">
                   {sampleResult.idealRecomendadoReserva.toLocaleString('pt-BR')}
                 </span>
-                <span className="text-xs text-slate-300 font-semibold">entrevistas</span>
+                <span className="text-xs text-secondary font-semibold">entrevistas</span>
               </div>
             </div>
-            <p className="text-[11px] text-slate-300 mt-2 border-t border-slate-700/60 pt-2">
+            <p className="text-[11px] text-secondary mt-2 border-t border-ui/60 pt-2">
               Margem de segurança para absorver recusas, cotas difíceis e auditorias de controle de qualidade.
             </p>
           </div>
 
           {/* Card 3: Análise da Meta Atual da Pesquisa */}
-          <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-950/40 to-slate-900 border border-emerald-500/40 flex flex-col justify-between">
+          <div className="p-4 rounded-xl bg-accent-success-soft border border-accent-success-soft-border flex flex-col justify-between">
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-accent-success flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-accent-success" />
                 Precisão na Meta Atual ({currentGoal})
               </span>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl sm:text-4xl font-black text-white">
+                <span className="text-3xl sm:text-4xl font-black text-primary">
                   ±{currentGoalMargin.marginOfErrorPercent}%
                 </span>
-                <span className="text-xs text-slate-300 font-semibold">margem de erro</span>
+                <span className="text-xs text-secondary font-semibold">margem de erro</span>
               </div>
             </div>
-            <p className="text-[11px] text-slate-300 mt-2 border-t border-slate-700/60 pt-2">
+            <p className="text-[11px] text-secondary mt-2 border-t border-ui/60 pt-2">
               {currentGoal >= sampleResult.sampleSize ? (
-                <span className="text-emerald-400 font-semibold">
+                <span className="text-accent-success font-semibold">
                   ✓ A meta atual ({currentGoal}) supera a amostra mínima necessária ({sampleResult.sampleSize}).
                 </span>
               ) : (
-                <span className="text-amber-400 font-semibold">
+                <span className="text-accent-warning font-semibold">
                   ⚠ A meta atual ({currentGoal}) tem margem de erro maior que os ±{marginOfError}% pretendidos.
                 </span>
               )}
@@ -344,12 +344,12 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
         </div>
 
         {/* Detalhes Técnicos e Fórmula Estatística */}
-        <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-700/70 text-xs text-slate-300 space-y-1.5 font-mono">
-          <div className="flex items-center gap-2 text-slate-200 font-bold font-sans">
-            <Info className="h-4 w-4 text-blue-400 shrink-0" />
+        <div className="p-3 rounded-lg bg-surface-raised border border-ui/70 text-xs text-secondary space-y-1.5 font-mono">
+          <div className="flex items-center gap-2 text-primary font-bold font-sans">
+            <Info className="h-4 w-4 text-accent-primary shrink-0" />
             <span>Memória de Cálculo Probabilístico:</span>
           </div>
-          <div className="pl-6 text-[11px] leading-relaxed text-slate-300">
+          <div className="pl-6 text-[11px] leading-relaxed text-secondary">
             {sampleResult.formulaAplicada} (com variabilidade máxima p=50%, q=50%).
           </div>
         </div>
@@ -359,7 +359,7 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
           <button
             type="button"
             onClick={() => setShowMatrix(!showMatrix)}
-            className="inline-flex items-center gap-2 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-bold text-accent-primary hover:text-accent-primary transition-colors"
           >
             <Layers className="h-4 w-4" />
             <span>
@@ -369,9 +369,9 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
           </button>
 
           {showMatrix && (
-            <div className="mt-3 overflow-x-auto rounded-xl border border-slate-700/80">
+            <div className="mt-3 overflow-x-auto rounded-xl border border-ui/80">
               <table className="w-full text-xs text-left">
-                <thead className="bg-slate-900/90 text-slate-200 border-b border-slate-700/80">
+                <thead className="bg-surface-raised text-primary border-b border-ui/80">
                   <tr>
                     <th className="py-2.5 px-3 font-bold">Nível de Confiança</th>
                     {matrixData.marginsOfError.map((err) => (
@@ -381,18 +381,18 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800 text-slate-300 bg-[#16171d]">
+                <tbody className="divide-y divide-ui text-secondary bg-surface">
                   {matrixData.confidenceLevels.map((conf, cIdx) => {
                     const isCurrentConf = Math.abs(confidencePercent - conf) < 0.2;
                     return (
                       <tr
                         key={conf}
-                        className={isCurrentConf ? 'bg-blue-600/10 font-bold' : 'hover:bg-slate-900/50'}
+                        className={isCurrentConf ? 'bg-accent-primary-soft font-bold' : 'hover:bg-surface-raised'}
                       >
-                        <td className="py-2.5 px-3 flex items-center gap-1.5 text-white">
+                        <td className="py-2.5 px-3 flex items-center gap-1.5 text-primary">
                           <span>{conf}%</span>
                           {isCurrentConf && (
-                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-blue-500/20 text-blue-300">
+                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-accent-primary-soft text-accent-primary">
                               ativo
                             </span>
                           )}
@@ -411,8 +411,8 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
                                 }}
                                 className={`w-full py-1 px-1.5 rounded transition-all font-bold ${
                                   isCurrentCell
-                                    ? 'bg-blue-600 text-white shadow-xs'
-                                    : 'hover:bg-slate-800 text-slate-200'
+                                    ? 'bg-accent-primary-solid text-on-accent shadow-xs'
+                                    : 'hover:bg-surface-raised text-primary'
                                 }`}
                                 title={`Clique para adotar: ${conf}% de confiança e ±${err}% de erro`}
                               >
@@ -426,7 +426,7 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
                   })}
                 </tbody>
               </table>
-              <div className="p-2 bg-slate-900/60 border-t border-slate-700/80 text-[10px] text-slate-400 text-center">
+              <div className="p-2 bg-surface-raised border-t border-ui/80 text-[10px] text-muted text-center">
                 Dica: Clique em qualquer célula da tabela para simular instantaneamente o número de coletas correspondente.
               </div>
             </div>

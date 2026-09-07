@@ -28,7 +28,6 @@ const MainContent: React.FC = () => {
     setActiveModule,
     hasPermission,
     currentProfile,
-    darkMode,
   } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [twoFactorModalOpen, setTwoFactorModalOpen] = useState(false);
@@ -36,9 +35,7 @@ const MainContent: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <div
-        className={`min-h-screen flex flex-col font-sans transition-colors selection:bg-blue-600 selection:text-white ${
-          darkMode ? 'bg-[#0a0b10] text-[#e2e8f0]' : 'bg-[#f8fafc] text-[#0f172a]'
-        }`}
+        className="min-h-screen flex flex-col font-sans transition-colors selection:bg-accent-primary-solid selection:text-on-accent bg-surface-app text-on-accent"
       >
         <LoginScreen />
         <PWAFirstVisitMobilePrompt onProceedToLogin={() => {}} />
@@ -93,19 +90,19 @@ const MainContent: React.FC = () => {
   const renderModule = () => {
     if (!isAllowed) {
       return (
-        <div className="mx-auto my-12 max-w-lg rounded-2xl border border-slate-800 bg-[#16171d] p-8 text-center shadow-2xl">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600/10 text-blue-400 border border-blue-500/20">
+        <div className="mx-auto my-12 max-w-lg rounded-2xl border border-ui bg-surface p-8 text-center shadow-2xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-primary-soft text-accent-primary-soft-text border border-accent-primary-soft-border">
             <ShieldAlert className="h-8 w-8" />
           </div>
-          <h2 className="mt-4 text-base font-bold text-white">
+          <h2 className="mt-4 text-base font-bold text-primary">
             Acesso Restrito pelas Políticas de Acesso
           </h2>
-          <p className="mt-2 text-xs text-slate-400 leading-relaxed">
+          <p className="mt-2 text-xs text-muted leading-relaxed">
             O seu perfil de colaborador atual não possui a permissão necessária para acessar este módulo. Solicite autorização a um Administrador ou alterne o usuário de teste no cabeçalho superior.
           </p>
           <button
             onClick={() => setActiveModule('home')}
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:opacity-90 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Retornar ao Início</span>
@@ -152,9 +149,7 @@ const MainContent: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen pb-10 flex flex-col font-sans transition-colors selection:bg-blue-600 selection:text-white ${
-        darkMode ? 'bg-[#0a0b10] text-[#e2e8f0]' : 'bg-[#f8fafc] text-[#0f172a]'
-      }`}
+      className="min-h-screen pb-10 flex flex-col font-sans transition-colors selection:bg-accent-primary-solid selection:text-on-accent bg-surface-app text-on-accent"
     >
       {/* Top Header */}
       <Header
@@ -176,24 +171,20 @@ const MainContent: React.FC = () => {
 
       {/* Bottom Status/Language Bar (Immersive UI) */}
       <footer
-        className={`fixed bottom-0 left-0 md:left-64 right-0 h-8 backdrop-blur-md border-t px-4 sm:px-6 flex items-center justify-between z-20 text-[10px] transition-colors ${
-          darkMode
-            ? 'bg-[#0a0b10]/95 border-slate-800/80 text-slate-500'
-            : 'bg-white/95 border-slate-200 text-slate-600 shadow-xs'
-        }`}
+        className="fixed bottom-0 left-0 md:left-64 right-0 h-8 backdrop-blur-md border-t border-subtle px-4 sm:px-6 flex items-center justify-between z-20 text-[10px] transition-colors bg-surface-app/95 text-muted shadow-xs"
       >
         <div className="flex items-center gap-3 font-semibold">
-          <span className="text-emerald-400 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="text-accent-success flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-success animate-pulse"></span>
             Servidores Online
           </span>
-          <span className="text-slate-700 hidden sm:inline">•</span>
-          <span className="text-slate-500 hidden sm:inline">v2.4.1-stable</span>
+          <span className="text-muted hidden sm:inline">•</span>
+          <span className="text-muted hidden sm:inline">v2.4.1-stable</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-slate-400 font-medium hidden sm:inline">Cluster SA-EAST-1</span>
-          <div className="h-3 w-px bg-slate-800 hidden sm:inline"></div>
-          <span className="text-slate-500 font-mono">UTC -03:00</span>
+          <span className="text-muted font-medium hidden sm:inline">Cluster SA-EAST-1</span>
+          <div className="h-3 w-px bg-strong hidden sm:inline"></div>
+          <span className="text-muted font-mono">UTC -03:00</span>
         </div>
       </footer>
 

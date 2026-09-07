@@ -258,81 +258,81 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
       {/* Top Banner & KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Metas Globais Ativas</span>
-            <div className="rounded-lg bg-blue-500/10 p-2 text-blue-400">
+            <span className="text-xs font-semibold text-muted">Metas Globais Ativas</span>
+            <div className="rounded-lg bg-accent-primary-soft p-2 text-accent-primary">
               <Globe2 className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">{totalMetas}</span>
-            <span className="text-xs text-slate-400">demográficas</span>
+            <span className="text-2xl font-bold text-primary">{totalMetas}</span>
+            <span className="text-xs text-muted">demográficas</span>
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <p className="mt-1 text-[11px] text-muted">
             Amostragens agregadas por idade, sexo e bairro
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Progresso Amostral Geral</span>
-            <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-400">
+            <span className="text-xs font-semibold text-muted">Progresso Amostral Geral</span>
+            <div className="rounded-lg bg-accent-success-soft p-2 text-accent-success">
               <Percent className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">{percentualConsolidado}%</span>
-            <span className="text-xs text-emerald-400">
+            <span className="text-2xl font-bold text-primary">{percentualConsolidado}%</span>
+            <span className="text-xs text-accent-success">
               {totalAtingidoGeral} / {totalAlvoGeral}
             </span>
           </div>
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
             <div
-              className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+              className="h-full rounded-full bg-accent-success-solid transition-all duration-500"
               style={{ width: `${percentualConsolidado}%` }}
             />
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Pesquisadores Vinculados</span>
-            <div className="rounded-lg bg-indigo-500/10 p-2 text-indigo-400">
+            <span className="text-xs font-semibold text-muted">Pesquisadores Vinculados</span>
+            <div className="rounded-lg bg-accent-purple-soft p-2 text-accent-purple">
               <Users className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">{surveyResearchers.length}</span>
-            <span className="text-xs text-indigo-400">perfis alocados</span>
+            <span className="text-2xl font-bold text-primary">{surveyResearchers.length}</span>
+            <span className="text-xs text-accent-purple">perfis alocados</span>
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <p className="mt-1 text-[11px] text-muted">
             Cada pesquisador visualiza apenas seu progresso
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Metas Concluídas</span>
-            <div className="rounded-lg bg-cyan-500/10 p-2 text-cyan-400">
+            <span className="text-xs font-semibold text-muted">Metas Concluídas</span>
+            <div className="rounded-lg bg-accent-info-soft p-2 text-accent-info">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">{metasConcluidasCount}</span>
-            <span className="text-xs text-slate-400">de {totalMetas}</span>
+            <span className="text-2xl font-bold text-primary">{metasConcluidasCount}</span>
+            <span className="text-xs text-muted">de {totalMetas}</span>
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <p className="mt-1 text-[11px] text-muted">
             Segmentos que já alcançaram 100% da cota
           </p>
         </div>
       </div>
 
       {/* Action Bar & Dimension Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-ui bg-surface p-4 shadow-xl">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold text-slate-300 mr-2 flex items-center gap-1.5">
-            <Sliders className="h-3.5 w-3.5 text-blue-400" />
+          <span className="text-xs font-bold text-secondary mr-2 flex items-center gap-1.5">
+            <Sliders className="h-3.5 w-3.5 text-accent-primary" />
             Filtrar por Demografia:
           </span>
           {(['todas', 'idade', 'sexo', 'bairro'] as const).map((dim) => (
@@ -341,8 +341,8 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               onClick={() => setFilterDimension(dim)}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 filterDimension === dim
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-900/30'
-                  : 'bg-slate-800/60 text-slate-400 hover:bg-slate-800 hover:text-white'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30'
+                  : 'bg-surface-raised text-muted hover:bg-surface-raised hover:text-primary'
               }`}
             >
               {dim === 'todas'
@@ -361,7 +361,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
             type="button"
             id="btn-open-create-global-meta"
             onClick={handleOpenCreateModal}
-            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-all shrink-0"
+            className="flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-all shrink-0"
           >
             <Plus className="h-4 w-4" />
             <span>Nova Meta Global Demográfica</span>
@@ -380,10 +380,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               key={target.id}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 target.status === 'pausada'
-                  ? 'border-amber-900/40 bg-[#16171d]/80 opacity-80'
+                  ? 'border-amber-900/40 bg-surface/80 opacity-80'
                   : summary.status === 'concluida'
-                  ? 'border-emerald-800/50 bg-[#141c19]'
-                  : 'border-slate-800 bg-[#16171d]'
+                  ? 'border-emerald-800/50 bg-accent-success-soft'
+                  : 'border-ui bg-surface'
               }`}
             >
               {/* Card Header & Summary */}
@@ -394,10 +394,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
                           target.status === 'pausada'
-                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                            ? 'bg-accent-warning-soft text-accent-warning border border-accent-warning-soft-border'
                             : summary.status === 'concluida'
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                            : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                            ? 'bg-accent-success-soft text-accent-success border border-accent-success-soft-border'
+                            : 'bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border'
                         }`}
                       >
                         {target.status === 'pausada' ? (
@@ -416,16 +416,16 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                       </span>
 
                       {target.ciclo && (
-                        <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-[10px] text-slate-400">
+                        <span className="rounded-full bg-surface-raised px-2.5 py-0.5 text-[10px] text-muted">
                           {target.ciclo}
                         </span>
                       )}
                     </div>
 
-                    <h3 className="text-base font-bold text-white">{target.titulo}</h3>
+                    <h3 className="text-base font-bold text-primary">{target.titulo}</h3>
 
                     {target.descricao && (
-                      <p className="text-xs text-slate-400 leading-relaxed max-w-3xl">
+                      <p className="text-xs text-muted leading-relaxed max-w-3xl">
                         {target.descricao}
                       </p>
                     )}
@@ -433,24 +433,24 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                     {/* Demographic Badges */}
                     <div className="flex flex-wrap items-center gap-2 pt-1">
                       {target.criterios.faixaEtaria && target.criterios.faixaEtaria !== 'Todas' && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 text-xs font-medium text-purple-300">
+                        <span className="inline-flex items-center gap-1 rounded-lg bg-accent-purple-soft border border-accent-purple-soft-border px-2.5 py-1 text-xs font-medium text-accent-purple">
                           🎂 Faixa: {target.criterios.faixaEtaria}
                         </span>
                       )}
                       {target.criterios.sexo && target.criterios.sexo !== 'Todos' && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-pink-500/10 border border-pink-500/20 px-2.5 py-1 text-xs font-medium text-pink-300">
+                        <span className="inline-flex items-center gap-1 rounded-lg bg-pink-500/10 border border-pink-500/20 px-2.5 py-1 text-xs font-medium text-accent-danger">
                           ⚧ Sexo: {target.criterios.sexo === 'F' ? 'Feminino' : target.criterios.sexo === 'M' ? 'Masculino' : target.criterios.sexo}
                         </span>
                       )}
                       {target.criterios.bairro && target.criterios.bairro !== 'Todos' && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-xs font-medium text-emerald-300">
+                        <span className="inline-flex items-center gap-1 rounded-lg bg-accent-success-soft border border-accent-success-soft-border px-2.5 py-1 text-xs font-medium text-accent-success">
                           <MapPin className="h-3 w-3" /> Bairro: {target.criterios.bairro}
                         </span>
                       )}
                       {(!target.criterios.faixaEtaria || target.criterios.faixaEtaria === 'Todas') &&
                         (!target.criterios.sexo || target.criterios.sexo === 'Todos') &&
                         (!target.criterios.bairro || target.criterios.bairro === 'Todos') && (
-                          <span className="rounded-lg bg-slate-800 px-2.5 py-1 text-xs text-slate-400">
+                          <span className="rounded-lg bg-surface-raised px-2.5 py-1 text-xs text-muted">
                             Demografia Aberta (Todos os Segmentos)
                           </span>
                         )}
@@ -461,35 +461,35 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   <div className="flex flex-col sm:flex-row lg:flex-col items-end gap-3 min-w-[220px]">
                     <div className="w-full text-right">
                       <div className="flex items-baseline justify-end gap-2">
-                        <span className="text-2xl font-black text-white">
+                        <span className="text-2xl font-black text-primary">
                           {summary.metaGlobalAtingida}
                         </span>
-                        <span className="text-xs text-slate-400">/ {summary.metaGlobalAlvo}</span>
+                        <span className="text-xs text-muted">/ {summary.metaGlobalAlvo}</span>
                         <span
                           className={`text-sm font-bold ${
                             summary.percentual >= 100
-                              ? 'text-emerald-400'
+                              ? 'text-accent-success'
                               : summary.percentual >= 75
-                              ? 'text-blue-400'
-                              : 'text-amber-400'
+                              ? 'text-accent-primary'
+                              : 'text-accent-warning'
                           }`}
                         >
                           ({summary.percentual}%)
                         </span>
                       </div>
-                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-surface-raised">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
                             summary.percentual >= 100
-                              ? 'bg-emerald-500'
+                              ? 'bg-accent-success-solid'
                               : summary.percentual >= 75
-                              ? 'bg-blue-500'
-                              : 'bg-amber-500'
+                              ? 'bg-accent-primary-solid'
+                              : 'bg-accent-warning-solid'
                           }`}
                           style={{ width: `${summary.percentual}%` }}
                         />
                       </div>
-                      <span className="mt-1 block text-[10px] text-slate-500">
+                      <span className="mt-1 block text-[10px] text-muted">
                         {summary.pesquisadoresConcluidos} de {summary.totalPesquisadoresVinculados}{' '}
                         pesquisadores com cota fechada
                       </span>
@@ -502,19 +502,19 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                           type="button"
                           onClick={() => handleTogglePause(target)}
                           title={target.status === 'pausada' ? 'Reativar meta' : 'Pausar meta'}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                          className="rounded-lg p-2 text-muted hover:bg-surface-raised hover:text-primary transition-colors"
                         >
                           {target.status === 'pausada' ? (
-                            <PlayCircle className="h-4 w-4 text-emerald-400" />
+                            <PlayCircle className="h-4 w-4 text-accent-success" />
                           ) : (
-                            <PauseCircle className="h-4 w-4 text-amber-400" />
+                            <PauseCircle className="h-4 w-4 text-accent-warning" />
                           )}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleOpenEditModal(target)}
                           title="Editar meta e cotas"
-                          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-blue-400 transition-colors"
+                          className="rounded-lg p-2 text-muted hover:bg-surface-raised hover:text-accent-primary transition-colors"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
@@ -522,7 +522,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                           type="button"
                           onClick={() => handleDelete(target.id, target.titulo)}
                           title="Excluir meta"
-                          className="rounded-lg p-2 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 transition-colors"
+                          className="rounded-lg p-2 text-muted hover:bg-accent-danger-soft hover:text-accent-danger transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -532,10 +532,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                 </div>
 
                 {/* Collapsible toggle for researcher assignments */}
-                <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3">
+                <div className="mt-4 flex items-center justify-between border-t border-ui/80 pt-3">
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-blue-400" />
-                    <span className="text-xs font-semibold text-slate-300">
+                    <Users className="h-4 w-4 text-accent-primary" />
+                    <span className="text-xs font-semibold text-secondary">
                       Pesquisadores Vinculados e Cotas Individuais ({target.atribuicoes.length})
                     </span>
                   </div>
@@ -543,7 +543,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   <button
                     type="button"
                     onClick={() => setExpandedTargetId(isExpanded ? null : target.id)}
-                    className="flex items-center gap-1 text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
+                    className="flex items-center gap-1 text-xs font-medium text-accent-primary hover:text-accent-primary transition-colors"
                   >
                     <span>{isExpanded ? 'Ocultar Detalhamento' : 'Ver Progresso por Pesquisador'}</span>
                     {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -553,12 +553,12 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
               {/* Detailed Researcher Assignment Table */}
               {isExpanded && (
-                <div className="border-t border-slate-800 bg-[#111218]/80 p-5">
+                <div className="border-t border-ui bg-surface-card/80 p-5">
                   <div className="mb-3 flex items-center justify-between">
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-muted">
                       Progresso individual apurado em tempo real com base nas entrevistas correspondentes:
                     </p>
-                    <span className="rounded-md bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-400">
+                    <span className="rounded-md bg-accent-primary-soft px-2 py-0.5 text-[10px] font-semibold text-accent-primary">
                       Tempo Real Ativo
                     </span>
                   </div>
@@ -579,31 +579,31 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                           key={assignment.pesquisadorId}
                           className={`rounded-xl border p-3.5 transition-all ${
                             isFechada
-                              ? 'border-emerald-800/60 bg-emerald-950/20'
-                              : 'border-slate-800 bg-[#16171d]'
+                              ? 'border-emerald-800/60 bg-accent-success-soft'
+                              : 'border-ui bg-surface'
                           }`}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex items-center gap-2">
-                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-slate-200">
+                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-raised text-xs font-bold text-primary">
                                 {assignment.pesquisadorNome.charAt(0)}
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-white leading-tight">
+                                <h4 className="text-xs font-bold text-primary leading-tight">
                                   {assignment.pesquisadorNome}
                                 </h4>
-                                <span className="text-[10px] text-slate-400">
+                                <span className="text-[10px] text-muted">
                                   {assignment.perfilAcessoNome || 'Pesquisador de Campo'}
                                 </span>
                               </div>
                             </div>
 
                             {isFechada ? (
-                              <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
+                              <span className="flex items-center gap-1 rounded-full bg-accent-success-soft px-2 py-0.5 text-[10px] font-bold text-accent-success border border-accent-success-soft-border">
                                 <Check className="h-3 w-3" /> Cota Feita
                               </span>
                             ) : (
-                              <span className="text-[11px] font-bold text-slate-300">
+                              <span className="text-[11px] font-bold text-secondary">
                                 {currentAtingida} / {assignment.cotaAlvo}
                               </span>
                             )}
@@ -611,22 +611,22 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-[11px] font-medium">
-                              <span className="text-slate-400">Progresso Individual</span>
-                              <span className={isFechada ? 'text-emerald-400 font-bold' : 'text-blue-400 font-bold'}>
+                              <span className="text-muted">Progresso Individual</span>
+                              <span className={isFechada ? 'text-accent-success font-bold' : 'text-accent-primary font-bold'}>
                                 {percent}%
                               </span>
                             </div>
-                            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
                               <div
                                 className={`h-full rounded-full transition-all duration-300 ${
-                                  isFechada ? 'bg-emerald-500' : 'bg-blue-500'
+                                  isFechada ? 'bg-accent-success-solid' : 'bg-accent-primary-solid'
                                 }`}
                                 style={{ width: `${Math.min(100, percent)}%` }}
                               />
                             </div>
                           </div>
 
-                          <div className="mt-2.5 flex items-center justify-between text-[10px] text-slate-500">
+                          <div className="mt-2.5 flex items-center justify-between text-[10px] text-muted">
                             <span>
                               {isFechada
                                 ? 'Meta alcançada com sucesso'
@@ -645,12 +645,12 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
         })}
 
         {filteredMetas.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-slate-800 bg-[#16171d] p-12 text-center">
-            <Globe2 className="mx-auto h-10 w-10 text-slate-600" />
-            <h3 className="mt-3 text-sm font-bold text-slate-300">
+          <div className="rounded-2xl border border-dashed border-ui bg-surface p-12 text-center">
+            <Globe2 className="mx-auto h-10 w-10 text-muted" />
+            <h3 className="mt-3 text-sm font-bold text-secondary">
               Nenhuma Meta Global Demográfica Encontrada
             </h3>
-            <p className="mt-1 text-xs text-slate-500 max-w-md mx-auto">
+            <p className="mt-1 text-xs text-muted max-w-md mx-auto">
               Defina metas de amostragem por Idade, Sexo e Bairro para garantir a representatividade
               estatística da pesquisa e vincule quotas individuais a cada pesquisador.
             </p>
@@ -658,7 +658,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               <button
                 type="button"
                 onClick={handleOpenCreateModal}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 Cadastrar Primeira Meta Global
@@ -670,26 +670,26 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
       {/* Modal: Criar / Editar Meta Global Demográfica */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay-modal p-4 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-2xl rounded-2xl border border-ui bg-surface p-6 shadow-2xl my-8">
+            <div className="flex items-center justify-between border-b border-ui pb-4">
               <div className="flex items-center gap-2">
-                <Globe2 className="h-5 w-5 text-blue-400" />
-                <h3 className="text-base font-bold text-white">
+                <Globe2 className="h-5 w-5 text-accent-primary" />
+                <h3 className="text-base font-bold text-primary">
                   {editingTargetId ? 'Editar Meta Global Demográfica' : 'Nova Meta Global Demográfica'}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+                className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-primary"
               >
                 ✕
               </button>
             </div>
 
             {formError && (
-              <div className="mt-4 flex items-center gap-2 rounded-lg border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-400">
+              <div className="mt-4 flex items-center gap-2 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft p-3 text-xs text-accent-danger">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{formError}</span>
               </div>
@@ -698,7 +698,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
             <form onSubmit={handleSaveTarget} className="mt-4 space-y-4">
               {/* Título e Descrição */}
               <div>
-                <label className="block text-xs font-bold text-slate-300">
+                <label className="block text-xs font-bold text-secondary">
                   Título da Meta Amostral *
                 </label>
                 <input
@@ -707,12 +707,12 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   value={titulo}
                   onChange={(e) => setTitulo(e.target.value)}
                   placeholder="Ex: Jovens 18 a 25 anos - Praça da Matriz"
-                  className="mt-1 w-full rounded-xl border border-slate-800 bg-[#111218] px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300">
+                <label className="block text-xs font-bold text-secondary">
                   Instruções de Campo / Descrição (Opcional)
                 </label>
                 <textarea
@@ -720,27 +720,27 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
                   placeholder="Ex: Abordar no perímetro do estande municipal ou entrada sul..."
-                  className="mt-1 w-full rounded-xl border border-slate-800 bg-[#111218] px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none resize-none"
+                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none resize-none"
                 />
               </div>
 
               {/* Critérios Demográficos (Idade, Sexo, Bairro) */}
-              <div className="rounded-xl border border-slate-800 bg-[#111218]/80 p-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
-                  <Sliders className="h-3.5 w-3.5 text-blue-400" />
+              <div className="rounded-xl border border-ui bg-surface-card/80 p-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-secondary mb-3 flex items-center gap-1.5">
+                  <Sliders className="h-3.5 w-3.5 text-accent-primary" />
                   Critérios de Agregação Demográfica
                 </h4>
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   {/* Faixa Etária */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-400">
+                    <label className="block text-xs font-medium text-muted">
                       🎂 Faixa Etária
                     </label>
                     <select
                       value={faixaEtaria}
                       onChange={(e) => setFaixaEtaria(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-2 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todas">Todas as faixas</option>
                       {FAIXAS_ETARIAS_PADRAO.map((faixa) => (
@@ -753,13 +753,13 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
                   {/* Sexo */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-400">
+                    <label className="block text-xs font-medium text-muted">
                       ⚧ Sexo / Gênero
                     </label>
                     <select
                       value={sexo}
                       onChange={(e) => setSexo(e.target.value as any)}
-                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-2 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todos">Todos os gêneros</option>
                       <option value="F">Feminino</option>
@@ -770,13 +770,13 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
                   {/* Bairro */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-400">
+                    <label className="block text-xs font-medium text-muted">
                       📍 Bairro / Região
                     </label>
                     <select
                       value={bairro}
                       onChange={(e) => setBairro(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-2 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todos">Todos os bairros</option>
                       {OPCOES_BAIRROS_PADRAO.map((b) => (
@@ -792,10 +792,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               {/* Meta Alvo Total */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300">
+                  <label className="block text-xs font-bold text-secondary">
                     Meta Global Alvo (Coletas Consolidadas)
                   </label>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-muted">
                     Total esperado para este estrato demográfico
                   </span>
                 </div>
@@ -805,19 +805,19 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   required
                   value={metaGlobalAlvo}
                   onChange={(e) => setMetaGlobalAlvo(Number(e.target.value))}
-                  className="w-32 rounded-xl border border-slate-800 bg-[#111218] px-3.5 py-2 text-xs font-bold text-white text-right focus:border-blue-500 focus:outline-none"
+                  className="w-32 rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs font-bold text-primary text-right focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
               {/* Vinculação de Pesquisadores e Distribuição de Cotas */}
-              <div className="rounded-xl border border-slate-800 bg-[#111218]/80 p-4">
+              <div className="rounded-xl border border-ui bg-surface-card/80 p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <UserCheck className="h-3.5 w-3.5 text-blue-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
+                      <UserCheck className="h-3.5 w-3.5 text-accent-primary" />
                       Vinculação de Perfis de Pesquisadores
                     </h4>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-muted">
                       Cada pesquisador visualiza apenas a cota atribuída a ele
                     </p>
                   </div>
@@ -825,7 +825,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   <button
                     type="button"
                     onClick={handleDistributeEqually}
-                    className="self-start sm:self-auto rounded-lg bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 text-[11px] font-semibold text-blue-400 hover:bg-blue-500/20 transition-colors"
+                    className="self-start sm:self-auto rounded-lg bg-accent-primary-soft border border-accent-primary-soft-border px-2.5 py-1 text-[11px] font-semibold text-accent-primary hover:bg-accent-primary-soft transition-colors"
                   >
                     Distribuir {metaGlobalAlvo} igualmente
                   </button>
@@ -838,7 +838,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                     return (
                       <div
                         key={researcher.id}
-                        className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#16171d] p-2.5"
+                        className="flex items-center justify-between rounded-lg border border-ui/80 bg-surface p-2.5"
                       >
                         <div className="flex items-center gap-2.5">
                           <input
@@ -857,16 +857,16 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                                 setSelectedResearchers(copy);
                               }
                             }}
-                            className="h-4 w-4 rounded border-slate-700 bg-[#111218] text-blue-600 focus:ring-0"
+                            className="h-4 w-4 rounded border-ui bg-surface-card text-accent-primary-solid focus:ring-0"
                           />
                           <div>
                             <label
                               htmlFor={`chk-${researcher.id}`}
-                              className="text-xs font-bold text-white cursor-pointer"
+                              className="text-xs font-bold text-primary cursor-pointer"
                             >
                               {researcher.nome}
                             </label>
-                            <span className="block text-[10px] text-slate-400">
+                            <span className="block text-[10px] text-muted">
                               {researcher.cargo || 'Pesquisador'} • Login: {researcher.login}
                             </span>
                           </div>
@@ -874,7 +874,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
                         {selectedResearchers[researcher.id] !== undefined && (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[11px] text-slate-400">Cota:</span>
+                            <span className="text-[11px] text-muted">Cota:</span>
                             <input
                               type="number"
                               min={1}
@@ -886,7 +886,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                                   [researcher.id]: val,
                                 }));
                               }}
-                              className="w-20 rounded-lg border border-slate-700 bg-[#111218] px-2 py-1 text-xs text-white text-center focus:border-blue-500 focus:outline-none"
+                              className="w-20 rounded-lg border border-ui bg-surface-card px-2 py-1 text-xs text-primary text-center focus:border-blue-500 focus:outline-none"
                             />
                           </div>
                         )}
@@ -897,18 +897,18 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               </div>
 
               {/* Modal Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-ui">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-xl px-4 py-2 text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                  className="rounded-xl px-4 py-2 text-xs font-medium text-muted hover:bg-surface-raised hover:text-primary transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   id="btn-save-global-meta"
-                  className="rounded-xl bg-blue-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+                  className="rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   {editingTargetId ? 'Atualizar Meta Global' : 'Salvar e Atribuir Metas'}
                 </button>

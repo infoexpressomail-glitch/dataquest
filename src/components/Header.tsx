@@ -64,26 +64,26 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
     currentProfile?.name.toLowerCase().includes('pesquisador');
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-800 bg-[#0a0b10]/90 px-4 backdrop-blur-md transition-colors sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-ui bg-surface-app/90 px-4 backdrop-blur-md transition-colors sm:px-6 lg:px-8">
       <div className="flex items-center gap-4">
         <button
           id="btn-mobile-menu-toggle"
           onClick={onToggleMobileSidebar}
           aria-label="Abrir menu de navegação"
-          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white md:hidden transition-colors"
+          className="rounded-lg p-2 text-muted hover:bg-surface-raised hover:text-primary md:hidden transition-colors"
         >
           <Menu className="h-5 w-5" />
         </button>
 
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white shadow-lg shadow-blue-900/40">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-solid font-bold text-on-accent shadow-lg shadow-blue-900/40">
             Q
           </div>
           <div>
-            <span className="text-base font-bold tracking-tight text-white">
-              Data<span className="text-blue-500">Quest</span>
+            <span className="text-base font-bold tracking-tight text-primary">
+              Data<span className="text-accent-primary">Quest</span>
             </span>
-            <span className="ml-2 hidden text-xs font-medium text-slate-500 sm:inline-block">
+            <span className="ml-2 hidden text-xs font-medium text-muted sm:inline-block">
               Gestão de Questionários
             </span>
           </div>
@@ -97,9 +97,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
             id="btn-header-researcher-badge"
             onClick={() => setActiveModule('pesquisador')}
             title="Ir para o Ambiente do Pesquisador"
-            className="flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-400 hover:bg-emerald-500/25 transition shadow-sm"
+            className="flex items-center gap-1.5 rounded-full bg-accent-success-soft border border-accent-success-soft-border px-3 py-1 text-xs font-bold text-accent-success hover:bg-accent-success-soft transition shadow-sm"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-accent-success-solid animate-pulse" />
             <span className="hidden sm:inline">Ambiente do Pesquisador</span>
             <span className="sm:hidden">Pesquisador</span>
           </button>
@@ -110,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           <button
             id="btn-header-new-survey"
             onClick={handleStartNewSurvey}
-            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+            className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
           >
             <PlusCircle className="h-4 w-4" />
             <span className="hidden sm:inline">{t('newSurvey')}</span>
@@ -124,16 +124,16 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           title="Monitor de Status de Conexão e Sincronização IndexedDB/Supabase"
           className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold border transition ${
             syncProgress.isActive
-              ? 'bg-blue-500/20 border-blue-500/50 text-blue-300 animate-pulse shadow-lg shadow-blue-500/10'
+              ? 'bg-accent-primary-soft border-accent-primary-soft-border text-accent-primary animate-pulse shadow-lg shadow-blue-500/10'
               : !effectiveOnline
-              ? 'bg-amber-500/15 border-amber-500/30 text-amber-400 hover:bg-amber-500/25'
+              ? 'bg-accent-warning-soft border-accent-warning-soft-border text-accent-warning hover:bg-accent-warning-soft'
               : pendingIndexedDbCount > 0 || offlineQueue.length > 0
-              ? 'bg-blue-500/15 border-blue-500/30 text-blue-400 hover:bg-blue-500/25'
-              : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+              ? 'bg-accent-primary-soft border-accent-primary-soft-border text-accent-primary hover:bg-accent-primary-soft'
+              : 'bg-accent-success-soft border-accent-success-soft-border text-accent-success hover:bg-accent-success-soft'
           }`}
         >
           {syncProgress.isActive ? (
-            <RefreshCw className="h-3.5 w-3.5 animate-spin text-blue-400" />
+            <RefreshCw className="h-3.5 w-3.5 animate-spin text-accent-primary" />
           ) : effectiveOnline ? (
             <Wifi className="h-3.5 w-3.5" />
           ) : (
@@ -151,7 +151,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
               : 'Online'}
           </span>
           {(pendingIndexedDbCount > 0 || offlineQueue.length > 0) && !syncProgress.isActive && (
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-slate-950">
+            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-accent-warning-solid text-[10px] font-bold text-on-warning">
               {pendingIndexedDbCount || offlineQueue.length}
             </span>
           )}
@@ -164,11 +164,11 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           title="Autenticação em Dois Fatores (2FA)"
           className={`flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider border transition ${
             twoFactorVerified
-              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
-              : 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20'
+              ? 'bg-accent-success-soft text-accent-success border-accent-success-soft-border hover:bg-accent-success-soft'
+              : 'bg-accent-warning-soft text-accent-warning border-accent-warning-soft-border hover:bg-accent-warning-soft'
           }`}
         >
-          <div className={`w-1.5 h-1.5 rounded-full ${twoFactorVerified ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+          <div className={`w-1.5 h-1.5 rounded-full ${twoFactorVerified ? 'bg-accent-success-solid animate-pulse' : 'bg-accent-warning-solid'}`} />
           <span>2FA {twoFactorVerified ? 'ATIVO' : 'PENDENTE'}</span>
         </button>
 
@@ -177,14 +177,14 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           <button
             id="btn-header-lang-selector"
             onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition"
+            className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface px-2.5 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-raised hover:text-primary transition"
           >
-            <Globe className="h-3.5 w-3.5 text-slate-400" />
+            <Globe className="h-3.5 w-3.5 text-muted" />
             <span className="uppercase">{language}</span>
           </button>
 
           {langDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-36 rounded-xl border border-slate-800 bg-[#16171d] p-1 shadow-2xl z-50">
+            <div className="absolute right-0 mt-2 w-36 rounded-xl border border-ui bg-surface p-1 shadow-2xl z-50">
               {(['pt', 'en', 'es'] as Language[]).map((lang) => (
                 <button
                   key={lang}
@@ -195,8 +195,8 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                   }}
                   className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-xs rounded-lg transition-colors ${
                     language === lang
-                      ? 'bg-blue-600/15 font-bold text-blue-400 border border-blue-600/20'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      ? 'bg-accent-primary-soft font-bold text-accent-primary border border-blue-600/20'
+                      : 'text-secondary hover:bg-surface-raised hover:text-primary'
                   }`}
                 >
                   <span>
@@ -204,7 +204,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                     {lang === 'en' && 'English'}
                     {lang === 'es' && 'Español'}
                   </span>
-                  {language === lang && <CheckCircle2 className="h-3.5 w-3.5 text-blue-400" />}
+                  {language === lang && <CheckCircle2 className="h-3.5 w-3.5 text-accent-primary" />}
                 </button>
               ))}
             </div>
@@ -216,9 +216,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           id="btn-header-dark-mode-toggle"
           onClick={() => setDarkMode(!darkMode)}
           aria-label="Alternar modo escuro"
-          className="rounded-lg border border-slate-800 bg-[#16171d] p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+          className="rounded-lg border border-ui bg-surface p-2 text-muted hover:bg-surface-raised hover:text-primary transition"
         >
-          {darkMode ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-slate-400" />}
+          {darkMode ? <Sun className="h-4 w-4 text-accent-warning" /> : <Moon className="h-4 w-4 text-muted" />}
         </button>
 
         {/* User Profile Switcher */}
@@ -226,33 +226,33 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           <button
             id="btn-header-user-menu"
             onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-            className="flex items-center gap-2.5 rounded-xl border border-slate-800 bg-[#16171d] p-1.5 pr-2.5 text-left text-xs transition hover:bg-slate-800"
+            className="flex items-center gap-2.5 rounded-xl border border-ui bg-surface p-1.5 pr-2.5 text-left text-xs transition hover:bg-surface-raised"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 text-xs font-bold text-white shadow-md shadow-blue-900/40">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 text-xs font-bold text-primary shadow-md shadow-blue-900/40">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div className="hidden text-left lg:block">
-              <div className="font-bold text-white leading-tight">
+              <div className="font-bold text-primary leading-tight">
                 {currentUser.nome.split(' ')[0]} {currentUser.nome.split(' ')[1] || ''}
               </div>
-              <div className="text-[10px] text-slate-400">
+              <div className="text-[10px] text-muted">
                 {currentProfile?.name || 'Perfil'}
               </div>
             </div>
           </button>
 
           {userDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-72 rounded-2xl border border-slate-800 bg-[#16171d] p-3 shadow-2xl z-50">
-              <div className="border-b border-slate-800 pb-2.5 px-1 text-xs">
-                <div className="font-bold text-white">{currentUser.nome}</div>
-                <div className="text-slate-400 text-[11px]">{currentUser.email}</div>
-                <span className="mt-1.5 inline-block rounded-md bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 text-[10px] font-bold text-blue-400">
+            <div className="absolute right-0 mt-2 w-72 rounded-2xl border border-ui bg-surface p-3 shadow-2xl z-50">
+              <div className="border-b border-ui pb-2.5 px-1 text-xs">
+                <div className="font-bold text-primary">{currentUser.nome}</div>
+                <div className="text-muted text-[11px]">{currentUser.email}</div>
+                <span className="mt-1.5 inline-block rounded-md bg-accent-primary-soft border border-accent-primary-soft-border px-2 py-0.5 text-[10px] font-bold text-accent-primary">
                   {currentProfile?.name}
                 </span>
               </div>
 
               <div className="py-2">
-                <div className="px-1 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <div className="px-1 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted">
                   Alternar Usuário para Testes
                 </div>
                 <div className="space-y-1 max-h-52 overflow-y-auto">
@@ -266,30 +266,30 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                       }}
                       className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-left transition-colors ${
                         currentUser.id === c.id
-                          ? 'bg-blue-600/15 font-bold text-blue-400 border border-blue-600/20'
-                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                          ? 'bg-accent-primary-soft font-bold text-accent-primary border border-blue-600/20'
+                          : 'text-secondary hover:bg-surface-raised hover:text-primary'
                       }`}
                     >
                       <div>
                         <div className="font-medium">{c.nome}</div>
-                        <div className="text-[10px] text-slate-500">login: {c.login}</div>
+                        <div className="text-[10px] text-muted">login: {c.login}</div>
                       </div>
-                      {currentUser.id === c.id && <CheckCircle2 className="h-3.5 w-3.5 text-blue-400" />}
+                      {currentUser.id === c.id && <CheckCircle2 className="h-3.5 w-3.5 text-accent-primary" />}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="border-t border-slate-800 pt-2 space-y-1">
+              <div className="border-t border-ui pt-2 space-y-1">
                 <button
                   id="btn-header-open-2fa"
                   onClick={() => {
                     setUserDropdownOpen(false);
                     onOpen2FAModal();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition"
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-secondary hover:bg-surface-raised hover:text-primary transition"
                 >
-                  <KeyRound className="h-3.5 w-3.5 text-blue-400" />
+                  <KeyRound className="h-3.5 w-3.5 text-accent-primary" />
                   <span>Configurar 2FA (Dois Fatores)</span>
                 </button>
 
@@ -299,9 +299,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                     setUserDropdownOpen(false);
                     logout();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-rose-400 hover:bg-rose-500/15 transition font-semibold"
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-accent-danger hover:bg-accent-danger-soft transition font-semibold"
                 >
-                  <LogOut className="h-3.5 w-3.5 text-rose-400" />
+                  <LogOut className="h-3.5 w-3.5 text-accent-danger" />
                   <span>Sair do Sistema</span>
                 </button>
               </div>

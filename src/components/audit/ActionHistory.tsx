@@ -165,24 +165,24 @@ export const ActionHistory: React.FC = () => {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
               <Lock className="w-3 h-3" />
               Auditoria de Conformidade
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-accent-success-soft text-accent-success border border-accent-success-soft-border">
               <ShieldCheck className="w-3 h-3" />
               LGPD Art. 16 / ISO 27001
             </span>
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl flex items-center gap-2.5">
-            <History className="h-6 w-6 text-blue-400" />
+          <h1 className="text-xl font-bold tracking-tight text-primary sm:text-2xl flex items-center gap-2.5">
+            <History className="h-6 w-6 text-accent-primary" />
             <span>Histórico de Ações & Trilha de Auditoria</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1 max-w-3xl leading-relaxed">
+          <p className="text-xs text-muted mt-1 max-w-3xl leading-relaxed">
             Registro detalhado e rastreável de todas as edições feitas em pesquisas ou respostas. Exibe{' '}
-            <strong className="text-slate-200">quem</strong> realizou a alteração,{' '}
-            <strong className="text-slate-200">o que</strong> foi modificado (com comparativo antes x depois) e{' '}
-            <strong className="text-slate-200">quando</strong> ocorreu, garantindo conformidade regulatória.
+            <strong className="text-primary">quem</strong> realizou a alteração,{' '}
+            <strong className="text-primary">o que</strong> foi modificado (com comparativo antes x depois) e{' '}
+            <strong className="text-primary">quando</strong> ocorreu, garantindo conformidade regulatória.
           </p>
         </div>
 
@@ -191,19 +191,19 @@ export const ActionHistory: React.FC = () => {
           <button
             id="btn-export-audit-csv"
             onClick={() => exportAuditLogsToCSV(filteredLogs)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition-colors shadow-sm"
+            className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-semibold text-primary hover:bg-surface-hover hover:text-primary transition-colors shadow-sm"
             title="Exportar registros filtrados para planilha CSV"
           >
-            <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
+            <FileSpreadsheet className="h-4 w-4 text-accent-success" />
             <span>Exportar CSV</span>
           </button>
           <button
             id="btn-export-audit-json"
             onClick={() => exportAuditLogsToJSON(filteredLogs)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition-colors shadow-sm"
+            className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-semibold text-primary hover:bg-surface-hover hover:text-primary transition-colors shadow-sm"
             title="Exportar pacote digital JSON com hashes de integridade"
           >
-            <FileCode className="h-4 w-4 text-cyan-400" />
+            <FileCode className="h-4 w-4 text-accent-info" />
             <span>Exportar JSON</span>
           </button>
         </div>
@@ -212,80 +212,80 @@ export const ActionHistory: React.FC = () => {
       {/* KPI Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Eventos */}
-        <div className="bg-[#16171d] p-4 rounded-xl border border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-surface p-4 rounded-xl border border-ui shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-semibold text-muted uppercase tracking-wider">
               Total de Ações
             </p>
-            <p className="text-2xl font-bold text-white mt-1">{totalLogs}</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Trilha ativa com integridade</p>
+            <p className="text-2xl font-bold text-primary mt-1">{totalLogs}</p>
+            <p className="text-[10px] text-muted mt-0.5">Trilha ativa com integridade</p>
           </div>
-          <div className="p-2.5 rounded-lg bg-blue-600/10 border border-blue-500/20 text-blue-400">
+          <div className="p-2.5 rounded-lg bg-accent-primary-soft border border-accent-primary-soft-border text-accent-primary">
             <History className="h-5 w-5" />
           </div>
         </div>
 
         {/* Edições em Respostas */}
-        <div className="bg-[#16171d] p-4 rounded-xl border border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-surface p-4 rounded-xl border border-ui shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-semibold text-muted uppercase tracking-wider">
               Edições em Respostas
             </p>
-            <p className="text-2xl font-bold text-purple-400 mt-1">{responseLogsCount}</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Retificações com justificativa</p>
+            <p className="text-2xl font-bold text-accent-purple mt-1">{responseLogsCount}</p>
+            <p className="text-[10px] text-muted mt-0.5">Retificações com justificativa</p>
           </div>
-          <div className="p-2.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400">
+          <div className="p-2.5 rounded-lg bg-accent-purple-soft border border-accent-purple-soft-border text-accent-purple">
             <MessageSquare className="h-5 w-5" />
           </div>
         </div>
 
         {/* Edições em Pesquisas */}
-        <div className="bg-[#16171d] p-4 rounded-xl border border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-surface p-4 rounded-xl border border-ui shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-semibold text-muted uppercase tracking-wider">
               Edições em Pesquisas
             </p>
-            <p className="text-2xl font-bold text-cyan-400 mt-1">{surveyLogsCount}</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Configurações & questionários</p>
+            <p className="text-2xl font-bold text-accent-info mt-1">{surveyLogsCount}</p>
+            <p className="text-[10px] text-muted mt-0.5">Configurações & questionários</p>
           </div>
-          <div className="p-2.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+          <div className="p-2.5 rounded-lg bg-accent-info-soft border border-accent-info-soft-border text-accent-info">
             <FileQuestion className="h-5 w-5" />
           </div>
         </div>
 
         {/* Operadores Auditados */}
-        <div className="bg-[#16171d] p-4 rounded-xl border border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-surface p-4 rounded-xl border border-ui shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-semibold text-muted uppercase tracking-wider">
               Operadores Auditados
             </p>
-            <p className="text-2xl font-bold text-emerald-400 mt-1">{uniqueAuthorsCount}</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Identificação nominal 100%</p>
+            <p className="text-2xl font-bold text-accent-success mt-1">{uniqueAuthorsCount}</p>
+            <p className="text-[10px] text-muted mt-0.5">Identificação nominal 100%</p>
           </div>
-          <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          <div className="p-2.5 rounded-lg bg-accent-success-soft border border-accent-success-soft-border text-accent-success">
             <User className="h-5 w-5" />
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-[#16171d] p-4 rounded-xl border border-slate-800 space-y-3">
+      <div className="bg-surface p-4 rounded-xl border border-ui space-y-3">
         <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           {/* Search box */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
             <input
               id="input-search-audit"
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por operador, código de pesquisa, justificativa de compliance ou campo alterado..."
-              className="w-full pl-9 pr-8 py-2 bg-[#0a0b10] border border-slate-800 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full pl-9 pr-8 py-2 bg-surface-app border border-ui rounded-lg text-xs text-primary placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-primary"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -293,13 +293,13 @@ export const ActionHistory: React.FC = () => {
           </div>
 
           {/* Quick Category Tabs */}
-          <div className="flex items-center gap-1 bg-[#0a0b10] p-1 rounded-lg border border-slate-800/80 overflow-x-auto text-xs shrink-0">
+          <div className="flex items-center gap-1 bg-surface-app p-1 rounded-lg border border-ui/80 overflow-x-auto text-xs shrink-0">
             <button
               onClick={() => setSelectedCategory('all')}
               className={`px-2.5 py-1 rounded text-xs font-semibold whitespace-nowrap transition-colors ${
                 selectedCategory === 'all'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-xs'
+                  : 'text-muted hover:text-primary'
               }`}
             >
               Todas ({auditLogs.length})
@@ -308,8 +308,8 @@ export const ActionHistory: React.FC = () => {
               onClick={() => setSelectedCategory('RESPOSTA')}
               className={`px-2.5 py-1 rounded text-xs font-semibold whitespace-nowrap transition-colors ${
                 selectedCategory === 'RESPOSTA'
-                  ? 'bg-purple-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-accent-purple-solid text-on-accent shadow-xs'
+                  : 'text-muted hover:text-primary'
               }`}
             >
               Respostas ({responseLogsCount})
@@ -318,8 +318,8 @@ export const ActionHistory: React.FC = () => {
               onClick={() => setSelectedCategory('PESQUISA')}
               className={`px-2.5 py-1 rounded text-xs font-semibold whitespace-nowrap transition-colors ${
                 selectedCategory === 'PESQUISA'
-                  ? 'bg-cyan-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-accent-info-solid text-primary shadow-xs'
+                  : 'text-muted hover:text-primary'
               }`}
             >
               Pesquisas ({surveyLogsCount})
@@ -328,15 +328,15 @@ export const ActionHistory: React.FC = () => {
         </div>
 
         {/* Secondary filters row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-800/60 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-ui/60 text-xs">
           {/* Filter by Operator */}
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 shrink-0">Quem:</span>
+            <span className="text-[11px] font-semibold text-muted shrink-0">Quem:</span>
             <select
               id="select-filter-operator"
               value={selectedUserLogin}
               onChange={(e) => setSelectedUserLogin(e.target.value)}
-              className="w-full bg-[#0a0b10] border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-blue-500"
             >
               <option value="all">Todos os Operadores ({collaborators.length})</option>
               {collaborators.map((c) => (
@@ -349,12 +349,12 @@ export const ActionHistory: React.FC = () => {
 
           {/* Filter by Target Type */}
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 shrink-0">Alvo:</span>
+            <span className="text-[11px] font-semibold text-muted shrink-0">Alvo:</span>
             <select
               id="select-filter-target"
               value={selectedTargetType}
               onChange={(e) => setSelectedTargetType(e.target.value)}
-              className="w-full bg-[#0a0b10] border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-blue-500"
             >
               <option value="all">Qualquer Tipo de Alvo</option>
               <option value="resposta">Somente Respostas / Coletas</option>
@@ -364,12 +364,12 @@ export const ActionHistory: React.FC = () => {
 
           {/* Filter by Period */}
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 shrink-0">Período:</span>
+            <span className="text-[11px] font-semibold text-muted shrink-0">Período:</span>
             <select
               id="select-filter-time"
               value={timeFilter}
               onChange={(e) => setTimeFilter(e.target.value)}
-              className="w-full bg-[#0a0b10] border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-blue-500"
             >
               <option value="all">Todo o Histórico</option>
               <option value="24h">Últimas 24 horas</option>
@@ -382,21 +382,21 @@ export const ActionHistory: React.FC = () => {
 
       {/* Audit Log Stream */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-          <span className="font-semibold text-slate-300">
+        <div className="flex items-center justify-between text-xs text-muted px-1">
+          <span className="font-semibold text-secondary">
             Exibindo {filteredLogs.length} registro(s) de conformidade
           </span>
-          <span className="text-[11px] text-slate-500 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[11px] text-muted flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-success-solid animate-pulse" />
             Integridade Criptográfica SHA-256 ativa
           </span>
         </div>
 
         {filteredLogs.length === 0 ? (
-          <div className="bg-[#16171d] rounded-xl border border-slate-800 p-12 text-center text-slate-400">
-            <History className="h-10 w-10 mx-auto text-slate-600 mb-3" />
-            <h3 className="text-sm font-bold text-white mb-1">Nenhum registro encontrado</h3>
-            <p className="text-xs text-slate-400 max-w-md mx-auto">
+          <div className="bg-surface rounded-xl border border-ui p-12 text-center text-muted">
+            <History className="h-10 w-10 mx-auto text-muted mb-3" />
+            <h3 className="text-sm font-bold text-primary mb-1">Nenhum registro encontrado</h3>
+            <p className="text-xs text-muted max-w-md mx-auto">
               Nenhuma ação de edição atende aos filtros selecionados. Tente ajustar os termos de busca ou selecionar &quot;Todo o Histórico&quot;.
             </p>
           </div>
@@ -410,10 +410,10 @@ export const ActionHistory: React.FC = () => {
               <div
                 key={log.id}
                 id={`audit-card-${log.id}`}
-                className="bg-[#16171d] rounded-xl border border-slate-800 p-4 sm:p-5 hover:border-slate-700/80 transition-all shadow-sm space-y-4"
+                className="bg-surface rounded-xl border border-ui p-4 sm:p-5 hover:border-ui/80 transition-all shadow-sm space-y-4"
               >
                 {/* Card Top: Badges, Target, and Timestamp */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-800/80">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-ui/80">
                   <div className="flex flex-wrap items-center gap-2">
                     {/* Action Type Badge */}
                     <span
@@ -423,30 +423,30 @@ export const ActionHistory: React.FC = () => {
                     </span>
 
                     {/* Target identifier tag */}
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700/80">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-surface-raised text-secondary border border-ui/80">
                       {log.alvo?.tipo === 'pesquisa' ? (
-                        <FileQuestion className="h-3 w-3 text-cyan-400" />
+                        <FileQuestion className="h-3 w-3 text-accent-info" />
                       ) : (
-                        <MessageSquare className="h-3 w-3 text-purple-400" />
+                        <MessageSquare className="h-3 w-3 text-accent-purple" />
                       )}
                       <span>{log.alvo?.identificador || 'N/A'}</span>
                     </span>
 
                     {/* Target survey name if present */}
                     {log.alvo?.nome && (
-                      <span className="text-xs text-slate-400 font-medium truncate max-w-xs sm:max-w-md">
+                      <span className="text-xs text-muted font-medium truncate max-w-xs sm:max-w-md">
                         • {log.alvo.nome}
                       </span>
                     )}
                   </div>
 
                   {/* QUANDO (When) Header info */}
-                  <div className="flex items-center gap-2 text-xs text-slate-400 shrink-0">
-                    <Clock className="h-3.5 w-3.5 text-slate-500" />
-                    <span className="font-semibold text-slate-300">
+                  <div className="flex items-center gap-2 text-xs text-muted shrink-0">
+                    <Clock className="h-3.5 w-3.5 text-muted" />
+                    <span className="font-semibold text-secondary">
                       {dateStr} às {timeStr}
                     </span>
-                    <span className="text-[11px] text-slate-500 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800 font-mono">
+                    <span className="text-[11px] text-muted bg-surface-raised px-2 py-0.5 rounded border border-ui font-mono">
                       {relativeTime}
                     </span>
                   </div>
@@ -455,32 +455,32 @@ export const ActionHistory: React.FC = () => {
                 {/* Card Main: QUEM (Who) + O QUÊ (What) */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                   {/* QUEM (Who) Column - 4 cols */}
-                  <div className="lg:col-span-4 bg-[#111218] p-3 rounded-lg border border-slate-800/80 space-y-2">
+                  <div className="lg:col-span-4 bg-surface-card p-3 rounded-lg border border-ui/80 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <User className="h-3 w-3 text-blue-400" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted flex items-center gap-1">
+                        <User className="h-3 w-3 text-accent-primary" />
                         Quem Alterou
                       </span>
-                      <span className="text-[10px] font-mono text-slate-500">
+                      <span className="text-[10px] font-mono text-muted">
                         IP: {log.autor?.ip || '127.0.0.1'}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3 pt-1">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-xs shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-primary shadow-xs shrink-0">
                         {(log.autor?.nome || 'U').slice(0, 2).toUpperCase()}
                       </div>
                       <div className="overflow-hidden min-w-0 flex-1">
-                        <p className="text-xs font-bold text-white truncate">{log.autor?.nome || 'Usuário'}</p>
-                        <p className="text-[11px] text-slate-400 truncate">
-                          Login: <span className="font-mono text-slate-300">@{log.autor?.login || 'usuario'}</span>
+                        <p className="text-xs font-bold text-primary truncate">{log.autor?.nome || 'Usuário'}</p>
+                        <p className="text-[11px] text-muted truncate">
+                          Login: <span className="font-mono text-secondary">@{log.autor?.login || 'usuario'}</span>
                         </p>
                       </div>
                     </div>
 
-                    <div className="pt-1.5 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500">Perfil:</span>
-                      <span className="font-semibold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded text-[10px] border border-blue-500/20">
+                    <div className="pt-1.5 border-t border-ui/60 flex items-center justify-between text-[11px]">
+                      <span className="text-muted">Perfil:</span>
+                      <span className="font-semibold text-accent-primary bg-accent-primary-soft px-2 py-0.5 rounded text-[10px] border border-accent-primary-soft-border">
                         {log.autor?.perfil || 'Operador'}
                       </span>
                     </div>
@@ -489,36 +489,36 @@ export const ActionHistory: React.FC = () => {
                   {/* O QUÊ (What) Column - 8 cols */}
                   <div className="lg:col-span-8 space-y-3">
                     <div>
-                      <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <h4 className="text-xs font-bold text-primary flex items-center gap-1.5">
                         <span>{log.tituloAcao}</span>
                       </h4>
-                      <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                      <p className="text-xs text-secondary mt-1 leading-relaxed">
                         {log.descricaoDetalhada}
                       </p>
                     </div>
 
                     {/* Diff Table / Field Changes (Antes x Depois) */}
                     {log.alteracoes && log.alteracoes.length > 0 && (
-                      <div className="bg-[#0e0f14] rounded-lg border border-slate-800/90 overflow-hidden text-xs">
-                        <div className="bg-slate-900/80 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 flex items-center justify-between">
+                      <div className="bg-surface-raised rounded-lg border border-ui/90 overflow-hidden text-xs">
+                        <div className="bg-surface-raised px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted border-b border-ui flex items-center justify-between">
                           <span>Modificações Realizadas (Antes x Depois)</span>
-                          <span className="text-slate-500">{log.alteracoes.length} item(ns)</span>
+                          <span className="text-muted">{log.alteracoes.length} item(ns)</span>
                         </div>
 
-                        <div className="divide-y divide-slate-800/60">
+                        <div className="divide-y divide-ui/60">
                           {log.alteracoes.map((alt, idx) => (
                             <div
                               key={idx}
                               className="px-3 py-2 grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
                             >
-                              <div className="sm:col-span-4 font-semibold text-slate-300 truncate">
+                              <div className="sm:col-span-4 font-semibold text-secondary truncate">
                                 {alt.rotulo || alt.campo}
                               </div>
 
                               <div className="sm:col-span-8 flex items-center gap-2 flex-wrap">
                                 {alt.valorAnterior !== undefined && (
                                   <span
-                                    className="px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20 text-[11px] line-through max-w-xs truncate"
+                                    className="px-2 py-0.5 rounded bg-accent-danger-soft text-accent-danger border border-accent-danger-soft-border text-[11px] line-through max-w-xs truncate"
                                     title={`Valor anterior: ${String(alt.valorAnterior)}`}
                                   >
                                     {String(alt.valorAnterior || '(vazio)')}
@@ -526,11 +526,11 @@ export const ActionHistory: React.FC = () => {
                                 )}
 
                                 {alt.valorAnterior !== undefined && (
-                                  <ArrowRight className="h-3 w-3 text-slate-500 shrink-0" />
+                                  <ArrowRight className="h-3 w-3 text-muted shrink-0" />
                                 )}
 
                                 <span
-                                  className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-[11px] font-semibold max-w-xs truncate"
+                                  className="px-2 py-0.5 rounded bg-accent-success-soft text-accent-success border border-accent-success-soft-border text-[11px] font-semibold max-w-xs truncate"
                                   title={`Novo valor: ${String(alt.valorNovo)}`}
                                 >
                                   {String(alt.valorNovo || '(vazio)')}
@@ -544,13 +544,13 @@ export const ActionHistory: React.FC = () => {
 
                     {/* Motivo de Conformidade / Compliance Justification */}
                     {log.motivoConformidade && (
-                      <div className="bg-amber-950/15 border border-amber-500/20 rounded-lg p-2.5 text-xs text-amber-200/90 flex items-start gap-2">
-                        <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+                      <div className="bg-accent-warning-soft border border-accent-warning-soft-border rounded-lg p-2.5 text-xs text-accent-warning-soft-text/90 flex items-start gap-2">
+                        <Info className="h-4 w-4 text-accent-warning shrink-0 mt-0.5" />
                         <div>
-                          <span className="font-bold text-amber-300">
+                          <span className="font-bold text-accent-warning">
                             Justificativa de Conformidade Legal:
                           </span>{' '}
-                          <span className="text-amber-100/80">{log.motivoConformidade}</span>
+                          <span className="text-accent-warning-soft-text/80">{log.motivoConformidade}</span>
                         </div>
                       </div>
                     )}
@@ -558,25 +558,25 @@ export const ActionHistory: React.FC = () => {
                 </div>
 
                 {/* Card Bottom: Hash de Integridade & Compliance Signature */}
-                <div className="pt-2.5 border-t border-slate-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-500">
+                <div className="pt-2.5 border-t border-ui/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-muted">
                   <div className="flex items-center gap-2 overflow-hidden min-w-0">
-                    <span className="font-mono text-slate-500 flex items-center gap-1 shrink-0">
-                      <Hash className="h-3 w-3 text-slate-400" />
+                    <span className="font-mono text-muted flex items-center gap-1 shrink-0">
+                      <Hash className="h-3 w-3 text-muted" />
                       SHA-256:
                     </span>
                     <span
-                      className="font-mono text-[10px] text-slate-400 truncate max-w-xs sm:max-w-md select-all"
+                      className="font-mono text-[10px] text-muted truncate max-w-xs sm:max-w-md select-all"
                       title={log.hashIntegridade}
                     >
                       {log.hashIntegridade}
                     </span>
                     <button
                       onClick={() => handleCopyHash(log.id, log.hashIntegridade)}
-                      className="p-1 hover:text-white text-slate-400 transition-colors shrink-0"
+                      className="p-1 hover:text-primary text-muted transition-colors shrink-0"
                       title="Copiar Hash SHA-256"
                     >
                       {copiedHashId === log.id ? (
-                        <Check className="h-3 w-3 text-emerald-400" />
+                        <Check className="h-3 w-3 text-accent-success" />
                       ) : (
                         <Copy className="h-3 w-3" />
                       )}
@@ -584,13 +584,13 @@ export const ActionHistory: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold text-[10px]">
+                    <span className="inline-flex items-center gap-1 text-accent-success font-semibold text-[10px]">
                       <CheckCircle2 className="h-3 w-3" />
                       Assinatura Válida
                     </span>
                     <button
                       onClick={() => setInspectingLog(log)}
-                      className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 font-semibold text-[11px] transition-colors"
+                      className="inline-flex items-center gap-1 text-accent-primary hover:text-accent-primary font-semibold text-[11px] transition-colors"
                     >
                       <Eye className="h-3 w-3" />
                       <span>Inspecionar Pacote</span>
@@ -605,89 +605,89 @@ export const ActionHistory: React.FC = () => {
 
       {/* Modal: Inspection of Audit Packet */}
       {inspectingLog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
-          <div className="w-full max-w-2xl bg-[#16171d] rounded-2xl border border-slate-700 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-[#111218]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay-modal backdrop-blur-xs">
+          <div className="w-full max-w-2xl bg-surface rounded-2xl border border-ui shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-4 border-b border-ui flex items-center justify-between bg-surface-card">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <div className="p-2 rounded-lg bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">
+                  <h3 className="text-sm font-bold text-primary">
                     Pacote Criptográfico de Auditoria
                   </h3>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-muted">
                     Identificador de Evento: #{inspectingLog.id}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setInspectingLog(null)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                className="p-1.5 text-muted hover:text-primary rounded-lg hover:bg-surface-raised transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="p-5 overflow-y-auto space-y-4 text-xs">
-              <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800 space-y-2">
-                <div className="flex justify-between items-center text-slate-400">
+              <div className="bg-surface-raised p-3 rounded-lg border border-ui space-y-2">
+                <div className="flex justify-between items-center text-muted">
                   <span className="font-semibold">Timestamp UTC:</span>
-                  <span className="font-mono text-slate-200">{inspectingLog.timestamp}</span>
+                  <span className="font-mono text-primary">{inspectingLog.timestamp}</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-400">
+                <div className="flex justify-between items-center text-muted">
                   <span className="font-semibold">Responsável:</span>
-                  <span className="text-slate-200">
+                  <span className="text-primary">
                     {inspectingLog.autor?.nome || 'Sistema'} ({inspectingLog.autor?.login || 'sistema'} - {inspectingLog.autor?.perfil || 'Operador'})
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-slate-400">
+                <div className="flex justify-between items-center text-muted">
                   <span className="font-semibold">Tipo de Ação:</span>
-                  <span className="font-mono text-blue-400">{inspectingLog.tipoAcao}</span>
+                  <span className="font-mono text-accent-primary">{inspectingLog.tipoAcao}</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-400">
+                <div className="flex justify-between items-center text-muted">
                   <span className="font-semibold">Alvo Auditado:</span>
-                  <span className="text-slate-200">
+                  <span className="text-primary">
                     {inspectingLog.alvo?.identificador || 'N/A'} ({inspectingLog.alvo?.nome || inspectingLog.alvo?.tipo || 'sistema'})
                   </span>
                 </div>
-                <div className="flex flex-col gap-1 pt-1 border-t border-slate-800 text-slate-400">
+                <div className="flex flex-col gap-1 pt-1 border-t border-ui text-muted">
                   <span className="font-semibold">Hash SHA-256 de Não-Repúdio:</span>
-                  <span className="font-mono text-[11px] text-emerald-400 break-all select-all bg-black/40 p-1.5 rounded">
+                  <span className="font-mono text-[11px] text-accent-success break-all select-all bg-surface-app p-1.5 rounded">
                     {inspectingLog.hashIntegridade}
                   </span>
                 </div>
               </div>
 
               {inspectingLog.motivoConformidade && (
-                <div className="bg-amber-950/20 border border-amber-500/20 rounded-lg p-3 text-amber-200">
-                  <p className="font-bold text-xs text-amber-300 mb-1">
+                <div className="bg-accent-warning-soft border border-accent-warning-soft-border rounded-lg p-3 text-accent-warning-soft-text">
+                  <p className="font-bold text-xs text-accent-warning mb-1">
                     Justificativa de Conformidade Registrada:
                   </p>
-                  <p className="text-xs text-amber-100/90 leading-relaxed">
+                  <p className="text-xs text-accent-warning-soft-text/90 leading-relaxed">
                     {inspectingLog.motivoConformidade}
                   </p>
                 </div>
               )}
 
               <div>
-                <p className="font-bold text-xs text-slate-300 mb-1.5">
+                <p className="font-bold text-xs text-secondary mb-1.5">
                   Payload Bruto (JSON para Auditoria Externa):
                 </p>
-                <pre className="bg-[#0a0b10] border border-slate-800 rounded-lg p-3 font-mono text-[11px] text-slate-300 overflow-x-auto max-h-48 leading-relaxed">
+                <pre className="bg-surface-app border border-ui rounded-lg p-3 font-mono text-[11px] text-secondary overflow-x-auto max-h-48 leading-relaxed">
                   {JSON.stringify(inspectingLog, null, 2)}
                 </pre>
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-800 bg-[#111218] flex items-center justify-between">
-              <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-semibold">
+            <div className="p-4 border-t border-ui bg-surface-card flex items-center justify-between">
+              <span className="text-[11px] text-accent-success flex items-center gap-1 font-semibold">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Em conformidade com Marco Civil & LGPD
               </span>
               <button
                 onClick={() => setInspectingLog(null)}
-                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors"
+                className="px-4 py-1.5 bg-accent-primary-solid hover:bg-accent-primary-solid-hover text-on-accent text-xs font-bold rounded-lg transition-colors"
               >
                 Fechar
               </button>

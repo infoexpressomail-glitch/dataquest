@@ -76,28 +76,28 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
   return (
     <div className="space-y-6">
       {/* Header com Identificação do Pesquisador & Indicador de Tempo Real */}
-      <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl">
+      <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3.5">
             <div className="relative">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-lg font-bold text-white shadow-lg shadow-blue-900/30">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-lg font-bold text-primary shadow-lg shadow-blue-900/30">
                 {activeResearcher.nome.charAt(0)}
               </div>
-              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-[#16171d]">
+              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-success-solid ring-2 ring-[#16171d]">
                 <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
               </span>
             </div>
 
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-white">{activeResearcher.nome}</h2>
-                <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-blue-400 border border-blue-500/20">
+                <h2 className="text-base font-bold text-primary">{activeResearcher.nome}</h2>
+                <span className="rounded-full bg-accent-primary-soft px-2.5 py-0.5 text-[11px] font-semibold text-accent-primary border border-accent-primary-soft-border">
                   {activeResearcher.cargo || 'Pesquisador de Campo'}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-muted mt-0.5">
                 Painel individual de metas e cotas demográficas em tempo real • ID:{' '}
-                <span className="font-mono text-slate-300">{activeResearcher.id}</span>
+                <span className="font-mono text-secondary">{activeResearcher.id}</span>
               </p>
             </div>
           </div>
@@ -106,11 +106,11 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
             {/* Seletor de visualização (disponível apenas para coordenadores/admins para simular a visão de qualquer pesquisador) */}
             {canSimulateOthers && (
               <div className="flex items-center gap-2">
-                <label className="text-xs text-slate-400 hidden sm:inline">Inspecionar Pesquisador:</label>
+                <label className="text-xs text-muted hidden sm:inline">Inspecionar Pesquisador:</label>
                 <select
                   value={selectedResearcherId}
                   onChange={(e) => setSelectedResearcherId(e.target.value)}
-                  className="rounded-xl border border-slate-800 bg-[#111218] px-3 py-1.5 text-xs text-white focus:border-blue-500 focus:outline-none"
+                  className="rounded-xl border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none"
                 >
                   {collaborators
                     .filter((c) => c.ativo)
@@ -123,8 +123,8 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
               </div>
             )}
 
-            <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
-              <Radio className="h-3 w-3 animate-pulse text-emerald-400" />
+            <div className="flex items-center gap-1.5 rounded-full bg-accent-success-soft px-3 py-1 text-xs font-semibold text-accent-success border border-accent-success-soft-border">
+              <Radio className="h-3 w-3 animate-pulse text-accent-success" />
               <span>Ao Vivo</span>
             </div>
           </div>
@@ -133,75 +133,75 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
 
       {/* KPI Cards do Pesquisador */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Minhas Metas</span>
-            <div className="rounded-lg bg-blue-500/10 p-2 text-blue-400">
+            <span className="text-xs font-semibold text-muted">Minhas Metas</span>
+            <div className="rounded-lg bg-accent-primary-soft p-2 text-accent-primary">
               <Target className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">{totalMetasAtribuidas}</span>
-            <span className="text-xs text-slate-400">segmentos atribuídos</span>
+            <span className="text-2xl font-bold text-primary">{totalMetasAtribuidas}</span>
+            <span className="text-xs text-muted">segmentos atribuídos</span>
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <p className="mt-1 text-[11px] text-muted">
             Amostragens sob sua responsabilidade direta
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Minha Produtividade</span>
-            <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-400">
+            <span className="text-xs font-semibold text-muted">Minha Produtividade</span>
+            <div className="rounded-lg bg-accent-success-soft p-2 text-accent-success">
               <TrendingUp className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">{percentualGeral}%</span>
-            <span className="text-xs text-emerald-400">
+            <span className="text-2xl font-bold text-primary">{percentualGeral}%</span>
+            <span className="text-xs text-accent-success">
               {totalCotasAtingidas} / {totalCotasAlvo} entrevistas
             </span>
           </div>
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
             <div
-              className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+              className="h-full rounded-full bg-accent-success-solid transition-all duration-500"
               style={{ width: `${percentualGeral}%` }}
             />
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Cotas Atingidas</span>
-            <div className="rounded-lg bg-cyan-500/10 p-2 text-cyan-400">
+            <span className="text-xs font-semibold text-muted">Cotas Atingidas</span>
+            <div className="rounded-lg bg-accent-info-soft p-2 text-accent-info">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">{totalMetasConcluidas}</span>
-            <span className="text-xs text-slate-400">de {totalMetasAtribuidas}</span>
+            <span className="text-2xl font-bold text-primary">{totalMetasConcluidas}</span>
+            <span className="text-xs text-muted">de {totalMetasAtribuidas}</span>
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <p className="mt-1 text-[11px] text-muted">
             {totalMetasConcluidas === totalMetasAtribuidas && totalMetasAtribuidas > 0
               ? 'Todas as suas cotas foram concluídas!'
               : `${totalMetasAtribuidas - totalMetasConcluidas} cotas ainda em andamento`}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl">
+        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Coletas Restantes</span>
-            <div className="rounded-lg bg-amber-500/10 p-2 text-amber-400">
+            <span className="text-xs font-semibold text-muted">Coletas Restantes</span>
+            <div className="rounded-lg bg-accent-warning-soft p-2 text-accent-warning">
               <Zap className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">
+            <span className="text-2xl font-bold text-primary">
               {Math.max(0, totalCotasAlvo - totalCotasAtingidas)}
             </span>
-            <span className="text-xs text-amber-400">entrevistas para meta</span>
+            <span className="text-xs text-accent-warning">entrevistas para meta</span>
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <p className="mt-1 text-[11px] text-muted">
             Foco de coleta recomendado para o ciclo
           </p>
         </div>
@@ -210,10 +210,10 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
       {/* Lista de Metas Individuais do Pesquisador */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white">
+          <h3 className="text-sm font-bold text-primary">
             Metas Demográficas Atribuídas a Você ({researcherGoals.length})
           </h3>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-muted">
             Atualização instantânea a cada nova entrevista enviada
           </span>
         </div>
@@ -226,10 +226,10 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
               key={target.id}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 progress.isConcluida
-                  ? 'border-emerald-800/60 bg-[#131c17]'
+                  ? 'border-emerald-800/60 bg-accent-success-soft'
                   : progress.percentual >= 75
-                  ? 'border-blue-800/50 bg-[#151a24]'
-                  : 'border-slate-800 bg-[#16171d]'
+                  ? 'border-blue-800/50 bg-accent-primary-soft'
+                  : 'border-ui bg-surface'
               }`}
             >
               <div className="p-5">
@@ -239,10 +239,10 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
                           progress.isConcluida
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                            ? 'bg-accent-success-soft text-accent-success border border-accent-success-soft-border'
                             : progress.percentual >= 80
-                            ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                            ? 'bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border'
+                            : 'bg-accent-warning-soft text-accent-warning border border-accent-warning-soft-border'
                         }`}
                       >
                         {progress.isConcluida ? (
@@ -261,16 +261,16 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                       </span>
 
                       {target.ciclo && (
-                        <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-[10px] text-slate-400">
+                        <span className="rounded-full bg-surface-raised px-2.5 py-0.5 text-[10px] text-muted">
                           {target.ciclo}
                         </span>
                       )}
                     </div>
 
-                    <h4 className="text-base font-bold text-white">{target.titulo}</h4>
+                    <h4 className="text-base font-bold text-primary">{target.titulo}</h4>
 
                     {target.descricao && (
-                      <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+                      <p className="text-xs text-muted max-w-2xl leading-relaxed">
                         {target.descricao}
                       </p>
                     )}
@@ -278,17 +278,17 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                     {/* Chips dos Critérios Demográficos da Meta */}
                     <div className="flex flex-wrap items-center gap-2 pt-1">
                       {target.criterios.faixaEtaria && target.criterios.faixaEtaria !== 'Todas' && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 text-xs font-medium text-purple-300">
+                        <span className="inline-flex items-center gap-1 rounded-lg bg-accent-purple-soft border border-accent-purple-soft-border px-2.5 py-1 text-xs font-medium text-accent-purple">
                           🎂 Faixa Etária: {target.criterios.faixaEtaria}
                         </span>
                       )}
                       {target.criterios.sexo && target.criterios.sexo !== 'Todos' && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-pink-500/10 border border-pink-500/20 px-2.5 py-1 text-xs font-medium text-pink-300">
+                        <span className="inline-flex items-center gap-1 rounded-lg bg-pink-500/10 border border-pink-500/20 px-2.5 py-1 text-xs font-medium text-accent-danger">
                           ⚧ Sexo: {target.criterios.sexo === 'F' ? 'Feminino' : target.criterios.sexo === 'M' ? 'Masculino' : target.criterios.sexo}
                         </span>
                       )}
                       {target.criterios.bairro && target.criterios.bairro !== 'Todos' && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-xs font-medium text-emerald-300">
+                        <span className="inline-flex items-center gap-1 rounded-lg bg-accent-success-soft border border-accent-success-soft-border px-2.5 py-1 text-xs font-medium text-accent-success">
                           <MapPin className="h-3 w-3" /> Bairro: {target.criterios.bairro}
                         </span>
                       )}
@@ -296,21 +296,21 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                   </div>
 
                   {/* Indicador Numérico Individual do Pesquisador */}
-                  <div className="w-full lg:w-64 shrink-0 rounded-xl bg-[#111218]/90 border border-slate-800/80 p-3.5 text-right">
+                  <div className="w-full lg:w-64 shrink-0 rounded-xl bg-surface-card/90 border border-ui/80 p-3.5 text-right">
                     <div className="flex items-baseline justify-between mb-1">
-                      <span className="text-xs font-semibold text-slate-400">Sua Cota:</span>
+                      <span className="text-xs font-semibold text-muted">Sua Cota:</span>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-2xl font-black text-white">
+                        <span className="text-2xl font-black text-primary">
                           {progress.cotaAtingida}
                         </span>
-                        <span className="text-xs text-slate-400">/ {progress.cotaAlvo}</span>
+                        <span className="text-xs text-muted">/ {progress.cotaAlvo}</span>
                         <span
                           className={`text-xs font-bold ${
                             progress.isConcluida
-                              ? 'text-emerald-400'
+                              ? 'text-accent-success'
                               : progress.percentual >= 75
-                              ? 'text-blue-400'
-                              : 'text-amber-400'
+                              ? 'text-accent-primary'
+                              : 'text-accent-warning'
                           }`}
                         >
                           ({progress.percentual}%)
@@ -318,36 +318,36 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                       </div>
                     </div>
 
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-surface-raised">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${
                           progress.isConcluida
-                            ? 'bg-emerald-500'
+                            ? 'bg-accent-success-solid'
                             : progress.percentual >= 75
-                            ? 'bg-blue-500'
-                            : 'bg-amber-500'
+                            ? 'bg-accent-primary-solid'
+                            : 'bg-accent-warning-solid'
                         }`}
                         style={{ width: `${Math.min(100, progress.percentual)}%` }}
                       />
                     </div>
 
-                    <p className="mt-2 text-[11px] font-medium text-slate-400 text-left">
+                    <p className="mt-2 text-[11px] font-medium text-muted text-left">
                       {progress.isConcluida ? (
-                        <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                        <span className="text-accent-success font-semibold flex items-center gap-1">
                           <CheckCircle2 className="h-3.5 w-3.5 inline" /> Cota concluída com êxito!
                         </span>
                       ) : (
-                        <span>Restam <strong className="text-white">{progress.restante}</strong> coletas válidas</span>
+                        <span>Restam <strong className="text-primary">{progress.restante}</strong> coletas válidas</span>
                       )}
                     </p>
                   </div>
                 </div>
 
                 {/* Submissões correspondentes (Histórico recente em tempo real) */}
-                <div className="mt-4 border-t border-slate-800/80 pt-3 flex items-center justify-between">
+                <div className="mt-4 border-t border-ui/80 pt-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FileCheck className="h-4 w-4 text-blue-400" />
-                    <span className="text-xs text-slate-300">
+                    <FileCheck className="h-4 w-4 text-accent-primary" />
+                    <span className="text-xs text-secondary">
                       {progress.coletasCorrespondentes.length > 0
                         ? `${progress.coletasCorrespondentes.length} entrevistas suas atendem a este perfil demográfico`
                         : 'Nenhuma entrevista registrada para este perfil até o momento'}
@@ -358,7 +358,7 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                     <button
                       type="button"
                       onClick={() => setExpandedTargetId(isExpanded ? null : target.id)}
-                      className="flex items-center gap-1 text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
+                      className="flex items-center gap-1 text-xs font-medium text-accent-primary hover:text-accent-primary transition-colors"
                     >
                       <span>{isExpanded ? 'Ocultar Coletas' : 'Ver Coletas Computadas'}</span>
                       {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -369,29 +369,29 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
 
               {/* Tabela expansível com as coletas computadas */}
               {isExpanded && progress.coletasCorrespondentes.length > 0 && (
-                <div className="border-t border-slate-800 bg-[#111218] p-4 space-y-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                <div className="border-t border-ui bg-surface-card p-4 space-y-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted block mb-2">
                     Últimas Entrevistas Computadas para esta Cota:
                   </span>
-                  <div className="divide-y divide-slate-800/60 max-h-48 overflow-y-auto">
+                  <div className="divide-y divide-ui/60 max-h-48 overflow-y-auto">
                     {progress.coletasCorrespondentes.slice(0, 10).map((sub) => (
                       <div
                         key={sub.id}
                         className="py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-1"
                       >
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-slate-400 text-[11px]">{sub.id}</span>
-                          <span className="text-slate-300">
+                          <span className="font-mono text-muted text-[11px]">{sub.id}</span>
+                          <span className="text-secondary">
                             {new Date(sub.dataHora).toLocaleString('pt-BR')}
                           </span>
                           {sub.geolocalizacao?.bairro && (
-                            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] text-emerald-400">
+                            <span className="rounded bg-surface-raised px-1.5 py-0.5 text-[10px] text-accent-success">
                               {sub.geolocalizacao.bairro}
                             </span>
                           )}
                         </div>
-                        <span className="text-[11px] text-slate-400">
-                          Status: <strong className="text-emerald-400">Concluída & Validada</strong>
+                        <span className="text-[11px] text-muted">
+                          Status: <strong className="text-accent-success">Concluída & Validada</strong>
                         </span>
                       </div>
                     ))}
@@ -403,12 +403,12 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
         })}
 
         {researcherGoals.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-slate-800 bg-[#16171d] p-12 text-center">
-            <Target className="mx-auto h-10 w-10 text-slate-600" />
-            <h3 className="mt-3 text-sm font-bold text-slate-300">
+          <div className="rounded-2xl border border-dashed border-ui bg-surface p-12 text-center">
+            <Target className="mx-auto h-10 w-10 text-muted" />
+            <h3 className="mt-3 text-sm font-bold text-secondary">
               Nenhuma Cota Individual Atribuída a Você
             </h3>
-            <p className="mt-1 text-xs text-slate-500 max-w-md mx-auto">
+            <p className="mt-1 text-xs text-muted max-w-md mx-auto">
               A coordenação de campo ainda não alocou cotas demográficas específicas para o seu
               perfil nesta pesquisa. Assim que forem atribuídas, elas aparecerão aqui automaticamente.
             </p>

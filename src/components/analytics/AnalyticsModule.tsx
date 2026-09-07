@@ -79,14 +79,14 @@ export const AnalyticsModule: React.FC = () => {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
               <BarChart3 className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+            <h1 className="text-xl font-bold tracking-tight text-primary sm:text-2xl">
               Análise de Resultados & Relatórios Cruzados
             </h1>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-muted mt-1">
             Cruzamento estatístico de variáveis (sexo, idade, escolaridade, bairros), dimensionamento de equipe em campo e exportações em PDF, XLS, XLSX e CSV.
           </p>
         </div>
@@ -94,14 +94,14 @@ export const AnalyticsModule: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => exportSubmissionsToCSV(currentSubs, selectedSurvey)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-200 shadow-sm hover:bg-slate-700 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3.5 py-2 text-xs font-bold text-primary shadow-sm hover:bg-surface-hover hover:text-primary transition-colors"
           >
-            <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
+            <FileSpreadsheet className="h-4 w-4 text-accent-success" />
             <span>Exportar CSV Geral</span>
           </button>
           <button
             onClick={() => exportSubmissionsToPDF(currentSubs, selectedSurvey)}
-            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+            className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
           >
             <FileText className="h-4 w-4" />
             <span>Exportar Relatório PDF</span>
@@ -110,14 +110,14 @@ export const AnalyticsModule: React.FC = () => {
       </div>
 
       {/* Pesquisa selecionada — informação principal, comum a todas as abas */}
-      <div className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl sm:flex-row sm:items-center">
-        <label className="text-xs font-bold text-slate-300 shrink-0">
+      <div className="flex flex-col gap-3 rounded-2xl border border-ui bg-surface p-4 shadow-xl sm:flex-row sm:items-center">
+        <label className="text-xs font-bold text-secondary shrink-0">
           Pesquisa em Análise:
         </label>
         <select
           value={selectedSurveyId}
           onChange={(e) => setSelectedSurveyId(e.target.value)}
-          className="w-full rounded-lg border border-slate-800 bg-[#111218] px-3 py-1.5 text-xs text-slate-200 focus:border-blue-500 focus:outline-none sm:w-auto"
+          className="w-full rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none sm:w-auto"
         >
           <option value="all">Visão Consolidada (Todas as Pesquisas)</option>
           {surveys.map((s) => (
@@ -129,13 +129,13 @@ export const AnalyticsModule: React.FC = () => {
       </div>
 
       {/* Navegação entre Abas do Módulo de Análise */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-1">
+      <div className="flex items-center gap-2 border-b border-ui pb-1">
         <button
           onClick={() => setActiveTab('crosstab')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'crosstab'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+              : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
           <Layers className="h-4 w-4" />
@@ -146,14 +146,14 @@ export const AnalyticsModule: React.FC = () => {
           onClick={() => setActiveTab('dimensionamento')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'dimensionamento'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+              : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
           <Users className="h-4 w-4" />
           <span>Dimensionamento de Pesquisadores</span>
           {teamSizing && (
-            <span className="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] font-mono text-blue-300">
+            <span className="rounded-full bg-surface-raised px-2 py-0.5 text-[10px] font-mono text-accent-primary">
               Min: {teamSizing.minPesquisadores}
             </span>
           )}
@@ -163,8 +163,8 @@ export const AnalyticsModule: React.FC = () => {
           onClick={() => setActiveTab('perguntas')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'perguntas'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+              : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
           <BarChart3 className="h-4 w-4" />
@@ -203,60 +203,60 @@ export const AnalyticsModule: React.FC = () => {
           {/* KPI Cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {/* Total Coletas */}
-            <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl">
+            <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-400">
+                <span className="text-xs font-medium text-muted">
                   Amostras Coletadas
                 </span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/20 border border-blue-500/30 text-blue-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-soft border border-accent-primary-soft-border text-accent-primary">
                   <Users className="h-4 w-4" />
                 </div>
               </div>
-              <div className="mt-3 text-3xl font-bold tracking-tight text-white">
+              <div className="mt-3 text-3xl font-bold tracking-tight text-primary">
                 {totalColetas}
               </div>
-              <div className="mt-1 text-xs text-emerald-400 font-medium">
+              <div className="mt-1 text-xs text-accent-success font-medium">
                 100% de integridade com validação de campo
               </div>
             </div>
 
             {/* Score NPS */}
-            <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl">
+            <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-400">
+                <span className="text-xs font-medium text-muted">
                   Net Promoter Score (NPS)
                 </span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600/20 border border-emerald-500/30 text-emerald-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-success-soft border border-accent-success-soft-border text-accent-success">
                   <Smile className="h-4 w-4" />
                 </div>
               </div>
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tight text-white">
+                <span className="text-3xl font-bold tracking-tight text-primary">
                   +{npsScore}
                 </span>
-                <span className="text-xs font-bold text-emerald-400">
+                <span className="text-xs font-bold text-accent-success">
                   Zona de Excelência
                 </span>
               </div>
-              <div className="mt-1 text-xs text-slate-400">
+              <div className="mt-1 text-xs text-muted">
                 {promoters} Promotores • {passives} Neutros • {detractors} Detratores
               </div>
             </div>
 
             {/* Metas da Pesquisa */}
-            <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl">
+            <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-400">
+                <span className="text-xs font-medium text-muted">
                   Metas Quantitativas
                 </span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600/20 border border-purple-500/30 text-purple-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-purple-soft border border-accent-purple-soft-border text-accent-purple">
                   <TrendingUp className="h-4 w-4" />
                 </div>
               </div>
-              <div className="mt-3 text-3xl font-bold tracking-tight text-white">
+              <div className="mt-3 text-3xl font-bold tracking-tight text-primary">
                 {selectedSurvey?.metas.length || 0}
               </div>
-              <div className="mt-1 text-xs text-slate-400">
+              <div className="mt-1 text-xs text-muted">
                 Regras de amostragem ativas neste ciclo
               </div>
             </div>
@@ -264,7 +264,7 @@ export const AnalyticsModule: React.FC = () => {
 
           {/* Distribution charts by Question */}
           <div className="space-y-4">
-            <h2 className="text-sm font-bold text-white">
+            <h2 className="text-sm font-bold text-primary">
               Distribuição Percentual de Respostas por Pergunta
             </h2>
 
@@ -272,18 +272,18 @@ export const AnalyticsModule: React.FC = () => {
               {questionBreakdown.map(({ pergunta, counts, totalResponses }) => (
                 <div
                   key={pergunta.id}
-                  className="rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl"
+                  className="rounded-2xl border border-ui bg-surface p-5 shadow-xl"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="rounded bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 text-[10px] font-bold text-blue-400">
+                    <span className="rounded bg-accent-primary-soft border border-accent-primary-soft-border px-2 py-0.5 text-[10px] font-bold text-accent-primary">
                       {pergunta.codigo}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">
+                    <span className="text-xs text-muted font-medium">
                       {totalResponses} respostas computadas
                     </span>
                   </div>
 
-                  <h4 className="mt-2 text-xs font-bold text-white line-clamp-2">
+                  <h4 className="mt-2 text-xs font-bold text-primary line-clamp-2">
                     {pergunta.enunciado}
                   </h4>
 
@@ -293,15 +293,15 @@ export const AnalyticsModule: React.FC = () => {
                       const pct = totalResponses > 0 ? Math.round((count / totalResponses) * 100) : 0;
                       return (
                         <div key={label} className="text-xs">
-                          <div className="flex items-center justify-between text-slate-300">
+                          <div className="flex items-center justify-between text-secondary">
                             <span className="font-medium truncate max-w-[70%]">{label}</span>
-                            <span className="font-bold text-white">
+                            <span className="font-bold text-primary">
                               {count} ({pct}%)
                             </span>
                           </div>
-                          <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                          <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-surface-raised">
                             <div
-                              className="h-full rounded-full bg-blue-600 transition-all duration-500"
+                              className="h-full rounded-full bg-accent-primary-solid transition-all duration-500"
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -310,7 +310,7 @@ export const AnalyticsModule: React.FC = () => {
                     })}
 
                     {totalResponses === 0 && (
-                      <div className="py-4 text-center text-xs text-slate-500">
+                      <div className="py-4 text-center text-xs text-muted">
                         Ainda não há respostas registradas para esta pergunta.
                       </div>
                     )}

@@ -211,10 +211,10 @@ export const SurveyList: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          <h1 className="text-xl font-bold tracking-tight text-primary sm:text-2xl">
             Módulo de Pesquisas e Questionários
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted">
             Criação com wizard em 5 etapas, replicação de ciclos, gestão de pesquisadores e exportação oficial.
           </p>
         </div>
@@ -223,10 +223,10 @@ export const SurveyList: React.FC = () => {
           <button
             id="btn-nav-to-audit-from-surveys"
             onClick={() => setActiveModule('historico_acoes')}
-            className="flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-600/10 px-3.5 py-2 text-xs font-bold text-blue-400 hover:bg-blue-600/20 transition-colors shadow-xs"
+            className="flex items-center gap-1.5 rounded-lg border border-accent-primary-soft-border bg-accent-primary-soft px-3.5 py-2 text-xs font-bold text-accent-primary hover:bg-accent-primary-soft transition-colors shadow-xs"
             title="Abrir Trilha de Auditoria e Histórico de Conformidade"
           >
-            <History className="h-4 w-4 text-blue-400" />
+            <History className="h-4 w-4 text-accent-primary" />
             <span>Histórico de Auditoria</span>
           </button>
 
@@ -237,10 +237,10 @@ export const SurveyList: React.FC = () => {
                 setAudioExportSurveyId(undefined);
                 setAudioExportModalOpen(true);
               }}
-              className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+              className="flex items-center gap-1.5 rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3.5 py-2 text-xs font-bold text-accent-purple hover:bg-accent-purple-soft transition-colors shadow-xs"
               title="Exportar gravações de áudio separadas por pesquisa (individual ou lote .ZIP)"
             >
-              <Volume2 className="h-4 w-4 text-purple-400" />
+              <Volume2 className="h-4 w-4 text-accent-purple" />
               <span>Exportar Áudios (.ZIP)</span>
             </button>
           )}
@@ -250,17 +250,17 @@ export const SurveyList: React.FC = () => {
               <button
                 id="btn-survey-import-questionnaire"
                 onClick={() => setQuestionnaireImportModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-600/10 px-3.5 py-2 text-xs font-bold text-purple-400 hover:bg-purple-600/20 transition-colors shadow-xs"
+                className="flex items-center gap-1.5 rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3.5 py-2 text-xs font-bold text-accent-purple hover:bg-accent-purple-soft transition-colors shadow-xs"
                 title="Importar questionário de texto/arquivo com questões e alternativas organizadas"
               >
-                <Upload className="h-4 w-4 text-purple-400" />
+                <Upload className="h-4 w-4 text-accent-purple" />
                 <span>Importar Questionário</span>
               </button>
 
               <button
                 id="btn-survey-create-new"
                 onClick={handleCreateNew}
-                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
               >
                 <PlusCircle className="h-4 w-4" />
                 <span>Criar Pesquisa (Abrir Wizard)</span>
@@ -272,19 +272,19 @@ export const SurveyList: React.FC = () => {
 
       {/* Replication Banner notification */}
       {replicationNotice && (
-        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs font-semibold text-emerald-400">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+        <div className="flex items-center gap-2 rounded-xl border border-accent-success-soft-border bg-accent-success-soft p-4 text-xs font-semibold text-accent-success">
+          <CheckCircle2 className="h-4 w-4 text-accent-success" />
           <span>{replicationNotice}</span>
         </div>
       )}
 
       {/* Search Bar & Status Tabs */}
-      <div className="flex flex-col justify-between gap-3 border-b border-slate-800 pb-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 border-b border-ui pb-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
           {isResearcher ? (
             <div className="flex items-center gap-2">
-              <span className="rounded-lg px-3.5 py-1.5 text-xs font-bold border bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-xs flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="rounded-lg px-3.5 py-1.5 text-xs font-bold border bg-accent-success-soft text-accent-success border-accent-success-soft-border shadow-xs flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent-success-solid animate-pulse" />
                 Ativas Atribuídas ({filteredSurveys.length})
               </span>
             </div>
@@ -295,8 +295,8 @@ export const SurveyList: React.FC = () => {
                 onClick={() => setActiveTab('ativas')}
                 className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
                   activeTab === 'ativas'
-                    ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                    : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                    ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border shadow-xs'
+                    : 'bg-surface-card text-muted border-ui hover:text-primary hover:bg-surface-raised'
                 }`}
               >
                 Ativas ({surveys.filter((s) => s.status === 'ativa').length})
@@ -308,8 +308,8 @@ export const SurveyList: React.FC = () => {
                   onClick={() => setActiveTab('inativas')}
                   className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
                     activeTab === 'inativas'
-                      ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                      : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                      ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border shadow-xs'
+                      : 'bg-surface-card text-muted border-ui hover:text-primary hover:bg-surface-raised'
                   }`}
                 >
                   Inativas ({surveys.filter((s) => s.status === 'inativa').length})
@@ -322,8 +322,8 @@ export const SurveyList: React.FC = () => {
                   onClick={() => setActiveTab('excluidas')}
                   className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
                     activeTab === 'excluidas'
-                      ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-xs'
-                      : 'bg-[#111218] text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
+                      ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border shadow-xs'
+                      : 'bg-surface-card text-muted border-ui hover:text-primary hover:bg-surface-raised'
                   }`}
                 >
                   Excluídas ({surveys.filter((s) => s.status === 'excluida').length})
@@ -334,21 +334,21 @@ export const SurveyList: React.FC = () => {
         </div>
 
         <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500" />
+          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-muted" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por nome ou código..."
-            className="w-full rounded-lg border border-slate-800 bg-[#111218] py-1.5 pl-8 pr-3 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-lg border border-ui bg-surface-card py-1.5 pl-8 pr-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
           />
         </div>
       </div>
 
       {/* Bulk Selection Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-[#16171d] px-4 py-2.5 shadow-md">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ui bg-surface px-4 py-2.5 shadow-md">
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-300 hover:text-white select-none">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-secondary hover:text-primary select-none">
             <input
               type="checkbox"
               id="checkbox-select-all-surveys"
@@ -362,13 +362,13 @@ export const SurveyList: React.FC = () => {
                   setSelectedSurveyIds((prev) => Array.from(new Set([...prev, ...currentIds])));
                 }
               }}
-              className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900 cursor-pointer"
+              className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-blue-500 focus:ring-offset-surface cursor-pointer"
             />
             <span>Selecionar todas ({filteredSurveys.length})</span>
           </label>
 
           {selectedSurveyIds.length > 0 && (
-            <span className="rounded-full bg-blue-600/20 border border-blue-500/30 px-2.5 py-0.5 text-xs font-bold text-blue-400">
+            <span className="rounded-full bg-accent-primary-soft border border-accent-primary-soft-border px-2.5 py-0.5 text-xs font-bold text-accent-primary">
               {selectedSurveyIds.length} selecionada(s)
             </span>
           )}
@@ -385,10 +385,10 @@ export const SurveyList: React.FC = () => {
                 setTrackingInitialId(selected[0]?.id);
                 setTrackingModalOpen(true);
               }}
-              className="flex items-center gap-1.5 rounded-lg border border-blue-500/40 bg-blue-600/20 px-3 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-600 hover:text-white transition-colors shadow-xs"
+              className="flex items-center gap-1.5 rounded-lg border border-accent-primary-soft-border bg-accent-primary-soft px-3 py-1.5 text-xs font-bold text-accent-primary hover:bg-accent-primary-solid-hover hover:text-on-accent transition-colors shadow-xs"
               title="Acompanhamento diário individual dos dias realizados das pesquisas selecionadas"
             >
-              <BarChart3 className="h-3.5 w-3.5 text-blue-400" />
+              <BarChart3 className="h-3.5 w-3.5 text-accent-primary" />
               <span>Gráfico Diário ({selectedSurveyIds.length})</span>
             </button>
 
@@ -397,10 +397,10 @@ export const SurveyList: React.FC = () => {
               <button
                 id="btn-bulk-export-consolidated-pdf"
                 onClick={() => setConsolidatedPdfModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-rose-500/40 bg-rose-600/20 px-3 py-1.5 text-xs font-bold text-rose-300 hover:bg-rose-600 hover:text-white transition-colors shadow-xs"
+                className="flex items-center gap-1.5 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft px-3 py-1.5 text-xs font-bold text-accent-danger hover:bg-accent-danger-solid-hover hover:text-on-accent transition-colors shadow-xs"
                 title="Exportar todas as pesquisas selecionadas para um único arquivo PDF consolidado"
               >
-                <FileText className="h-3.5 w-3.5 text-rose-400" />
+                <FileText className="h-3.5 w-3.5 text-accent-danger" />
                 <span>Exportar PDF Consolidado ({selectedSurveyIds.length})</span>
               </button>
             )}
@@ -412,10 +412,10 @@ export const SurveyList: React.FC = () => {
                   onClick={() => {
                     bulkUpdateSurveysStatus(selectedSurveyIds, 'ativa');
                   }}
-                  className="flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-600/10 px-2.5 py-1.5 text-xs font-semibold text-emerald-400 hover:bg-emerald-600/20 transition-colors"
+                  className="flex items-center gap-1 rounded-lg border border-accent-success-soft-border bg-accent-success-soft px-2.5 py-1.5 text-xs font-semibold text-accent-success hover:bg-accent-success-soft transition-colors"
                   title="Ativar todas as pesquisas selecionadas"
                 >
-                  <Power className="h-3.5 w-3.5 text-emerald-400" />
+                  <Power className="h-3.5 w-3.5 text-accent-success" />
                   <span>Ativar</span>
                 </button>
 
@@ -424,10 +424,10 @@ export const SurveyList: React.FC = () => {
                   onClick={() => {
                     bulkUpdateSurveysStatus(selectedSurveyIds, 'inativa');
                   }}
-                  className="flex items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-600/10 px-2.5 py-1.5 text-xs font-semibold text-amber-400 hover:bg-amber-600/20 transition-colors"
+                  className="flex items-center gap-1 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-2.5 py-1.5 text-xs font-semibold text-accent-warning hover:bg-accent-warning-soft transition-colors"
                   title="Inativar todas as pesquisas selecionadas"
                 >
-                  <Power className="h-3.5 w-3.5 text-amber-400" />
+                  <Power className="h-3.5 w-3.5 text-accent-warning" />
                   <span>Inativar</span>
                 </button>
               </>
@@ -441,10 +441,10 @@ export const SurveyList: React.FC = () => {
                   setReplicationNotice(`${selectedSurveyIds.length} pesquisa(s) replicada(s) para novo ciclo com sucesso!`);
                   setTimeout(() => setReplicationNotice(null), 5000);
                 }}
-                className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition-colors"
+                className="flex items-center gap-1 rounded-lg border border-ui bg-surface-raised px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-surface-hover transition-colors"
                 title="Replicar ciclos das pesquisas selecionadas"
               >
-                <Copy className="h-3.5 w-3.5 text-blue-400" />
+                <Copy className="h-3.5 w-3.5 text-accent-primary" />
                 <span>Replicar</span>
               </button>
             )}
@@ -458,10 +458,10 @@ export const SurveyList: React.FC = () => {
                     setSelectedSurveyIds([]);
                   }
                 }}
-                className="flex items-center gap-1 rounded-lg border border-rose-500/30 bg-rose-600/10 px-2.5 py-1.5 text-xs font-semibold text-rose-400 hover:bg-rose-600/20 transition-colors"
+                className="flex items-center gap-1 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft px-2.5 py-1.5 text-xs font-semibold text-accent-danger hover:bg-accent-danger-soft transition-colors"
                 title="Excluir pesquisas selecionadas"
               >
-                <Trash2 className="h-3.5 w-3.5 text-rose-400" />
+                <Trash2 className="h-3.5 w-3.5 text-accent-danger" />
                 <span>Excluir</span>
               </button>
             )}
@@ -469,7 +469,7 @@ export const SurveyList: React.FC = () => {
             <button
               id="btn-bulk-clear-selection"
               onClick={() => setSelectedSurveyIds([])}
-              className="text-xs text-slate-400 hover:text-white px-2 py-1 transition-colors"
+              className="text-xs text-muted hover:text-primary px-2 py-1 transition-colors"
             >
               Desmarcar
             </button>
@@ -490,10 +490,10 @@ export const SurveyList: React.FC = () => {
           return (
             <div
               key={survey.id}
-              className={`flex flex-col justify-between rounded-2xl border bg-[#16171d] p-5 shadow-xl transition ${
+              className={`flex flex-col justify-between rounded-2xl border bg-surface p-5 shadow-xl transition ${
                 isSelected
-                  ? 'border-blue-500/60 ring-1 ring-blue-500/30 bg-slate-900/40'
-                  : 'border-slate-800 hover:border-slate-700'
+                  ? 'border-accent-primary-soft-border ring-1 ring-blue-500/30 bg-surface-raised'
+                  : 'border-ui hover:border-ui'
               }`}
             >
               <div>
@@ -511,21 +511,21 @@ export const SurveyList: React.FC = () => {
                             : [...prev, survey.id]
                         );
                       }}
-                      className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900 cursor-pointer mr-0.5"
+                      className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-blue-500 focus:ring-offset-surface cursor-pointer mr-0.5"
                     />
-                    <span className="rounded bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 text-xs font-bold text-blue-400">
+                    <span className="rounded bg-accent-primary-soft border border-accent-primary-soft-border px-2 py-0.5 text-xs font-bold text-accent-primary">
                       {survey.codigo}
                     </span>
-                    <span className="rounded bg-slate-800 border border-slate-700 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
+                    <span className="rounded bg-surface-raised border border-ui px-2 py-0.5 text-[10px] font-semibold text-secondary">
                       Ciclo {survey.cicloAtual} (v{survey.versao})
                     </span>
                     <span
                       className={`rounded px-2 py-0.5 text-[10px] font-bold border ${
                         survey.status === 'ativa'
-                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                          ? 'bg-accent-success-soft text-accent-success border-accent-success-soft-border'
                           : survey.status === 'inativa'
-                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                          : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                          ? 'bg-accent-warning-soft text-accent-warning border-accent-warning-soft-border'
+                          : 'bg-accent-danger-soft text-accent-danger border-accent-danger-soft-border'
                       }`}
                     >
                       {survey.status.toUpperCase()}
@@ -539,8 +539,8 @@ export const SurveyList: React.FC = () => {
                         onClick={() => setSyncModalSurvey(survey)}
                         className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold border transition ${
                           survey.serverSyncToken
-                            ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25'
-                            : 'bg-amber-500/15 border-amber-500/30 text-amber-300 hover:bg-amber-500/25'
+                            ? 'bg-accent-success-soft border-accent-success-soft-border text-accent-success hover:bg-accent-success-soft'
+                            : 'bg-accent-warning-soft border-accent-warning-soft-border text-accent-warning hover:bg-accent-warning-soft'
                         }`}
                         title={
                           survey.serverSyncToken
@@ -559,36 +559,36 @@ export const SurveyList: React.FC = () => {
                   </div>
 
                   {survey.habilitarColetaWeb && (
-                    <span className="rounded bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 text-[10px] font-semibold text-cyan-300">
+                    <span className="rounded bg-accent-info-soft border border-accent-info-soft-border px-2 py-0.5 text-[10px] font-semibold text-accent-info">
                       Coleta Web ({survey.tipoColetaWeb})
                     </span>
                   )}
                 </div>
 
-                <h3 className="mt-2.5 text-base font-bold text-white">
+                <h3 className="mt-2.5 text-base font-bold text-primary">
                   {survey.nome}
                 </h3>
-                <p className="mt-1 text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                <p className="mt-1 text-xs text-muted line-clamp-2 leading-relaxed">
                   {survey.descricao}
                 </p>
 
                 {/* Metadata summary */}
-                <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-slate-900/50 border border-slate-800/80 p-3 text-center text-xs">
+                <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-surface-raised border border-ui/80 p-3 text-center text-xs">
                   <div>
-                    <div className="text-[10px] text-slate-400 font-medium">Perguntas</div>
-                    <div className="font-bold text-white text-sm mt-0.5">
+                    <div className="text-[10px] text-muted font-medium">Perguntas</div>
+                    <div className="font-bold text-primary text-sm mt-0.5">
                       {survey.perguntas.length}
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-slate-400 font-medium">Regras / Pulos</div>
-                    <div className="font-bold text-white text-sm mt-0.5">
+                    <div className="text-[10px] text-muted font-medium">Regras / Pulos</div>
+                    <div className="font-bold text-primary text-sm mt-0.5">
                       {survey.regras.length}
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-slate-400 font-medium">Entrevistas</div>
-                    <div className="font-bold text-white text-sm mt-0.5">
+                    <div className="text-[10px] text-muted font-medium">Entrevistas</div>
+                    <div className="font-bold text-primary text-sm mt-0.5">
                       {surveySubs.length}
                     </div>
                   </div>
@@ -596,15 +596,15 @@ export const SurveyList: React.FC = () => {
 
                 {/* Pesquisadores vinculados */}
                 <div className="mt-3.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400">
-                    <Users className="h-3.5 w-3.5 text-slate-500" />
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-muted">
+                    <Users className="h-3.5 w-3.5 text-muted" />
                     <span>Pesquisadores Vinculados ({assignedResearchers.length}):</span>
                   </div>
                   <div className="mt-1.5 flex flex-wrap gap-1">
                     {assignedResearchers.map((r) => (
                       <span
                         key={r.id}
-                        className="rounded bg-slate-800 border border-slate-700/60 px-2 py-0.5 text-[10px] text-slate-300"
+                        className="rounded bg-surface-raised border border-ui/60 px-2 py-0.5 text-[10px] text-secondary"
                       >
                         {r.nome.split(' ')[0]}
                       </span>
@@ -614,7 +614,7 @@ export const SurveyList: React.FC = () => {
               </div>
 
               {/* Action Buttons Toolbar */}
-              <div className="mt-5 border-t border-slate-800 pt-3">
+              <div className="mt-5 border-t border-ui pt-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   {/* Left: Wizard / Edit & Replicate */}
                   <div className="flex items-center gap-1.5">
@@ -622,7 +622,7 @@ export const SurveyList: React.FC = () => {
                       <button
                         id={`btn-edit-survey-${survey.id}`}
                         onClick={() => handleEdit(survey)}
-                        className="flex items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-200 border border-slate-700 hover:bg-slate-700 hover:text-white transition-colors"
+                        className="flex items-center gap-1 rounded-lg bg-surface-raised px-2.5 py-1.5 text-xs font-semibold text-primary border border-ui hover:bg-surface-hover hover:text-primary transition-colors"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
                         <span>Editar</span>
@@ -634,9 +634,9 @@ export const SurveyList: React.FC = () => {
                         id={`btn-replicate-survey-${survey.id}`}
                         onClick={() => handleReplicate(survey)}
                         title="Replicar toda a pesquisa e metas para novo ciclo sem perder o histórico"
-                        className="flex items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-200 border border-slate-700 hover:bg-slate-700 hover:text-white transition-colors"
+                        className="flex items-center gap-1 rounded-lg bg-surface-raised px-2.5 py-1.5 text-xs font-semibold text-primary border border-ui hover:bg-surface-hover hover:text-primary transition-colors"
                       >
-                        <Copy className="h-3.5 w-3.5 text-blue-400" />
+                        <Copy className="h-3.5 w-3.5 text-accent-primary" />
                         <span>Replicar Ciclo</span>
                       </button>
                     )}
@@ -648,7 +648,7 @@ export const SurveyList: React.FC = () => {
                         setEditingSurvey(survey);
                         setActiveModule('simulador');
                       }}
-                      className="flex items-center gap-1 rounded-lg bg-blue-600/15 px-2.5 py-1.5 text-xs font-semibold text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition-colors"
+                      className="flex items-center gap-1 rounded-lg bg-accent-primary-soft px-2.5 py-1.5 text-xs font-semibold text-accent-primary border border-accent-primary-soft-border hover:bg-accent-primary-solid-hover hover:text-on-accent transition-colors"
                     >
                       <Smartphone className="h-3.5 w-3.5" />
                       <span>Coleta</span>
@@ -666,9 +666,9 @@ export const SurveyList: React.FC = () => {
                         setTrackingModalOpen(true);
                       }}
                       title="Ver Gráfico de Acompanhamento Diário (dias de coleta, metas, produtividade)"
-                      className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-blue-400 transition-colors"
+                      className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-primary transition-colors"
                     >
-                      <BarChart3 className="h-4 w-4 text-blue-400" />
+                      <BarChart3 className="h-4 w-4 text-accent-primary" />
                     </button>
 
                     {canListenAudio && (
@@ -679,9 +679,9 @@ export const SurveyList: React.FC = () => {
                           setAudioExportModalOpen(true);
                         }}
                         title={`Exportar em lote ou ouvir gravações de áudio da pesquisa "${survey.nome}"`}
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-purple-400 transition-colors"
+                        className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-purple transition-colors"
                       >
-                        <Volume2 className="h-4 w-4 text-purple-400" />
+                        <Volume2 className="h-4 w-4 text-accent-purple" />
                       </button>
                     )}
 
@@ -693,9 +693,9 @@ export const SurveyList: React.FC = () => {
                           setGeoModalOpen(true);
                         }}
                         title="Visualizar georreferenciamento em mapa"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-emerald-400 transition-colors"
+                        className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-success transition-colors"
                       >
-                        <MapPin className="h-4 w-4 text-emerald-400" />
+                        <MapPin className="h-4 w-4 text-accent-success" />
                       </button>
                     )}
 
@@ -706,17 +706,17 @@ export const SurveyList: React.FC = () => {
                           id={`btn-export-csv-${survey.id}`}
                           onClick={() => handleExportCSV(survey)}
                           title="Exportar Resultados em CSV (com código, pesquisador, data/hora)"
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-emerald-400 transition-colors"
+                          className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-success transition-colors"
                         >
-                          <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
+                          <FileSpreadsheet className="h-4 w-4 text-accent-success" />
                         </button>
                         <button
                           id={`btn-export-pdf-${survey.id}`}
                           onClick={() => handleExportPDF(survey)}
                           title="Exportar Relatório em PDF"
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-red-400 transition-colors"
+                          className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-danger transition-colors"
                         >
-                          <FileText className="h-4 w-4 text-red-400" />
+                          <FileText className="h-4 w-4 text-accent-danger" />
                         </button>
                       </>
                     )}
@@ -727,9 +727,9 @@ export const SurveyList: React.FC = () => {
                         id={`btn-toggle-status-${survey.id}`}
                         onClick={() => toggleSurveyStatus(survey.id)}
                         title={survey.status === 'ativa' ? 'Desativar Pesquisa' : 'Ativar Pesquisa'}
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-amber-400 transition-colors"
+                        className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-warning transition-colors"
                       >
-                        <Power className="h-4 w-4 text-amber-400" />
+                        <Power className="h-4 w-4 text-accent-warning" />
                       </button>
                     )}
 
@@ -739,9 +739,9 @@ export const SurveyList: React.FC = () => {
                         id={`btn-restore-survey-${survey.id}`}
                         onClick={() => restoreSurvey(survey.id)}
                         title="Restaurar pesquisa excluída"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-emerald-400 transition-colors"
+                        className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-success transition-colors"
                       >
-                        <RotateCcw className="h-4 w-4 text-emerald-400" />
+                        <RotateCcw className="h-4 w-4 text-accent-success" />
                       </button>
                     ) : (
                       canDelete && (
@@ -753,7 +753,7 @@ export const SurveyList: React.FC = () => {
                             }
                           }}
                           title="Excluir pesquisa"
-                          className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-500/10 hover:text-rose-400 transition-colors"
+                          className="rounded-lg p-1.5 text-muted hover:bg-accent-danger-soft hover:text-accent-danger transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -768,12 +768,12 @@ export const SurveyList: React.FC = () => {
       </div>
 
       {filteredSurveys.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">
-          <FileQuestion className="mx-auto h-10 w-10 text-slate-400" />
-          <h3 className="mt-3 text-sm font-bold text-slate-700 dark:text-slate-300">
+        <div className="rounded-2xl border border-dashed border-ui p-8 text-center">
+          <FileQuestion className="mx-auto h-10 w-10 text-muted" />
+          <h3 className="mt-3 text-sm font-bold text-secondary">
             Nenhuma pesquisa encontrada nesta categoria
           </h3>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs text-muted">
             Verifique os filtros selecionados ou crie uma nova pesquisa utilizando o Wizard.
           </p>
         </div>

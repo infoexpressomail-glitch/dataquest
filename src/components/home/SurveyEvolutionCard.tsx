@@ -139,43 +139,43 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
     if (active && payload && payload.length) {
       const dataPoint = payload[0]?.payload;
       return (
-        <div className="rounded-xl border border-slate-800 bg-[#16171d]/95 p-3.5 shadow-2xl backdrop-blur-md text-xs">
-          <p className="font-bold text-white mb-2 flex items-center gap-1.5 border-b border-slate-800 pb-1.5">
-            <Calendar className="h-3.5 w-3.5 text-blue-400" />
+        <div className="rounded-xl border border-ui bg-surface/95 p-3.5 shadow-2xl backdrop-blur-md text-xs">
+          <p className="font-bold text-primary mb-2 flex items-center gap-1.5 border-b border-ui pb-1.5">
+            <Calendar className="h-3.5 w-3.5 text-accent-primary" />
             <span>Dia {label} ({dataPoint?.dataIso})</span>
           </p>
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between gap-4 text-slate-300">
+            <div className="flex items-center justify-between gap-4 text-secondary">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-blue-500" />
+                <span className="h-2 w-2 rounded-full bg-accent-primary-solid" />
                 Coletas do Dia:
               </span>
-              <span className="font-bold text-white">{dataPoint?.coletasDoDia}</span>
+              <span className="font-bold text-primary">{dataPoint?.coletasDoDia}</span>
             </div>
-            <div className="flex items-center justify-between gap-4 text-emerald-400">
+            <div className="flex items-center justify-between gap-4 text-accent-success">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <span className="h-2 w-2 rounded-full bg-accent-success-solid" />
                 Total Acumulado:
               </span>
               <span className="font-bold">{dataPoint?.coletasAcumuladas}</span>
             </div>
-            <div className="flex items-center justify-between gap-4 text-purple-400">
+            <div className="flex items-center justify-between gap-4 text-accent-purple">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-purple-500" />
+                <span className="h-2 w-2 rounded-full bg-accent-purple-solid" />
                 Com Gravação de Áudio:
               </span>
               <span className="font-bold">{dataPoint?.comAudio}</span>
             </div>
-            <div className="flex items-center justify-between gap-4 text-amber-400">
+            <div className="flex items-center justify-between gap-4 text-accent-warning">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                <span className="h-2 w-2 rounded-full bg-accent-warning-solid" />
                 Com Georreferenciamento:
               </span>
               <span className="font-bold">{dataPoint?.comGPS}</span>
             </div>
-            <div className="flex items-center justify-between gap-4 text-slate-400 pt-1 border-t border-slate-800/80 text-[11px]">
+            <div className="flex items-center justify-between gap-4 text-muted pt-1 border-t border-ui/80 text-[11px]">
               <span>Pesquisadores em Campo:</span>
-              <span className="font-medium text-slate-200">{dataPoint?.pesquisadoresAtivos}</span>
+              <span className="font-medium text-primary">{dataPoint?.pesquisadoresAtivos}</span>
             </div>
           </div>
         </div>
@@ -185,27 +185,27 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-5 shadow-xl transition-all">
+    <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all">
       {/* Top Header com Seletor da Pesquisa Atual e Anteriores */}
-      <div className="flex flex-col justify-between gap-4 border-b border-slate-800 pb-4 lg:flex-row lg:items-center">
+      <div className="flex flex-col justify-between gap-4 border-b border-ui pb-4 lg:flex-row lg:items-center">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-4 bg-blue-500 rounded-full" />
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <span className="w-1.5 h-4 bg-accent-primary-solid rounded-full" />
+            <h3 className="text-sm font-bold text-primary flex items-center gap-2">
               <span>Evolução da Coleta em Campo</span>
               {selectedSurvey?.status === 'ativa' ? (
-                <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="flex items-center gap-1 rounded-full bg-accent-success-soft border border-accent-success-soft-border px-2 py-0.5 text-[10px] font-semibold text-accent-success">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-success-solid animate-pulse" />
                   Pesquisa em Andamento
                 </span>
               ) : (
-                <span className="rounded-full bg-slate-800 border border-slate-700 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                <span className="rounded-full bg-surface-raised border border-ui px-2 py-0.5 text-[10px] font-semibold text-muted">
                   Pesquisa Anterior ({selectedSurvey?.status || 'Inativa'})
                 </span>
               )}
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-muted mt-0.5">
             Acompanhe o volume diário e a curva acumulada de entrevistas realizadas ao longo do tempo.
           </p>
         </div>
@@ -218,7 +218,7 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
               id="select-home-evolution-survey"
               value={selectedSurveyId}
               onChange={(e) => setSelectedSurveyId(e.target.value)}
-              className="appearance-none rounded-lg border border-slate-700 bg-slate-900/90 py-1.5 pl-3 pr-8 text-xs font-semibold text-white focus:border-blue-500 focus:outline-none cursor-pointer max-w-xs truncate"
+              className="appearance-none rounded-lg border border-ui bg-surface-raised py-1.5 pl-3 pr-8 text-xs font-semibold text-primary focus:border-blue-500 focus:outline-none cursor-pointer max-w-xs truncate"
             >
               <optgroup label="Pesquisas em Andamento (Ativas)">
                 {surveys
@@ -242,17 +242,17 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
                 </optgroup>
               )}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-3.5 w-3.5 text-muted" />
           </div>
 
           {/* Filtro de Período */}
-          <div className="flex items-center rounded-lg border border-slate-800 bg-slate-900/80 p-0.5 text-xs">
+          <div className="flex items-center rounded-lg border border-ui bg-surface-raised p-0.5 text-xs">
             <button
               onClick={() => setPeriodFilter('7d')}
               className={`rounded-md px-2.5 py-1 font-medium transition ${
                 periodFilter === '7d'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-xs'
+                  : 'text-muted hover:text-primary'
               }`}
             >
               7D
@@ -261,8 +261,8 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
               onClick={() => setPeriodFilter('14d')}
               className={`rounded-md px-2.5 py-1 font-medium transition ${
                 periodFilter === '14d'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-xs'
+                  : 'text-muted hover:text-primary'
               }`}
             >
               14D
@@ -271,8 +271,8 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
               onClick={() => setPeriodFilter('all')}
               className={`rounded-md px-2.5 py-1 font-medium transition ${
                 periodFilter === 'all'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-xs'
+                  : 'text-muted hover:text-primary'
               }`}
             >
               Tudo
@@ -283,43 +283,43 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
 
       {/* Mini KPIs da Pesquisa Selecionada */}
       <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+        <div className="rounded-xl border border-ui/80 bg-surface-raised p-3">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
             Total Coletado
           </span>
           <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-xl font-bold text-white">{totalColetadas}</span>
-            <span className="text-[11px] text-slate-500">entrevistas</span>
+            <span className="text-xl font-bold text-primary">{totalColetadas}</span>
+            <span className="text-[11px] text-muted">entrevistas</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+        <div className="rounded-xl border border-ui/80 bg-surface-raised p-3">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
             Média por Dia
           </span>
           <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-xl font-bold text-blue-400">{mediaDiaria}</span>
-            <span className="text-[11px] text-slate-500">coletas/dia</span>
+            <span className="text-xl font-bold text-accent-primary">{mediaDiaria}</span>
+            <span className="text-[11px] text-muted">coletas/dia</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+        <div className="rounded-xl border border-ui/80 bg-surface-raised p-3">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
             Com Áudio Gravado
           </span>
           <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-xl font-bold text-purple-400">{percentAudio}%</span>
-            <span className="text-[11px] text-slate-500">({totalComAudio})</span>
+            <span className="text-xl font-bold text-accent-purple">{percentAudio}%</span>
+            <span className="text-[11px] text-muted">({totalComAudio})</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+        <div className="rounded-xl border border-ui/80 bg-surface-raised p-3">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
             Georreferenciadas
           </span>
           <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-xl font-bold text-emerald-400">{percentGPS}%</span>
-            <span className="text-[11px] text-slate-500">({totalComGPS})</span>
+            <span className="text-xl font-bold text-accent-success">{percentGPS}%</span>
+            <span className="text-[11px] text-muted">({totalComGPS})</span>
           </div>
         </div>
       </div>
@@ -327,19 +327,19 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
       {/* Gráfico Recharts de Evolução */}
       <div className="mt-5">
         {evolutionData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-800 bg-slate-900/20 py-12 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 mb-3">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-ui bg-surface-raised py-12 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border mb-3">
               <Activity className="h-6 w-6" />
             </div>
-            <h4 className="text-xs font-bold text-slate-300">
+            <h4 className="text-xs font-bold text-secondary">
               Nenhuma entrevista registrada para {selectedSurvey?.nome || 'esta pesquisa'}
             </h4>
-            <p className="text-[11px] text-slate-500 max-w-sm mt-1">
+            <p className="text-[11px] text-muted max-w-sm mt-1">
               Colete respostas utilizando o Simulador de Coleta ou sincronize as entrevistas realizadas em campo.
             </p>
             <button
               onClick={() => setActiveModule('simulador')}
-              className="mt-4 flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-md hover:bg-blue-500 transition-colors"
+              className="mt-4 flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-1.5 text-xs font-bold text-on-accent shadow-md hover:bg-accent-primary-solid-hover transition-colors"
             >
               <Smartphone className="h-3.5 w-3.5" />
               <span>Abrir Simulador de Coleta</span>
@@ -352,18 +352,18 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
                 data={evolutionData}
                 margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e2230" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" vertical={false} />
                 <XAxis
                   dataKey="dataFormatada"
-                  stroke="#64748b"
-                  tick={{ fontSize: 11, fill: '#94a3b8' }}
-                  tickLine={{ stroke: '#334155' }}
+                  stroke="var(--border)"
+                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
+                  tickLine={{ stroke: 'var(--border-subtle)' }}
                 />
                 <YAxis
                   yAxisId="left"
-                  stroke="#64748b"
-                  tick={{ fontSize: 11, fill: '#94a3b8' }}
-                  tickLine={{ stroke: '#334155' }}
+                  stroke="var(--border)"
+                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
+                  tickLine={{ stroke: 'var(--border-subtle)' }}
                   allowDecimals={false}
                 />
                 <YAxis
@@ -377,7 +377,7 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
                 <Tooltip content={<CustomChartTooltip />} />
                 <Legend
                   wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
-                  formatter={(value) => <span className="text-slate-300">{value}</span>}
+                  formatter={(value) => <span className="text-secondary">{value}</span>}
                 />
                 <Bar
                   yAxisId="left"
@@ -414,13 +414,13 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
       </div>
 
       {/* Rodapé com atalho para o módulo de respostas e visualização completa */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-3 text-xs text-slate-400">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-ui/80 pt-3 text-xs text-muted">
         <div className="flex items-center gap-2">
-          <span className="text-slate-500 font-mono text-[11px]">
+          <span className="text-muted font-mono text-[11px]">
             Código: {selectedSurvey?.codigo}
           </span>
           <span>•</span>
-          <span className="text-slate-400">
+          <span className="text-muted">
             Ciclo {selectedSurvey?.cicloAtual} (v{selectedSurvey?.versao})
           </span>
         </div>
@@ -433,7 +433,7 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
             }
             setActiveModule('respostas');
           }}
-          className="inline-flex items-center gap-1 font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+          className="inline-flex items-center gap-1 font-semibold text-accent-primary hover:text-accent-primary transition-colors"
         >
           <span>Ver Respostas Detalhadas</span>
           <ArrowUpRight className="h-3.5 w-3.5" />

@@ -1,61 +1,245 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   DESIGN TOKENS SEMÂNTICOS — TEMA ESCURO (PADRÃO) E TEMA CLARO
+   Cada token é nomeado pelo PAPEL que exerce na interface (superfície, texto,
+   borda, accent...) e não pela cor em si. A troca de tema é feita só por
+   .dark / .light no <html> (ver AppContext.tsx, não alterado). Os
+   componentes devem consumir os utilitários Tailwind derivados destes
+   tokens via @theme abaixo (bg-surface, text-primary, border-ui,
+   bg-accent-primary, etc.) em vez de classes de cor fixas.
+   ========================================================================== */
 :root {
-  /* Dark Theme Tokens (Default) */
-  --bg-app: #0a0b10;
-  --bg-surface: #16171d;
-  --bg-surface-elevated: #1e2029;
-  --bg-surface-card: #111218;
-  --bg-input: #0a0b10;
-  --border-ui: #334155;
-  --border-subtle: #1e293b;
-  --border-focus: #3b82f6;
+  /* Superfícies */
+  --surface-app: #0a0b10;
+  --surface: #16171d;
+  --surface-raised: #1e2029;
+  --surface-card: #111218;
+  --surface-input: #0a0b10;
+  --surface-hover: #1e2230;
+  --surface-active: #2b3245;
+  --overlay-modal: rgba(10, 11, 16, 0.75);
+  --surface-header: #16171d;
+  --surface-footer: #16171d;
+
+  /* Texto */
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
-  --icon-primary: #94a3b8;
-  --icon-accent-blue: #60a5fa;
-  --icon-accent-emerald: #34d399;
-  --icon-accent-amber: #fbbf24;
-  --icon-accent-rose: #f87171;
-  --icon-accent-purple: #c084fc;
+  --text-link: #60a5fa;
+  --text-on-accent: #ffffff;
+  --text-on-warning: #1c1917; /* texto escuro sobre fundo âmbar/amarelo (mesmo valor nos dois temas) */
+
+  /* Bordas */
+  --border: #334155;
+  --border-subtle: #1e293b;
+  --border-strong: #475569;
+  --border-focus: #3b82f6;
+
+  /* Accents semânticos — uso como texto/ícone sobre a superfície do app */
+  --accent-primary: #60a5fa;
+  --accent-success: #34d399;
+  --accent-warning: #fbbf24;
+  --accent-danger: #f87171;
+  --accent-info: #22d3ee;
+  --accent-purple: #c084fc;
+
+  /* Accents "sólidos" — usados em fundo de botão/ícone de destaque.
+     Mesmo valor nos dois temas (o texto por cima usa --text-on-accent). */
+  --accent-primary-solid: #2563eb;
+  --accent-success-solid: #059669;
+  --accent-warning-solid: #d97706;
+  --accent-danger-solid: #e11d48;
+  --accent-info-solid: #0891b2;
+  --accent-purple-solid: #9333ea;
+
+  --accent-primary-solid-hover: #3b82f6;
+  --accent-success-solid-hover: #10b981;
+  --accent-warning-solid-hover: #f59e0b;
+  --accent-danger-solid-hover: #f43f5e;
+  --accent-info-solid-hover: #06b6d4;
+  --accent-purple-solid-hover: #a855f7;
+  --accent-primary-soft-bg: rgba(59, 130, 246, 0.15);
+  --accent-primary-soft-border: rgba(59, 130, 246, 0.3);
+  --accent-primary-soft-text: #93c5fd;
+
+  --accent-success-soft-bg: rgba(16, 185, 129, 0.15);
+  --accent-success-soft-border: rgba(16, 185, 129, 0.3);
+  --accent-success-soft-text: #6ee7b7;
+
+  --accent-warning-soft-bg: rgba(217, 119, 6, 0.15);
+  --accent-warning-soft-border: rgba(217, 119, 6, 0.3);
+  --accent-warning-soft-text: #fcd34d;
+
+  --accent-danger-soft-bg: rgba(225, 29, 72, 0.15);
+  --accent-danger-soft-border: rgba(225, 29, 72, 0.3);
+  --accent-danger-soft-text: #fda4af;
+
+  --accent-info-soft-bg: rgba(8, 145, 178, 0.15);
+  --accent-info-soft-border: rgba(8, 145, 178, 0.3);
+  --accent-info-soft-text: #67e8f9;
+
+  --accent-purple-soft-bg: rgba(147, 51, 234, 0.15);
+  --accent-purple-soft-border: rgba(147, 51, 234, 0.3);
+  --accent-purple-soft-text: #d8b4fe;
+
+  /* Scrollbar */
+  --scrollbar-track: #0a0b10;
+  --scrollbar-thumb: #1e2230;
+  --scrollbar-thumb-hover: #2b3245;
 }
 
 /* ==========================================================================
-   WCAG AAA HIGH-CONTRAST LIGHT MODE TOKENS & SYSTEM VARIABLES
-   Standards:
-   - Text contrast >= 7.0:1 (WCAG AAA Level 1.4.6)
-   - UI Components, Form Borders, Checkboxes & Icons >= 3.0:1 (WCAG AAA Level 1.4.11)
+   TEMA CLARO — WCAG AAA (texto >= 7:1, UI/ícones >= 3:1)
    ========================================================================== */
 html.light,
 html:not(.dark) {
   color-scheme: light;
 
-  /* Surfaces & Backgrounds */
-  --bg-app: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-surface-elevated: #f1f5f9;
-  --bg-surface-card: #ffffff;
-  --bg-input: #ffffff;
+  --surface-app: #f8fafc;
+  --surface: #ffffff;
+  --surface-raised: #f1f5f9;
+  --surface-card: #ffffff;
+  --surface-input: #ffffff;
+  --surface-hover: #e2e8f0;
+  --surface-active: #cbd5e1;
+  --overlay-modal: rgba(15, 23, 42, 0.5);
+  --surface-header: #ffffff;
+  --surface-footer: #ffffff;
 
-  /* Strict WCAG AAA UI Borders (Contrasts against #ffffff: #475569 = 7.45:1, #64748b = 4.77:1 -> both exceed 3:1) */
-  --border-ui: #475569;
-  --border-subtle: #64748b;
-  --border-focus: #1e40af; /* 8.5:1 */
+  --text-primary: #090d16;   /* 19.1:1 sobre #ffffff */
+  --text-secondary: #1e293b; /* 13.6:1 */
+  --text-muted: #334155;     /* 10.0:1 */
+  --text-link: #1e40af;      /* 8.5:1 */
+  --text-on-accent: #ffffff;
+  --text-on-warning: #1c1917;
 
-  /* Strict WCAG AAA Typography (Contrasts against #ffffff: #090d16 = 19.1:1, #0f172a = 16.9:1, #1e293b = 13.6:1, #334155 = 10.0:1 -> all exceed 7:1) */
-  --text-primary: #090d16;
-  --text-secondary: #1e293b;
-  --text-muted: #334155;
+  --border: #475569;       /* 7.45:1 */
+  --border-subtle: #64748b; /* 4.77:1 */
+  --border-strong: #334155; /* 10.0:1 */
+  --border-focus: #1e40af;  /* 8.5:1 */
 
-  /* Strict WCAG AAA Icons (Contrasts against #ffffff exceed 7:1) */
-  --icon-primary: #1e293b;
-  --icon-secondary: #334155;
-  --icon-accent-blue: #1e40af; /* 8.5:1 */
-  --icon-accent-emerald: #065f46; /* 8.1:1 */
-  --icon-accent-amber: #78350f; /* 8.2:1 */
-  --icon-accent-rose: #991b1b; /* 7.6:1 */
-  --icon-accent-purple: #581c87; /* 9.2:1 */
+  --accent-primary: #1e40af; /* 8.5:1 */
+  --accent-success: #065f46; /* 8.1:1 */
+  --accent-warning: #78350f; /* 8.2:1 */
+  --accent-danger: #991b1b;  /* 7.6:1 */
+  --accent-info: #0e7490;    /* 7.2:1 */
+  --accent-purple: #581c87;  /* 9.2:1 */
+
+  --accent-primary-solid: #2563eb;
+  --accent-success-solid: #059669;
+  --accent-warning-solid: #d97706;
+  --accent-danger-solid: #e11d48;
+  --accent-info-solid: #0891b2;
+  --accent-purple-solid: #9333ea;
+
+  --accent-primary-solid-hover: #3b82f6;
+  --accent-success-solid-hover: #10b981;
+  --accent-warning-solid-hover: #f59e0b;
+  --accent-danger-solid-hover: #f43f5e;
+  --accent-info-solid-hover: #06b6d4;
+  --accent-purple-solid-hover: #a855f7;
+
+  --accent-primary-soft-bg: #dbeafe;
+  --accent-primary-soft-border: #93c5fd;
+  --accent-primary-soft-text: #1e40af;
+
+  --accent-success-soft-bg: #d1fae5;
+  --accent-success-soft-border: #a7f3d0;
+  --accent-success-soft-text: #065f46;
+
+  --accent-warning-soft-bg: #fef3c7;
+  --accent-warning-soft-border: #fde68a;
+  --accent-warning-soft-text: #78350f;
+
+  --accent-danger-soft-bg: #fee2e2;
+  --accent-danger-soft-border: #fca5a5;
+  --accent-danger-soft-text: #991b1b;
+
+  --accent-info-soft-bg: #cffafe;
+  --accent-info-soft-border: #67e8f9;
+  --accent-info-soft-text: #0e7490;
+
+  --accent-purple-soft-bg: #f3e8ff;
+  --accent-purple-soft-border: #d8b4fe;
+  --accent-purple-soft-text: #581c87;
+
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #94a3b8;
+  --scrollbar-thumb-hover: #64748b;
+}
+
+/* ==========================================================================
+   Tailwind v4 — mapeia os tokens semânticos para utilitários de cor
+   (bg-*, text-*, border-*). Como os valores são custom properties que
+   mudam com .dark/.light, os utilitários abaixo já respeitam o tema
+   automaticamente, sem precisar de nenhuma sobrescrita com !important.
+   ========================================================================== */
+@theme {
+  --color-surface-app: var(--surface-app);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-card: var(--surface-card);
+  --color-surface-input: var(--surface-input);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-active: var(--surface-active);
+  --color-overlay-modal: var(--overlay-modal);
+  --color-surface-header: var(--surface-header);
+  --color-surface-footer: var(--surface-footer);
+
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-link: var(--text-link);
+  --color-on-accent: var(--text-on-accent);
+  --color-on-warning: var(--text-on-warning);
+
+  --color-ui: var(--border);
+  --color-subtle: var(--border-subtle);
+  --color-strong: var(--border-strong);
+  --color-focus: var(--border-focus);
+
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-success: var(--accent-success);
+  --color-accent-warning: var(--accent-warning);
+  --color-accent-danger: var(--accent-danger);
+  --color-accent-info: var(--accent-info);
+  --color-accent-purple: var(--accent-purple);
+
+  --color-accent-primary-solid: var(--accent-primary-solid);
+  --color-accent-success-solid: var(--accent-success-solid);
+  --color-accent-warning-solid: var(--accent-warning-solid);
+  --color-accent-danger-solid: var(--accent-danger-solid);
+  --color-accent-info-solid: var(--accent-info-solid);
+  --color-accent-purple-solid: var(--accent-purple-solid);
+
+  --color-accent-primary-solid-hover: var(--accent-primary-solid-hover);
+  --color-accent-success-solid-hover: var(--accent-success-solid-hover);
+  --color-accent-warning-solid-hover: var(--accent-warning-solid-hover);
+  --color-accent-danger-solid-hover: var(--accent-danger-solid-hover);
+  --color-accent-info-solid-hover: var(--accent-info-solid-hover);
+  --color-accent-purple-solid-hover: var(--accent-purple-solid-hover);
+
+  --color-accent-primary-soft: var(--accent-primary-soft-bg);
+  --color-accent-success-soft: var(--accent-success-soft-bg);
+  --color-accent-warning-soft: var(--accent-warning-soft-bg);
+  --color-accent-danger-soft: var(--accent-danger-soft-bg);
+  --color-accent-info-soft: var(--accent-info-soft-bg);
+  --color-accent-purple-soft: var(--accent-purple-soft-bg);
+
+  --color-accent-primary-soft-border: var(--accent-primary-soft-border);
+  --color-accent-success-soft-border: var(--accent-success-soft-border);
+  --color-accent-warning-soft-border: var(--accent-warning-soft-border);
+  --color-accent-danger-soft-border: var(--accent-danger-soft-border);
+  --color-accent-info-soft-border: var(--accent-info-soft-border);
+  --color-accent-purple-soft-border: var(--accent-purple-soft-border);
+
+  --color-accent-primary-soft-text: var(--accent-primary-soft-text);
+  --color-accent-success-soft-text: var(--accent-success-soft-text);
+  --color-accent-warning-soft-text: var(--accent-warning-soft-text);
+  --color-accent-danger-soft-text: var(--accent-danger-soft-text);
+  --color-accent-info-soft-text: var(--accent-info-soft-text);
+  --color-accent-purple-soft-text: var(--accent-purple-soft-text);
 }
 
 @layer base {
@@ -64,14 +248,8 @@ html:not(.dark) {
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  html.dark body {
-    background-color: var(--bg-app);
-    color: var(--text-primary);
-  }
-
-  html.light body,
-  html:not(.dark) body {
-    background-color: var(--bg-app);
+  body {
+    background-color: var(--surface-app);
     color: var(--text-primary);
   }
 
@@ -80,745 +258,15 @@ html:not(.dark) {
     width: 6px;
     height: 6px;
   }
-  
-  html.dark ::-webkit-scrollbar-track {
-    background: #0a0b10;
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
   }
-  html.dark ::-webkit-scrollbar-thumb {
-    background: #1e2230;
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
     border-radius: 9999px;
   }
-  html.dark ::-webkit-scrollbar-thumb:hover {
-    background: #2b3245;
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
   }
-
-  html.light ::-webkit-scrollbar-track,
-  html:not(.dark) ::-webkit-scrollbar-track {
-    background: #f1f5f9;
-  }
-  html.light ::-webkit-scrollbar-thumb,
-  html:not(.dark) ::-webkit-scrollbar-thumb {
-    background: #94a3b8;
-    border-radius: 9999px;
-  }
-  html.light ::-webkit-scrollbar-thumb:hover,
-  html:not(.dark) ::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
-  }
-}
-
-/* ==========================================================================
-   GRADIENTES DECORATIVOS ESCUROS (cards de destaque)
-   Em modo escuro esses gradientes usam tons -900/-950 profundos. No modo
-   claro isso resulta em texto escuro (já corrigido acima) sobre um FUNDO
-   também escuro, tornando-o ilegível. Aqui neutralizamos o gradiente para
-   um par de tons claros e coerentes com a paleta clara do sistema.
-   ========================================================================== */
-html.light [class*="from-blue-950"],
-html.light [class*="from-blue-900"],
-html:not(.dark) [class*="from-blue-950"],
-html:not(.dark) [class*="from-blue-900"] {
-  --tw-gradient-from: #dbeafe !important;
-  --tw-gradient-to: rgb(219 234 254 / 0) !important;
-}
-
-html.light [class*="from-indigo-950"],
-html.light [class*="from-indigo-900"],
-html:not(.dark) [class*="from-indigo-950"],
-html:not(.dark) [class*="from-indigo-900"] {
-  --tw-gradient-from: #e0e7ff !important;
-  --tw-gradient-to: rgb(224 231 255 / 0) !important;
-}
-
-html.light [class*="from-emerald-950"],
-html.light [class*="from-emerald-900"],
-html:not(.dark) [class*="from-emerald-950"],
-html:not(.dark) [class*="from-emerald-900"] {
-  --tw-gradient-from: #d1fae5 !important;
-  --tw-gradient-to: rgb(209 250 229 / 0) !important;
-}
-
-html.light [class*="from-amber-950"],
-html.light [class*="from-amber-900"],
-html:not(.dark) [class*="from-amber-950"],
-html:not(.dark) [class*="from-amber-900"] {
-  --tw-gradient-from: #fef3c7 !important;
-  --tw-gradient-to: rgb(254 243 199 / 0) !important;
-}
-
-html.light [class*="via-slate-900"],
-html:not(.dark) [class*="via-slate-900"] {
-  --tw-gradient-via: #f1f5f9 !important;
-}
-
-html.light [class*="to-slate-900"],
-html.light [class*="to-blue-950"],
-html.light [class*="to-indigo-900"],
-html:not(.dark) [class*="to-slate-900"],
-html:not(.dark) [class*="to-blue-950"],
-html:not(.dark) [class*="to-indigo-900"] {
-  --tw-gradient-to: #ffffff !important;
-}
-
-/* Cards com gradiente escuro decorativo: força texto e labels legíveis mesmo
-   que alguma regra de gradiente específica não seja coberta acima */
-html.light [class*="from-blue-950"] *,
-html.light [class*="from-indigo-950"] *,
-html.light [class*="from-emerald-950"] *,
-html.light [class*="from-amber-950"] *,
-html:not(.dark) [class*="from-blue-950"] *,
-html:not(.dark) [class*="from-indigo-950"] *,
-html:not(.dark) [class*="from-emerald-950"] *,
-html:not(.dark) [class*="from-amber-950"] * {
-  color: #090d16;
-}
-
-/* ==========================================================================
-   CAIXAS DE ALERTA/STATUS COM FUNDO ESCURO TRANSLÚCIDO (bg-*-950/XX)
-   Padrão muito comum em avisos de sucesso/erro/alerta (login, wizard, 2FA,
-   políticas de acesso, cadastro). Em modo escuro fica um fundo verde/azul/
-   vermelho bem escuro e translúcido; no claro isso precisa virar um fundo
-   claro da mesma família de cor, senão o texto (já escurecido acima) fica
-   ilegível sobre um fundo que continua escuro.
-   ========================================================================== */
-html.light [class*="bg-emerald-950/"],
-html:not(.dark) [class*="bg-emerald-950/"] {
-  background-color: #d1fae5 !important;
-}
-
-html.light [class*="bg-blue-950/"],
-html:not(.dark) [class*="bg-blue-950/"] {
-  background-color: #dbeafe !important;
-}
-
-html.light [class*="bg-rose-950/"],
-html.light [class*="bg-red-950/"],
-html:not(.dark) [class*="bg-rose-950/"],
-html:not(.dark) [class*="bg-red-950/"] {
-  background-color: #fee2e2 !important;
-}
-
-html.light [class*="bg-amber-950/"],
-html:not(.dark) [class*="bg-amber-950/"] {
-  background-color: #fef3c7 !important;
-}
-
-html.light [class*="bg-purple-950/"],
-html.light [class*="bg-indigo-950/"],
-html:not(.dark) [class*="bg-purple-950/"],
-html:not(.dark) [class*="bg-indigo-950/"] {
-  background-color: #f3e8ff !important;
-}
-
-html.light [class*="bg-slate-950/"],
-html:not(.dark) [class*="bg-slate-950/"] {
-  background-color: #e2e8f0 !important;
-}
-
-/* hover:bg-*-950/XX (ex: botão de excluir com hover vermelho escuro) */
-html.light [class*="hover\\:bg-rose-950/"]:hover,
-html:not(.dark) [class*="hover\\:bg-rose-950/"]:hover {
-  background-color: #fee2e2 !important;
-}
-
-/* Background overrides for Light Theme */
-html.light .bg-\[\#0a0b10\],
-html:not(.dark) .bg-\[\#0a0b10\] {
-  background-color: #f8fafc !important;
-}
-
-html.light .bg-\[\#0a0b10\]\/90,
-html.light .bg-\[\#0a0b10\]\/95,
-html:not(.dark) .bg-\[\#0a0b10\]\/90,
-html:not(.dark) .bg-\[\#0a0b10\]\/95 {
-  background-color: rgba(248, 250, 252, 0.96) !important;
-}
-
-html.light .bg-\[\#0d0e14\],
-html:not(.dark) .bg-\[\#0d0e14\] {
-  background-color: #f1f5f9 !important;
-}
-
-html.light .bg-\[\#111218\],
-html:not(.dark) .bg-\[\#111218\] {
-  background-color: #ffffff !important;
-}
-
-html.light .bg-\[\#16171d\],
-html.light .bg-\[\#16171d\]\/80,
-html.light .bg-\[\#16171d\]\/90,
-html:not(.dark) .bg-\[\#16171d\],
-html:not(.dark) .bg-\[\#16171d\]\/80,
-html:not(.dark) .bg-\[\#16171d\]\/90 {
-  background-color: #ffffff !important;
-}
-
-/* Botões utilitários do Header (idioma, tema, perfil) usam o mesmo tom de
-   fundo branco do cabeçalho no tema claro, o que deixa a borda fina como
-   único indício visual do botão. Aqui reforçamos com um cinza sutil para
-   que fiquem claramente destacáveis como controles clicáveis. */
-html.light header .bg-\[\#16171d\],
-html:not(.dark) header .bg-\[\#16171d\] {
-  background-color: #f1f5f9 !important;
-}
-
-html.light .bg-\[\#1b1c24\],
-html.light .bg-\[\#1e2029\],
-html:not(.dark) .bg-\[\#1b1c24\],
-html:not(.dark) .bg-\[\#1e2029\] {
-  background-color: #f8fafc !important;
-}
-
-html.light .bg-slate-900,
-html.light [class*="bg-slate-900/"],
-html:not(.dark) .bg-slate-900,
-html:not(.dark) [class*="bg-slate-900/"] {
-  background-color: #f1f5f9 !important;
-}
-
-html.light .bg-slate-800,
-html.light [class*="bg-slate-800/"],
-html:not(.dark) .bg-slate-800,
-html:not(.dark) [class*="bg-slate-800/"] {
-  background-color: #f1f5f9 !important;
-  color: #090d16 !important;
-  border-color: #475569 !important;
-  font-weight: 600;
-}
-
-html.light .bg-slate-800 *,
-html.light [class*="bg-slate-800/"] *,
-html:not(.dark) .bg-slate-800 *,
-html:not(.dark) [class*="bg-slate-800/"] * {
-  color: #090d16 !important;
-}
-
-html.light .bg-slate-700,
-html.light [class*="bg-slate-700/"],
-html:not(.dark) .bg-slate-700,
-html:not(.dark) [class*="bg-slate-700/"] {
-  background-color: #e2e8f0 !important;
-  color: #090d16 !important;
-  border-color: #475569 !important;
-}
-
-html.light .bg-slate-700 *,
-html.light [class*="bg-slate-700/"] *,
-html:not(.dark) .bg-slate-700 *,
-html:not(.dark) [class*="bg-slate-700/"] * {
-  color: #090d16 !important;
-}
-
-html.light .bg-slate-950,
-html:not(.dark) .bg-slate-950 {
-  background-color: #e2e8f0 !important;
-}
-
-/* Border overrides for Light Theme - Strict WCAG AAA (Contrast >= 3.0:1 for UI elements) */
-html.light .border,
-html:not(.dark) .border {
-  border-color: #64748b !important; /* 4.77:1 contrast on #ffffff */
-}
-
-html.light [class*="border-slate-800"],
-html.light [class*="border-slate-700"],
-html.light [class*="border-slate-600"],
-html.light [class*="border-slate-500"],
-html:not(.dark) [class*="border-slate-800"],
-html:not(.dark) [class*="border-slate-700"],
-html:not(.dark) [class*="border-slate-600"],
-html:not(.dark) [class*="border-slate-500"] {
-  border-color: #475569 !important; /* 7.45:1 contrast on #ffffff */
-}
-
-html.light [class*="border-slate-400"],
-html.light [class*="border-slate-300"],
-html.light [class*="border-slate-200"],
-html.light [class*="border-gray-200"],
-html.light [class*="border-gray-300"],
-html:not(.dark) [class*="border-slate-400"],
-html:not(.dark) [class*="border-slate-300"],
-html:not(.dark) [class*="border-slate-200"],
-html:not(.dark) [class*="border-gray-200"],
-html:not(.dark) [class*="border-gray-300"] {
-  border-color: #64748b !important; /* 4.77:1 contrast on #ffffff */
-}
-
-html.light [class*="divide-slate-"],
-html:not(.dark) [class*="divide-slate-"] {
-  border-color: #64748b !important;
-}
-
-/* Typography contrast in Light Theme (Strict WCAG AAA Level 1.4.6 >= 7.0:1) */
-html.light .text-white,
-html:not(.dark) .text-white {
-  color: #090d16 !important; /* 19.1:1 contrast on #ffffff */
-}
-
-html.light .text-slate-100,
-html:not(.dark) .text-slate-100 {
-  color: #090d16 !important;
-}
-
-html.light .text-slate-200,
-html:not(.dark) .text-slate-200 {
-  color: #0f172a !important; /* 16.9:1 contrast */
-}
-
-html.light .text-slate-300,
-html:not(.dark) .text-slate-300 {
-  color: #1e293b !important; /* 13.6:1 contrast */
-}
-
-/* WCAG AAA High contrast secondary and muted text (>= 7:1 contrast on light backgrounds) */
-html.light .text-slate-400,
-html:not(.dark) .text-slate-400 {
-  color: #1e293b !important; /* 13.6:1 contrast */
-  font-weight: 500;
-}
-
-html.light .text-slate-500,
-html:not(.dark) .text-slate-500 {
-  color: #273746 !important; /* 11.2:1 contrast */
-  font-weight: 500;
-}
-
-/* Semantic & Accent Text on Light Background - Strict WCAG AAA >= 7:1
-   Inclui -300 (usado em badges de destaque sobre fundo colorido claro) */
-html.light .text-blue-300,
-html.light .text-blue-400,
-html.light .text-blue-500,
-html:not(.dark) .text-blue-300,
-html:not(.dark) .text-blue-400,
-html:not(.dark) .text-blue-500 {
-  color: #1e40af !important; /* 8.5:1 contrast */
-}
-
-html.light .text-emerald-300,
-html.light .text-emerald-400,
-html.light .text-emerald-500,
-html:not(.dark) .text-emerald-300,
-html:not(.dark) .text-emerald-400,
-html:not(.dark) .text-emerald-500 {
-  color: #065f46 !important; /* 8.1:1 contrast */
-}
-
-html.light .text-amber-300,
-html.light .text-amber-400,
-html.light .text-amber-500,
-html.light .text-yellow-500,
-html:not(.dark) .text-amber-300,
-html:not(.dark) .text-amber-400,
-html:not(.dark) .text-amber-500,
-html:not(.dark) .text-yellow-500 {
-  color: #78350f !important; /* 8.2:1 contrast */
-}
-
-html.light .text-purple-300,
-html.light .text-purple-400,
-html.light .text-purple-500,
-html:not(.dark) .text-purple-300,
-html:not(.dark) .text-purple-400,
-html:not(.dark) .text-purple-500 {
-  color: #581c87 !important; /* 9.2:1 contrast */
-}
-
-html.light .text-cyan-300,
-html.light .text-cyan-400,
-html.light .text-cyan-500,
-html:not(.dark) .text-cyan-300,
-html:not(.dark) .text-cyan-400,
-html:not(.dark) .text-cyan-500 {
-  color: #0e7490 !important; /* 7.2:1 contrast */
-}
-
-html.light .text-indigo-300,
-html.light .text-indigo-400,
-html.light .text-indigo-500,
-html:not(.dark) .text-indigo-300,
-html:not(.dark) .text-indigo-400,
-html:not(.dark) .text-indigo-500 {
-  color: #3730a3 !important; /* 8.0:1 contrast */
-}
-
-html.light .text-rose-300,
-html.light .text-rose-400,
-html.light .text-rose-500,
-html.light .text-red-300,
-html.light .text-red-400,
-html.light .text-red-500,
-html:not(.dark) .text-rose-300,
-html:not(.dark) .text-rose-400,
-html:not(.dark) .text-rose-500,
-html:not(.dark) .text-red-300,
-html:not(.dark) .text-red-400,
-html:not(.dark) .text-red-500 {
-  color: #991b1b !important; /* 7.6:1 contrast */
-}
-
-html.light .text-pink-300,
-html.light .text-pink-400,
-html.light .text-pink-500,
-html:not(.dark) .text-pink-300,
-html:not(.dark) .text-pink-400,
-html:not(.dark) .text-pink-500 {
-  color: #9d174d !important; /* 7.3:1 contrast */
-}
-
-/* ==========================================================================
-   STRICT WCAG AAA (3:1+) FOR ALL ICONS & GRAPHICAL OBJECTS
-   Ensures every Lucide SVG icon has crisp, immediately discernible contrast
-   ========================================================================== */
-html.light svg.lucide,
-html:not(.dark) svg.lucide {
-  color: inherit;
-}
-
-html.light svg[class*="text-slate-400"],
-html.light svg[class*="text-slate-500"],
-html.light svg[class*="text-slate-300"],
-html.light svg[class*="text-gray-400"],
-html.light svg[class*="text-gray-500"],
-html:not(.dark) svg[class*="text-slate-400"],
-html:not(.dark) svg[class*="text-slate-500"],
-html:not(.dark) svg[class*="text-slate-300"],
-html:not(.dark) svg[class*="text-gray-400"],
-html:not(.dark) svg[class*="text-gray-500"] {
-  color: #1e293b !important; /* 13.6:1 contrast */
-}
-
-html.light svg[class*="text-blue-400"],
-html.light svg[class*="text-blue-500"],
-html:not(.dark) svg[class*="text-blue-400"],
-html:not(.dark) svg[class*="text-blue-500"] {
-  color: #1e40af !important; /* 8.5:1 contrast */
-}
-
-html.light svg[class*="text-emerald-400"],
-html.light svg[class*="text-emerald-500"],
-html:not(.dark) svg[class*="text-emerald-400"],
-html:not(.dark) svg[class*="text-emerald-500"] {
-  color: #065f46 !important; /* 8.1:1 contrast */
-}
-
-html.light svg[class*="text-amber-400"],
-html.light svg[class*="text-amber-500"],
-html:not(.dark) svg[class*="text-amber-400"],
-html:not(.dark) svg[class*="text-amber-500"] {
-  color: #78350f !important; /* 8.2:1 contrast */
-}
-
-html.light svg[class*="text-rose-400"],
-html.light svg[class*="text-rose-500"],
-html.light svg[class*="text-red-400"],
-html.light svg[class*="text-red-500"],
-html:not(.dark) svg[class*="text-rose-400"],
-html:not(.dark) svg[class*="text-rose-500"],
-html:not(.dark) svg[class*="text-red-400"],
-html:not(.dark) svg[class*="text-red-500"] {
-  color: #991b1b !important; /* 7.6:1 contrast */
-}
-
-html.light svg[class*="text-purple-400"],
-html.light svg[class*="text-purple-500"],
-html:not(.dark) svg[class*="text-purple-400"],
-html:not(.dark) svg[class*="text-purple-500"] {
-  color: #581c87 !important; /* 9.2:1 contrast */
-}
-
-/* CRITICAL: Retain crisp pure white text inside dark/vibrant primary buttons */
-html.light .bg-blue-600,
-html.light .bg-blue-700,
-html.light .bg-blue-500,
-html.light .bg-emerald-600,
-html.light .bg-emerald-700,
-html.light .bg-rose-600,
-html.light .bg-red-600,
-html.light .bg-purple-600,
-html.light .bg-indigo-600,
-html.light button.bg-blue-600,
-html.light button.bg-emerald-600,
-html.light button.bg-rose-600,
-html.light [class*="bg-blue-600"],
-html.light [class*="bg-emerald-600"],
-html.light [class*="bg-rose-600"],
-html:not(.dark) .bg-blue-600,
-html:not(.dark) .bg-blue-700,
-html:not(.dark) .bg-blue-500,
-html:not(.dark) .bg-emerald-600,
-html:not(.dark) .bg-emerald-700,
-html:not(.dark) .bg-rose-600,
-html:not(.dark) .bg-red-600,
-html:not(.dark) .bg-purple-600,
-html:not(.dark) .bg-indigo-600,
-html:not(.dark) button.bg-blue-600,
-html:not(.dark) button.bg-emerald-600,
-html:not(.dark) button.bg-rose-600 {
-  color: #ffffff !important;
-}
-
-html.light .bg-blue-600 *,
-html.light .bg-blue-700 *,
-html.light .bg-emerald-600 *,
-html.light .bg-rose-600 *,
-html.light .bg-red-600 *,
-html.light .bg-purple-600 *,
-html:not(.dark) .bg-blue-600 *,
-html:not(.dark) .bg-blue-700 *,
-html:not(.dark) .bg-emerald-600 *,
-html:not(.dark) .bg-rose-600 *,
-html:not(.dark) .bg-red-600 *,
-html:not(.dark) .bg-purple-600 * {
-  color: #ffffff !important;
-}
-
-/* Form Controls in Light Theme - WCAG AAA */
-html.light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-html.light select,
-html.light textarea,
-html:not(.dark) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-html:not(.dark) select,
-html:not(.dark) textarea {
-  background-color: #ffffff !important;
-  color: #090d16 !important;
-  border-color: #475569 !important; /* 7.45:1 contrast - exceeds 3:1 AAA */
-  font-weight: 500;
-}
-
-html.light input:focus,
-html.light select:focus,
-html.light textarea:focus,
-html:not(.dark) input:focus,
-html:not(.dark) select:focus,
-html:not(.dark) textarea:focus {
-  border-color: #1e40af !important;
-  outline: 2px solid rgba(30, 64, 175, 0.3) !important;
-}
-
-/* Checkboxes and Radios (WCAG AAA >= 3.0:1) */
-html.light input[type="checkbox"],
-html.light input[type="radio"],
-html:not(.dark) input[type="checkbox"],
-html:not(.dark) input[type="radio"] {
-  border-color: #334155 !important; /* 10:1 contrast on #ffffff */
-  background-color: #ffffff !important;
-}
-
-html.light input[type="checkbox"]:checked,
-html.light input[type="radio"]:checked,
-html:not(.dark) input[type="checkbox"]:checked,
-html:not(.dark) input[type="radio"]:checked {
-  background-color: #1e40af !important;
-  border-color: #1e40af !important;
-  color: #ffffff !important;
-}
-
-/* Sliders and Range Inputs */
-html.light input[type="range"],
-html:not(.dark) input[type="range"] {
-  background-color: #cbd5e1 !important;
-  accent-color: #1e40af !important;
-}
-
-/* Placeholders with WCAG AAA Contrast (>= 7:1) */
-html.light input::placeholder,
-html.light textarea::placeholder,
-html:not(.dark) input::placeholder,
-html:not(.dark) textarea::placeholder {
-  color: #334155 !important; /* 10:1 contrast */
-  font-weight: 500;
-}
-
-/* Primary Button White Icons & Text Preservation */
-html.light [class*="bg-blue-600"] svg,
-html.light [class*="bg-emerald-600"] svg,
-html.light [class*="bg-rose-600"] svg,
-html.light [class*="bg-red-600"] svg,
-html.light [class*="bg-purple-600"] svg,
-html.light [class*="bg-indigo-600"] svg,
-html:not(.dark) [class*="bg-blue-600"] svg,
-html:not(.dark) [class*="bg-emerald-600"] svg,
-html:not(.dark) [class*="bg-rose-600"] svg,
-html:not(.dark) [class*="bg-red-600"] svg,
-html:not(.dark) [class*="bg-purple-600"] svg,
-html:not(.dark) [class*="bg-indigo-600"] svg {
-  color: #ffffff !important;
-  stroke: #ffffff !important;
-}
-
-/* Tables and Data Grids in Light Theme */
-html.light table th,
-html:not(.dark) table th {
-  color: #090d16 !important;
-  background-color: #f1f5f9 !important;
-  border-color: #64748b !important;
-}
-
-html.light table td,
-html:not(.dark) table td {
-  border-color: #64748b !important;
-}
-
-/* Hover states in Light Theme */
-html.light .hover\:bg-slate-800:hover,
-html:not(.dark) .hover\:bg-slate-800:hover {
-  background-color: #e2e8f0 !important;
-  color: #090d16 !important;
-}
-
-html.light .hover\:bg-slate-700:hover,
-html:not(.dark) .hover\:bg-slate-700:hover {
-  background-color: #cbd5e1 !important;
-  color: #090d16 !important;
-}
-
-/* Badges & Accents in Light Mode — cobre qualquer opacidade (/10, /15, /20...)
-   usando seletor de atributo, e estende para todas as cores de badge usadas */
-html.light [class*="bg-blue-500/"],
-html:not(.dark) [class*="bg-blue-500/"] {
-  background-color: #dbeafe !important;
-  color: #1e40af !important;
-  border-color: #93c5fd !important;
-}
-
-html.light [class*="bg-emerald-500/"],
-html:not(.dark) [class*="bg-emerald-500/"] {
-  background-color: #d1fae5 !important;
-  color: #065f46 !important;
-  border-color: #a7f3d0 !important;
-}
-
-html.light [class*="bg-purple-500/"],
-html:not(.dark) [class*="bg-purple-500/"] {
-  background-color: #f3e8ff !important;
-  color: #581c87 !important;
-  border-color: #d8b4fe !important;
-}
-
-html.light [class*="bg-amber-500/"],
-html:not(.dark) [class*="bg-amber-500/"] {
-  background-color: #fef3c7 !important;
-  color: #78350f !important;
-  border-color: #fde68a !important;
-}
-
-html.light [class*="bg-rose-500/"],
-html.light [class*="bg-red-500/"],
-html:not(.dark) [class*="bg-rose-500/"],
-html:not(.dark) [class*="bg-red-500/"] {
-  background-color: #fee2e2 !important;
-  color: #991b1b !important;
-  border-color: #fca5a5 !important;
-}
-
-html.light [class*="bg-cyan-500/"],
-html:not(.dark) [class*="bg-cyan-500/"] {
-  background-color: #cffafe !important;
-  color: #0e7490 !important;
-  border-color: #67e8f9 !important;
-}
-
-html.light [class*="bg-indigo-500/"],
-html:not(.dark) [class*="bg-indigo-500/"] {
-  background-color: #e0e7ff !important;
-  color: #3730a3 !important;
-  border-color: #a5b4fc !important;
-}
-
-/* Ícones dentro desses badges herdam a mesma cor do texto do badge */
-html.light [class*="bg-blue-500/"] svg,
-html.light [class*="bg-emerald-500/"] svg,
-html.light [class*="bg-purple-500/"] svg,
-html.light [class*="bg-amber-500/"] svg,
-html.light [class*="bg-rose-500/"] svg,
-html.light [class*="bg-red-500/"] svg,
-html.light [class*="bg-cyan-500/"] svg,
-html.light [class*="bg-indigo-500/"] svg,
-html:not(.dark) [class*="bg-blue-500/"] svg,
-html:not(.dark) [class*="bg-emerald-500/"] svg,
-html:not(.dark) [class*="bg-purple-500/"] svg,
-html:not(.dark) [class*="bg-amber-500/"] svg,
-html:not(.dark) [class*="bg-rose-500/"] svg,
-html:not(.dark) [class*="bg-red-500/"] svg,
-html:not(.dark) [class*="bg-cyan-500/"] svg,
-html:not(.dark) [class*="bg-indigo-500/"] svg {
-  color: inherit !important;
-  stroke: currentColor !important;
-}
-
-/* Também cobre a variante -600/XX usada em alguns badges de destaque de perfil */
-html.light [class*="bg-blue-600/"],
-html:not(.dark) [class*="bg-blue-600/"] {
-  background-color: #dbeafe !important;
-  color: #1e40af !important;
-  border-color: #93c5fd !important;
-}
-
-html.light [class*="bg-emerald-600/"],
-html:not(.dark) [class*="bg-emerald-600/"] {
-  background-color: #d1fae5 !important;
-  color: #065f46 !important;
-  border-color: #a7f3d0 !important;
-}
-
-html.light [class*="bg-amber-600/"],
-html:not(.dark) [class*="bg-amber-600/"] {
-  background-color: #fef3c7 !important;
-  color: #78350f !important;
-  border-color: #fde68a !important;
-}
-
-html.light [class*="bg-rose-600/"],
-html:not(.dark) [class*="bg-rose-600/"] {
-  background-color: #fee2e2 !important;
-  color: #991b1b !important;
-  border-color: #fca5a5 !important;
-}
-
-html.light [class*="bg-purple-600/"],
-html:not(.dark) [class*="bg-purple-600/"] {
-  background-color: #f3e8ff !important;
-  color: #581c87 !important;
-  border-color: #d8b4fe !important;
-}
-
-html.light [class*="bg-cyan-600/"],
-html:not(.dark) [class*="bg-cyan-600/"] {
-  background-color: #cffafe !important;
-  color: #0e7490 !important;
-  border-color: #67e8f9 !important;
-}
-
-/* Ícones dentro desses badges -600/XX herdam a cor do texto */
-html.light [class*="bg-emerald-600/"] svg,
-html.light [class*="bg-amber-600/"] svg,
-html.light [class*="bg-rose-600/"] svg,
-html.light [class*="bg-purple-600/"] svg,
-html.light [class*="bg-cyan-600/"] svg,
-html:not(.dark) [class*="bg-emerald-600/"] svg,
-html:not(.dark) [class*="bg-amber-600/"] svg,
-html:not(.dark) [class*="bg-rose-600/"] svg,
-html:not(.dark) [class*="bg-purple-600/"] svg,
-html:not(.dark) [class*="bg-cyan-600/"] svg {
-  color: inherit !important;
-  stroke: currentColor !important;
-}
-
-/* Modal and Dropdown surfaces in Light Theme */
-html.light .bg-black\/80,
-html.light .bg-black\/70,
-html.light .bg-black\/60,
-html:not(.dark) .bg-black\/80,
-html:not(.dark) .bg-black\/70,
-html:not(.dark) .bg-black\/60 {
-  background-color: rgba(15, 23, 42, 0.5) !important;
-}
-
-html.light .shadow-2xl,
-html.light .shadow-xl,
-html.light .shadow-lg,
-html:not(.dark) .shadow-2xl,
-html:not(.dark) .shadow-xl,
-html:not(.dark) .shadow-lg {
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
 }

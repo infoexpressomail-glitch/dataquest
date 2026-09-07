@@ -67,34 +67,34 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs overflow-y-auto animate-fadeIn">
-      <div className="relative w-full max-w-xl rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-2xl my-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay-modal p-4 backdrop-blur-xs overflow-y-auto animate-fadeIn">
+      <div className="relative w-full max-w-xl rounded-2xl border border-ui bg-surface p-6 shadow-2xl my-6">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-slate-800 pb-4">
+        <div className="flex items-start justify-between border-b border-ui pb-4">
           <div className="flex items-center gap-3">
             <div
               className={`flex h-11 w-11 items-center justify-center rounded-xl border ${
                 effectiveOnline
-                  ? 'border-emerald-500/30 bg-emerald-600/20 text-emerald-400'
-                  : 'border-amber-500/30 bg-amber-600/20 text-amber-400'
+                  ? 'border-accent-success-soft-border bg-accent-success-soft text-accent-success'
+                  : 'border-accent-warning-soft-border bg-accent-warning-soft text-accent-warning'
               }`}
             >
               {effectiveOnline ? <Wifi className="h-6 w-6" /> : <WifiOff className="h-6 w-6" />}
             </div>
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <h2 className="text-base font-bold text-primary flex items-center gap-2">
                 Sincronização & Armazenamento Offline
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase border ${
                     effectiveOnline
-                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                      : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                      ? 'bg-accent-success-soft text-accent-success border-accent-success-soft-border'
+                      : 'bg-accent-warning-soft text-accent-warning border-accent-warning-soft-border'
                   }`}
                 >
                   {effectiveOnline ? 'Online' : 'Offline'}
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted">
                 Gerencie as pesquisas e coletas salvas no dispositivo para envio ao servidor central.
               </p>
             </div>
@@ -102,20 +102,20 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
           <button
             id="btn-close-offline-modal"
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            className="rounded-lg p-2 text-muted hover:bg-surface-raised hover:text-primary transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Connectivity Status & Simulated Offline Toggle */}
-        <div className="mt-4 rounded-xl border border-slate-800 bg-[#111218] p-4 space-y-3">
+        <div className="mt-4 rounded-xl border border-ui bg-surface-card p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-xs font-bold text-slate-200">
+              <div className="text-xs font-bold text-primary">
                 Simular Modo Offline (Testes de Campo)
               </div>
-              <div className="text-[11px] text-slate-400">
+              <div className="text-[11px] text-muted">
                 Permite testar a criação e edição de pesquisas e coletas sem enviar ao servidor até sincronizar.
               </div>
             </div>
@@ -130,21 +130,21 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
                 }}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+              <div className="w-11 h-6 bg-surface-raised peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-warning-solid"></div>
             </label>
           </div>
 
-          <div className="flex items-center gap-2 pt-2 border-t border-slate-800/80 text-xs">
-            <span className="text-slate-400">Conexão real do navegador:</span>
+          <div className="flex items-center gap-2 pt-2 border-t border-ui/80 text-xs">
+            <span className="text-muted">Conexão real do navegador:</span>
             <span
               className={`font-semibold ${
-                isOnline ? 'text-emerald-400' : 'text-rose-400'
+                isOnline ? 'text-accent-success' : 'text-accent-danger'
               }`}
             >
               {isOnline ? 'Internet Disponível' : 'Sem Conexão'}
             </span>
             {isSimulatedOffline && (
-              <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30 ml-auto">
+              <span className="rounded bg-accent-warning-soft px-2 py-0.5 text-[10px] font-bold text-accent-warning border border-accent-warning-soft-border ml-auto">
                 Modo Simulado Ativo
               </span>
             )}
@@ -154,26 +154,26 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
         {/* IndexedDB Cache Manager & Supabase Cloud Status Card */}
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* IndexedDB Cache Card */}
-          <div className="rounded-xl border border-slate-800 bg-[#111218] p-3.5 space-y-2">
+          <div className="rounded-xl border border-ui bg-surface-card p-3.5 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
-                <Database className="h-4 w-4 text-emerald-400" />
+              <span className="flex items-center gap-1.5 text-xs font-bold text-primary">
+                <Database className="h-4 w-4 text-accent-success" />
                 Cache IndexedDB
               </span>
-              <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+              <span className="rounded-full bg-accent-success-soft border border-accent-success-soft-border px-2 py-0.5 text-[10px] font-bold text-accent-success">
                 Ativo
               </span>
             </div>
-            <div className="text-[11px] text-slate-400 space-y-1">
+            <div className="text-[11px] text-muted space-y-1">
               <div>
                 Pesquisa corrente em rascunho:{' '}
-                <strong className="text-white">
+                <strong className="text-primary">
                   {currentSurveyDraft ? currentSurveyDraft.nome : 'Nenhum rascunho'}
                 </strong>
               </div>
               <div>
                 Última gravação:{' '}
-                <span className="text-slate-300">
+                <span className="text-secondary">
                   {lastIndexedDBSave
                     ? new Date(lastIndexedDBSave).toLocaleTimeString()
                     : 'Aguardando alterações'}
@@ -181,7 +181,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
               </div>
               <div>
                 Pesquisas offline pendentes:{' '}
-                <strong className="text-amber-400">{pendingIndexedDbCount}</strong>
+                <strong className="text-accent-warning">{pendingIndexedDbCount}</strong>
               </div>
             </div>
             {currentSurveyDraft && (
@@ -191,7 +191,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
                   clearCurrentSurveyDraft();
                   setSyncResult({ success: true, message: 'Rascunho IndexedDB descartado.' });
                 }}
-                className="text-[10px] text-rose-400 hover:text-rose-300 hover:underline pt-1"
+                className="text-[10px] text-accent-danger hover:text-accent-danger hover:underline pt-1"
               >
                 Limpar rascunho do cache
               </button>
@@ -199,56 +199,56 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
           </div>
 
           {/* Supabase Sync Card with Live Connection Monitor */}
-          <div className="rounded-xl border border-slate-800 bg-[#111218] p-3.5 space-y-2">
+          <div className="rounded-xl border border-ui bg-surface-card p-3.5 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
-                <Server className="h-4 w-4 text-blue-400" />
+              <span className="flex items-center gap-1.5 text-xs font-bold text-primary">
+                <Server className="h-4 w-4 text-accent-primary" />
                 Supabase Sync & Monitor
               </span>
               <span
                 className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase border ${
                   syncProgress.isActive || supabaseSyncStatus === 'syncing'
-                    ? 'bg-blue-500/15 border-blue-500/30 text-blue-400 animate-pulse'
+                    ? 'bg-accent-primary-soft border-accent-primary-soft-border text-accent-primary animate-pulse'
                     : supabaseSyncStatus === 'synced'
-                    ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
-                    : 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                    ? 'bg-accent-success-soft border-accent-success-soft-border text-accent-success'
+                    : 'bg-accent-warning-soft border-accent-warning-soft-border text-accent-warning'
                 }`}
               >
                 {syncProgress.isActive ? `${syncProgress.percent}%` : supabaseSyncStatus}
               </span>
             </div>
 
-            <div className="text-[11px] text-slate-400 space-y-1">
+            <div className="text-[11px] text-muted space-y-1">
               <div className="flex items-center justify-between">
                 <span>Hardware:</span>
-                <span className="font-mono text-slate-300">navigator.onLine = {String(isOnline)}</span>
+                <span className="font-mono text-secondary">navigator.onLine = {String(isOnline)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Canal:</span>
-                <span className="text-slate-300 font-medium">
+                <span className="text-secondary font-medium">
                   {isSupabaseLive ? 'Supabase Cloud (Chave Ativa)' : 'Supabase Seguro (Simulado)'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Último sync:</span>
-                <span className="text-slate-300">{lastSupabaseSync || 'Ao restabelecer sinal'}</span>
+                <span className="text-secondary">{lastSupabaseSync || 'Ao restabelecer sinal'}</span>
               </div>
-              <div className="text-emerald-400 font-medium flex items-center justify-between">
+              <div className="text-accent-success font-medium flex items-center justify-between">
                 <span>Auto-sync reativo:</span>
-                <span className="font-bold bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20">Ativo</span>
+                <span className="font-bold bg-accent-success-soft px-1.5 py-0.2 rounded border border-accent-success-soft-border">Ativo</span>
               </div>
             </div>
 
             {/* Live Progress Bar if active */}
             {syncProgress.isActive && (
-              <div className="pt-2 border-t border-slate-800 space-y-1">
-                <div className="flex items-center justify-between text-[10px] text-blue-300">
+              <div className="pt-2 border-t border-ui space-y-1">
+                <div className="flex items-center justify-between text-[10px] text-accent-primary">
                   <span className="truncate max-w-[240px] font-medium">{syncProgress.message}</span>
                   <span className="font-bold">{syncProgress.percent}%</span>
                 </div>
-                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-surface-raised rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-blue-500 transition-all duration-300 rounded-full"
+                    className="h-full bg-accent-primary-solid transition-all duration-300 rounded-full"
                     style={{ width: `${syncProgress.percent}%` }}
                   />
                 </div>
@@ -270,7 +270,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
                       setSyncing(false);
                     }
                   }}
-                  className="text-[10px] text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 font-semibold disabled:opacity-50"
+                  className="text-[10px] text-accent-primary hover:text-accent-primary hover:underline flex items-center gap-1 font-semibold disabled:opacity-50"
                 >
                   <RefreshCw className={`h-3 w-3 ${syncProgress.isActive ? 'animate-spin' : ''}`} />
                   <span>{syncProgress.isActive ? 'Sincronizando...' : 'Forçar sincronização de pendências'}</span>
@@ -285,14 +285,14 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
           <div
             className={`mt-3 rounded-xl border p-3 text-xs flex items-center gap-2 ${
               syncResult.success
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                ? 'bg-accent-success-soft border-accent-success-soft-border text-accent-success'
+                : 'bg-accent-danger-soft border-accent-danger-soft-border text-accent-danger'
             }`}
           >
             {syncResult.success ? (
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-accent-success" />
             ) : (
-              <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+              <AlertCircle className="h-4 w-4 shrink-0 text-accent-danger" />
             )}
             <span>{syncResult.message}</span>
           </div>
@@ -301,14 +301,14 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
         {/* Pending Queue List */}
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-              <CloudOff className="h-4 w-4 text-amber-400" />
+            <h3 className="text-xs font-bold text-secondary flex items-center gap-1.5">
+              <CloudOff className="h-4 w-4 text-accent-warning" />
               Fila de Itens Salvos Offline ({offlineQueue.length})
             </h3>
             {offlineQueue.length > 0 && (
               <button
                 onClick={clearOfflineQueue}
-                className="text-[11px] text-rose-400 hover:text-rose-300 hover:underline flex items-center gap-1"
+                className="text-[11px] text-accent-danger hover:text-accent-danger hover:underline flex items-center gap-1"
               >
                 <Trash2 className="h-3 w-3" />
                 <span>Limpar fila</span>
@@ -316,22 +316,22 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
             )}
           </div>
 
-          <div className="max-h-56 overflow-y-auto rounded-xl border border-slate-800 bg-[#111218] p-2 space-y-2">
+          <div className="max-h-56 overflow-y-auto rounded-xl border border-ui bg-surface-card p-2 space-y-2">
             {offlineQueue.length > 0 ? (
               offlineQueue.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#16171d] p-2.5 text-xs hover:border-slate-700 transition-colors"
+                  className="flex items-center justify-between rounded-lg border border-ui/80 bg-surface p-2.5 text-xs hover:border-ui transition-colors"
                 >
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/15 border border-blue-500/20 text-blue-400">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-soft border border-accent-primary-soft-border text-accent-primary">
                       <FileText className="h-4 w-4" />
                     </div>
                     <div>
-                      <div className="font-semibold text-white">
+                      <div className="font-semibold text-primary">
                         {item.descricao || (item.tipo === 'survey' ? 'Pesquisa' : 'Submissão')}
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] text-slate-400">
+                      <div className="flex items-center gap-2 text-[10px] text-muted">
                         <span className="flex items-center gap-1">
                           <Clock className="h-2.5 w-2.5" />
                           {new Date(item.dataCriacao).toLocaleTimeString([], {
@@ -341,7 +341,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
                           })}
                         </span>
                         <span>•</span>
-                        <span className="uppercase text-amber-400 font-bold">
+                        <span className="uppercase text-accent-warning font-bold">
                           {item.status}
                         </span>
                       </div>
@@ -351,17 +351,17 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
                   <button
                     onClick={() => removeOfflineItem(item.id)}
                     title="Remover item da fila"
-                    className="rounded p-1.5 text-slate-400 hover:bg-slate-800 hover:text-rose-400 transition-colors"
+                    className="rounded p-1.5 text-muted hover:bg-surface-raised hover:text-accent-danger transition-colors"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-slate-500 text-xs text-center">
-                <Check className="h-6 w-6 text-emerald-500 mb-1" />
-                <span className="font-semibold text-slate-300">Nenhum item pendente de sincronização.</span>
-                <span className="text-[11px] text-slate-500 mt-0.5">
+              <div className="flex flex-col items-center justify-center py-8 text-muted text-xs text-center">
+                <Check className="h-6 w-6 text-accent-success mb-1" />
+                <span className="font-semibold text-secondary">Nenhum item pendente de sincronização.</span>
+                <span className="text-[11px] text-muted mt-0.5">
                   Todas as pesquisas e formulários estão sincronizados com o servidor.
                 </span>
               </div>
@@ -370,18 +370,18 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
         </div>
 
         {/* Security / Compliance Info Box */}
-        <div className="mt-4 flex items-start gap-2 rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 text-[11px] text-slate-400">
-          <Info className="h-4 w-4 shrink-0 text-blue-400 mt-0.5" />
+        <div className="mt-4 flex items-start gap-2 rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft p-3 text-[11px] text-muted">
+          <Info className="h-4 w-4 shrink-0 text-accent-primary mt-0.5" />
           <span>
             Ao salvar offline, a pesquisa corrente é armazenada com integridade criptográfica no armazenamento local e adicionada à fila de transmissão com carimbo de tempo seguro.
           </span>
         </div>
 
         {/* Actions Footer */}
-        <div className="mt-5 flex items-center justify-between border-t border-slate-800 pt-3">
+        <div className="mt-5 flex items-center justify-between border-t border-ui pt-3">
           <button
             onClick={onClose}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+            className="rounded-xl border border-ui bg-surface-raised px-4 py-2 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition-colors"
           >
             Fechar
           </button>
@@ -390,7 +390,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
             id="btn-trigger-sync-queue"
             disabled={syncing || offlineQueue.length === 0 || !effectiveOnline}
             onClick={handleSync}
-            className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-95"
+            className="flex items-center gap-2 rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-95"
           >
             <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
             <span>

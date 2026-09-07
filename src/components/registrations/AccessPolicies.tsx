@@ -324,17 +324,17 @@ export const AccessPolicies: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          <h1 className="text-xl font-bold tracking-tight text-primary sm:text-2xl">
             Políticas de Acesso e Permissões
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted">
             Configure detalhadamente a matriz de privilégios e controle de acesso baseado em papéis (RBAC).
           </p>
         </div>
 
         <button
           onClick={handleSave}
-          className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
         >
           <Save className="h-4 w-4" />
           <span>Salvar Alterações de Política</span>
@@ -342,14 +342,14 @@ export const AccessPolicies: React.FC = () => {
       </div>
 
       {saveSuccess && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-xs font-bold text-emerald-300">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+        <div className="flex items-center gap-2 rounded-2xl border border-accent-success-soft-border bg-accent-success-soft p-4 text-xs font-bold text-accent-success">
+          <CheckCircle2 className="h-4 w-4 text-accent-success" />
           <span>Políticas de acesso do perfil salvas e propagadas com sucesso!</span>
         </div>
       )}
 
       {/* Profile Selector Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+      <div className="flex flex-wrap gap-2 border-b border-ui pb-3">
         {profiles.map((p) => {
           const isSelected = p.id === activeProfile?.id;
           return (
@@ -358,8 +358,8 @@ export const AccessPolicies: React.FC = () => {
               onClick={() => handleSelectProfile(p.id)}
               className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition ${
                 isSelected
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40 border border-blue-500'
-                  : 'bg-[#16171d] text-slate-300 hover:bg-slate-800 border border-slate-800 hover:text-white'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40 border border-blue-500'
+                  : 'bg-surface text-secondary hover:bg-surface-raised border border-ui hover:text-primary'
               }`}
             >
               <ShieldCheck className="h-4 w-4" />
@@ -370,16 +370,16 @@ export const AccessPolicies: React.FC = () => {
       </div>
 
       {/* Selected Profile Summary Info */}
-      <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-4 shadow-xl space-y-4">
+      <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-accent-primary">
               Perfil Selecionado
             </span>
-            <h3 className="text-base font-bold text-white">
+            <h3 className="text-base font-bold text-primary">
               {activeProfile.name}
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted">
               {activeProfile.description}
             </p>
           </div>
@@ -396,7 +396,7 @@ export const AccessPolicies: React.FC = () => {
                 });
                 setActiveProfile({ ...activeProfile, permissions: updated });
               }}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+              className="rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition-colors"
             >
               Marcar Todos
             </button>
@@ -411,7 +411,7 @@ export const AccessPolicies: React.FC = () => {
                 });
                 setActiveProfile({ ...activeProfile, permissions: updated });
               }}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+              className="rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition-colors"
             >
               Desmarcar Todos
             </button>
@@ -419,39 +419,39 @@ export const AccessPolicies: React.FC = () => {
         </div>
 
         {/* Resumo geral: "O que este perfil pode fazer?" de forma imediata */}
-        <div className="flex flex-wrap items-center gap-2 border-t border-slate-800 pt-3">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mr-1">
+        <div className="flex flex-wrap items-center gap-2 border-t border-ui pt-3">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted mr-1">
             Resumo de {PERMISSION_GROUPS.length} módulos:
           </span>
-          <span className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <span className="flex items-center gap-1.5 rounded-lg border border-accent-success-soft-border bg-accent-success-soft px-2.5 py-1 text-[11px] font-bold text-accent-success">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-success-solid" />
             {groupStatusCounts.full} com acesso total
           </span>
-          <span className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+          <span className="flex items-center gap-1.5 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-2.5 py-1 text-[11px] font-bold text-accent-warning">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-warning-solid" />
             {groupStatusCounts.partial} com acesso parcial
           </span>
-          <span className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1 text-[11px] font-bold text-slate-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
+          <span className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-2.5 py-1 text-[11px] font-bold text-muted">
+            <span className="h-1.5 w-1.5 rounded-full bg-strong" />
             {groupStatusCounts.none} sem acesso
           </span>
         </div>
 
         {/* Busca rápida por permissão */}
-        <div className="relative border-t border-slate-800 pt-3">
-          <Search className="pointer-events-none absolute left-3 top-1/2 mt-1.5 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
+        <div className="relative border-t border-ui pt-3">
+          <Search className="pointer-events-none absolute left-3 top-1/2 mt-1.5 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por permissão, módulo ou descrição..."
-            className="w-full rounded-lg border border-slate-800 bg-[#111218] py-2 pl-9 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
           />
         </div>
       </div>
 
       {searchTerm && visibleGroups.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-slate-800 bg-[#16171d] p-6 text-center text-xs text-slate-400">
+        <div className="rounded-2xl border border-dashed border-ui bg-surface p-6 text-center text-xs text-muted">
           Nenhuma permissão encontrada para "{searchTerm}".
         </div>
       )}
@@ -464,35 +464,35 @@ export const AccessPolicies: React.FC = () => {
           const isCollapsed = Boolean(collapsedGroups[group.category]) && !normalizedSearch;
 
           const toneClasses = {
-            full: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
-            partial: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
-            none: 'border-slate-700 bg-slate-800/60 text-slate-400',
+            full: 'border-accent-success-soft-border bg-accent-success-soft text-accent-success',
+            partial: 'border-accent-warning-soft-border bg-accent-warning-soft text-accent-warning',
+            none: 'border-ui bg-surface-raised text-muted',
           }[status.tone];
 
           const dotClasses = {
-            full: 'bg-emerald-400',
-            partial: 'bg-amber-400',
-            none: 'bg-slate-500',
+            full: 'bg-accent-success-solid',
+            partial: 'bg-accent-warning-solid',
+            none: 'bg-strong',
           }[status.tone];
 
           return (
             <div
               key={group.category}
-              className="overflow-hidden rounded-2xl border border-slate-800 bg-[#16171d] shadow-xl"
+              className="overflow-hidden rounded-2xl border border-ui bg-surface shadow-xl"
             >
               {/* Group header — clicável para recolher/expandir */}
               <button
                 type="button"
                 onClick={() => toggleGroupCollapse(group.category)}
-                className="flex w-full items-center justify-between gap-3 border-b border-slate-800 bg-[#111218] px-5 py-3 text-left transition-colors hover:bg-[#16171d]"
+                className="flex w-full items-center justify-between gap-3 border-b border-ui bg-surface-card px-5 py-3 text-left transition-colors hover:bg-surface"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   {isCollapsed ? (
-                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted" />
                   ) : (
-                    <ChevronDown className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                    <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted" />
                   )}
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary">
                     {group.moduleName}
                   </h4>
                   <span
@@ -516,7 +516,7 @@ export const AccessPolicies: React.FC = () => {
                       handleToggleCategory(group, status.active !== totalInGroup);
                     }
                   }}
-                  className="shrink-0 text-[11px] font-semibold text-blue-400 hover:underline cursor-pointer"
+                  className="shrink-0 text-[11px] font-semibold text-accent-primary hover:underline cursor-pointer"
                 >
                   {status.active === totalInGroup ? 'Desmarcar grupo' : 'Marcar todas do grupo'}
                 </span>
@@ -533,27 +533,27 @@ export const AccessPolicies: React.FC = () => {
                         key={item.key}
                         className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
                           isChecked
-                            ? 'border-blue-500/60 bg-blue-600/10 shadow-sm shadow-blue-950/40'
-                            : 'border-slate-800 bg-[#111218] hover:bg-slate-800/40'
+                            ? 'border-accent-primary-soft-border bg-accent-primary-soft shadow-sm shadow-blue-950/40'
+                            : 'border-ui bg-surface-card hover:bg-surface-raised'
                         }`}
                       >
                         <input
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => handleTogglePermission(item.key)}
-                          className="mt-0.5 h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+                          className="mt-0.5 h-4 w-4 rounded text-accent-primary-solid focus:ring-blue-500"
                         />
                         <div className="flex-1">
                           <div
                             className={`text-xs font-bold ${
                               isChecked
-                                ? 'text-blue-300'
-                                : 'text-slate-200'
+                                ? 'text-accent-primary'
+                                : 'text-primary'
                             }`}
                           >
                             {item.label}
                           </div>
-                          <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">
+                          <p className="mt-0.5 text-[11px] leading-relaxed text-muted">
                             {item.description}
                           </p>
                         </div>
@@ -570,7 +570,7 @@ export const AccessPolicies: React.FC = () => {
       <div className="flex justify-end pt-4">
         <button
           onClick={handleSave}
-          className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
         >
           <Save className="h-4 w-4" />
           <span>Salvar Alterações de Política</span>

@@ -242,45 +242,45 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-5xl rounded-2xl border border-slate-800 bg-[#111218] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay-modal backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="relative w-full max-w-5xl rounded-2xl border border-ui bg-surface-card shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 px-6 py-4 bg-[#14161f]">
+        <div className="flex items-center justify-between border-b border-ui/80 px-6 py-4 bg-surface-raised">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
               <FileSpreadsheet className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <h2 className="text-base font-bold text-primary flex items-center gap-2">
                 Importação Estruturada de Questionário
-                <span className="rounded-full bg-blue-600/20 px-2 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-500/30">
+                <span className="rounded-full bg-accent-primary-soft px-2 py-0.5 text-[10px] font-bold text-accent-primary border border-accent-primary-soft-border">
                   Perguntas & Alternativas
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted">
                 Organize automaticamente questões e alternativas e altere os tipos conforme necessário.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            className="rounded-lg p-2 text-muted hover:bg-surface-raised hover:text-primary transition"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Steps indicator */}
-        <div className="flex border-b border-slate-800/80 bg-[#0d0e14] px-6 py-2.5 text-xs font-semibold gap-6">
+        <div className="flex border-b border-ui/80 bg-surface-app px-6 py-2.5 text-xs font-semibold gap-6">
           <button
             onClick={() => setActiveStep('input')}
             className={`flex items-center gap-2 transition ${
               activeStep === 'input'
-                ? 'text-blue-400 font-bold border-b-2 border-blue-500 pb-1'
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'text-accent-primary font-bold border-b-2 border-blue-500 pb-1'
+                : 'text-muted hover:text-secondary'
             }`}
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 text-[10px]">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-raised text-[10px]">
               1
             </span>
             <span>Entrada do Questionário (Texto / Arquivo / Modelos)</span>
@@ -293,11 +293,11 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
             }}
             className={`flex items-center gap-2 transition ${
               activeStep === 'review'
-                ? 'text-blue-400 font-bold border-b-2 border-blue-500 pb-1'
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'text-accent-primary font-bold border-b-2 border-blue-500 pb-1'
+                : 'text-muted hover:text-secondary'
             }`}
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 text-[10px]">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-raised text-[10px]">
               2
             </span>
             <span>Organização e Alteração de Tipos das Alternativas ({parsedQuestions.length})</span>
@@ -311,11 +311,11 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
               {/* Templates Quick Load */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-wider">
-                    <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+                  <span className="text-xs font-bold text-secondary flex items-center gap-1.5 uppercase tracking-wider">
+                    <Sparkles className="h-3.5 w-3.5 text-accent-primary" />
                     Modelos Rápidos Pré-configurados (1-Clique)
                   </span>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="text-[11px] text-muted">
                     Selecione para testar ou basear seu questionário
                   </span>
                 </div>
@@ -327,12 +327,12 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
                       onClick={() => handleApplyTemplate(tpl.id)}
                       className={`text-left p-3 rounded-xl border transition-all ${
                         selectedTemplate === tpl.id
-                          ? 'border-blue-500/50 bg-blue-600/10 text-white shadow-md'
-                          : 'border-slate-800 bg-[#14161f] text-slate-300 hover:border-slate-700 hover:bg-slate-800/40'
+                          ? 'border-accent-primary-soft-border bg-accent-primary-soft text-primary shadow-md'
+                          : 'border-ui bg-surface-raised text-secondary hover:border-ui hover:bg-surface-raised'
                       }`}
                     >
-                      <div className="text-xs font-bold text-blue-400 mb-1">{tpl.title}</div>
-                      <div className="text-[11px] text-slate-400 line-clamp-2">{tpl.description}</div>
+                      <div className="text-xs font-bold text-accent-primary mb-1">{tpl.title}</div>
+                      <div className="text-[11px] text-muted line-clamp-2">{tpl.description}</div>
                     </button>
                   ))}
                 </div>
@@ -341,12 +341,12 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
               {/* Upload or Paste */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-secondary uppercase tracking-wider">
                     Texto ou Conteúdo do Questionário
                   </label>
                   <div className="flex items-center gap-3">
-                    <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                      <Upload className="h-3.5 w-3.5 text-blue-400" />
+                    <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-medium text-secondary hover:bg-surface-raised hover:text-primary transition">
+                      <Upload className="h-3.5 w-3.5 text-accent-primary" />
                       <span>Carregar Arquivo (.txt, .csv)</span>
                       <input
                         type="file"
@@ -362,7 +362,7 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
                         setSelectedTemplate('');
                         setFeedbackMsg(null);
                       }}
-                      className="text-xs text-slate-500 hover:text-slate-300"
+                      className="text-xs text-muted hover:text-secondary"
                     >
                       Limpar
                     </button>
@@ -370,7 +370,7 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
                 </div>
 
                 {feedbackMsg && (
-                  <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 text-xs text-emerald-400">
+                  <div className="flex items-center gap-2 rounded-lg bg-accent-success-soft border border-accent-success-soft-border px-3 py-1.5 text-xs text-accent-success">
                     <CheckCircle2 className="h-4 w-4 shrink-0" />
                     <span>{feedbackMsg}</span>
                   </div>
@@ -402,11 +402,11 @@ D) 60 anos ou mais
 
 5. Deixe um comentário com sugestões de melhoria:`}
                   rows={14}
-                  className="w-full rounded-xl border border-slate-800 bg-[#0d0e14] p-4 text-xs font-mono text-slate-200 placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition leading-relaxed"
+                  className="w-full rounded-xl border border-ui bg-surface-app p-4 text-xs font-mono text-primary placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition leading-relaxed"
                 />
 
-                <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-1">
-                  <HelpCircle className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+                <div className="flex items-center gap-2 text-[11px] text-muted mt-1">
+                  <HelpCircle className="h-3.5 w-3.5 text-accent-primary shrink-0" />
                   <span>
                     O analisador inteligente reconhece números de questões (1., 02-, Q3), letras de alternativas (A), B), a., b.), marcadores (-, •) e sugere automaticamente tipos como Múltipla Escolha, Sim/Não, Escala ou NPS.
                   </span>
@@ -417,17 +417,17 @@ D) 60 anos ou mais
             /* Step 2: Review and Edit Types / Alternatives */
             <div className="space-y-6">
               {/* Summary Banner */}
-              <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-blue-500/20 bg-blue-600/10 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm shadow-md">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-primary-solid text-on-accent font-bold text-sm shadow-md">
                     {parsedQuestions.length}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">
+                    <h3 className="text-sm font-bold text-primary">
                       Questões Organizadas com Sucesso
                     </h3>
-                    <p className="text-xs text-slate-300">
-                      Total de <strong className="text-blue-400">{totalAlternatives}</strong> alternativas detectadas. Você pode alterar o tipo de qualquer questão e customizar as alternativas abaixo antes de importar.
+                    <p className="text-xs text-secondary">
+                      Total de <strong className="text-accent-primary">{totalAlternatives}</strong> alternativas detectadas. Você pode alterar o tipo de qualquer questão e customizar as alternativas abaixo antes de importar.
                     </p>
                   </div>
                 </div>
@@ -436,15 +436,15 @@ D) 60 anos ou mais
                   <button
                     type="button"
                     onClick={handleAddNewEmptyQuestion}
-                    className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition"
+                    className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-semibold text-primary hover:bg-surface-hover hover:text-primary transition"
                   >
-                    <Plus className="h-3.5 w-3.5 text-blue-400" />
+                    <Plus className="h-3.5 w-3.5 text-accent-primary" />
                     <span>+ Nova Questão</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveStep('input')}
-                    className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition"
+                    className="flex items-center gap-1.5 text-xs text-muted hover:text-primary transition"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
                     <span>Voltar para Entrada</span>
@@ -457,22 +457,22 @@ D) 60 anos ou mais
                 {parsedQuestions.map((q, qIdx) => (
                   <div
                     key={q.id || qIdx}
-                    className="rounded-xl border border-slate-800 bg-[#14161f] p-4 transition-all hover:border-slate-700"
+                    className="rounded-xl border border-ui bg-surface-raised p-4 transition-all hover:border-ui"
                   >
                     {/* Question Header & Controls */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-3 mb-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ui/80 pb-3 mb-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="flex h-6 w-12 items-center justify-center rounded-md bg-blue-600/20 font-mono text-xs font-bold text-blue-400 border border-blue-500/30">
+                        <span className="flex h-6 w-12 items-center justify-center rounded-md bg-accent-primary-soft font-mono text-xs font-bold text-accent-primary border border-accent-primary-soft-border">
                           {q.codigo || `P${String(qIdx + 1).padStart(2, '0')}`}
                         </span>
-                        <span className="text-xs text-slate-400 font-medium">
+                        <span className="text-xs text-muted font-medium">
                           Item #{qIdx + 1}
                         </span>
                       </div>
 
                       {/* Type Selector (CRITICAL USER REQUIREMENT: alterar o tipo das alternativas depois de importadas) */}
                       <div className="flex items-center gap-2">
-                        <label className="text-[11px] font-bold text-slate-400">
+                        <label className="text-[11px] font-bold text-muted">
                           Tipo da Questão / Alternativas:
                         </label>
                         <select
@@ -480,7 +480,7 @@ D) 60 anos ou mais
                           onChange={(e) =>
                             handleUpdateQuestionType(qIdx, e.target.value as QuestionType)
                           }
-                          className="rounded-lg border border-blue-500/40 bg-[#0d0e14] px-3 py-1.5 text-xs font-semibold text-blue-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                          className="rounded-lg border border-accent-primary-soft-border bg-surface-app px-3 py-1.5 text-xs font-semibold text-accent-primary focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
                         >
                           <option value="multipla_escolha">Múltipla Escolha (Opção Única)</option>
                           <option value="multipla_selecao">Múltipla Seleção (Múltiplas Opções)</option>
@@ -496,8 +496,8 @@ D) 60 anos ou mais
                           onClick={() => handleToggleObrigatoria(qIdx)}
                           className={`rounded-lg px-2.5 py-1.5 text-[11px] font-bold border transition ${
                             q.obrigatoria
-                              ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
-                              : 'bg-slate-800 border-slate-700 text-slate-400'
+                              ? 'bg-accent-warning-soft border-accent-warning-soft-border text-accent-warning'
+                              : 'bg-surface-raised border-ui text-muted'
                           }`}
                         >
                           {q.obrigatoria ? 'Obrigatória' : 'Opcional'}
@@ -507,7 +507,7 @@ D) 60 anos ou mais
                           type="button"
                           onClick={() => handleDeleteQuestion(qIdx)}
                           title="Excluir questão"
-                          className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-500/20 hover:text-rose-400 transition"
+                          className="rounded-lg p-1.5 text-muted hover:bg-accent-danger-soft hover:text-accent-danger transition"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -521,7 +521,7 @@ D) 60 anos ou mais
                         value={q.enunciado}
                         onChange={(e) => handleUpdateEnunciado(qIdx, e.target.value)}
                         placeholder="Enunciado da pergunta"
-                        className="w-full rounded-lg border border-slate-800 bg-[#0d0e14] px-3 py-2 text-xs font-medium text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                        className="w-full rounded-lg border border-ui bg-surface-app px-3 py-2 text-xs font-medium text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                       />
                     </div>
 
@@ -530,16 +530,16 @@ D) 60 anos ou mais
                       q.tipo === 'multipla_selecao' ||
                       q.tipo === 'sim_nao' ||
                       q.tipo === 'escala_numerica') && (
-                      <div className="rounded-lg border border-slate-800/80 bg-[#0d0e14]/60 p-3 space-y-2">
-                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                      <div className="rounded-lg border border-ui/80 bg-surface-app/60 p-3 space-y-2">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-muted">
                           <span className="flex items-center gap-1.5">
-                            <ListOrdered className="h-3.5 w-3.5 text-blue-400" />
+                            <ListOrdered className="h-3.5 w-3.5 text-accent-primary" />
                             Alternativas Organizadas ({q.opcoes?.length || 0}):
                           </span>
                           <button
                             type="button"
                             onClick={() => handleAddOption(qIdx)}
-                            className="flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 transition"
+                            className="flex items-center gap-1 text-[11px] font-bold text-accent-primary hover:text-accent-primary transition"
                           >
                             <Plus className="h-3.5 w-3.5" />
                             <span>Adicionar Alternativa</span>
@@ -550,9 +550,9 @@ D) 60 anos ou mais
                           {(q.opcoes || []).map((opt, optIdx) => (
                             <div
                               key={opt.id || optIdx}
-                              className="flex items-center gap-2 rounded-lg border border-slate-800 bg-[#16171d] px-2.5 py-1.5"
+                              className="flex items-center gap-2 rounded-lg border border-ui bg-surface px-2.5 py-1.5"
                             >
-                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-800 text-[10px] font-bold text-slate-400">
+                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-surface-raised text-[10px] font-bold text-muted">
                                 {String.fromCharCode(65 + optIdx)}
                               </span>
                               <input
@@ -561,12 +561,12 @@ D) 60 anos ou mais
                                 onChange={(e) =>
                                   handleUpdateOptionLabel(qIdx, optIdx, e.target.value)
                                 }
-                                className="flex-1 bg-transparent text-xs text-slate-200 focus:outline-none"
+                                className="flex-1 bg-transparent text-xs text-primary focus:outline-none"
                               />
                               <button
                                 type="button"
                                 onClick={() => handleDeleteOption(qIdx, optIdx)}
-                                className="text-slate-500 hover:text-rose-400 transition"
+                                className="text-muted hover:text-accent-danger transition"
                               >
                                 <X className="h-3.5 w-3.5" />
                               </button>
@@ -575,12 +575,12 @@ D) 60 anos ou mais
                         </div>
 
                         {(!q.opcoes || q.opcoes.length === 0) && (
-                          <div className="py-2 text-center text-xs text-slate-500">
+                          <div className="py-2 text-center text-xs text-muted">
                             Nenhuma alternativa cadastrada.{' '}
                             <button
                               type="button"
                               onClick={() => handleAddOption(qIdx)}
-                              className="text-blue-400 underline font-semibold ml-1"
+                              className="text-accent-primary underline font-semibold ml-1"
                             >
                               Clique para adicionar
                             </button>
@@ -591,19 +591,19 @@ D) 60 anos ou mais
 
                     {/* Specific helper info for Text, NPS, Data */}
                     {q.tipo === 'texto_aberto' && (
-                      <div className="text-[11px] text-slate-500 italic bg-[#0d0e14]/40 p-2 rounded-md border border-slate-800/60">
+                      <div className="text-[11px] text-muted italic bg-surface-app/40 p-2 rounded-md border border-ui/60">
                         Campo de resposta aberta: o entrevistado responderá livremente com texto dissertativo.
                       </div>
                     )}
 
                     {q.tipo === 'nps' && (
-                      <div className="text-[11px] text-blue-400/80 bg-blue-600/5 p-2 rounded-md border border-blue-500/20">
+                      <div className="text-[11px] text-accent-primary/80 bg-accent-primary-soft p-2 rounded-md border border-accent-primary-soft-border">
                         Escala NPS automática de 0 (Nada Provável) a 10 (Extremamente Provável) com métricas de Detratores, Neutros e Promotores.
                       </div>
                     )}
 
                     {q.tipo === 'data_hora' && (
-                      <div className="text-[11px] text-slate-500 italic bg-[#0d0e14]/40 p-2 rounded-md border border-slate-800/60">
+                      <div className="text-[11px] text-muted italic bg-surface-app/40 p-2 rounded-md border border-ui/60">
                         Entrada de data e horário com formatação automática de calendário e relógio.
                       </div>
                     )}
@@ -615,28 +615,28 @@ D) 60 anos ou mais
         </div>
 
         {/* Modal Footer */}
-        <div className="flex flex-wrap items-center justify-between border-t border-slate-800/80 px-6 py-4 bg-[#14161f] gap-4">
+        <div className="flex flex-wrap items-center justify-between border-t border-ui/80 px-6 py-4 bg-surface-raised gap-4">
           <div className="flex items-center gap-4">
-            <span className="text-xs font-semibold text-slate-400">Modo de Inserção:</span>
-            <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+            <span className="text-xs font-semibold text-muted">Modo de Inserção:</span>
+            <label className="flex items-center gap-1.5 text-xs text-secondary cursor-pointer">
               <input
                 type="radio"
                 name="importMode"
                 value="append"
                 checked={importMode === 'append'}
                 onChange={() => setImportMode('append')}
-                className="text-blue-600 focus:ring-blue-500"
+                className="text-accent-primary-solid focus:ring-blue-500"
               />
               <span>Adicionar às perguntas existentes</span>
             </label>
-            <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+            <label className="flex items-center gap-1.5 text-xs text-secondary cursor-pointer">
               <input
                 type="radio"
                 name="importMode"
                 value="replace"
                 checked={importMode === 'replace'}
                 onChange={() => setImportMode('replace')}
-                className="text-blue-600 focus:ring-blue-500"
+                className="text-accent-primary-solid focus:ring-blue-500"
               />
               <span>Substituir todo o questionário</span>
             </label>
@@ -646,7 +646,7 @@ D) 60 anos ou mais
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-slate-800 bg-[#16171d] px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition"
+              className="rounded-lg border border-ui bg-surface px-4 py-2 text-xs font-semibold text-secondary hover:bg-surface-raised hover:text-primary transition"
             >
               Cancelar
             </button>
@@ -655,7 +655,7 @@ D) 60 anos ou mais
               <button
                 type="button"
                 onClick={handleParse}
-                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition"
+                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition"
               >
                 <span>Analisar e Organizar Questões</span>
                 <ArrowRight className="h-4 w-4" />
@@ -664,7 +664,7 @@ D) 60 anos ou mais
               <button
                 type="button"
                 onClick={handleFinalSubmit}
-                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition active:scale-95"
+                className="flex items-center gap-2 rounded-lg bg-accent-success-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-success-solid-hover transition active:scale-95"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Confirmar e Importar {parsedQuestions.length} Questões</span>
