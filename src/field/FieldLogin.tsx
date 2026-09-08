@@ -77,26 +77,28 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 font-sans bg-surface-app text-on-accent">
+    <div className="min-h-screen flex items-center justify-center px-4 py-6 sm:p-4 font-sans bg-surface-app text-on-accent">
       <div className="w-full max-w-md">
         {/* Botão voltar */}
         <button
           onClick={onExit}
           className="mb-4 inline-flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition"
         >
+          <span className="hidden sm:inline">Voltar</span>
           <ArrowLeft className="h-3.5 w-3.5 text-accent-primary" />
           <span>Voltar</span>
         </button>
 
-        <div className="rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-surface via-surface-raised to-surface p-8 shadow-2xl">
+        <div className="rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-surface via-surface-raised to-surface p-5 sm:p-8 shadow-2xl">
           <div className="flex flex-col items-center text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-emerald-500 text-on-accent font-black text-xl shadow-lg shadow-emerald-900/50">
+              <span className="sr-only">DataQuest</span>
               DQ
             </div>
-            <h1 className="mt-4 text-xl font-black text-primary">
+            <h1 className="mt-4 text-lg font-black text-primary sm:text-xl">
               Modo Pesquisador de Campo
             </h1>
-            <p className="mt-1 text-xs text-muted">
+            <p className="mt-1 text-[11px] leading-relaxed text-muted sm:text-xs">
               Entre com suas credenciais e clique em <strong className="text-accent-primary">Sincronizar</strong> para baixar as pesquisas e políticas relacionadas ao seu login.
             </p>
           </div>
