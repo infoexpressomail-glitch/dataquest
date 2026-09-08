@@ -62,9 +62,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
   const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key);
 
   const navItemClass = (isActive: boolean) =>
-    `relative flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
+    `group relative flex items-center gap-3 w-full pl-3 pr-2 py-2 rounded-lg text-xs font-semibold transition-all ${
       isActive
-        ? 'bg-accent-primary-soft text-accent-primary border border-accent-primary/40 shadow-sm font-bold'
+        ? 'bg-accent-primary-soft text-accent-primary shadow-sm font-bold'
         : 'text-muted hover:text-primary hover:bg-surface-raised'
     }`;
 
@@ -100,15 +100,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
       onClick={() => handleNavigate(leaf.module)}
       className={
         leaf.badge !== undefined
-          ? `relative flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
+          ? `relative flex items-center justify-between w-full pl-3 pr-2 py-2 rounded-lg text-xs font-semibold transition-all ${
               active
-                ? 'bg-accent-primary-soft text-accent-primary border border-accent-primary/40 shadow-sm font-bold'
+                ? 'bg-accent-primary-soft text-accent-primary shadow-sm font-bold'
                 : 'text-muted hover:text-primary hover:bg-surface-raised'
             }`
           : navItemClass(active)
       }
     >
-      {active && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-accent-primary shadow-sm" />}
+      {active && <span className="absolute left-1 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-accent-primary shadow-sm" />}
       <div className="flex items-center gap-3">
         <leaf.icon
           className={`h-4 w-4 shrink-0 ${
@@ -131,21 +131,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
     const isCollapsed = collapsedSections[section.title];
 
     return (
-      <div key={section.title} className={index === 0 ? '' : 'pt-3'}>
-        <button
-          type="button"
-          onClick={() => toggleSection(section.title)}
-          className="flex w-full items-center justify-between px-2 pb-1.5 text-[10px] font-bold text-muted uppercase tracking-widest hover:text-secondary transition-colors"
-        >
-          <span>{section.title}</span>
-          {isCollapsed ? (
-            <ChevronRight className="h-3 w-3" />
-          ) : (
-            <ChevronDown className="h-3 w-3" />
-          )}
-        </button>
+      <div key={section.title} className={index === 0 ? '' : 'mt-3'}>
+        <div className="flex items-center gap-2 px-1 pb-1">
+          <button
+            type="button"
+            onClick={() => toggleSection(section.title)}
+            className="flex flex-1 items-center justify-between gap-2 rounded px-2 py-1 text-[10px] font-bold text-muted uppercase tracking-widest hover:text-secondary hover:bg-surface-raised transition-colors"
+          >
+            <span>{section.title}</span>
+            {isCollapsed ? (
+              <ChevronRight className="h-3 w-3" />
+            ) : (
+              <ChevronDown className="h-3 w-3" />
+            )}
+          </button>
+        </div>
         {!isCollapsed && (
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             {section.items.map((leaf) => renderLeaf(leaf, isActiveIn([leaf.module])))}
           </div>
         )}
@@ -488,9 +490,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-1">
+        <div className="flex-1 overflow-y-auto px-3 py-5 space-y-0.5">
           <div
-            className={`pt-2 pb-2 px-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
+            className={`px-1 pb-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
               isResearcher ? 'text-accent-success' : 'text-muted'
             }`}
           >
