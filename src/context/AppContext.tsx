@@ -15,6 +15,7 @@ import {
   SyncProgressItem,
   GlobalDemographicTarget,
   ResearcherQuotaAssignment,
+  BaseMeta,
   AnalyticalReport,
 } from '../types';
 import {
@@ -26,6 +27,7 @@ import {
   initialImports,
   initialAuditLogs,
   initialAnalyticalReports,
+  initialBaseMetas,
 } from '../mockData';
 import { generateIntegrityHash, diffSurveys } from '../utils/auditUtils';
 import {
@@ -156,6 +158,9 @@ interface AppContextType {
   saveGlobalTarget: (surveyId: string, target: GlobalDemographicTarget) => void;
   deleteGlobalTarget: (surveyId: string, targetId: string) => void;
   assignResearcherQuota: (surveyId: string, targetId: string, assignment: ResearcherQuotaAssignment) => void;
+  baseMetas: BaseMeta[];
+  saveBaseMeta: (meta: BaseMeta) => void;
+  deleteBaseMeta: (metaId: string) => void;
 
   // Central Server Synchronization
   serverOnline: boolean;
@@ -178,6 +183,7 @@ const STORAGE_KEYS = {
   CURRENT_USER_ID: 'dataquest_user_id',
   AUDIT_LOGS: 'dataquest_audit_logs_v1',
   ANALYTICAL_REPORTS: 'dataquest_analytical_reports_v1',
+  BASE_METAS: 'dataquest_base_metas_v1',
   OFFLINE_QUEUE: 'dataquest_offline_sync_queue',
   SIMULATED_OFFLINE: 'dataquest_simulated_offline',
 };
@@ -248,6 +254,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch {
       return initialSurveys;
     }
+  });
+
+  // Catálogo de metas base reutilizáveis (sistema base) — independe de pesquisa
+  const [baseMetas, setBaseMetas] = useState<BaseMeta[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.BASE_METAS);
+    return saved ? JSON.parse(saved) : (initialBaseMetas || []);
   });
 
   const [submissions, setSubmissions] = useState<InterviewSubmission[]>(() => {
@@ -1057,6 +1069,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem(STORAGE_KEYS.ANALYTICAL_REPORTS, JSON.stringify(analyticalReports));
   }, [analyticalReports]);
 
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.BASE_METAS, JSON.stringify(baseMetas));
+  }, [baseMetas]);
+
   const setLanguage = (l: Language) => setLanguageState(l);
   const setDarkMode = (d: boolean) => setDarkModeState(d);
 
@@ -1758,6 +1774,54 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  // Catálogo de Metas Base reutilizáveis (sistema base)
+  const saveBaseMeta = (meta: BaseMeta) => {
+    setBaseMetas((prev) => {
+      const index = prev.findIndex((m) => m.id === meta.id);
+      if (index >= 0) {
+        return prev.map((m) => (m.id === meta.id ? meta : m));
+      }
+      return [...prev, meta];
+    });
+
+    addAuditLog({
+      categoria: 'METAS',
+      tipoAcao: 'CRIACAO_PESQUISA',
+      tituloAcao: 'Cadastro de Meta Base no Sistema',
+      descricaoDetalhada: `Meta base "${meta.titulo}" cadastrada no catálogo reutilizável.`,
+      autor: {
+        id: currentUser.id,
+        nome: currentUser.nome,
+        login: currentUser.login,
+        perfil: currentProfile?.name || 'Administrador',
+      },
+      alvo: { tipo: 'metas', id: meta.id, identificador: meta.id, nome: meta.titulo },
+      alteracoes: [{ campo: 'status', rotulo: 'Status', valorAnterior: '—', valorNovo: 'ativa' }],
+      motivoConformidade: 'Registro no catálogo base para reutilização em novas pesquisas.',
+      statusConformidade: 'ok',
+    });
+  };
+
+  const deleteBaseMeta = (metaId: string) => {
+    setBaseMetas((prev) => prev.filter((m) => m.id !== metaId));
+    addAuditLog({
+      categoria: 'METAS',
+      tipoAcao: 'EXCLUSAO_PESQUISA',
+      tituloAcao: 'Exclusão de Meta Base do Sistema',
+      descricaoDetalhada: `Meta base ID ${metaId} removida do catálogo reutilizável.`,
+      autor: {
+        id: currentUser.id,
+        nome: currentUser.nome,
+        login: currentUser.login,
+        perfil: currentProfile?.name || 'Administrador',
+      },
+      alvo: { tipo: 'metas', id: metaId, identificador: metaId, nome: 'Meta Base' },
+      alteracoes: [{ campo: 'status', rotulo: 'Status', valorAnterior: 'ativa', valorNovo: 'excluida' }],
+      motivoConformidade: 'Remoção de meta base do catálogo por solicitação da coordenação.',
+      statusConformidade: 'atencao',
+    });
+  };
+
   const assignResearcherQuota = (
     surveyId: string,
     targetId: string,
@@ -2355,6 +2419,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         saveGlobalTarget,
         deleteGlobalTarget,
         assignResearcherQuota,
+
+        // Catálogo de Metas Base reutilizáveis
+        baseMetas,
+        saveBaseMeta,
+        deleteBaseMeta,
 
         // Central Server Sync
         serverOnline,

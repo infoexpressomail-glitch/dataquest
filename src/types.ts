@@ -152,7 +152,25 @@ export type DemographicDimension = 'idade' | 'sexo' | 'bairro';
 export interface DemographicQuotaCriteria {
   faixaEtaria?: string; // Ex: '18 a 25 anos', '26 a 40 anos', '41 a 60 anos', 'Acima de 60 anos', 'Todas'
   sexo?: 'M' | 'F' | 'Outro' | 'Todos' | 'Feminino' | 'Masculino';
+  escolaridade?: string; // Ex: 'Ensino Fundamental', 'Ensino Médio', 'Ensino Superior', 'Todos'
   bairro?: string; // Ex: 'Centro', 'Praça da Matriz', 'Zona Norte', 'UBS Central', 'Todos'
+}
+
+/**
+ * Meta base reutilizável do catálogo (sistema base).
+ * Define apenas os critérios demográficos e o alvo global; a vinculação de
+ * cotas por pesquisador acontece ao montar a pesquisa (Wizard), gerando os
+ * GlobalDemographicTarget da pesquisa.
+ */
+export interface BaseMeta {
+  id: string;
+  titulo: string;
+  descricao?: string;
+  criterios: DemographicQuotaCriteria;
+  metaGlobalAlvo: number;
+  status: 'ativa' | 'concluida' | 'pausada';
+  criadoEm: string;
+  atualizadoEm: string;
 }
 
 export interface ResearcherQuotaAssignment {
@@ -166,6 +184,8 @@ export interface ResearcherQuotaAssignment {
 
 export interface GlobalDemographicTarget {
   id: string;
+  /** Referência à meta base do catálogo que originou esta meta (opcional). */
+  baseMetaId?: string;
   pesquisaId: string;
   titulo: string; // Ex: "Amostragem Jovens - Praça da Matriz", "Cota Feminina Geral"
   descricao?: string;

@@ -28,6 +28,14 @@ export const OPCOES_BAIRROS_PADRAO = [
   'Bela Vista',
 ];
 
+export const OPCOES_ESCOLARIDADE_PADRAO = [
+  'Sem instrução',
+  'Ensino Fundamental',
+  'Ensino Médio',
+  'Ensino Superior',
+  'Pós-graduação',
+];
+
 /**
  * Valida se uma submissão de entrevista atende aos critérios demográficos da meta
  */
@@ -35,7 +43,7 @@ export function matchDemographicCriteria(
   submission: InterviewSubmission,
   target: GlobalDemographicTarget
 ): boolean {
-  const { faixaEtaria, sexo, bairro } = target.criterios;
+  const { faixaEtaria, sexo, escolaridade, bairro } = target.criterios;
 
   // 1. Validação de Faixa Etária
   if (faixaEtaria && faixaEtaria !== 'Todas' && faixaEtaria !== 'Todos') {
@@ -82,7 +90,34 @@ export function matchDemographicCriteria(
     }
   }
 
-  // 3. Validação de Bairro / Região
+  // 3. Validação de Escolaridade
+  if (escolaridade && escolaridade !== 'Todos' && escolaridade !== 'Todas') {
+    const eduAnswer = submission.respostas.find(
+      (r) =>
+        r.perguntaEnunciado.toLowerCase().includes('escolaridade') ||
+        r.perguntaEnunciado.toLowerCase().includes('escolar') ||
+        r.perguntaEnunciado.toLowerCase().includes('instrução') ||
+        r.perguntaEnunciado.toLowerCase().includes('grau')
+    );
+
+    if (eduAnswer) {
+      const respStr = Array.isArray(eduAnswer.resposta)
+        ? eduAnswer.resposta.join(' ')
+        : String(eduAnswer.resposta);
+
+      const normalizedCriteria = escolaridade.toLowerCase();
+      const normalizedResp = respStr.toLowerCase();
+
+      if (
+        !normalizedResp.includes(normalizedCriteria) &&
+        !normalizedCriteria.includes(normalizedResp)
+      ) {
+        return false;
+      }
+    }
+  }
+
+  // 4. Validação de Bairro / Região
   if (bairro && bairro !== 'Todos' && bairro !== 'Todas') {
     const subBairro = submission.geolocalizacao?.bairro || '';
     const neighborhoodAnswer = submission.respostas.find(

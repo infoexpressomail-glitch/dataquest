@@ -13,16 +13,18 @@ import {
   Info,
   Calculator,
   ArrowRight,
+  Library,
 } from 'lucide-react';
 import { MetaTarget, ConditionOperator } from '../../types';
 import { GlobalMetasManager } from './GlobalMetasManager';
+import { MetaCatalogManager } from './MetaCatalogManager';
 import { ResearcherIndividualGoalsView } from './ResearcherIndividualGoalsView';
 import { MobileMetasDashboard } from './MobileMetasDashboard';
 import { FieldTeamSizingCard } from './FieldTeamSizingCard';
 import { calculateTeamSizing } from '../../utils/crosstabUtils';
 
 export const MetasModule: React.FC = () => {
-  const { surveys, submissions, saveSurvey, hasPermission, setActiveModule } = useApp();
+  const { surveys, submissions, saveSurvey, hasPermission, setActiveModule, baseMetas } = useApp();
 
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>(surveys[0]?.id || '');
   const activeSurvey = surveys.find((s) => s.id === selectedSurveyId) || surveys[0];
@@ -34,7 +36,7 @@ export const MetasModule: React.FC = () => {
   const isFieldResearcher = !canManageMetas && !hasPermission('analise_acesso');
 
   // Se o usuário for pesquisador (sem permissão de gestão), abre por padrão no progresso individual
-  const [activeTab, setActiveTab] = useState<'globais' | 'dimensionamento' | 'individual' | 'mobile' | 'questoes'>(
+  const [activeTab, setActiveTab] = useState<'globais' | 'catalogo' | 'dimensionamento' | 'individual' | 'mobile' | 'questoes'>(
     canManageMetas ? 'globais' : 'individual'
   );
 
@@ -89,7 +91,7 @@ export const MetasModule: React.FC = () => {
 
   // Proteção de navegação: mesmo que activeTab aponte para uma aba administrativa,
   // o pesquisador de campo é redirecionado para o seu progresso individual.
-  const restrictedTabsForResearcher: Array<typeof activeTab> = ['globais', 'dimensionamento', 'questoes'];
+  const restrictedTabsForResearcher: Array<typeof activeTab> = ['globais', 'catalogo', 'dimensionamento', 'questoes'];
   const effectiveTab =
     isFieldResearcher && restrictedTabsForResearcher.includes(activeTab) ? 'individual' : activeTab;
 
@@ -153,6 +155,30 @@ export const MetasModule: React.FC = () => {
               }`}
             >
               {totalMetasGlobais}
+            </span>
+          </button>
+        )}
+
+        {!isFieldResearcher && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('catalogo')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
+              activeTab === 'catalogo'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/30'
+                : 'text-muted hover:text-primary hover:bg-surface-raised'
+            }`}
+          >
+            <Library className="h-4 w-4" />
+            <span>Catálogo de Metas</span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] ${
+                activeTab === 'catalogo'
+                  ? 'bg-accent-primary-soft text-accent-primary-soft-text'
+                  : 'bg-surface-raised text-muted'
+              }`}
+            >
+              {baseMetas.length}
             </span>
           </button>
         )}
@@ -238,6 +264,11 @@ export const MetasModule: React.FC = () => {
       {/* Submodule View 1: Gerenciamento de Metas Globais */}
       {effectiveTab === 'globais' && activeSurvey && (
         <GlobalMetasManager activeSurvey={activeSurvey} canManageMetas={canManageMetas} />
+      )}
+
+      {/* Submodule View: Catálogo de Metas Base reutilizáveis */}
+      {effectiveTab === 'catalogo' && (
+        <MetaCatalogManager canManageMetas={canManageMetas} />
       )}
 
       {/* Submodule View: Dimensionamento de Equipe em Campo */}

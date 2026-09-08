@@ -4,7 +4,6 @@ import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
 import { ResearcherIndividualGoalsView } from '../components/metas/ResearcherIndividualGoalsView';
 import { FieldSession } from './fieldTypes';
 import {
-  ClipboardList,
   WifiOff,
   ArrowRight,
   CheckCircle2,
@@ -93,13 +92,6 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
           </div>
 
           <div className="flex flex-col items-stretch sm:items-end gap-2">
-            <button
-              onClick={onStartColeta}
-              className="inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-5 py-3 text-sm font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
-            >
-              <ClipboardList className="h-4 w-4" />
-              Iniciar nova coleta
-            </button>
             <span
               className={`inline-flex items-center gap-1.5 self-start sm:self-end text-[10px] font-bold ${
                 effectiveOnline ? 'text-accent-success' : 'text-accent-warning'

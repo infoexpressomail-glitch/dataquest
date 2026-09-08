@@ -7,6 +7,7 @@ import {
   ExternalImport,
   ActionAuditLog,
   AnalyticalReport,
+  BaseMeta,
 } from './types';
 
 export const initialProfiles: AccessProfile[] = [
@@ -1614,3 +1615,69 @@ export const initialAuditLogs: ActionAuditLog[] = [
 ];
 
 export const initialAnalyticalReports: AnalyticalReport[] = [];
+
+// Catálogo de metas base reutilizáveis no sistema base.
+// As metas aqui são apenas critérios amostrais (idade, sexo, escolaridade, bairro);
+// a vinculação de cotas por pesquisador é feita ao montar a pesquisa (Wizard).
+export const initialBaseMetas: BaseMeta[] = [
+  {
+    id: 'base_sexo_masculino',
+    titulo: 'Cota de Sexo Masculino',
+    descricao: 'Garantir representatividade de entrevistados do sexo masculino no plano amostral.',
+    criterios: { sexo: 'M' },
+    metaGlobalAlvo: 50,
+    status: 'ativa',
+    criadoEm: '2025-05-12T10:00:00Z',
+    atualizadoEm: '2025-05-12T10:00:00Z',
+  },
+  {
+    id: 'base_sexo_feminino',
+    titulo: 'Cota de Sexo Feminino',
+    descricao: 'Garantir representatividade de entrevistadas do sexo feminino no plano amostral.',
+    criterios: { sexo: 'F' },
+    metaGlobalAlvo: 50,
+    status: 'ativa',
+    criadoEm: '2025-05-12T10:00:00Z',
+    atualizadoEm: '2025-05-12T10:00:00Z',
+  },
+  {
+    id: 'base_faixa_jovens',
+    titulo: 'Faixa Etária 18 a 25 anos',
+    descricao: 'Amostragem de jovens adultos para segmento de idade específico.',
+    criterios: { faixaEtaria: '18 a 25 anos' },
+    metaGlobalAlvo: 40,
+    status: 'ativa',
+    criadoEm: '2025-05-12T10:00:00Z',
+    atualizadoEm: '2025-05-12T10:00:00Z',
+  },
+  {
+    id: 'base_faixa_adultos',
+    titulo: 'Faixa Etária 26 a 40 anos',
+    descricao: 'Amostragem de adultos para segmento de idade específico.',
+    criterios: { faixaEtaria: '26 a 40 anos' },
+    metaGlobalAlvo: 40,
+    status: 'ativa',
+    criadoEm: '2025-05-12T10:00:00Z',
+    atualizadoEm: '2025-05-12T10:00:00Z',
+  },
+  {
+    id: 'base_escolaridade_medio',
+    titulo: 'Escolaridade Ensino Médio',
+    descricao: 'Garantir representatividade de entrevistados com ensino médio.',
+    criterios: { escolaridade: 'Ensino Médio' },
+    metaGlobalAlvo: 40,
+    status: 'ativa',
+    criadoEm: '2025-05-12T10:00:00Z',
+    atualizadoEm: '2025-05-12T10:00:00Z',
+  },
+  {
+    id: 'base_escolaridade_superior',
+    titulo: 'Escolaridade Ensino Superior',
+    descricao: 'Garantir representatividade de entrevistados com ensino superior.',
+    criterios: { escolaridade: 'Ensino Superior' },
+    metaGlobalAlvo: 40,
+    status: 'ativa',
+    criadoEm: '2025-05-12T10:00:00Z',
+    atualizadoEm: '2025-05-12T10:00:00Z',
+  },
+];
