@@ -19,6 +19,7 @@ import {
   CloudOff,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
+import { SurveyConsultaTable } from './home/SurveyConsultaTable';
 
 export const HomeDashboard: React.FC = () => {
   const {
@@ -447,6 +448,9 @@ export const HomeDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Nova seção: Consulta de Pesquisas em formato de tabela (sem remover as seções acima) */}
+      <SurveyConsultaTable />
     </div>
   );
 };
