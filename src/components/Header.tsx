@@ -157,30 +157,16 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           )}
         </button>
 
-        {/* 2FA Status Badge */}
-        <button
-          id="btn-header-2fa-status"
-          onClick={onOpen2FAModal}
-          title="Autenticação em Dois Fatores (2FA)"
-          className={`flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider border transition ${
-            twoFactorVerified
-              ? 'bg-accent-success-soft text-accent-success border-accent-success-soft-border hover:bg-accent-success-soft'
-              : 'bg-accent-warning-soft text-accent-warning border-accent-warning-soft-border hover:bg-accent-warning-soft'
-          }`}
-        >
-          <div className={`w-1.5 h-1.5 rounded-full ${twoFactorVerified ? 'bg-accent-success-solid animate-pulse' : 'bg-accent-warning-solid'}`} />
-          <span>2FA {twoFactorVerified ? 'ATIVO' : 'PENDENTE'}</span>
-        </button>
-
-        {/* Language Selector */}
+        {/* Language Selector (icon-only) */}
         <div className="relative">
           <button
             id="btn-header-lang-selector"
             onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-            className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface px-2.5 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-raised hover:text-primary transition"
+            title="Idioma / Language"
+            aria-label="Selecionar idioma"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-ui bg-surface text-muted hover:bg-surface-raised hover:text-primary transition"
           >
-            <Globe className="h-3.5 w-3.5 text-muted" />
-            <span className="uppercase">{language}</span>
+            <Globe className="h-4 w-4" />
           </button>
 
           {langDropdownOpen && (
@@ -251,6 +237,24 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                 </span>
               </div>
 
+              {/* 2FA status — consolidated from the header badge */}
+              <button
+                id="btn-dropdown-2fa-status"
+                onClick={() => {
+                  setUserDropdownOpen(false);
+                  onOpen2FAModal();
+                }}
+                className="mt-2 flex w-full items-center justify-between gap-2 rounded-lg border border-ui bg-surface-raised/60 px-2.5 py-2 transition hover:bg-surface-raised"
+              >
+                <span className="flex items-center gap-2 text-[11px] font-semibold text-secondary">
+                  <span className={`flex h-4 w-4 items-center justify-center rounded-full ${twoFactorVerified ? 'bg-accent-success-solid' : 'bg-accent-warning-solid'}`}>
+                    <KeyRound className="h-2.5 w-2.5 text-on-accent" />
+                  </span>
+                  <span>2FA {twoFactorVerified ? 'Ativo' : 'Pendente'}</span>
+                </span>
+                <span className="text-[10px] font-bold text-accent-primary">Configurar</span>
+              </button>
+
               <div className="py-2">
                 <div className="px-1 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted">
                   Alternar Usuário para Testes
@@ -281,18 +285,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
               </div>
 
               <div className="border-t border-ui pt-2 space-y-1">
-                <button
-                  id="btn-header-open-2fa"
-                  onClick={() => {
-                    setUserDropdownOpen(false);
-                    onOpen2FAModal();
-                  }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-secondary hover:bg-surface-raised hover:text-primary transition"
-                >
-                  <KeyRound className="h-3.5 w-3.5 text-accent-primary" />
-                  <span>Configurar 2FA (Dois Fatores)</span>
-                </button>
-
                 <button
                   id="btn-header-logout"
                   onClick={() => {
