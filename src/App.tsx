@@ -228,15 +228,23 @@ const MainContent: React.FC = () => {
 };
 
 export default function App() {
-  // Etapa 5 — rota dedicada por hash (#app-pesquisador).
-  // O pesquisador acessa o Modo Pesquisador por uma URL própria, sem precisar
-  // estar logado no ambiente de gestão (o FieldApp exibe o login de campo).
+  // Etapa 5 + rota curta /campo — o pesquisador acessa o Modo Pesquisador por
+  // uma URL própria (/campo ou #app-pesquisador), sem precisar estar logado no
+  // ambiente de gestão (o FieldApp exibe o login de campo).
   const [fieldRoute, setFieldRoute] = useState<boolean>(() => isFieldRoute());
 
   useEffect(() => {
-    const onHashChange = () => setFieldRoute(isFieldRoute());
+    const evaluate = () => setFieldRoute(isFieldRoute());
+    const onPopState = evaluate;
+    const onHashChange = evaluate;
     window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    window.addEventListener('popstate', onPopState);
+    // Reavalia também após o mount (cobre carregamento direto em /campo).
+    evaluate();
+    return () => {
+      window.removeEventListener('hashchange', onHashChange);
+      window.removeEventListener('popstate', onPopState);
+    };
   }, []);
 
   return (
