@@ -194,6 +194,14 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
       return;
     }
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }));
+
+    const isLast = activeSurvey
+      ? currentQuestionIndex >= activeSurvey.perguntas.length - 1
+      : false;
+    // Na última pergunta (modo pesquisador) não avançamos automaticamente:
+    // o pesquisador conclui a coleta manualmente pelo botão "Finalizar Pesquisa".
+    if (fieldMode && isLast) return;
+
     evaluateNextStep(value);
   };
 
@@ -941,35 +949,68 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
             </button>
 
             <div className="flex items-center gap-2">
-              {/* Em modo pesquisador, o avanço é automático ao escolher a resposta ou
-                  pressionar Enter. Mantemos 'Finalizar formulário' apenas no cabeçalho
-                  para não repetir. 'Avançar' aparece só quando o tipo exige seleção
-                  múltipla (multipla_selecao). */}
-              {!fieldMode && (
-                <button
-                  type="button"
-                  onClick={() => setConfirmFinalizeModalOpen(true)}
-                  className="flex items-center gap-1 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-3 py-2 text-xs font-semibold text-accent-warning hover:bg-accent-warning-soft transition-colors"
-                >
-                  <CheckSquare className="h-3.5 w-3.5" />
-                  <span>Finalizar formulário</span>
-                </button>
-              )}
+              {(() => {
+                const isLast = activeSurvey
+                  ? currentQuestionIndex === activeSurvey.perguntas.length - 1
+                  : false;
+                const showAdvance = !fieldMode || currentQuestion?.tipo === 'multipla_selecao';
 
-              {(currentQuestion?.tipo === 'multipla_selecao' || !fieldMode) && (
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
-                >
-                  <span>
-                    {currentQuestionIndex === activeSurvey.perguntas.length - 1
-                      ? 'Finalizar Pesquisa'
-                      : 'Avançar'}
-                  </span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              )}
+                /* Em modo pesquisador: nas demais perguntas o avanço é automático ao
+                   escolher a resposta ou pressionar Enter. Na última pergunta exibimos
+                   o botão "Finalizar Pesquisa" para o pesquisador concluir manualmente.
+                   Mantemos 'Finalizar formulário' apenas no cabeçalho (sem repetição). */
+                if (fieldMode) {
+                  if (isLast) {
+                    return (
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                      >
+                        <span>Finalizar Pesquisa</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    );
+                  }
+                  if (showAdvance) {
+                    return (
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                      >
+                        <span>Avançar</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    );
+                  }
+                  return null;
+                }
+
+                /* Sistema padrão (não pesquisador): fluxo completo com Finalizar + Avançar. */
+                return (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmFinalizeModalOpen(true)}
+                      className="flex items-center gap-1 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-3 py-2 text-xs font-semibold text-accent-warning hover:bg-accent-warning-soft transition-colors"
+                    >
+                      <CheckSquare className="h-3.5 w-3.5" />
+                      <span>Finalizar formulário</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                    >
+                      <span>
+                        {isLast ? 'Finalizar Pesquisa' : 'Avançar'}
+                      </span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>
