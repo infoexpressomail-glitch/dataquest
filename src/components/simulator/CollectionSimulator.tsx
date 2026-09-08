@@ -610,13 +610,16 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
               <RotateCcw className="h-4 w-4" />
               <span>Realizar Nova Coleta</span>
             </button>
-            <button
-              id="btn-ver-respostas-coletadas"
-              onClick={() => setActiveModule('respostas')}
-              className="rounded-lg bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
-            >
-              Ver Respostas Registradas
-            </button>
+            {/* Pesquisador não deve ver a opção de verificação de respostas */}
+            {!fieldMode && (
+              <button
+                id="btn-ver-respostas-coletadas"
+                onClick={() => setActiveModule('respostas')}
+                className="rounded-lg bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+              >
+                Ver Respostas Registradas
+              </button>
+            )}
           </div>
         </div>
       ) : isReviewStep ? (
