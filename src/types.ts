@@ -136,6 +136,16 @@ export interface ConditionalRule {
   descricao?: string;
 }
 
+/** Regra de filtro da "Composição da meta" (Pergunta → Condição → Resposta). */
+export interface MetaCompositionRule {
+  id: string;
+  perguntaId: string;
+  perguntaCodigo: string;
+  perguntaEnunciado: string;
+  condicao: ConditionOperator;
+  resposta: string;
+}
+
 export interface MetaTarget {
   id: string;
   pesquisaId: string;
@@ -145,6 +155,15 @@ export interface MetaTarget {
   quantidadeAlvo: number;
   quantidadeAtingida: number;
   ciclo: string;
+  // Modelo "Composição da meta" (tela de metas)
+  nome?: string; // Nome da meta exibido ao pesquisador
+  composicao?: MetaCompositionRule[]; // Regras de filtro (Pergunta/Condição/Resposta)
+  distribuicao?: 'geral' | 'por_pesquisador'; // Escopo da quantidade de coletas
+  quantidadeAlvoPorPesquisador?: number; // Quantidade de coletas por pesquisador
+  bloquearAposAtingir?: boolean; // Bloquear coletas após atingir a meta
+  status?: 'ativa' | 'pausada' | 'concluida';
+  criadoEm?: string;
+  atualizadoEm?: string;
 }
 
 export type DemographicDimension = 'idade' | 'sexo' | 'bairro';

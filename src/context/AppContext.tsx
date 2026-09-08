@@ -31,6 +31,10 @@ import {
 } from '../mockData';
 import { generateIntegrityHash, diffSurveys } from '../utils/auditUtils';
 import {
+  matchSubmissionToMeta,
+  isResearcherReached,
+} from '../utils/metaComposition';
+import {
   saveCurrentSurveyDraftToDB,
   getCurrentSurveyDraftFromDB,
   clearCurrentSurveyDraftFromDB,
@@ -1861,6 +1865,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addSubmission = (sub: InterviewSubmission) => {
+    // Bloqueio de coletas: quando uma meta com "Bloquear coletas após atingir a meta"
+    // já foi atingida (ou o pesquisador já atingiu a própria cota), a nova coleta que
+    // se enquadra na composição da meta é rejeitada em tempo real.
+    const surveyForSub = surveys.find((s) => s.id === sub.pesquisaId);
+    if (surveyForSub) {
+      const metasBloqueadas = (surveyForSub.metas || []).filter(
+        (m) =>
+          m.bloquearAposAtingir &&
+          matchSubmissionToMeta(m, sub) &&
+          isResearcherReached(m, submissions, sub.pesquisadorId)
+      );
+      if (metasBloqueadas.length > 0) {
+        const nomes = metasBloqueadas.map((m) => m.nome || m.titulo || m.id).join(', ');
+        alert(
+          `Coleta bloqueada: a meta "${nomes}" já foi atingida. ` +
+            `Novas coletas que se enquadram nessa composição não são permitidas.`
+        );
+        return;
+      }
+    }
+
     setSubmissions((prev) => [sub, ...prev]);
 
     if (!effectiveOnline) {

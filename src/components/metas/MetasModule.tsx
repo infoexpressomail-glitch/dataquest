@@ -18,6 +18,7 @@ import {
 import { MetaTarget, ConditionOperator } from '../../types';
 import { GlobalMetasManager } from './GlobalMetasManager';
 import { MetaCatalogManager } from './MetaCatalogManager';
+import { MetaCompositionScreen } from './MetaCompositionScreen';
 import { ResearcherIndividualGoalsView } from './ResearcherIndividualGoalsView';
 import { MobileMetasDashboard } from './MobileMetasDashboard';
 import { FieldTeamSizingCard } from './FieldTeamSizingCard';
@@ -36,9 +37,15 @@ export const MetasModule: React.FC = () => {
   const isFieldResearcher = !canManageMetas && !hasPermission('analise_acesso');
 
   // Se o usuário for pesquisador (sem permissão de gestão), abre por padrão no progresso individual
-  const [activeTab, setActiveTab] = useState<'globais' | 'catalogo' | 'dimensionamento' | 'individual' | 'mobile' | 'questoes'>(
-    canManageMetas ? 'globais' : 'individual'
-  );
+  const [activeTab, setActiveTab] = useState<
+    | 'composicao'
+    | 'globais'
+    | 'catalogo'
+    | 'dimensionamento'
+    | 'individual'
+    | 'mobile'
+    | 'questoes'
+  >(canManageMetas ? 'composicao' : 'individual');
 
   const teamSizing = activeSurvey
     ? calculateTeamSizing(activeSurvey, submissions)
@@ -91,7 +98,13 @@ export const MetasModule: React.FC = () => {
 
   // Proteção de navegação: mesmo que activeTab aponte para uma aba administrativa,
   // o pesquisador de campo é redirecionado para o seu progresso individual.
-  const restrictedTabsForResearcher: Array<typeof activeTab> = ['globais', 'catalogo', 'dimensionamento', 'questoes'];
+  const restrictedTabsForResearcher: Array<typeof activeTab> = [
+    'composicao',
+    'globais',
+    'catalogo',
+    'dimensionamento',
+    'questoes',
+  ];
   const effectiveTab =
     isFieldResearcher && restrictedTabsForResearcher.includes(activeTab) ? 'individual' : activeTab;
 
@@ -135,6 +148,30 @@ export const MetasModule: React.FC = () => {
 
       {/* Modern Navigation Tabs */}
       <div className="flex items-center gap-2 border-b border-ui pb-1 overflow-x-auto no-scrollbar">
+        {!isFieldResearcher && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('composicao')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
+              activeTab === 'composicao'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/30'
+                : 'text-muted hover:text-primary hover:bg-surface-raised'
+            }`}
+          >
+            <Target className="h-4 w-4" />
+            <span>Composição da Meta</span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] ${
+                activeTab === 'composicao'
+                  ? 'bg-accent-primary-soft text-accent-primary-soft-text'
+                  : 'bg-surface-raised text-muted'
+              }`}
+            >
+              {totalMetasQuestoes}
+            </span>
+          </button>
+        )}
+
         {!isFieldResearcher && (
           <button
             type="button"
@@ -260,6 +297,14 @@ export const MetasModule: React.FC = () => {
           </button>
         )}
       </div>
+
+      {/* Submodule View 0: Composição da Meta (tela principal de Metas) */}
+      {effectiveTab === 'composicao' && activeSurvey && (
+        <MetaCompositionScreen
+          activeSurvey={activeSurvey}
+          canManageMetas={canManageMetas}
+        />
+      )}
 
       {/* Submodule View 1: Gerenciamento de Metas Globais */}
       {effectiveTab === 'globais' && activeSurvey && (
