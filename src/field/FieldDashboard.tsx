@@ -62,15 +62,6 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
     (sub) => sub.dataHora && sub.dataHora.slice(0, 10) === todayStr
   );
 
-  const totalCount = researcherSubmissions.length;
-
-  // Meta diária simples (reaproveita a mesma premissa do ResearcherEnvironment)
-  const dailyTarget = 20;
-  const todayProgressPercent = Math.min(
-    100,
-    Math.round((submissionsToday.length / dailyTarget) * 100)
-  );
-
   const pendingCount = offlineQueue.length + pendingIndexedDbCount;
 
   // Pesquisa cujas metas estão expandidas no card do dashboard.
@@ -91,15 +82,12 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
                   <span className="h-1.5 w-1.5 rounded-full bg-accent-success-solid animate-pulse" />
                   Pesquisador de Campo
                 </span>
-                <span className="rounded-md bg-surface-raised px-2 py-0.5 text-[10px] font-mono text-secondary border border-ui">
-                  Login: {currentUser.login}
-                </span>
               </div>
               <h1 className="mt-1.5 text-lg font-black text-primary">
                 Olá, {currentUser.nome.split(' ')[0]}
               </h1>
               <p className="text-[11px] text-muted font-medium">
-                Matrícula {currentUser.cpf} • Foco no seu trabalho de campo
+                Foco no seu trabalho de campo
               </p>
             </div>
           </div>
@@ -135,15 +123,8 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
           icon={<TrendingUp className="h-4 w-4" />}
           label="Coletas de hoje"
           value={String(submissionsToday.length)}
-          hint={`${todayProgressPercent}% da meta diária (${dailyTarget})`}
+          hint="Entrevistas realizadas hoje"
           tone="primary"
-        />
-        <SummaryCard
-          icon={<CheckCircle2 className="h-4 w-4" />}
-          label="Total acumulado"
-          value={String(totalCount)}
-          hint="Suas entrevistas concluídas"
-          tone="success"
         />
         <SummaryCard
           icon={<WifiOff className="h-4 w-4" />}
@@ -219,9 +200,6 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
                     <div className="flex items-start justify-between gap-2">
                       <span className="rounded-md bg-surface-raised border border-ui px-2 py-0.5 text-[10px] font-mono text-accent-primary">
                         {survey.codigo}
-                      </span>
-                      <span className="text-[10px] text-muted font-semibold">
-                        {survey.perguntas?.length ?? 0} perguntas
                       </span>
                     </div>
                     <h3 className="mt-2 text-sm font-bold text-primary leading-snug">

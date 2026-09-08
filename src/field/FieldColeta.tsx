@@ -108,7 +108,8 @@ export const FieldColeta: React.FC<FieldColetaProps> = ({ session }) => {
       {/* Formulário de coleta reutilizado */}
       {activeSurvey && (
         <div className="rounded-2xl border border-ui bg-surface p-4 sm:p-6 shadow-xl">
-          <CollectionSimulator />
+          {/* fieldMode=true: oculta elementos técnicos/estatísticos para o coletor de campo */}
+          <CollectionSimulator fieldMode />
         </div>
       )}
     </div>

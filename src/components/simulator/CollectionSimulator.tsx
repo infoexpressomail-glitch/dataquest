@@ -35,7 +35,17 @@ import {
   calculateSampleSize,
 } from '../../utils/samplingUtils';
 
-export const CollectionSimulator: React.FC = () => {
+interface CollectionSimulatorProps {
+  /**
+   * Quando true (Modo Pesquisador), oculta elementos técnicos/estatísticos que
+   * não fazem sentido para o coletor de campo: barra de níveis de confiança
+   * (Z-score), painel de status da entrevista e textos técnicos (IndexedDB/SHA-256).
+   * O sistema padrão (simulador administrativo) mantém tudo.
+   */
+  fieldMode?: boolean;
+}
+
+export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldMode }) => {
   const {
     surveys,
     editingSurvey,
@@ -287,7 +297,9 @@ export const CollectionSimulator: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-ui pb-3">
         <div className="flex items-center gap-2 px-1">
           <Smartphone className="h-4 w-4 text-accent-primary" />
-          <span className="text-xs font-bold text-primary">Simulador de Coleta Mobile</span>
+          <span className="text-xs font-bold text-primary">
+            {fieldMode ? 'Formulário de Coleta' : 'Simulador de Coleta Mobile'}
+          </span>
         </div>
 
         {activeSurvey && (
@@ -299,7 +311,8 @@ export const CollectionSimulator: React.FC = () => {
       </div>
 
       {/* Barra de Níveis de Confiança Padrão com Preenchimento de Z-score */}
-      {activeSurvey && (
+      {/* Oculto no Modo Pesquisador (fieldMode) — é estatístico, não faz sentido para o coletor */}
+      {!fieldMode && activeSurvey && (
         <div className="rounded-xl border border-ui bg-surface p-3 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border shrink-0">
@@ -381,7 +394,7 @@ export const CollectionSimulator: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <span className="rounded-md bg-accent-primary-soft border border-accent-primary-soft-border px-2.5 py-1 text-xs font-bold text-accent-primary">
-                Coleta em Tempo Real & Coleta Web
+                {fieldMode ? 'Coleta de Campo' : 'Coleta em Tempo Real & Coleta Web'}
               </span>
               <h1 className="mt-1 text-lg font-bold text-primary">
                 {activeSurvey.nome}
@@ -391,7 +404,8 @@ export const CollectionSimulator: React.FC = () => {
               </p>
             </div>
 
-            {/* Live status indicators */}
+            {/* Live status indicators — oculto no Modo Pesquisador (fieldMode) */}
+            {!fieldMode && (
             <div className="flex items-center gap-2.5">
               <div className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface px-2.5 py-1 text-[11px] font-semibold text-secondary shadow-xs">
                 <MapPin className="h-3.5 w-3.5 text-accent-success" />
@@ -436,7 +450,8 @@ export const CollectionSimulator: React.FC = () => {
               {isAudioAtLimit && <span className="text-[10px] text-accent-warning font-bold">(Máx)</span>}
             </div>
           )}
-        </div>
+            </div>
+            )}
       </div>
 
       {/* Modal: Finalizar Formulário - Gravar ou Descartar */}
@@ -450,7 +465,9 @@ export const CollectionSimulator: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-primary">Finalizar Formulário</h3>
-                  <p className="text-xs text-muted">Status da entrevista em andamento</p>
+                  <p className="text-xs text-muted">
+                    {fieldMode ? 'Confirme a conclusão da coleta' : 'Status da entrevista em andamento'}
+                  </p>
                 </div>
               </div>
               <button
@@ -536,7 +553,9 @@ export const CollectionSimulator: React.FC = () => {
                 <span>Armazenado Offline com Sucesso</span>
               </div>
               <p className="text-xs text-secondary leading-relaxed">
-                Você está sem conexão de internet no momento. Todo o progresso foi salvo com segurança no seu navegador (IndexedDB) e será sincronizado automaticamente quando o sinal de internet for reestabelecido.
+                {fieldMode
+                  ? 'Você está sem conexão de internet no momento. Sua coleta foi salva com segurança neste aparelho e será enviada automaticamente quando a conexão for restabelecida.'
+                  : 'Você está sem conexão de internet no momento. Todo o progresso foi salvo com segurança no seu navegador (IndexedDB) e será sincronizado automaticamente quando o sinal de internet for reestabelecido.'}
               </p>
               <div className="text-[11px] text-muted pt-1 border-t border-accent-warning-soft-border flex flex-wrap justify-between gap-2">
                 <span>Pesquisador: <strong className="text-primary">{currentUser.nome}</strong></span>
@@ -656,7 +675,9 @@ export const CollectionSimulator: React.FC = () => {
               <div>
                 <p className="font-bold text-accent-warning">Sem Sinal de Internet (Modo Offline)</p>
                 <p className="text-[11px] text-accent-warning/80 mt-0.5">
-                  Todo o progresso será armazenado de forma segura no seu navegador (IndexedDB) e sincronizado automaticamente quando o sinal retornar.
+                  {fieldMode
+                    ? 'Sua coleta será salva com segurança neste aparelho e enviada automaticamente quando a conexão retornar.'
+                    : 'Todo o progresso será armazenado de forma segura no seu navegador (IndexedDB) e sincronizado automaticamente quando o sinal retornar.'}
                 </p>
               </div>
             </div>
