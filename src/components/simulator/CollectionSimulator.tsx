@@ -128,6 +128,13 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
     if (lastAnswer !== undefined && currentQuestion) {
       setAnswers((prev) => ({ ...prev, [currentQuestion.id]: lastAnswer }));
     }
+    // No modo pesquisador não há etapa de revisão: grava e encerra direto.
+    if (fieldMode) {
+      handleSubmitFinal(lastAnswer !== undefined && currentQuestion
+        ? { [currentQuestion.id]: lastAnswer }
+        : undefined);
+      return;
+    }
     setIsReviewStep(true);
   };
 
@@ -220,10 +227,12 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
     }
   };
 
-  const handleSubmitFinal = async () => {
+  const handleSubmitFinal = async (answersOverride?: Record<string, any>) => {
     if (!activeSurvey) return;
     setIsSaving(true);
-    const finalAnswers = { ...answers };
+    // Permite passar as respostas atualizadas (evita problema de estado async ao
+    // finalizar direto a partir da última pergunta no modo pesquisador).
+    const finalAnswers = answersOverride ? { ...answers, ...answersOverride } : { ...answers };
 
     const formattedAnswers: AnswerItem[] = Object.entries(finalAnswers).map(([perguntaId, resposta]) => {
       const q = activeSurvey.perguntas.find((p) => p.id === perguntaId);
@@ -537,7 +546,12 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                 type="button"
                 onClick={() => {
                   setConfirmFinalizeModalOpen(false);
-                  setIsReviewStep(true);
+                  // No modo pesquisador grava e encerra direto, sem etapa de revisão.
+                  if (fieldMode) {
+                    handleSubmitFinal();
+                  } else {
+                    setIsReviewStep(true);
+                  }
                 }}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-success-solid px-4 py-3 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-success-solid-hover transition active:scale-[0.99]"
               >
