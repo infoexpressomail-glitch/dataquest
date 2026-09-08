@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { Collaborator, AccessProfile } from '../types';
 import { FieldSection } from './fieldTypes';
 import {
   LayoutDashboard,
@@ -15,6 +16,10 @@ import {
 
 interface FieldSidebarProps {
   section: FieldSection;
+  /** Colaborador autenticado no sub-app (opcional — usa o contexto quando ausente). */
+  user?: Collaborator;
+  /** Perfil do colaborador autenticado (opcional). */
+  profile?: AccessProfile;
   onNavigate: (s: FieldSection) => void;
   onExit: () => void;
   isOpenMobile: boolean;
@@ -35,12 +40,17 @@ const NAV_ITEMS: { id: FieldSection; label: string; icon: React.ReactNode }[] = 
  */
 export const FieldSidebar: React.FC<FieldSidebarProps> = ({
   section,
+  user,
+  profile,
   onNavigate,
   onExit,
   isOpenMobile,
   onCloseMobile,
 }) => {
-  const { currentUser, currentProfile, effectiveOnline } = useApp();
+  const { currentUser: ctxUser, currentProfile: ctxProfile, effectiveOnline } = useApp();
+
+  const currentUser = user ?? ctxUser;
+  const currentProfile = profile ?? ctxProfile;
 
   const canBackToGestao =
     currentProfile?.id === 'prof_pesq' ||

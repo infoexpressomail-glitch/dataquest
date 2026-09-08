@@ -3,13 +3,21 @@ import { useApp } from '../context/AppContext';
 import { InterviewSubmission } from '../types';
 import { AudioPlayerModal } from '../components/surveys/AudioPlayerModal';
 import { GeoMapModal } from '../components/surveys/GeoMapModal';
+import { FieldSession } from './fieldTypes';
 import { History, Mic, MapPin, Clock, Inbox, Download } from 'lucide-react';
+
+interface FieldHistoricoProps {
+  /** Sessão autenticada no sub-app (opcional — usa o contexto quando ausente). */
+  session?: FieldSession;
+}
 
 /**
  * Histórico do sub-app: lista APENAS as coletas do pesquisador logado.
  */
-export const FieldHistorico: React.FC = () => {
-  const { currentUser, submissions } = useApp();
+export const FieldHistorico: React.FC<FieldHistoricoProps> = ({ session }) => {
+  const { currentUser: ctxUser, submissions } = useApp();
+
+  const currentUser = session?.user ?? ctxUser;
 
   const [selectedAudioSub, setSelectedAudioSub] = useState<InterviewSubmission | null>(null);
   const [selectedGeoSub, setSelectedGeoSub] = useState<InterviewSubmission | null>(null);

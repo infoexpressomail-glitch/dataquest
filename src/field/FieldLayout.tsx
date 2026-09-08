@@ -1,10 +1,15 @@
 import React from 'react';
+import { Collaborator, AccessProfile } from '../types';
 import { FieldSection } from './fieldTypes';
 import { FieldSidebar } from './FieldSidebar';
 import { FieldHeader } from './FieldHeader';
 
 interface FieldLayoutProps {
   section: FieldSection;
+  /** Colaborador autenticado no sub-app (opcional — usado em vez do contexto quando presente). */
+  user?: Collaborator;
+  /** Perfil do colaborador autenticado (opcional). */
+  profile?: AccessProfile;
   onNavigate: (s: FieldSection) => void;
   onExit: () => void;
   mobileSidebarOpen: boolean;
@@ -18,6 +23,8 @@ interface FieldLayoutProps {
  */
 export const FieldLayout: React.FC<FieldLayoutProps> = ({
   section,
+  user,
+  profile,
   onNavigate,
   onExit,
   mobileSidebarOpen,
@@ -30,6 +37,8 @@ export const FieldLayout: React.FC<FieldLayoutProps> = ({
       {/* Sidebar (desktop fixa à esquerda, mobile como overlay) */}
       <FieldSidebar
         section={section}
+        user={user}
+        profile={profile}
         onNavigate={onNavigate}
         onExit={onExit}
         isOpenMobile={mobileSidebarOpen}
@@ -40,6 +49,8 @@ export const FieldLayout: React.FC<FieldLayoutProps> = ({
       <div className="flex flex-1 flex-col md:pl-64 min-w-0">
         <FieldHeader
           section={section}
+          user={user}
+          profile={profile}
           onToggleMobileSidebar={onToggleMobileSidebar}
           onExit={onExit}
         />

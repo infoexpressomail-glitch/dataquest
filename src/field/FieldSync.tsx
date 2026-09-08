@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { FieldSession } from './fieldTypes';
 import { RefreshCw, Wifi, WifiOff, CheckCircle2, AlertTriangle } from 'lucide-react';
+
+interface FieldSyncProps {
+  /** Sessão autenticada no sub-app (opcional — usado para apresentar o pesquisador). */
+  session?: FieldSession;
+}
 
 /**
  * Tela de Sincronização do sub-app — mesma lógica da aba de sincronização
  * existente (offlineQueue + pendingIndexedDbCount + effectiveOnline + syncOfflineQueue).
  */
-export const FieldSync: React.FC = () => {
+export const FieldSync: React.FC<FieldSyncProps> = ({ session }) => {
   const { effectiveOnline, offlineQueue, pendingIndexedDbCount, syncOfflineQueue } = useApp();
 
   const [isSyncing, setIsSyncing] = useState(false);

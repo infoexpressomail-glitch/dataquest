@@ -3,15 +3,25 @@ import { useApp } from '../context/AppContext';
 import { Survey } from '../types';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
 import { CollectionSimulator } from '../components/simulator/CollectionSimulator';
+import { FieldSession } from './fieldTypes';
 import { ClipboardList, CheckCircle2, ArrowRight, ChevronDown } from 'lucide-react';
+
+interface FieldColetaProps {
+  /** Sessão autenticada no sub-app (opcional — usa o contexto quando ausente). */
+  session?: FieldSession;
+}
 
 /**
  * Tela de Coleta do sub-app.
  * Reutiliza o CollectionSimulator embutido; quando há mais de uma pesquisa
  * liberada, permite selecionar qual coletar (define o editingSurvey do contexto).
  */
-export const FieldColeta: React.FC = () => {
-  const { currentUser, currentProfile, surveys, editingSurvey, setEditingSurvey } = useApp();
+export const FieldColeta: React.FC<FieldColetaProps> = ({ session }) => {
+  const { currentUser: ctxUser, currentProfile: ctxProfile, surveys: ctxSurveys, editingSurvey, setEditingSurvey } = useApp();
+
+  const currentUser = session?.user ?? ctxUser;
+  const currentProfile = session?.profile ?? ctxProfile;
+  const surveys = session?.surveys ?? ctxSurveys;
 
   const isResearcher =
     currentProfile?.id === 'prof_pesq' ||

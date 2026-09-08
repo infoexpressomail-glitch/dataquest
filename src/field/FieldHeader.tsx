@@ -1,10 +1,15 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { Collaborator, AccessProfile } from '../types';
 import { FieldSection } from './fieldTypes';
 import { Menu, ArrowLeft, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 
 interface FieldHeaderProps {
   section: FieldSection;
+  /** Colaborador autenticado no sub-app (opcional — usa o contexto quando ausente). */
+  user?: Collaborator;
+  /** Perfil do colaborador autenticado (opcional). */
+  profile?: AccessProfile;
   onToggleMobileSidebar: () => void;
   onExit: () => void;
 }
@@ -14,11 +19,21 @@ interface FieldHeaderProps {
  */
 export const FieldHeader: React.FC<FieldHeaderProps> = ({
   section,
+  user,
+  profile,
   onToggleMobileSidebar,
   onExit,
 }) => {
-  const { currentUser, currentProfile, effectiveOnline, offlineQueue, pendingIndexedDbCount } =
-    useApp();
+  const {
+    currentUser: ctxUser,
+    currentProfile: ctxProfile,
+    effectiveOnline,
+    offlineQueue,
+    pendingIndexedDbCount,
+  } = useApp();
+
+  const currentUser = user ?? ctxUser;
+  const currentProfile = profile ?? ctxProfile;
 
   const isResearcher =
     currentProfile?.id === 'prof_pesq' ||

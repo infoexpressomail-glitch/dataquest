@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
+import { FieldSession } from './fieldTypes';
 import {
   ClipboardList,
   WifiOff,
@@ -13,6 +14,8 @@ import {
 } from 'lucide-react';
 
 interface FieldDashboardProps {
+  /** Sessão autenticada no sub-app (opcional — usa o contexto quando ausente). */
+  session?: FieldSession;
   onStartColeta: () => void;
   onGoHistorico: () => void;
   onGoSync: () => void;
@@ -22,19 +25,25 @@ interface FieldDashboardProps {
  * Tela inicial do sub-app: identidade + cards de resumo + pesquisas liberadas.
  */
 export const FieldDashboard: React.FC<FieldDashboardProps> = ({
+  session,
   onStartColeta,
   onGoHistorico,
   onGoSync,
 }) => {
   const {
-    currentUser,
-    currentProfile,
-    surveys,
+    currentUser: ctxUser,
+    currentProfile: ctxProfile,
+    surveys: ctxSurveys,
     submissions,
     effectiveOnline,
     offlineQueue,
     pendingIndexedDbCount,
   } = useApp();
+
+  // Usa o pesquisador autenticado (sessão) quando presente; senão cai no mock do contexto.
+  const currentUser = session?.user ?? ctxUser;
+  const currentProfile = session?.profile ?? ctxProfile;
+  const surveys = session?.surveys ?? ctxSurveys;
 
   const isResearcher =
     currentProfile?.id === 'prof_pesq' ||

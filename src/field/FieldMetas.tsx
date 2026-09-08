@@ -2,15 +2,25 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
 import { ResearcherIndividualGoalsView } from '../components/metas/ResearcherIndividualGoalsView';
+import { FieldSession } from './fieldTypes';
 import { Target, Inbox, ArrowRight } from 'lucide-react';
+
+interface FieldMetasProps {
+  /** Sessão autenticada no sub-app (opcional — usa o contexto quando ausente). */
+  session?: FieldSession;
+}
 
 /**
  * Tela "Minhas Metas & Cotas" do sub-app.
  * Reutiliza o ResearcherIndividualGoalsView mostrando apenas as metas do
  * pesquisador logado (o componente trava no currentUser.id para campo).
  */
-export const FieldMetas: React.FC = () => {
-  const { currentUser, currentProfile, surveys } = useApp();
+export const FieldMetas: React.FC<FieldMetasProps> = ({ session }) => {
+  const { currentUser: ctxUser, currentProfile: ctxProfile, surveys: ctxSurveys } = useApp();
+
+  const currentUser = session?.user ?? ctxUser;
+  const currentProfile = session?.profile ?? ctxProfile;
+  const surveys = session?.surveys ?? ctxSurveys;
 
   const isResearcher =
     currentProfile?.id === 'prof_pesq' ||
