@@ -150,7 +150,7 @@ export const FieldMetas: React.FC<FieldMetasProps> = ({ session, onResync }) => 
 
                 {isOpen && (
                   <div className="border-t border-ui p-4">
-                    <ResearcherIndividualGoalsView activeSurvey={survey} />
+                    <ResearcherIndividualGoalsView activeSurvey={survey} fieldMode />
                   </div>
                 )}
               </div>

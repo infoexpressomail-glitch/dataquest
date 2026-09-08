@@ -23,10 +23,13 @@ import {
 
 interface ResearcherIndividualGoalsViewProps {
   activeSurvey: Survey;
+  /** Quando true (sub-app de campo), oculta o painel consolidado (header de inspeção e KPIs) e mostra apenas os campos das metas atribuídas na pesquisa. */
+  fieldMode?: boolean;
 }
 
 export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsViewProps> = ({
   activeSurvey,
+  fieldMode = false,
 }) => {
   const { currentUser, collaborators, submissions, hasPermission } = useApp();
 
@@ -75,7 +78,8 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
 
   return (
     <div className="space-y-6">
-      {/* Header com Identificação do Pesquisador & Indicador de Tempo Real */}
+      {/* Header com Identificação do Pesquisador & Indicador de Tempo Real (oculto no campo) */}
+      {!fieldMode && (
       <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3.5">
@@ -130,8 +134,10 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
           </div>
         </div>
       </div>
+      )}
 
-      {/* KPI Cards do Pesquisador */}
+      {/* KPI Cards do Pesquisador (oculto no campo) */}
+      {!fieldMode && (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
           <div className="flex items-center justify-between">
@@ -206,6 +212,7 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
           </p>
         </div>
       </div>
+      )}
 
       {/* Lista de Metas Individuais do Pesquisador */}
       <div className="space-y-4">

@@ -236,7 +236,7 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
 
                       {expandedGoalsSurveyId === survey.id && (
                         <div className="mt-2">
-                          <ResearcherIndividualGoalsView activeSurvey={survey} />
+                          <ResearcherIndividualGoalsView activeSurvey={survey} fieldMode />
                         </div>
                       )}
                     </div>
