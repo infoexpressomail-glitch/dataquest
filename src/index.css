@@ -26,7 +26,7 @@
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
-  --text-link: #60a5fa;
+  --text-link: #34d399;
   --text-on-accent: #ffffff;
   --text-on-warning: #1c1917; /* texto escuro sobre fundo âmbar/amarelo (mesmo valor nos dois temas) */
 
@@ -34,10 +34,10 @@
   --border: #334155;
   --border-subtle: #1e293b;
   --border-strong: #475569;
-  --border-focus: #3b82f6;
+  --border-focus: #10b981;
 
   /* Accents semânticos — uso como texto/ícone sobre a superfície do app */
-  --accent-primary: #60a5fa;
+  --accent-primary: #34d399;
   --accent-success: #34d399;
   --accent-warning: #fbbf24;
   --accent-danger: #f87171;
@@ -46,22 +46,22 @@
 
   /* Accents "sólidos" — usados em fundo de botão/ícone de destaque.
      Mesmo valor nos dois temas (o texto por cima usa --text-on-accent). */
-  --accent-primary-solid: #2563eb;
+  --accent-primary-solid: #059669;
   --accent-success-solid: #059669;
   --accent-warning-solid: #d97706;
   --accent-danger-solid: #e11d48;
   --accent-info-solid: #0891b2;
   --accent-purple-solid: #9333ea;
 
-  --accent-primary-solid-hover: #3b82f6;
+  --accent-primary-solid-hover: #10b981;
   --accent-success-solid-hover: #10b981;
   --accent-warning-solid-hover: #f59e0b;
   --accent-danger-solid-hover: #f43f5e;
   --accent-info-solid-hover: #06b6d4;
   --accent-purple-solid-hover: #a855f7;
-  --accent-primary-soft-bg: rgba(59, 130, 246, 0.15);
-  --accent-primary-soft-border: rgba(59, 130, 246, 0.3);
-  --accent-primary-soft-text: #93c5fd;
+  --accent-primary-soft-bg: rgba(16, 185, 129, 0.15);
+  --accent-primary-soft-border: rgba(16, 185, 129, 0.3);
+  --accent-primary-soft-text: #6ee7b7;
 
   --accent-success-soft-bg: rgba(16, 185, 129, 0.15);
   --accent-success-soft-border: rgba(16, 185, 129, 0.3);
@@ -110,39 +110,39 @@ html:not(.dark) {
   --text-primary: #090d16;   /* 19.1:1 sobre #ffffff */
   --text-secondary: #1e293b; /* 13.6:1 */
   --text-muted: #334155;     /* 10.0:1 */
-  --text-link: #1e40af;      /* 8.5:1 */
+  --text-link: #047857;      /* 7.5:1 */
   --text-on-accent: #ffffff;
   --text-on-warning: #1c1917;
 
   --border: #475569;       /* 7.45:1 */
   --border-subtle: #64748b; /* 4.77:1 */
   --border-strong: #334155; /* 10.0:1 */
-  --border-focus: #1e40af;  /* 8.5:1 */
+  --border-focus: #047857;  /* 7.5:1 */
 
-  --accent-primary: #1e40af; /* 8.5:1 */
+  --accent-primary: #047857; /* 8.5:1 */
   --accent-success: #065f46; /* 8.1:1 */
   --accent-warning: #78350f; /* 8.2:1 */
   --accent-danger: #991b1b;  /* 7.6:1 */
   --accent-info: #0e7490;    /* 7.2:1 */
   --accent-purple: #581c87;  /* 9.2:1 */
 
-  --accent-primary-solid: #2563eb;
+  --accent-primary-solid: #059669;
   --accent-success-solid: #059669;
   --accent-warning-solid: #d97706;
   --accent-danger-solid: #e11d48;
   --accent-info-solid: #0891b2;
   --accent-purple-solid: #9333ea;
 
-  --accent-primary-solid-hover: #3b82f6;
+  --accent-primary-solid-hover: #10b981;
   --accent-success-solid-hover: #10b981;
   --accent-warning-solid-hover: #f59e0b;
   --accent-danger-solid-hover: #f43f5e;
   --accent-info-solid-hover: #06b6d4;
   --accent-purple-solid-hover: #a855f7;
 
-  --accent-primary-soft-bg: #dbeafe;
-  --accent-primary-soft-border: #93c5fd;
-  --accent-primary-soft-text: #1e40af;
+  --accent-primary-soft-bg: #d1fae5;
+  --accent-primary-soft-border: #a7f3d0;
+  --accent-primary-soft-text: #047857;
 
   --accent-success-soft-bg: #d1fae5;
   --accent-success-soft-border: #a7f3d0;
