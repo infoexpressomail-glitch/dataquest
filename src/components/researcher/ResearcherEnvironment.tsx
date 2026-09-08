@@ -27,6 +27,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { Survey, InterviewSubmission } from '../../types';
+import { filterResearcherVisibleSurveys } from '../../utils/researcherUtils';
 import { CollectionSimulator } from '../simulator/CollectionSimulator';
 import { ResearcherIndividualGoalsView } from '../metas/ResearcherIndividualGoalsView';
 import { AudioPlayerModal } from '../surveys/AudioPlayerModal';
@@ -59,18 +60,11 @@ export const ResearcherEnvironment: React.FC = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
 
-  // Filter surveys strictly: only active surveys assigned to this researcher; past/inactive surveys do not appear
-  const researcherSurveys = surveys.filter((s) => {
-    // Only ACTIVE surveys
-    if (s.status !== 'ativa') return false;
-
-    // Must be assigned to this researcher
-    const isAssigned =
-      (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id)) ||
-      (s.pesquisadoresIds && s.pesquisadoresIds.includes(currentUser.id));
-
-    return Boolean(isAssigned);
-  });
+  // Pesquisas visíveis ao pesquisador: apenas as atribuídas a ele e que estão
+  // ativas (ou concluídas pela coordenação, mas re-habilitadas para este login).
+  // Pesquisas finalizadas (concluídas) para este pesquisador NÃO aparecem, a
+  // menos que sejam novamente habilitadas para este login.
+  const researcherSurveys = filterResearcherVisibleSurveys(surveys, currentUser);
 
   // Filter submissions made by this researcher
   const researcherSubmissions = submissions.filter(

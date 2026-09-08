@@ -56,6 +56,8 @@ export const SurveyList: React.FC = () => {
     setEditingSurvey,
     replicateSurvey,
     toggleSurveyStatus,
+    finalizeSurvey,
+    reopenSurvey,
     deleteSurvey,
     restoreSurvey,
     bulkUpdateSurveysStatus,
@@ -134,7 +136,7 @@ export const SurveyList: React.FC = () => {
 
       // Status filter
       if (activeTab === 'ativas' && s.status !== 'ativa') return false;
-      if (activeTab === 'inativas' && s.status !== 'inativa') return false;
+      if (activeTab === 'inativas' && s.status !== 'inativa' && s.status !== 'concluida') return false;
       if (activeTab === 'excluidas' && s.status !== 'excluida') return false;
     }
 
@@ -313,7 +315,7 @@ export const SurveyList: React.FC = () => {
                       : 'bg-transparent text-muted border-transparent hover:text-primary hover:bg-surface-raised'
                   }`}
                 >
-                  Inativas ({surveys.filter((s) => s.status === 'inativa').length})
+                  Inativas/Concluídas ({surveys.filter((s) => s.status === 'inativa' || s.status === 'concluida').length})
                 </button>
               )}
 
@@ -543,6 +545,8 @@ export const SurveyList: React.FC = () => {
                           ? 'bg-accent-success-soft text-accent-success border-accent-success-soft-border'
                           : survey.status === 'inativa'
                           ? 'bg-accent-warning-soft text-accent-warning border-accent-warning-soft-border'
+                          : survey.status === 'concluida'
+                          ? 'bg-accent-purple-soft text-accent-purple border-accent-purple-soft-border'
                           : 'bg-accent-danger-soft text-accent-danger border-accent-danger-soft-border'
                       }`}
                     >
@@ -740,7 +744,7 @@ export const SurveyList: React.FC = () => {
                     )}
 
                     {/* Deactivate / Activate */}
-                    {canToggleActive && survey.status !== 'excluida' && (
+                    {canToggleActive && survey.status !== 'excluida' && survey.status !== 'concluida' && (
                       <button
                         id={`btn-toggle-status-${survey.id}`}
                         onClick={() => toggleSurveyStatus(survey.id)}
@@ -749,6 +753,33 @@ export const SurveyList: React.FC = () => {
                       >
                         <Power className="h-4 w-4 text-accent-warning" />
                       </button>
+                    )}
+
+                    {/* Finalize (mark as concluded) / Reopen */}
+                    {canToggleActive && survey.status !== 'excluida' && (
+                      survey.status === 'concluida' ? (
+                        <button
+                          id={`btn-reopen-survey-${survey.id}`}
+                          onClick={() => reopenSurvey(survey.id)}
+                          title="Reabrir pesquisa (voltar ao status ativa)"
+                          className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-success transition-colors"
+                        >
+                          <RotateCcw className="h-4 w-4 text-accent-success" />
+                        </button>
+                      ) : (
+                        <button
+                          id={`btn-finalize-survey-${survey.id}`}
+                          onClick={() => {
+                            if (window.confirm(`Deseja finalizar (concluir) a pesquisa "${survey.nome}"? Ela deixará de aparecer para os pesquisadores.`)) {
+                              finalizeSurvey(survey.id);
+                            }
+                          }}
+                          title="Finalizar pesquisa (marcar como concluída)"
+                          className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-accent-purple transition-colors"
+                        >
+                          <CheckCircle2 className="h-4 w-4 text-accent-purple" />
+                        </button>
+                      )
                     )}
 
                     {/* Delete / Restore */}

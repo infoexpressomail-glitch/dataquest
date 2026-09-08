@@ -83,6 +83,9 @@ export interface Collaborator {
   // Metadados
   ativo: boolean;
   pesquisasVinculadasIds: string[];
+  // Pesquisas que, mesmo marcadas como CONCLUÍDAS pela coordenação,
+  // foram re-habilitadas especificamente para o login deste pesquisador.
+  pesquisasReabilitadasIds?: string[];
   criadoEm: string;
 }
 
@@ -181,7 +184,7 @@ export interface Survey {
   codigo: string;
   nome: string; // ex: "LiterArraial 2025 - Prefeitura"
   descricao: string;
-  status: 'ativa' | 'inativa' | 'excluida';
+  status: 'ativa' | 'inativa' | 'concluida' | 'excluida';
   habilitarColetaWeb: boolean;
   tipoColetaWeb: 'publico' | 'interno';
   colaboradorWebId?: string; // Pesquisador atribuído para registros web

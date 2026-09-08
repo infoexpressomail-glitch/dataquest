@@ -72,6 +72,9 @@ interface AppContextType {
   saveSurvey: (s: Survey) => void;
   replicateSurvey: (surveyId: string) => Survey;
   toggleSurveyStatus: (surveyId: string) => void;
+  finalizeSurvey: (surveyId: string) => void; // marca como concluída (finalizada) pela coordenação
+  reopenSurvey: (surveyId: string) => void;   // volta a status ativa
+  setSurveyReEnabledForResearcher: (surveyId: string, researcherId: string, enabled: boolean) => void;
   deleteSurvey: (surveyId: string) => void;
   restoreSurvey: (surveyId: string) => void;
   submissions: InterviewSubmission[];
@@ -1411,6 +1414,109 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  // Marca a pesquisa como CONCLUÍDA (finalizada) pela coordenação.
+  // A partir daí ela deixa de aparecer para os pesquisadores, exceto
+  // para aqueles cujo login foi re-habilitado (pesquisasReabilitadasIds).
+  const finalizeSurvey = (surveyId: string) => {
+    const target = surveys.find((s) => s.id === surveyId);
+    if (target) {
+      addAuditLog({
+        categoria: 'PESQUISA',
+        tipoAcao: 'STATUS_PESQUISA',
+        tituloAcao: 'Finalização da Pesquisa (Concluída)',
+        descricaoDetalhada: `Pesquisa "${target.nome}" (${target.codigo}) finalizada pela coordenação. Deixou de ser exibida aos pesquisadores.`,
+        autor: {
+          id: currentUser.id,
+          nome: currentUser.nome,
+          login: currentUser.login,
+          perfil: currentProfile?.name || 'Colaborador',
+        },
+        alvo: {
+          tipo: 'pesquisa',
+          id: target.id,
+          identificador: target.codigo,
+          nome: target.nome,
+        },
+        alteracoes: [{ campo: 'status', rotulo: 'Status', valorAnterior: target.status, valorNovo: 'concluida' }],
+        motivoConformidade: 'Encerramento oficial do ciclo de coleta pela coordenação.',
+        statusConformidade: 'conforme',
+      });
+    }
+
+    setSurveys((prev) =>
+      prev.map((s) =>
+        s.id === surveyId
+          ? { ...s, status: 'concluida', emAndamento: false, atualizadaEm: new Date().toISOString() }
+          : s
+      )
+    );
+  };
+
+  // Reabre uma pesquisa finalizada (volta para o status ativa).
+  const reopenSurvey = (surveyId: string) => {
+    const target = surveys.find((s) => s.id === surveyId);
+    if (target) {
+      addAuditLog({
+        categoria: 'PESQUISA',
+        tipoAcao: 'STATUS_PESQUISA',
+        tituloAcao: 'Reabertura de Pesquisa',
+        descricaoDetalhada: `Pesquisa "${target.nome}" (${target.codigo}) reaberta pela coordenação para novas coletas.`,
+        autor: {
+          id: currentUser.id,
+          nome: currentUser.nome,
+          login: currentUser.login,
+          perfil: currentProfile?.name || 'Colaborador',
+        },
+        alvo: {
+          tipo: 'pesquisa',
+          id: target.id,
+          identificador: target.codigo,
+          nome: target.nome,
+        },
+        alteracoes: [{ campo: 'status', rotulo: 'Status', valorAnterior: target.status, valorNovo: 'ativa' }],
+        motivoConformidade: 'Autorização de retomada de coleta pela coordenação.',
+        statusConformidade: 'conforme',
+      });
+    }
+
+    setSurveys((prev) =>
+      prev.map((s) =>
+        s.id === surveyId
+          ? { ...s, status: 'ativa', emAndamento: true, atualizadaEm: new Date().toISOString() }
+          : s
+      )
+    );
+  };
+
+  // Habilita/desabilita uma pesquisa já concluída para um login específico.
+  const setSurveyReEnabledForResearcher = (
+    surveyId: string,
+    researcherId: string,
+    enabled: boolean
+  ) => {
+    setCollaborators((prev) => {
+      const updatedColabs = prev.map((c) => {
+        if (c.id !== researcherId) return c;
+        const list = Array.isArray(c.pesquisasReabilitadasIds) ? [...c.pesquisasReabilitadasIds] : [];
+        const updated = enabled
+          ? Array.from(new Set([...list, surveyId]))
+          : list.filter((id) => id !== surveyId);
+        return { ...c, pesquisasReabilitadasIds: updated };
+      });
+
+      // Se o pesquisador alterado é o usuário atualmente logado, reflete a
+      // mudança na sessão corrente para a tela reagir imediatamente.
+      if (researcherId === currentUser.id) {
+        const updatedCurrent = updatedColabs.find((c) => c.id === researcherId);
+        if (updatedCurrent) {
+          setCurrentUser(updatedCurrent);
+        }
+      }
+
+      return updatedColabs;
+    });
+  };
+
   const deleteSurvey = (surveyId: string) => {
     const target = surveys.find((s) => s.id === surveyId);
     if (target) {
@@ -2156,6 +2262,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         saveSurvey,
         replicateSurvey,
         toggleSurveyStatus,
+        finalizeSurvey,
+        reopenSurvey,
+        setSurveyReEnabledForResearcher,
         deleteSurvey,
         restoreSurvey,
         submissions,

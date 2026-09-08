@@ -27,6 +27,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { Survey, Question, InterviewSubmission, AnswerItem } from '../../types';
+import { filterResearcherVisibleSurveys } from '../../utils/researcherUtils';
 import { generatePlayableWavBlob, formatAudioDuration } from '../../utils/audioUtils';
 import { saveOfflineSubmissionToDB } from '../../utils/indexedDBStorage';
 import {
@@ -51,17 +52,11 @@ export const CollectionSimulator: React.FC = () => {
     currentProfile?.id === 'prof_pesq' ||
     currentProfile?.name.toLowerCase().includes('pesquisador');
 
-  // Filter surveys strictly for researchers: only active surveys assigned to them
-  const availableSurveys = surveys.filter((s) => {
-    if (s.status !== 'ativa') return false;
-    if (isResearcher) {
-      return (
-        (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id)) ||
-        (s.pesquisadoresIds && s.pesquisadoresIds.includes(currentUser.id))
-      );
-    }
-    return true;
-  });
+  // Filter surveys strictly for researchers: only surveys visible to them
+  // (ativas, ou concluídas mas re-habilitadas para este login).
+  const availableSurveys = isResearcher
+    ? filterResearcherVisibleSurveys(surveys, currentUser)
+    : surveys.filter((s) => s.status !== 'excluida');
 
   const activeSurvey: Survey | undefined =
     (editingSurvey && availableSurveys.some((s) => s.id === editingSurvey.id) ? editingSurvey : undefined) ||

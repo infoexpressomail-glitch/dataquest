@@ -70,6 +70,7 @@ export const CollaboratorForm: React.FC = () => {
     nomeContatoFixo: '',
     ativo: true,
     pesquisasVinculadasIds: [],
+    pesquisasReabilitadasIds: [],
     criadoEm: new Date().toISOString(),
   };
 
@@ -725,35 +726,81 @@ export const CollaboratorForm: React.FC = () => {
                 </p>
 
                 <div className="mt-3 space-y-2 max-h-36 overflow-y-auto">
-                  {surveys.map((s) => {
-                    const isChecked = formData.pesquisasVinculadasIds?.includes(s.id);
-                    return (
-                      <label
-                        key={s.id}
-                        className="flex cursor-pointer items-center justify-between rounded-lg border border-ui bg-surface p-2.5 text-xs text-primary"
-                      >
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              const list = formData.pesquisasVinculadasIds || [];
-                              const updated = isChecked
-                                ? list.filter((id) => id !== s.id)
-                                : [...list, s.id];
-                              setFormData({ ...formData, pesquisasVinculadasIds: updated });
-                            }}
-                            className="rounded text-accent-primary-solid focus:ring-emerald-500"
-                          />
-                          <span className="font-bold text-primary">
-                            [{s.codigo}] {s.nome}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-muted">Ciclo {s.cicloAtual}</span>
-                      </label>
-                    );
-                  })}
+                  {surveys
+                    .filter((s) => s.status !== 'excluida' && s.status !== 'concluida')
+                    .map((s) => {
+                      const isChecked = formData.pesquisasVinculadasIds?.includes(s.id);
+                      return (
+                        <label
+                          key={s.id}
+                          className="flex cursor-pointer items-center justify-between rounded-lg border border-ui bg-surface p-2.5 text-xs text-primary"
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => {
+                                const list = formData.pesquisasVinculadasIds || [];
+                                const updated = isChecked
+                                  ? list.filter((id) => id !== s.id)
+                                  : [...list, s.id];
+                                setFormData({ ...formData, pesquisasVinculadasIds: updated });
+                              }}
+                              className="rounded text-accent-primary-solid focus:ring-emerald-500"
+                            />
+                            <span className="font-bold text-primary">
+                              [{s.codigo}] {s.nome}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-muted">Ciclo {s.cicloAtual}</span>
+                        </label>
+                      );
+                    })}
                 </div>
+
+                {surveys.some((s) => s.status === 'concluida') && (
+                  <div className="mt-4">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
+                      <FileCheck className="h-3.5 w-3.5 text-accent-purple" />
+                      Pesquisas Finalizadas — Re-habilitar para este Login
+                    </p>
+                    <p className="mt-1 text-[11px] text-muted">
+                      Pesquisas marcadas como concluídas pela coordenação. Marque para liberá-las novamente apenas para este pesquisador.
+                    </p>
+                    <div className="mt-2 space-y-2 max-h-28 overflow-y-auto rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft/30 p-2">
+                      {surveys
+                        .filter((s) => s.status === 'concluida')
+                        .map((s) => {
+                          const isReEnabled = (formData.pesquisasReabilitadasIds || []).includes(s.id);
+                          return (
+                            <label
+                              key={`re-${s.id}`}
+                              className="flex cursor-pointer items-center justify-between rounded-lg border border-accent-purple-soft-border bg-surface p-2.5 text-xs text-primary"
+                            >
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={isReEnabled}
+                                  onChange={() => {
+                                    const list = formData.pesquisasReabilitadasIds || [];
+                                    const updated = isReEnabled
+                                      ? list.filter((id) => id !== s.id)
+                                      : [...list, s.id];
+                                    setFormData({ ...formData, pesquisasReabilitadasIds: updated });
+                                  }}
+                                  className="rounded text-accent-purple-solid focus:ring-purple-500"
+                                />
+                                <span className="font-bold text-primary">
+                                  [{s.codigo}] {s.nome}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-accent-purple font-semibold">Concluída</span>
+                            </label>
+                          );
+                        })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-2 border-t border-ui pt-3">
