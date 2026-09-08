@@ -35,7 +35,9 @@ export const HomeDashboard: React.FC = () => {
   const inativeSurveysCount = surveys.filter((s) => s.status === 'inativa').length;
   const totalSurveysCount = surveys.filter((s) => s.status !== 'excluida').length;
   const totalInterviews = submissions.length;
-  const activeLicenses = 50; // Total licensed devices/collectors
+  // Licença = colaborador ativo. O total de licenças é o total de colaboradores
+  // cadastrados; as licenças em uso são os colaboradores ativos.
+  const activeLicenses = collaborators.length; // Total de licenças disponibilizáveis
   const usedLicenses = collaborators.filter((c) => c.ativo).length;
 
   const canViewPaineis = hasPermission('home_visualiza_paineis_superiores');
@@ -163,15 +165,18 @@ export const HomeDashboard: React.FC = () => {
                 {usedLicenses} / {activeLicenses}
               </span>
               <span className="text-xs font-medium text-muted">
-                dispositivos
+                colaboradores
               </span>
             </div>
             {/* Progress bar */}
             <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
               <div
                 className="h-full rounded-full bg-accent-success-solid shadow-sm"
-                style={{ width: `${(usedLicenses / activeLicenses) * 100}%` }}
+                style={{ width: `${activeLicenses > 0 ? (usedLicenses / activeLicenses) * 100 : 0}%` }}
               />
+            </div>
+            <div className="mt-2 text-xs text-muted">
+              Licenças em uso / disponibilizáveis
             </div>
           </div>
 

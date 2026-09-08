@@ -20,6 +20,7 @@ import {
   History,
   LogOut,
   Download,
+  KeyRound,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -412,6 +413,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           : []),
         ...(hasPermission('colaboradores_acesso')
           ? [
+              {
+                id: 'menu-item-licencas',
+                module: 'licencas',
+                label: 'Licenças',
+                icon: KeyRound,
+                iconClassName: 'text-accent-success',
+              },
               {
                 id: 'menu-submenu-cadastro-colaboradores',
                 module: 'colaboradores',

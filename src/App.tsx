@@ -14,6 +14,7 @@ import { AnalyticalReportsModule } from './components/reports/AnalyticalReportsM
 import { AccessPolicies } from './components/registrations/AccessPolicies';
 import { CollaboratorForm } from './components/registrations/CollaboratorForm';
 import { CollectionSimulator } from './components/simulator/CollectionSimulator';
+import { LicensesModule } from './components/licenses/LicensesModule';
 import { TwoFactorModal } from './components/auth/TwoFactorModal';
 import { ActionHistory } from './components/audit/ActionHistory';
 import { ConnectionSyncNotification } from './components/common/ConnectionSyncNotification';
@@ -76,6 +77,8 @@ const MainContent: React.FC = () => {
         return hasPermission('relatorios_acesso');
       case 'politicas_acesso':
         return hasPermission('politicas_acesso');
+      case 'licencas':
+        return hasPermission('colaboradores_acesso');
       case 'colaboradores':
         return hasPermission('colaboradores_acesso');
       case 'historico_acoes':
@@ -142,6 +145,8 @@ const MainContent: React.FC = () => {
         return <AccessPolicies />;
       case 'colaboradores':
         return <CollaboratorForm />;
+      case 'licencas':
+        return <LicensesModule />;
       case 'historico_acoes':
       case 'auditoria':
         return <ActionHistory />;
