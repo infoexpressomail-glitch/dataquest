@@ -49,10 +49,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const supabase = getSupabaseAdmin();
 
-    // Busca o colaborador para saber as pesquisas re-habilitadas e as vinculadas
+    // Busca o colaborador para saber as pesquisas re-habilitadas
     const { data: colab, error: colabErr } = await supabase
       .from('colaboradores')
-      .select('id, pesquisas_reabilitadas_ids, pesquisas_vinculadas_ids')
+      .select('id, pesquisas_reabilitadas_ids')
       .eq('id', id)
       .maybeSingle();
 
@@ -64,31 +64,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const reabilitadas: string[] = colab.pesquisas_reabilitadas_ids || [];
-    const vinculadasPeloColaborador: string[] = colab.pesquisas_vinculadas_ids || [];
 
-    // Vínculo aceito por EITHER lado (igual ao researcherUtils.ts):
-    //   - pesquisas.pesquisadores_ids contém o id do colaborador; OU
-    //   - colaboradores.pesquisas_vinculadas_ids contém a pesquisa.
-    const { data: rowsBySurvey, error: surveysErr } = await supabase
+    // FONTE DE VERDADE única: pesquisas.pesquisadores_ids contém o id do pesquisador.
+    // (Ao desvincular a pesquisa no sistema base via SurveyForm, ela some daqui.)
+    const { data: rows, error: surveysErr } = await supabase
       .from('pesquisas')
       .select('*')
       .contains('pesquisadores_ids', [id]);
 
     if (surveysErr) {
       return res.status(500).json({ success: false, message: `Erro ao consultar pesquisas: ${surveysErr.message}` });
-    }
-
-    // Pesquisas vinculadas pelo colaborador (mas ainda não listadas por pesquisadores_ids)
-    let rows = (rowsBySurvey || []) as SurveyRow[];
-    if (vinculadasPeloColaborador.length > 0) {
-      const { data: rowsByColab, error: colabSurveysErr } = await supabase
-        .from('pesquisas')
-        .select('*')
-        .in('id', vinculadasPeloColaborador);
-      if (!colabSurveysErr && rowsByColab) {
-        const known = new Set(rows.map((r) => r.id));
-        rows = rows.concat((rowsByColab as SurveyRow[]).filter((r) => !known.has(r.id)));
-      }
     }
 
     const list = [];

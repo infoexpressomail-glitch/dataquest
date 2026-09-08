@@ -121,16 +121,16 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <SummaryCard
           icon={<TrendingUp className="h-4 w-4" />}
-          label="Coletas de hoje"
+          label="Realizadas"
           value={String(submissionsToday.length)}
           hint="Entrevistas realizadas hoje"
           tone="primary"
         />
         <SummaryCard
           icon={<WifiOff className="h-4 w-4" />}
-          label="Fila offline"
+          label="Falta enviar"
           value={String(pendingCount)}
-          hint={pendingCount > 0 ? 'Pendentes de sincronização' : 'Tudo sincronizado'}
+          hint={pendingCount > 0 ? 'Pendentes de sincronização' : 'Tudo enviado'}
           tone={pendingCount > 0 ? 'warning' : 'success'}
         />
       </div>
