@@ -48,6 +48,7 @@ import {
   checkServerHealth,
 } from '../services/serverSurveyService';
 import { ServerSyncCheckResult } from '../types';
+import { saveCollaboratorToServer } from '../services/serverCollaboratorService';
 
 interface AppContextType {
   isAuthenticated: boolean;
@@ -66,7 +67,7 @@ interface AppContextType {
   profiles: AccessProfile[];
   updateProfile: (p: AccessProfile) => void;
   collaborators: Collaborator[];
-  saveCollaborator: (c: Collaborator) => void;
+  saveCollaborator: (c: Collaborator, senha?: string) => Promise<boolean>;
   toggleCollaboratorStatus: (id: string) => void;
   surveys: Survey[];
   saveSurvey: (s: Survey) => void;
@@ -1127,7 +1128,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.removeItem(STORAGE_KEYS.AUDIT_LOGS);
   };
 
-  const saveCollaborator = (colab: Collaborator) => {
+  const saveCollaborator = async (colab: Collaborator, senha?: string): Promise<boolean> => {
+    // Persiste no servidor central (grava no Supabase com senha em hash).
+    // Se falhar, mantém o estado local e retorna false para o formulário exibir o erro.
+    let serverOk = false;
+    try {
+      const result = await saveCollaboratorToServer(colab, senha);
+      if (result?.success) {
+        serverOk = true;
+        // Atualiza o id/campos devolvidos pelo servidor, se houver.
+        if (result.colaborador) {
+          colab = { ...colab, ...result.colaborador };
+        }
+      }
+    } catch {
+      // Mantém apenas o estado local; o formulário decide como avisar.
+    }
+
     setCollaborators((prev) => {
       const idx = prev.findIndex((c) => c.id === colab.id);
       if (idx >= 0) {
@@ -1137,6 +1154,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
       return [colab, ...prev];
     });
+
+    return serverOk;
   };
 
   const toggleCollaboratorStatus = (id: string) => {

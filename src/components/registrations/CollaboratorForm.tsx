@@ -93,19 +93,32 @@ export const CollaboratorForm: React.FC = () => {
     setModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.nome.trim() || !formData.cpf.trim() || !formData.login.trim()) {
       alert('Por favor preencha os campos obrigatórios (Nome, CPF e Login).');
       return;
     }
 
-    saveCollaborator(formData);
+    // Persiste o cadastro também no servidor (senha com hash), para o login
+    // de campo (Modo Pesquisador) autenticar contra as credenciais corretas.
+    const senha = formData.senha || undefined;
+    const perfilSelecionado = profiles.find((p) => p.id === formData.perfilAcessoId);
+    const payload = {
+      ...formData,
+      // Envia também o NOME do perfil para o servidor resolver por nome quando
+      // o id for um valor local (mock 'prof_pesq') e não um uuid do banco.
+      perfilAcessoNome: perfilSelecionado?.name || formData.perfilAcessoNome,
+    };
+    const saved = await saveCollaborator(payload, senha);
+
     setModalOpen(false);
     setSuccessNotice(
-      `Colaborador "${formData.nome}" ${isEditing ? 'atualizado' : 'cadastrado'} com sucesso!`
+      saved
+        ? `Colaborador "${formData.nome}" ${isEditing ? 'atualizado' : 'cadastrado'} com sucesso (incluído no servidor)!`
+        : `Colaborador "${formData.nome}" ${isEditing ? 'atualizado' : 'cadastrado'} localmente. Servidor indisponível — o login de campo pode não autenticar até o servidor voltar.`
     );
-    setTimeout(() => setSuccessNotice(null), 4000);
+    setTimeout(() => setSuccessNotice(null), 5000);
   };
 
   const handleOpenPasswordModal = (colab: Collaborator) => {
@@ -114,18 +127,27 @@ export const CollaboratorForm: React.FC = () => {
     setPasswordModalOpen(true);
   };
 
-  const handleSavePassword = (e: React.FormEvent) => {
+  const handleSavePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordTargetColab || !newPassword.trim()) return;
 
-    saveCollaborator({
+    // Persiste a nova senha no servidor (hash) para o login de campo funcionar.
+    const colab = {
       ...passwordTargetColab,
       senha: newPassword.trim(),
-    });
+      perfilAcessoNome:
+        passwordTargetColab.perfilAcessoNome ||
+        profiles.find((p) => p.id === passwordTargetColab.perfilAcessoId)?.name,
+    };
+    const saved = await saveCollaborator(colab, newPassword.trim());
 
     setPasswordModalOpen(false);
-    setSuccessNotice(`Senha do usuário "${passwordTargetColab.login}" redefinida com sucesso!`);
-    setTimeout(() => setSuccessNotice(null), 4000);
+    setSuccessNotice(
+      saved
+        ? `Senha do usuário "${passwordTargetColab.login}" redefinida com sucesso!`
+        : `Senha atualizada localmente. Servidor indisponível — o login de campo pode não autenticar até o servidor voltar.`
+    );
+    setTimeout(() => setSuccessNotice(null), 5000);
   };
 
   const filteredCollaborators = collaborators.filter((c) => {
