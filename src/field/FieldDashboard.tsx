@@ -117,8 +117,8 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
         <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-accent-primary-soft blur-3xl" />
       </div>
 
-      {/* Cards de resumo */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* Cards de resumo — apenas 2 métricas, grid balanceado */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <SummaryCard
           icon={<TrendingUp className="h-4 w-4" />}
           label="Coletas de hoje"

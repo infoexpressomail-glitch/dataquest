@@ -181,6 +181,31 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
     evaluateNextStep(currentAns);
   };
 
+  /**
+   * Avanço automático (Modo Pesquisador / fieldMode): registra a resposta e
+   * já direciona para a próxima pergunta. Usado ao escolher uma opção ou ao
+   * pressionar Enter em campos de texto/numérico/data.
+   */
+  const handleAutoAdvance = (value: any) => {
+    if (!currentQuestion) return;
+    const val = Array.isArray(value) ? value : String(value ?? '');
+    if (currentQuestion.obrigatoria && !val) {
+      alert('Esta pergunta é obrigatória. Por favor, forneça uma resposta para prosseguir.');
+      return;
+    }
+    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }));
+    evaluateNextStep(value);
+  };
+
+  // Enter em campos de texto/numérico/data avança (Modo Pesquisador).
+  const handleFieldKeyDown = (e: React.KeyboardEvent) => {
+    if (!fieldMode) return;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAutoAdvance(answers[currentQuestion?.id ?? '']);
+    }
+  };
+
   const handlePrev = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
@@ -762,7 +787,9 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                         value={opt.value}
                         checked={answers[currentQuestion.id] === opt.value}
                         onChange={() =>
-                          setAnswers({ ...answers, [currentQuestion.id]: opt.value })
+                          fieldMode
+                            ? handleAutoAdvance(opt.value)
+                            : setAnswers({ ...answers, [currentQuestion.id]: opt.value })
                         }
                         className="text-accent-primary-solid focus:ring-emerald-500"
                       />
@@ -797,6 +824,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                             setAnswers({ ...answers, [currentQuestion.id]: updated });
                           }}
                           className="rounded text-accent-primary-solid focus:ring-emerald-500"
+                          title="Selecione todas as opções aplicáveis e depois use o botão Avançar"
                         />
                       </label>
                     );
@@ -809,7 +837,11 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                       <button
                         key={opt}
                         type="button"
-                        onClick={() => setAnswers({ ...answers, [currentQuestion.id]: opt })}
+                        onClick={() =>
+                          fieldMode
+                            ? handleAutoAdvance(opt)
+                            : setAnswers({ ...answers, [currentQuestion.id]: opt })
+                        }
                         className={`rounded-xl border p-3.5 text-xs font-bold transition ${
                           answers[currentQuestion.id] === opt
                             ? 'border-emerald-500 bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/40'
@@ -831,7 +863,9 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                           key={n}
                           type="button"
                           onClick={() =>
-                            setAnswers({ ...answers, [currentQuestion.id]: String(n) })
+                            fieldMode
+                              ? handleAutoAdvance(String(n))
+                              : setAnswers({ ...answers, [currentQuestion.id]: String(n) })
                           }
                           className={`flex h-10 w-10 items-center justify-center rounded-lg font-bold text-xs transition ${
                             answers[currentQuestion.id] === String(n)
@@ -858,6 +892,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                     onChange={(e) =>
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
+                    onKeyDown={handleFieldKeyDown}
                     placeholder="Digite a resposta do entrevistado..."
                     className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                   />
@@ -871,6 +906,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                     onChange={(e) =>
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
+                    onKeyDown={handleFieldKeyDown}
                     placeholder="Informe o valor numérico..."
                     className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                   />
@@ -884,6 +920,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                     onChange={(e) =>
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
+                    onKeyDown={handleFieldKeyDown}
                     className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary focus:border-emerald-500 focus:outline-none"
                   />
                 )}
@@ -904,27 +941,35 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
             </button>
 
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setConfirmFinalizeModalOpen(true)}
-                className="flex items-center gap-1 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-3 py-2 text-xs font-semibold text-accent-warning hover:bg-accent-warning-soft transition-colors"
-              >
-                <CheckSquare className="h-3.5 w-3.5" />
-                <span>Finalizar formulário</span>
-              </button>
+              {/* Em modo pesquisador, o avanço é automático ao escolher a resposta ou
+                  pressionar Enter. Mantemos 'Finalizar formulário' apenas no cabeçalho
+                  para não repetir. 'Avançar' aparece só quando o tipo exige seleção
+                  múltipla (multipla_selecao). */}
+              {!fieldMode && (
+                <button
+                  type="button"
+                  onClick={() => setConfirmFinalizeModalOpen(true)}
+                  className="flex items-center gap-1 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-3 py-2 text-xs font-semibold text-accent-warning hover:bg-accent-warning-soft transition-colors"
+                >
+                  <CheckSquare className="h-3.5 w-3.5" />
+                  <span>Finalizar formulário</span>
+                </button>
+              )}
 
-              <button
-                type="button"
-                onClick={handleNext}
-                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
-              >
-                <span>
-                  {currentQuestionIndex === activeSurvey.perguntas.length - 1
-                    ? 'Finalizar Pesquisa'
-                    : 'Avançar'}
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
+              {(currentQuestion?.tipo === 'multipla_selecao' || !fieldMode) && (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                >
+                  <span>
+                    {currentQuestionIndex === activeSurvey.perguntas.length - 1
+                      ? 'Finalizar Pesquisa'
+                      : 'Avançar'}
+                  </span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
