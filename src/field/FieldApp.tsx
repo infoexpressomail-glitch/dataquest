@@ -31,6 +31,31 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
   const [section, setSection] = useState<FieldSection>('dashboard');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
+  // Re-sincroniza automaticamente na montagem quando já havia uma sessão
+  // persistida: garante que remoções/alterações feitas pela coordenação no
+  // sistema base (ex.: tirar uma pesquisa do pesquisador) se reflitam ao entrar,
+  // sem depender do pesquisador clicar em "Re-sincronizar".
+  const initialSessionRef = React.useRef(session);
+  React.useEffect(() => {
+    const stored = initialSessionRef.current;
+    if (!stored) return;
+    let active = true;
+    resyncFieldSurveys(stored)
+      .then((updated) => {
+        if (active) {
+          setSession(updated);
+          persistFieldSession(updated);
+        }
+      })
+      .catch(() => {
+        // Falha de rede: mantém a sessão persistida (usuário vê dados em cache).
+      });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Autentica (vindo do FieldLogin): persiste e segue para o ambiente.
   const handleAuthenticated = (newSession: FieldSession) => {
     persistFieldSession(newSession);
