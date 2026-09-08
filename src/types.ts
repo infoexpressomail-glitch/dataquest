@@ -49,6 +49,10 @@ export interface AccessPolicyPermissions {
 
   // Políticas de Acesso
   politicas_acesso: boolean;
+
+  // Módulo de Relatórios Analíticos
+  relatorios_acesso: boolean;
+  relatorios_criar_alterar_excluir: boolean;
 }
 
 export interface AccessProfile {
@@ -228,6 +232,34 @@ export interface ServerSyncCheckResult {
   serverSurvey?: Survey;
 }
 
+/**
+ * Bloco livre de um Relatório Analítico. O usuário monta quantos blocos
+ * quiser, cada um com seu próprio título; "origem" só existe para fins de
+ * exibição (ícone/rótulo de "gerado automaticamente"), nunca restringe o
+ * conteúdo ou a estrutura do relatório.
+ */
+export interface ReportBlock {
+  id: string;
+  titulo: string;
+  conteudo: string; // texto livre (markdown simples: **negrito**, listas com "- ")
+  ordem: number;
+  origem: 'automatico_quantitativo' | 'automatico_qualitativo' | 'manual';
+  criadoEm: string;
+  atualizadoEm: string;
+}
+
+export interface AnalyticalReport {
+  id: string;
+  pesquisaId: string;
+  pesquisaNome: string;
+  titulo: string;
+  blocos: ReportBlock[];
+  criadoPorId: string;
+  criadoPorNome: string;
+  criadoEm: string;
+  atualizadoEm: string;
+}
+
 export interface AnswerItem {
   perguntaId: string;
   perguntaCodigo: string;
@@ -304,7 +336,10 @@ export type ActionType =
   | 'ALTERACAO_META'
   | 'IMPORTACAO_DADOS'
   | 'ACAO_EM_LOTE'
-  | 'SINCRONIZACAO_OFFLINE';
+  | 'SINCRONIZACAO_OFFLINE'
+  | 'CRIACAO_RELATORIO'
+  | 'EDICAO_RELATORIO'
+  | 'EXCLUSAO_RELATORIO';
 
 export interface FieldChange {
   campo: string;
@@ -329,7 +364,7 @@ export interface ActionAuditLog {
   };
   // O quê
   alvo: {
-    tipo: 'pesquisa' | 'resposta' | 'meta' | 'importacao' | 'sistema' | 'colaborador';
+    tipo: 'pesquisa' | 'resposta' | 'meta' | 'importacao' | 'sistema' | 'colaborador' | 'relatorio';
     id: string;
     identificador: string;
     nome?: string;

@@ -15,6 +15,7 @@ import {
   SyncProgressItem,
   GlobalDemographicTarget,
   ResearcherQuotaAssignment,
+  AnalyticalReport,
 } from '../types';
 import {
   initialProfiles,
@@ -24,6 +25,7 @@ import {
   initialConnections,
   initialImports,
   initialAuditLogs,
+  initialAnalyticalReports,
 } from '../mockData';
 import { generateIntegrityHash, diffSurveys } from '../utils/auditUtils';
 import {
@@ -92,6 +94,9 @@ interface AppContextType {
     }
   ) => ActionAuditLog;
   clearAuditLogs: () => void;
+  analyticalReports: AnalyticalReport[];
+  saveAnalyticalReport: (report: AnalyticalReport) => void;
+  deleteAnalyticalReport: (reportId: string) => void;
   activeModule: string;
   setActiveModule: (m: string) => void;
   editingSurvey: Survey | null;
@@ -168,6 +173,7 @@ const STORAGE_KEYS = {
   IMPORTS: 'dataquest_imports_v1',
   CURRENT_USER_ID: 'dataquest_user_id',
   AUDIT_LOGS: 'dataquest_audit_logs_v1',
+  ANALYTICAL_REPORTS: 'dataquest_analytical_reports_v1',
   OFFLINE_QUEUE: 'dataquest_offline_sync_queue',
   SIMULATED_OFFLINE: 'dataquest_simulated_offline',
 };
@@ -275,6 +281,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }));
     } catch {
       return initialAuditLogs;
+    }
+  });
+
+  const [analyticalReports, setAnalyticalReports] = useState<AnalyticalReport[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ANALYTICAL_REPORTS);
+      if (!saved) return initialAnalyticalReports;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : initialAnalyticalReports;
+    } catch {
+      return initialAnalyticalReports;
     }
   });
 
@@ -1032,6 +1049,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem(STORAGE_KEYS.AUDIT_LOGS, JSON.stringify(auditLogs));
   }, [auditLogs]);
 
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ANALYTICAL_REPORTS, JSON.stringify(analyticalReports));
+  }, [analyticalReports]);
+
   const setLanguage = (l: Language) => setLanguageState(l);
   const setDarkMode = (d: boolean) => setDarkModeState(d);
 
@@ -1454,6 +1475,75 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSurveys((prev) =>
       prev.map((s) => (s.id === surveyId ? { ...s, status: 'ativa' } : s))
     );
+  };
+
+  // Módulo de Relatórios Analíticos
+  const saveAnalyticalReport = (report: AnalyticalReport) => {
+    const orig = analyticalReports.find((r) => r.id === report.id);
+    const isNew = !orig;
+
+    addAuditLog({
+      categoria: 'CONFIGURACAO',
+      tipoAcao: isNew ? 'CRIACAO_RELATORIO' : 'EDICAO_RELATORIO',
+      tituloAcao: isNew ? 'Criação de Relatório Analítico' : 'Edição de Relatório Analítico',
+      descricaoDetalhada: isNew
+        ? `Novo relatório analítico "${report.titulo}" criado para a pesquisa "${report.pesquisaNome}" com ${report.blocos.length} bloco(s) de texto.`
+        : `Relatório analítico "${report.titulo}" atualizado (${report.blocos.length} bloco(s) de texto).`,
+      autor: {
+        id: currentUser.id,
+        nome: currentUser.nome,
+        login: currentUser.login,
+        perfil: currentProfile?.name || 'Colaborador',
+      },
+      alvo: {
+        tipo: 'relatorio',
+        id: report.id,
+        identificador: report.id,
+        nome: report.titulo,
+      },
+      alteracoes: [
+        { campo: 'titulo', rotulo: 'Título', valorNovo: report.titulo },
+        { campo: 'blocos', rotulo: 'Total de Blocos', valorNovo: `${report.blocos.length} blocos` },
+      ],
+      motivoConformidade: 'Documentação analítica dos resultados de pesquisa para fins de registro e conformidade.',
+      statusConformidade: 'conforme',
+    });
+
+    setAnalyticalReports((prev) => {
+      const existingIdx = prev.findIndex((r) => r.id === report.id);
+      if (existingIdx === -1) return [...prev, report];
+      const updated = [...prev];
+      updated[existingIdx] = report;
+      return updated;
+    });
+  };
+
+  const deleteAnalyticalReport = (reportId: string) => {
+    const target = analyticalReports.find((r) => r.id === reportId);
+    if (target) {
+      addAuditLog({
+        categoria: 'CONFIGURACAO',
+        tipoAcao: 'EXCLUSAO_RELATORIO',
+        tituloAcao: 'Exclusão de Relatório Analítico',
+        descricaoDetalhada: `Relatório analítico "${target.titulo}" (pesquisa "${target.pesquisaNome}") excluído definitivamente.`,
+        autor: {
+          id: currentUser.id,
+          nome: currentUser.nome,
+          login: currentUser.login,
+          perfil: currentProfile?.name || 'Colaborador',
+        },
+        alvo: {
+          tipo: 'relatorio',
+          id: target.id,
+          identificador: target.id,
+          nome: target.titulo,
+        },
+        motivoConformidade: 'Exclusão solicitada pelo responsável pela análise.',
+        statusConformidade: 'atencao',
+      });
+    }
+
+    setAnalyticalReports((prev) => prev.filter((r) => r.id !== reportId));
   };
 
   // Gerenciamento de Metas Globais Demográficas
@@ -2030,6 +2120,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSubmissions(initialSubmissions);
     setImports(initialImports);
     setAuditLogs(initialAuditLogs);
+    setAnalyticalReports(initialAnalyticalReports);
     setCurrentUser(initialCollaborators[0]);
     setTwoFactorVerified(true);
     setActiveModule('home');
@@ -2078,6 +2169,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         auditLogs,
         addAuditLog,
         clearAuditLogs,
+        analyticalReports,
+        saveAnalyticalReport,
+        deleteAnalyticalReport,
         activeModule,
         setActiveModule,
         editingSurvey,

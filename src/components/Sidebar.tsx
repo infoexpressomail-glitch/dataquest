@@ -6,6 +6,7 @@ import {
   FileQuestion,
   MessageSquare,
   BarChart3,
+  FileBarChart2,
   Target,
   FileSpreadsheet,
   ShieldCheck,
@@ -257,16 +258,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
     },
     {
       title: 'Análise',
-      items: hasPermission('analise_acesso')
-        ? [
-            {
-              id: 'menu-item-analise',
-              module: 'analise',
-              label: t('analytics'),
-              icon: BarChart3,
-            },
-          ]
-        : [],
+      items: [
+        ...(hasPermission('analise_acesso')
+          ? [
+              {
+                id: 'menu-item-analise',
+                module: 'analise',
+                label: t('analytics'),
+                icon: BarChart3,
+              },
+            ]
+          : []),
+        ...(hasPermission('relatorios_acesso')
+          ? [
+              {
+                id: 'menu-item-relatorios',
+                module: 'relatorios',
+                label: t('analyticalReports'),
+                icon: FileBarChart2,
+                iconClassName: 'text-accent-purple',
+              },
+            ]
+          : []),
+      ],
     },
     {
       title: 'Exportação',
@@ -339,16 +353,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
     },
     {
       title: 'Análise',
-      items: hasPermission('analise_acesso')
-        ? [
-            {
-              id: 'menu-item-analise',
-              module: 'analise',
-              label: t('analytics'),
-              icon: BarChart3,
-            },
-          ]
-        : [],
+      items: [
+        ...(hasPermission('analise_acesso')
+          ? [
+              {
+                id: 'menu-item-analise',
+                module: 'analise',
+                label: t('analytics'),
+                icon: BarChart3,
+              },
+            ]
+          : []),
+        ...(hasPermission('relatorios_acesso')
+          ? [
+              {
+                id: 'menu-item-relatorios',
+                module: 'relatorios',
+                label: t('analyticalReports'),
+                icon: FileBarChart2,
+                iconClassName: 'text-accent-purple',
+              },
+            ]
+          : []),
+      ],
     },
     {
       title: 'Metas e Planejamento',

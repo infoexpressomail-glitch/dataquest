@@ -6,6 +6,7 @@ import {
   RecentConnection,
   ExternalImport,
   ActionAuditLog,
+  AnalyticalReport,
 } from './types';
 
 export const initialProfiles: AccessProfile[] = [
@@ -52,6 +53,9 @@ export const initialProfiles: AccessProfile[] = [
       home_visualiza_conexoes_recentes: true,
 
       politicas_acesso: true,
+
+      relatorios_acesso: true,
+      relatorios_criar_alterar_excluir: true,
     },
   },
   {
@@ -97,6 +101,9 @@ export const initialProfiles: AccessProfile[] = [
       home_visualiza_conexoes_recentes: true,
 
       politicas_acesso: false,
+
+      relatorios_acesso: true,
+      relatorios_criar_alterar_excluir: true,
     },
   },
   {
@@ -142,6 +149,9 @@ export const initialProfiles: AccessProfile[] = [
       home_visualiza_conexoes_recentes: false,
 
       politicas_acesso: false,
+
+      relatorios_acesso: false,
+      relatorios_criar_alterar_excluir: false,
     },
   },
   {
@@ -187,6 +197,9 @@ export const initialProfiles: AccessProfile[] = [
       home_visualiza_conexoes_recentes: true,
 
       politicas_acesso: false,
+
+      relatorios_acesso: true,
+      relatorios_criar_alterar_excluir: true,
     },
   },
 ];
@@ -1599,3 +1612,5 @@ export const initialAuditLogs: ActionAuditLog[] = [
     statusConformidade: 'conforme',
   },
 ];
+
+export const initialAnalyticalReports: AnalyticalReport[] = [];

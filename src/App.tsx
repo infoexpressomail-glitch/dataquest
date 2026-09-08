@@ -10,6 +10,7 @@ import { AnalyticsModule } from './components/analytics/AnalyticsModule';
 import { MetasModule } from './components/metas/MetasModule';
 import { TeamSizingModule } from './components/team/TeamSizingModule';
 import { ExternalImportModule } from './components/import/ExternalImportModule';
+import { AnalyticalReportsModule } from './components/reports/AnalyticalReportsModule';
 import { AccessPolicies } from './components/registrations/AccessPolicies';
 import { CollaboratorForm } from './components/registrations/CollaboratorForm';
 import { CollectionSimulator } from './components/simulator/CollectionSimulator';
@@ -71,6 +72,8 @@ const MainContent: React.FC = () => {
         return isResearcher ? true : hasPermission('meta_acesso');
       case 'importacao':
         return hasPermission('importacao_acesso');
+      case 'relatorios':
+        return hasPermission('relatorios_acesso');
       case 'politicas_acesso':
         return hasPermission('politicas_acesso');
       case 'colaboradores':
@@ -133,6 +136,8 @@ const MainContent: React.FC = () => {
         return <TeamSizingModule />;
       case 'importacao':
         return <ExternalImportModule />;
+      case 'relatorios':
+        return <AnalyticalReportsModule />;
       case 'politicas_acesso':
         return <AccessPolicies />;
       case 'colaboradores':

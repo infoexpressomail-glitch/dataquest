@@ -20,8 +20,8 @@ import {
 export const ExternalImportModule: React.FC = () => {
   const { surveys, saveSurvey, addSubmission, hasPermission } = useApp();
 
-  const canImportSurvey = hasPermission('importacao_pesquisa_externa');
-  const canImportResponse = hasPermission('importacao_resposta_externa');
+  const canImportSurvey = hasPermission('importacao_importar_planilha');
+  const canImportResponse = hasPermission('importacao_importar_planilha');
 
   const [importType, setImportType] = useState<'pesquisa' | 'respostas'>('pesquisa');
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>(surveys[0]?.id || '');

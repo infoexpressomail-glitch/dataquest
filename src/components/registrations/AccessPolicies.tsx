@@ -216,6 +216,22 @@ const PERMISSION_GROUPS: PermissionGroup[] = [
     ],
   },
   {
+    moduleName: 'Módulo de Relatórios Analíticos',
+    category: 'relatorios',
+    items: [
+      {
+        key: 'relatorios_acesso',
+        label: 'Acesso ao Módulo de Relatórios Analíticos',
+        description: 'Visualiza os relatórios de análise quantitativa e qualitativa das pesquisas.',
+      },
+      {
+        key: 'relatorios_criar_alterar_excluir',
+        label: 'Criar, Alterar ou Excluir Relatório',
+        description: 'Permite criar novos relatórios, editar blocos de texto e gerar rascunhos automáticos a partir dos resultados.',
+      },
+    ],
+  },
+  {
     moduleName: 'Políticas de Acesso (Administração)',
     category: 'politicas',
     items: [
