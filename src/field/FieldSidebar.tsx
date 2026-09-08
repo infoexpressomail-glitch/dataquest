@@ -12,6 +12,7 @@ import {
   X,
   Wifi,
   WifiOff,
+  LogOut,
 } from 'lucide-react';
 
 interface FieldSidebarProps {
@@ -21,7 +22,10 @@ interface FieldSidebarProps {
   /** Perfil do colaborador autenticado (opcional). */
   profile?: AccessProfile;
   onNavigate: (s: FieldSection) => void;
+  /** Voltar ao ambiente de gestão. */
   onExit: () => void;
+  /** Sair do Modo Pesquisador (limpa a sessão e volta ao login de campo). */
+  onLogout: () => void;
   isOpenMobile: boolean;
   onCloseMobile: () => void;
 }
@@ -44,6 +48,7 @@ export const FieldSidebar: React.FC<FieldSidebarProps> = ({
   profile,
   onNavigate,
   onExit,
+  onLogout,
   isOpenMobile,
   onCloseMobile,
 }) => {
@@ -128,8 +133,15 @@ export const FieldSidebar: React.FC<FieldSidebarProps> = ({
 
       </nav>
 
-      {/* Rodapé: voltar ao ambiente de gestão */}
-      <div className="border-t border-ui p-3">
+      {/* Rodapé: sair do modo + voltar ao ambiente de gestão */}
+      <div className="border-t border-ui p-3 space-y-2">
+        <button
+          onClick={onLogout}
+          className="w-full inline-flex items-center gap-2 rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft px-3 py-2.5 text-xs font-semibold text-accent-danger hover:bg-accent-danger-soft-bg hover:opacity-90 transition"
+        >
+          <LogOut className="h-4 w-4" />
+          <span>Trocar pesquisador</span>
+        </button>
         <button
           onClick={onExit}
           className="w-full inline-flex items-center gap-2 rounded-xl border border-ui bg-surface-raised px-3 py-2.5 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition"

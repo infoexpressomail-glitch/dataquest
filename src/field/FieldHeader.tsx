@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Collaborator, AccessProfile } from '../types';
 import { FieldSection } from './fieldTypes';
-import { Menu, ArrowLeft, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { Menu, ArrowLeft, Wifi, WifiOff, RefreshCw, LogOut } from 'lucide-react';
 
 interface FieldHeaderProps {
   section: FieldSection;
@@ -11,7 +11,10 @@ interface FieldHeaderProps {
   /** Perfil do colaborador autenticado (opcional). */
   profile?: AccessProfile;
   onToggleMobileSidebar: () => void;
+  /** Voltar ao ambiente de gestão. */
   onExit: () => void;
+  /** Sair do Modo Pesquisador (limpa a sessão e volta ao login de campo). */
+  onLogout: () => void;
 }
 
 /**
@@ -23,6 +26,7 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({
   profile,
   onToggleMobileSidebar,
   onExit,
+  onLogout,
 }) => {
   const {
     currentUser: ctxUser,
@@ -88,6 +92,15 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({
             {pendingCount} pendente(s)
           </span>
         )}
+
+        {/* Trocar pesquisador (logout do modo) */}
+        <button
+          onClick={onLogout}
+          className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft px-3 py-1.5 text-xs font-semibold text-accent-danger hover:opacity-90 transition"
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          <span>Trocar pesquisador</span>
+        </button>
 
         {/* Voltar à gestão */}
         <button

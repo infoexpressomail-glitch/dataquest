@@ -11,7 +11,10 @@ interface FieldLayoutProps {
   /** Perfil do colaborador autenticado (opcional). */
   profile?: AccessProfile;
   onNavigate: (s: FieldSection) => void;
+  /** Voltar ao ambiente de gestão (sair do fullscreen do Modo Pesquisador). */
   onExit: () => void;
+  /** Sair do Modo Pesquisador (limpa a sessão persistida e volta ao login de campo). */
+  onLogout: () => void;
   mobileSidebarOpen: boolean;
   onToggleMobileSidebar: () => void;
   onCloseMobileSidebar: () => void;
@@ -27,6 +30,7 @@ export const FieldLayout: React.FC<FieldLayoutProps> = ({
   profile,
   onNavigate,
   onExit,
+  onLogout,
   mobileSidebarOpen,
   onToggleMobileSidebar,
   onCloseMobileSidebar,
@@ -41,6 +45,7 @@ export const FieldLayout: React.FC<FieldLayoutProps> = ({
         profile={profile}
         onNavigate={onNavigate}
         onExit={onExit}
+        onLogout={onLogout}
         isOpenMobile={mobileSidebarOpen}
         onCloseMobile={onCloseMobileSidebar}
       />
@@ -53,6 +58,7 @@ export const FieldLayout: React.FC<FieldLayoutProps> = ({
           profile={profile}
           onToggleMobileSidebar={onToggleMobileSidebar}
           onExit={onExit}
+          onLogout={onLogout}
         />
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
           {children}
