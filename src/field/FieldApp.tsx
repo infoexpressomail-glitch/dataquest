@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useApp } from '../context/AppContext';
 import { FieldSection, FieldSession } from './fieldTypes';
 import { FieldLayout } from './FieldLayout';
 import { FieldDashboard } from './FieldDashboard';
@@ -29,7 +28,6 @@ interface FieldAppProps {
  *   4. O pesquisador pode re-sincronizar as pesquisas (FieldSync) ou sair.
  */
 export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
-  const { isAuthenticated } = useApp();
   // Restaura a sessão persistida uma única vez na montagem.
   const [session, setSession] = useState<FieldSession | null>(() => loadFieldSession());
   const [section, setSection] = useState<FieldSection>('dashboard');

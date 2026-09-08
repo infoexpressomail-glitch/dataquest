@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
@@ -22,6 +22,11 @@ import { ResearcherEnvironment } from './components/researcher/ResearcherEnviron
 import { LoginScreen } from './components/auth/LoginScreen';
 import { PWAFirstVisitMobilePrompt } from './components/pwa/PWAFirstVisitMobilePrompt';
 import { FieldApp } from './field/FieldApp';
+import {
+  isFieldRoute,
+  navigateToFieldRoute,
+  leaveFieldRoute,
+} from './field/fieldRoute';
 import { ShieldAlert, ArrowLeft, ClipboardList } from 'lucide-react';
 
 const MainContent: React.FC = () => {
@@ -34,7 +39,6 @@ const MainContent: React.FC = () => {
   } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [twoFactorModalOpen, setTwoFactorModalOpen] = useState(false);
-  const [fieldMode, setFieldMode] = useState(false);
 
   if (!isAuthenticated) {
     return (
@@ -50,12 +54,6 @@ const MainContent: React.FC = () => {
   const isResearcher =
     currentProfile?.id === 'prof_pesq' ||
     currentProfile?.name.toLowerCase().includes('pesquisador');
-
-  // Modo Pesquisador: sub-app fullscreen (app separado, mesmo estado/backend).
-  // Só é acessível a quem tem perfil pesquisador (FieldApp valida internamente).
-  if (fieldMode) {
-    return <FieldApp onExit={() => setFieldMode(false)} />;
-  }
 
   // Determine permission requirement for current active module
   const checkModuleAccess = (module: string): boolean => {
@@ -218,7 +216,7 @@ const MainContent: React.FC = () => {
       {/* Floating CTA: abrir o Modo Pesquisador (apenas para perfil pesquisador) */}
       {isResearcher && (
         <button
-          onClick={() => setFieldMode(true)}
+          onClick={navigateToFieldRoute}
           className="fixed bottom-12 right-4 z-30 inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
         >
           <ClipboardList className="h-4 w-4" />
@@ -230,9 +228,24 @@ const MainContent: React.FC = () => {
 };
 
 export default function App() {
+  // Etapa 5 — rota dedicada por hash (#app-pesquisador).
+  // O pesquisador acessa o Modo Pesquisador por uma URL própria, sem precisar
+  // estar logado no ambiente de gestão (o FieldApp exibe o login de campo).
+  const [fieldRoute, setFieldRoute] = useState<boolean>(() => isFieldRoute());
+
+  useEffect(() => {
+    const onHashChange = () => setFieldRoute(isFieldRoute());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
   return (
     <AppProvider>
-      <MainContent />
+      {fieldRoute ? (
+        <FieldApp onExit={leaveFieldRoute} />
+      ) : (
+        <MainContent />
+      )}
     </AppProvider>
   );
 }
