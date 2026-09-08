@@ -62,9 +62,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
   const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key);
 
   const navItemClass = (isActive: boolean) =>
-    `flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
+    `relative flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
       isActive
-        ? 'bg-accent-primary-soft text-accent-primary border border-blue-600/25 shadow-xs font-bold'
+        ? 'bg-accent-primary-soft text-accent-primary border border-accent-primary/40 shadow-sm font-bold'
         : 'text-muted hover:text-primary hover:bg-surface-raised'
     }`;
 
@@ -100,16 +100,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
       onClick={() => handleNavigate(leaf.module)}
       className={
         leaf.badge !== undefined
-          ? `flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
+          ? `relative flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
               active
-                ? 'bg-accent-primary-soft text-accent-primary border border-blue-600/25 shadow-xs font-bold'
+                ? 'bg-accent-primary-soft text-accent-primary border border-accent-primary/40 shadow-sm font-bold'
                 : 'text-muted hover:text-primary hover:bg-surface-raised'
             }`
           : navItemClass(active)
       }
     >
+      {active && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-accent-primary shadow-sm" />}
       <div className="flex items-center gap-3">
-        <leaf.icon className={`h-4 w-4 shrink-0 ${leaf.iconClassName || ''}`} />
+        <leaf.icon
+          className={`h-4 w-4 shrink-0 ${
+            active ? 'text-accent-primary' : leaf.iconClassName || ''
+          }`}
+        />
         <span>{leaf.label}</span>
       </div>
       {leaf.badge !== undefined && (
