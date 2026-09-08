@@ -26,6 +26,7 @@ import {
   CheckSquare,
   Square,
   Check,
+  X,
   Calendar,
   Server,
   ShieldCheck,
@@ -289,14 +290,14 @@ export const SurveyList: React.FC = () => {
               </span>
             </div>
           ) : (
-            <>
+            <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-ui bg-surface-card p-1.5 shadow-xs">
               <button
                 id="tab-surveys-active"
                 onClick={() => setActiveTab('ativas')}
                 className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
                   activeTab === 'ativas'
                     ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border shadow-xs'
-                    : 'bg-surface-card text-muted border-ui hover:text-primary hover:bg-surface-raised'
+                    : 'bg-transparent text-muted border-transparent hover:text-primary hover:bg-surface-raised'
                 }`}
               >
                 Ativas ({surveys.filter((s) => s.status === 'ativa').length})
@@ -309,7 +310,7 @@ export const SurveyList: React.FC = () => {
                   className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
                     activeTab === 'inativas'
                       ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border shadow-xs'
-                      : 'bg-surface-card text-muted border-ui hover:text-primary hover:bg-surface-raised'
+                      : 'bg-transparent text-muted border-transparent hover:text-primary hover:bg-surface-raised'
                   }`}
                 >
                   Inativas ({surveys.filter((s) => s.status === 'inativa').length})
@@ -323,30 +324,47 @@ export const SurveyList: React.FC = () => {
                   className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition border ${
                     activeTab === 'excluidas'
                       ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border shadow-xs'
-                      : 'bg-surface-card text-muted border-ui hover:text-primary hover:bg-surface-raised'
+                      : 'bg-transparent text-muted border-transparent hover:text-primary hover:bg-surface-raised'
                   }`}
                 >
                   Excluídas ({surveys.filter((s) => s.status === 'excluida').length})
                 </button>
               )}
-            </>
+            </div>
           )}
         </div>
 
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-muted" />
+        <div className="relative w-full sm:w-80">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por nome ou código..."
-            className="w-full rounded-lg border border-ui bg-surface-card py-1.5 pl-8 pr-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+            placeholder="Buscar por nome, código ou descrição..."
+            className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-8 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 focus:outline-none"
           />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm('')}
+              title="Limpar busca"
+              aria-label="Limpar busca"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted transition-colors hover:bg-surface-raised hover:text-primary"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Bulk Selection Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ui bg-surface px-4 py-2.5 shadow-md">
+      {/* Bulk Selection Bar — fixa ao rolar para manter as ações em massa sempre visíveis */}
+      <div
+        className={`sticky top-16 z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-2.5 shadow-md transition-colors ${
+          selectedSurveyIds.length > 0
+            ? 'border-accent-primary/40 bg-surface-raised ring-1 ring-blue-500/20'
+            : 'border-ui bg-surface'
+        }`}
+      >
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-secondary hover:text-primary select-none">
             <input
