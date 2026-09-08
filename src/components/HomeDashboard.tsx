@@ -10,10 +10,13 @@ import {
   ArrowUpRight,
   PlusCircle,
   Smartphone,
-  ShieldCheck,
   CheckCircle2,
   Clock,
   Sparkles,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  CloudOff,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
 
@@ -27,6 +30,10 @@ export const HomeDashboard: React.FC = () => {
     hasPermission,
     setActiveModule,
     setEditingSurvey,
+    effectiveOnline,
+    offlineQueue,
+    pendingIndexedDbCount,
+    syncProgress,
   } = useApp();
 
   const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key);
@@ -59,16 +66,35 @@ export const HomeDashboard: React.FC = () => {
       <div className="relative overflow-hidden flex flex-col justify-between gap-4 rounded-2xl border border-ui bg-surface p-6 text-primary shadow-xl md:flex-row md:items-center">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent-primary-soft rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center rounded-md bg-accent-primary-soft px-2.5 py-1 text-xs font-bold text-accent-primary border border-accent-primary-soft-border">
-              Cluster SA-EAST-1 • Alta Disponibilidade
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold border ${
+                syncProgress.isActive
+                  ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border'
+                  : effectiveOnline
+                  ? 'bg-accent-success-soft text-accent-success border-accent-success-soft-border'
+                  : 'bg-accent-warning-soft text-accent-warning border-accent-warning-soft-border'
+              }`}
+            >
+              {syncProgress.isActive ? (
+                <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+              ) : effectiveOnline ? (
+                <Wifi className="h-3.5 w-3.5" />
+              ) : (
+                <WifiOff className="h-3.5 w-3.5" />
+              )}
+              {syncProgress.isActive
+                ? `Sincronizando (${syncProgress.percent}%)`
+                : effectiveOnline
+                ? 'Online'
+                : 'Offline'}
             </span>
           </div>
           <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl text-primary">
             Painel Geral de Controle
           </h1>
           <p className="mt-1 text-sm text-muted max-w-2xl leading-relaxed">
-            Monitoramento em tempo real de coletas, regras condicionais, metas quantitativas e sincronização em nuvem.
+            Monitoramento em tempo real de coletas, regras condicionais, metas quantitativas e sincronização de dados.
           </p>
         </div>
 
@@ -372,19 +398,52 @@ export const HomeDashboard: React.FC = () => {
             </div>
           )}
 
-          {/* Cloud High-Availability Status Box */}
-          <div className="rounded-2xl border border-accent-primary-soft-border bg-gradient-to-br from-blue-600/10 to-indigo-600/10 p-5 text-xs shadow-xl">
+          {/* Status de Sincronização em Nuvem — dados reais do sistema */}
+          <div className="rounded-2xl border border-accent-primary-soft-border bg-surface p-5 text-xs shadow-xl">
             <div className="flex items-center gap-2 font-bold text-primary">
-              <ShieldCheck className="h-4 w-4 text-accent-primary" />
-              <span>Infraestrutura em Nuvem</span>
+              <CloudOff className="h-4 w-4 text-accent-primary" />
+              <span>Sincronização em Nuvem</span>
             </div>
             <p className="mt-2 text-secondary leading-relaxed">
-              Escalabilidade automática ativa. Cluster <span className="text-accent-primary font-bold">SA-EAST-1</span> operando com redundância multi-zona e alta disponibilidade.
+              Dados são persistidos localmente e sincronizados quando a conexão é restabelecida.
             </p>
-            <div className="mt-3 flex items-center gap-2 text-[11px] text-accent-success font-semibold">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>99.98% de disponibilidade operacional</span>
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-semibold">
+              <span
+                className={`inline-flex items-center gap-1 ${
+                  syncProgress.isActive
+                    ? 'text-accent-primary'
+                    : effectiveOnline
+                    ? 'text-accent-success'
+                    : 'text-accent-warning'
+                }`}
+              >
+                {syncProgress.isActive ? (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                ) : effectiveOnline ? (
+                  <Wifi className="h-3.5 w-3.5" />
+                ) : (
+                  <WifiOff className="h-3.5 w-3.5" />
+                )}
+                {syncProgress.isActive
+                  ? `Sincronizando (${syncProgress.percent}%)`
+                  : effectiveOnline
+                  ? 'Online — conectado'
+                  : 'Offline — operando localmente'}
+              </span>
+              {(pendingIndexedDbCount > 0 || offlineQueue.length > 0) && (
+                <span className="inline-flex items-center gap-1 text-accent-warning">
+                  <Clock className="h-3 w-3" />
+                  {pendingIndexedDbCount} no IndexedDB{pendingIndexedDbCount > 0 && offlineQueue.length > 0 ? ' • ' : ''}
+                  {offlineQueue.length > 0 ? `${offlineQueue.length} p/ sincronizar` : ''}
+                </span>
+              )}
             </div>
+            {pendingIndexedDbCount === 0 && offlineQueue.length === 0 && effectiveOnline && (
+              <div className="mt-3 flex items-center gap-2 text-[11px] text-accent-success font-semibold">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                <span>Repositório sincronizado — nada pendente</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
