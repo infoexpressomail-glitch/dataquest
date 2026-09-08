@@ -1,69 +1,47 @@
 import React from 'react';
-import { Collaborator, AccessProfile } from '../types';
 import { FieldSection } from './fieldTypes';
 import { FieldSidebar } from './FieldSidebar';
-import { FieldHeader } from './FieldHeader';
 
 interface FieldLayoutProps {
   section: FieldSection;
-  /** Colaborador autenticado no sub-app (opcional — usado em vez do contexto quando presente). */
-  user?: Collaborator;
-  /** Perfil do colaborador autenticado (opcional). */
-  profile?: AccessProfile;
+  user: { nome: string };
+  profile: { name: string };
   onNavigate: (s: FieldSection) => void;
-  /** Voltar ao ambiente de gestão (sair do fullscreen do Modo Pesquisador). */
   onExit: () => void;
-  /** Sair do Modo Pesquisador (limpa a sessão persistida e volta ao login de campo). */
   onLogout: () => void;
   mobileSidebarOpen: boolean;
   onToggleMobileSidebar: () => void;
-  onCloseMobileSidebar: () => void;
   children: React.ReactNode;
 }
 
 /**
- * Layout do sub-app: sidebar fixa (collapse em mobile) + área de conteúdo.
+ * Layout do sub-app de campo: sidebar + área de conteúdo.
  */
 export const FieldLayout: React.FC<FieldLayoutProps> = ({
   section,
   user,
-  profile,
   onNavigate,
-  onExit,
   onLogout,
   mobileSidebarOpen,
   onToggleMobileSidebar,
-  onCloseMobileSidebar,
   children,
 }) => {
   return (
-    <div className="min-h-screen flex font-sans transition-colors bg-surface-app text-on-accent">
-      {/* Sidebar (desktop fixa à esquerda, mobile como overlay) */}
+    <div className="flex h-screen w-full overflow-hidden bg-surface text-primary">
       <FieldSidebar
         section={section}
-        user={user}
-        profile={profile}
         onNavigate={onNavigate}
-        onExit={onExit}
         onLogout={onLogout}
-        isOpenMobile={mobileSidebarOpen}
-        onCloseMobile={onCloseMobileSidebar}
+        mobileOpen={mobileSidebarOpen}
+        onCloseMobile={onToggleMobileSidebar}
+        userName={user.nome}
       />
 
-      {/* Coluna de conteúdo */}
-      <div className="flex flex-1 flex-col md:pl-64 min-w-0">
-        <FieldHeader
-          section={section}
-          user={user}
-          profile={profile}
-          onToggleMobileSidebar={onToggleMobileSidebar}
-          onExit={onExit}
-          onLogout={onLogout}
-        />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
+      <main className="flex-1 overflow-y-auto bg-surface">
+        <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6">
           {children}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

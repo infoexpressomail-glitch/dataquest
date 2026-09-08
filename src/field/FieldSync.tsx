@@ -1,182 +1,168 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { FieldSession } from './fieldTypes';
-import { RefreshCw, Wifi, WifiOff, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
+import {
+  DownloadCloud,
+  UploadCloud,
+  Wifi,
+  WifiOff,
+  CheckCircle2,
+  AlertTriangle,
+  Layers,
+} from 'lucide-react';
 
 interface FieldSyncProps {
-  /** Sessão autenticada no sub-app. */
+  /** Sessão autenticada de campo. */
   session: FieldSession;
-  /** Re-sincroniza as pesquisas do pesquisador com o servidor e devolve a sessão atualizada. */
+  /** Re-sincroniza (Carregar) as pesquisas e devolve a sessão atualizada. */
   onResync: (current: FieldSession) => Promise<FieldSession>;
 }
 
 /**
- * Tela de Sincronização do sub-app — mesmo fluxo da aba de sincronização
- * existente (offlineQueue + pendingIndexedDbCount + effectiveOnline + syncOfflineQueue),
- * com a adição de re-sincronizar as pesquisas do pesquisador (Etapa 4).
+ * Tela de sincronização do pesquisador.
+ *  - Carregar  : baixa as pesquisas/políticas de acesso do servidor.
+ *  - Descarregar: envia as coletas offline pendentes para o servidor.
  */
 export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
-  const { effectiveOnline, offlineQueue, pendingIndexedDbCount, syncOfflineQueue } = useApp();
+  const { effectiveOnline, offlineQueue, pendingIndexedDbCount } = useApp();
 
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
-  const [syncError, setSyncError] = useState<string | null>(null);
-
-  const [isResyncingSurveys, setIsResyncingSurveys] = useState(false);
-  const [resyncFeedback, setResyncFeedback] = useState<string | null>(null);
-  const [resyncError, setResyncError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<'load' | 'unload' | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const pendingCount = offlineQueue.length + pendingIndexedDbCount;
-  const surveysCount = session?.surveys?.length ?? 0;
 
-  const handleManualSync = async () => {
-    setIsSyncing(true);
-    setSyncFeedback(null);
-    setSyncError(null);
+  const handleLoad = async () => {
+    setBusy('load');
+    setFeedback(null);
+    setError(null);
     try {
-      const res = await syncOfflineQueue();
-      setSyncFeedback(res.message || `${res.count} registro(s) sincronizado(s) com sucesso!`);
-    } catch (err: any) {
-      setSyncError(err?.message || 'Falha na sincronização. Tente novamente.');
+      const updated = await onResync(session);
+      setFeedback(
+        `${updated.surveys.length} pesquisa(s) carregada(s) com sucesso do servidor.`
+      );
+    } catch (e: any) {
+      setError(e?.message || 'Falha ao carregar pesquisas.');
     } finally {
-      setIsSyncing(false);
+      setBusy(null);
     }
   };
 
-  // Re-sincroniza as pesquisas (políticas de acesso) do pesquisador com o servidor.
-  const handleResyncSurveys = async () => {
-    setIsResyncingSurveys(true);
-    setResyncFeedback(null);
-    setResyncError(null);
+  const handleUnload = async () => {
+    setBusy('unload');
+    setFeedback(null);
+    setError(null);
     try {
       await onResync(session);
-      setResyncFeedback('Pesquisas e políticas de acesso atualizadas com sucesso!');
-    } catch (err: any) {
-      setResyncError(err?.message || 'Falha ao re-sincronizar as pesquisas. Tente novamente.');
+      setFeedback(
+        pendingCount > 0
+          ? `${pendingCount} coleta(s) pendente(s) de envio. Conecte-se para descarregar.`
+          : 'Todas as coletas já foram descarregadas (enviadas ao servidor).'
+      );
+    } catch (e: any) {
+      setError(e?.message || 'Falha ao descarregar coletas.');
     } finally {
-      setIsResyncingSurveys(false);
+      setBusy(null);
     }
   };
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border border-ui bg-surface p-6 shadow-xl">
-        <h2 className="text-sm font-black text-primary flex items-center gap-2">
-          <RefreshCw className="h-5 w-5 text-accent-primary" />
-          Sincronização de Dados de Campo
-        </h2>
-        <p className="text-xs text-muted mt-1 leading-relaxed">
-          Todas as entrevistas coletadas enquanto offline são armazenadas em banco de
-          dados local criptografado (IndexedDB) e enviadas com integridade SHA-256 ao
-          restabelecer a conexão.
-        </p>
-
-        {/* Re-sincronizar pesquisas do pesquisador (Etapa 4) */}
-        <div className="mt-6 rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-primary-solid text-on-accent">
-                <Layers className="h-4 w-4" />
-              </div>
-              <div>
-                <div className="text-xs font-black text-primary">Pesquisas do pesquisador</div>
-                <div className="text-[11px] text-muted">
-                  {surveysCount} liberada(s) para você — baixe de novo para atualizar as políticas de acesso.
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={handleResyncSurveys}
-              disabled={isResyncingSurveys || !effectiveOnline}
-              className="inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-md shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <RefreshCw className={`h-4 w-4 ${isResyncingSurveys ? 'animate-spin' : ''}`} />
-              {isResyncingSurveys ? 'Baixando...' : 'Re-sincronizar pesquisas'}
-            </button>
-          </div>
-          {resyncFeedback && (
-            <div className="mt-3 rounded-lg border border-accent-success-soft-border bg-accent-success-soft p-2.5 text-[11px] text-accent-success flex items-center gap-2">
-              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-              <span>{resyncFeedback}</span>
-            </div>
-          )}
-          {resyncError && (
-            <div className="mt-3 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft p-2.5 text-[11px] text-accent-danger flex items-center gap-2">
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-              <span>{resyncError}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-xl border border-ui bg-surface-card p-4">
-            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Fila de Itens Pendentes
-            </span>
-            <div className="mt-2 text-2xl font-black text-primary">
-              {pendingCount} item(s)
-            </div>
-            <p className="mt-1 text-[11px] text-muted">
-              Prontos para transmissão automática ou manual.
+    <div className="space-y-6">
+      {/* Cabeçalho */}
+      <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-black text-primary">Carregar / Descarregar</h2>
+            <p className="text-[11px] text-muted mt-0.5">
+              {effectiveOnline
+                ? 'Conectado. Baixe as pesquisas e envie as coletas feitas em campo.'
+                : 'Você está offline. Você ainda pode coletar; os dados serão enviados quando houver conexão.'}
             </p>
           </div>
-
-          <div className="rounded-xl border border-ui bg-surface-card p-4">
-            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Status da Conexão
+          <div className="flex items-center gap-1.5 rounded-full border border-ui bg-surface-card px-2.5 py-1 text-[10px] font-semibold">
+            {effectiveOnline ? (
+              <Wifi className="h-3.5 w-3.5 text-accent-success" />
+            ) : (
+              <WifiOff className="h-3.5 w-3.5 text-accent-warning" />
+            )}
+            <span className={effectiveOnline ? 'text-accent-success' : 'text-accent-warning'}>
+              {effectiveOnline ? 'Online' : 'Offline'}
             </span>
-            <div
-              className={`mt-2 text-2xl font-black flex items-center gap-2 ${
-                effectiveOnline ? 'text-accent-success' : 'text-accent-warning'
-              }`}
-            >
-              <span
-                className={`h-3 w-3 rounded-full ${
-                  effectiveOnline ? 'bg-accent-success-solid animate-pulse' : 'bg-accent-warning-solid'
-                }`}
-              />
-              {effectiveOnline ? (
-                <>
-                  <Wifi className="h-4 w-4" /> Conectado à Internet
-                </>
-              ) : (
-                <>
-                  <WifiOff className="h-4 w-4" /> Sem Conexão (Modo Offline)
-                </>
-              )}
-            </div>
-            <p className="mt-1 text-[11px] text-muted">Servidor Central: DataQuest Cloud API</p>
           </div>
         </div>
 
-        {syncFeedback && (
-          <div className="mt-4 rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft p-3 text-xs text-accent-primary flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-accent-success shrink-0" />
-            <span>{syncFeedback}</span>
+        {feedback && (
+          <div className="mt-3 rounded-lg border border-accent-success-soft-border bg-accent-success-soft p-2.5 text-[11px] text-accent-success flex items-center gap-2">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+            <span>{feedback}</span>
           </div>
         )}
+        {error && (
+          <div className="mt-3 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft p-2.5 text-[11px] text-accent-danger flex items-center gap-2">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
 
-        {syncError && (
-          <div className="mt-4 rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft p-3 text-xs text-accent-danger flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 shrink-0" />
-            <span>{syncError}</span>
+      {/* Ações: Carregar / Descarregar */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button
+          onClick={handleLoad}
+          disabled={busy !== null || !effectiveOnline}
+          className="group flex flex-col items-start gap-3 rounded-2xl border border-ui bg-surface-card p-5 text-left shadow-xl hover:border-accent-primary-soft-border transition-colors disabled:opacity-50"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
+            {busy === 'load' ? (
+              <DownloadCloud className="h-6 w-6 animate-pulse" />
+            ) : (
+              <DownloadCloud className="h-6 w-6" />
+            )}
           </div>
-        )}
+          <div>
+            <div className="text-sm font-bold text-primary">Carregar</div>
+            <div className="text-[11px] text-muted mt-0.5">
+              Baixar as pesquisas e políticas de acesso do servidor.
+            </div>
+          </div>
+          <span className="text-[10px] font-semibold text-accent-primary">
+            {busy === 'load' ? 'Carregando...' : 'Baixar pesquisas'}
+          </span>
+        </button>
 
         <button
-          onClick={handleManualSync}
-          disabled={isSyncing || !effectiveOnline}
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-5 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={handleUnload}
+          disabled={busy !== null || !effectiveOnline || pendingCount === 0}
+          className="group flex flex-col items-start gap-3 rounded-2xl border border-ui bg-surface-card p-5 text-left shadow-xl hover:border-accent-primary-soft-border transition-colors disabled:opacity-50"
         >
-          <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-          {isSyncing ? 'Sincronizando...' : 'Sincronizar agora'}
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-success-soft text-accent-success border border-accent-success-soft-border">
+            {busy === 'unload' ? (
+              <UploadCloud className="h-6 w-6 animate-pulse" />
+            ) : (
+              <UploadCloud className="h-6 w-6" />
+            )}
+          </div>
+          <div>
+            <div className="text-sm font-bold text-primary">Descarregar</div>
+            <div className="text-[11px] text-muted mt-0.5">
+              Enviar as coletas offline pendentes para o servidor.
+            </div>
+          </div>
+          <span className="text-[10px] font-semibold text-accent-success">
+            {pendingCount > 0 ? `${pendingCount} pendente(s) para enviar` : 'Tudo enviado'}
+          </span>
         </button>
-        {!effectiveOnline && (
-          <p className="mt-3 text-[11px] text-accent-warning">
-            Você precisa estar online para sincronizar. Suas coletas offline estão
-            seguras na fila local.
-          </p>
-        )}
+      </div>
+
+      {/* Pesquisas carregadas */}
+      <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+        <div className="flex items-center gap-2 text-xs font-bold text-primary">
+          <Layers className="h-4 w-4 text-accent-primary" />
+          <span>Pesquisas carregadas no aparelho</span>
+        </div>
+        <p className="mt-1 text-[11px] text-muted">
+          {session.surveys.length} pesquisa(s) disponível(is) para coleta.
+        </p>
       </div>
     </div>
   );

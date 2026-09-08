@@ -1,34 +1,35 @@
 import React, { useState } from 'react';
 import { FieldSection, FieldSession } from './fieldTypes';
 import { FieldLayout } from './FieldLayout';
+import { FieldHome } from './FieldHome';
 import { FieldDashboard } from './FieldDashboard';
 import { FieldColeta } from './FieldColeta';
+import { FieldMetas } from './FieldMetas';
 import { FieldSync } from './FieldSync';
 import { FieldLogin } from './FieldLogin';
-import { loadFieldSession, clearFieldSession, persistFieldSession } from '../services/fieldSessionStore';
 import { resyncFieldSurveys } from '../services/fieldSyncService';
+import {
+  persistFieldSession,
+  loadFieldSession,
+  clearFieldSession,
+} from '../services/fieldSessionStore';
 
 interface FieldAppProps {
   onExit: () => void;
 }
 
 /**
- * Root do sub-app "Modo Pesquisador".
- * Age como um app separado (fullscreen, sem o shell administrativo),
- * mas compartilhando o mesmo backend/estado via AppContext.
- *
- * Fluxo de entrada (Etapa 3/4):
- *   1. Tenta restaurar a sessão persistida (sessionStorage). Se existir, entra
- *      direto no ambiente sem pedir login de novo.
- *   2. Sem sessão → FieldLogin (login + Sincronizar), que autentica contra o
- *      servidor e baixa as pesquisas/políticas do pesquisador.
- *   3. Após autenticar, persiste a sessão e exibe o ambiente de campo.
- *   4. O pesquisador pode re-sincronizar as pesquisas (FieldSync) ou sair.
+ * Sub-app do Modo Pesquisador.
+ * Estrutura de telas:
+ *   home      -> grade de ações (Pesquisas, Carregar, Descarregar, Atualizar Meta)
+ *   pesquisas -> seleção da pesquisa ativa + contadores (Realizadas / Falta enviar)
+ *   coleta    -> formulário de coleta (CollectionSimulator com fieldMode)
+ *   metas     -> acompanhamento das metas por pesquisa ativa
+ *   sync      -> Carregar/Descarregar + status de sincronização
  */
 export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
-  // Restaura a sessão persistida uma única vez na montagem.
   const [session, setSession] = useState<FieldSession | null>(() => loadFieldSession());
-  const [section, setSection] = useState<FieldSection>('dashboard');
+  const [section, setSection] = useState<FieldSection>('home');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Re-sincroniza automaticamente na montagem quando já havia uma sessão
@@ -57,16 +58,17 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
   }, []);
 
   // Autentica (vindo do FieldLogin): persiste e segue para o ambiente.
-  const handleAuthenticated = (newSession: FieldSession) => {
-    persistFieldSession(newSession);
-    setSession(newSession);
-    setSection('dashboard');
+  const handleAuthenticated = (s: FieldSession) => {
+    setSession(s);
+    persistFieldSession(s);
+    setSection('home');
   };
 
-  // Re-sincroniza as pesquisas do pesquisador (usado pelo FieldSync).
+  // Re-sincroniza as pesquisas do pesquisador (usado pelo FieldHome e FieldMetas).
   const handleResync = async (current: FieldSession): Promise<FieldSession> => {
     const updated = await resyncFieldSurveys(current);
     setSession(updated);
+    persistFieldSession(updated);
     return updated;
   };
 
@@ -74,7 +76,7 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
   const handleLogout = () => {
     clearFieldSession();
     setSession(null);
-    setSection('dashboard');
+    setSection('home');
   };
 
   // Sem sessão autenticada de campo → tela de login + sincronização.
@@ -102,18 +104,42 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
       onLogout={handleLogout}
       mobileSidebarOpen={mobileSidebarOpen}
       onToggleMobileSidebar={() => setMobileSidebarOpen((v) => !v)}
-      onCloseMobileSidebar={() => setMobileSidebarOpen(false)}
     >
-      {section === 'dashboard' && (
+      {section === 'home' && (
+        <FieldHome
+          session={session}
+          onNavigate={navigate}
+          onResync={handleResync}
+        />
+      )}
+
+      {section === 'pesquisas' && (
         <FieldDashboard
           session={session}
           onStartColeta={() => navigate('coleta')}
           onGoSync={() => navigate('sync')}
         />
       )}
-      {section === 'coleta' && <FieldColeta session={session} />}
+
+      {section === 'coleta' && (
+        <FieldColeta
+          session={session}
+          onBack={() => navigate('pesquisas')}
+        />
+      )}
+
+      {section === 'metas' && (
+        <FieldMetas
+          session={session}
+          onResync={handleResync}
+        />
+      )}
+
       {section === 'sync' && (
-        <FieldSync session={session} onResync={handleResync} />
+        <FieldSync
+          session={session}
+          onResync={handleResync}
+        />
       )}
     </FieldLayout>
   );
