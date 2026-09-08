@@ -82,7 +82,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
       {/* Top bar with Theme & Language */}
       <header className="flex items-center justify-between px-6 py-4 z-10">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-primary-solid font-bold text-on-accent shadow-lg shadow-blue-900/40">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-primary-solid font-bold text-on-accent shadow-lg shadow-emerald-900/40">
             Q
           </div>
           <div>
@@ -154,7 +154,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           {/* Login Form Box */}
           <div className="rounded-3xl border border-ui bg-surface p-6 sm:p-8 shadow-2xl backdrop-blur-md">
             <div className="text-center space-y-1.5 mb-6">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-primary shadow-xl shadow-blue-900/40 mb-3">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-emerald-500 text-primary shadow-xl shadow-emerald-900/40 mb-3">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <h1 className="text-xl font-bold text-primary sm:text-2xl">
@@ -191,7 +191,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                     placeholder="Ex: rodrigo.pesquisador ou carlos.admin"
                     autoCapitalize="none"
                     autoCorrect="off"
-                    className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-4 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
+                    className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-4 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -213,7 +213,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                     value={senhaInput}
                     onChange={(e) => setSenhaInput(e.target.value)}
                     placeholder="Sua senha cadastrada"
-                    className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-10 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
+                    className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-10 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none transition-colors"
                   />
                   <button
                     type="button"
@@ -229,7 +229,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid py-3 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover active:scale-[0.99] disabled:opacity-50 transition-all cursor-pointer"
+                className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid py-3 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover active:scale-[0.99] disabled:opacity-50 transition-all cursor-pointer"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
@@ -276,7 +276,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                         onClick={() => handleSelectQuickAccount(c.login, c.senha || 'pesq123')}
                         className={`w-full flex items-center justify-between p-2 rounded-xl border text-left text-xs transition-all ${
                           isSelected
-                            ? 'border-blue-500 bg-accent-primary-soft text-primary font-bold'
+                            ? 'border-emerald-500 bg-accent-primary-soft text-primary font-bold'
                             : 'border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                         }`}
                       >

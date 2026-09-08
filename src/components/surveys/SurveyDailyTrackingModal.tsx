@@ -428,7 +428,7 @@ export const SurveyDailyTrackingModal: React.FC<SurveyDailyTrackingModalProps> =
                   <Bar
                     dataKey="totalEntrevistas"
                     name="Entrevistas Realizadas"
-                    fill="#3b82f6"
+                    fill="#059669"
                     radius={[4, 4, 0, 0]}
                     maxBarSize={38}
                   />

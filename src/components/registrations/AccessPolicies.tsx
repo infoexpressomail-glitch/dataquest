@@ -350,7 +350,7 @@ export const AccessPolicies: React.FC = () => {
 
         <button
           onClick={handleSave}
-          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
         >
           <Save className="h-4 w-4" />
           <span>Salvar Alterações de Política</span>
@@ -374,7 +374,7 @@ export const AccessPolicies: React.FC = () => {
               onClick={() => handleSelectProfile(p.id)}
               className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition ${
                 isSelected
-                  ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40 border border-blue-500'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/40 border border-emerald-500'
                   : 'bg-surface text-secondary hover:bg-surface-raised border border-ui hover:text-primary'
               }`}
             >
@@ -461,7 +461,7 @@ export const AccessPolicies: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por permissão, módulo ou descrição..."
-            className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-3 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
           />
         </div>
       </div>
@@ -549,7 +549,7 @@ export const AccessPolicies: React.FC = () => {
                         key={item.key}
                         className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
                           isChecked
-                            ? 'border-accent-primary-soft-border bg-accent-primary-soft shadow-sm shadow-blue-950/40'
+                            ? 'border-accent-primary-soft-border bg-accent-primary-soft shadow-sm shadow-emerald-950/40'
                             : 'border-ui bg-surface-card hover:bg-surface-raised'
                         }`}
                       >
@@ -557,7 +557,7 @@ export const AccessPolicies: React.FC = () => {
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => handleTogglePermission(item.key)}
-                          className="mt-0.5 h-4 w-4 rounded text-accent-primary-solid focus:ring-blue-500"
+                          className="mt-0.5 h-4 w-4 rounded text-accent-primary-solid focus:ring-emerald-500"
                         />
                         <div className="flex-1">
                           <div
@@ -586,7 +586,7 @@ export const AccessPolicies: React.FC = () => {
       <div className="flex justify-end pt-4">
         <button
           onClick={handleSave}
-          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
         >
           <Save className="h-4 w-4" />
           <span>Salvar Alterações de Política</span>

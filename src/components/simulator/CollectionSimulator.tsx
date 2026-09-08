@@ -335,7 +335,7 @@ export const CollectionSimulator: React.FC = () => {
                   title={`${std.title} - Z=${std.zScore.toFixed(3)}`}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                     isSelected
-                      ? 'bg-accent-primary-solid text-on-accent shadow-sm ring-1 ring-blue-400/40'
+                      ? 'bg-accent-primary-solid text-on-accent shadow-sm ring-1 ring-emerald-400/40'
                       : 'bg-surface-raised border border-ui text-secondary hover:border-ui hover:text-primary'
                   }`}
                 >
@@ -566,7 +566,7 @@ export const CollectionSimulator: React.FC = () => {
             <button
               id="btn-ver-respostas-coletadas"
               onClick={() => setActiveModule('respostas')}
-              className="rounded-lg bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+              className="rounded-lg bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
             >
               Ver Respostas Registradas
             </button>
@@ -611,7 +611,7 @@ export const CollectionSimulator: React.FC = () => {
                   <span>Perfil: <strong className="text-secondary">{currentProfile?.name || 'Pesquisador'}</strong></span>
                 </div>
               </div>
-              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-xs font-bold text-primary shrink-0 shadow-md">
+              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center text-xs font-bold text-primary shrink-0 shadow-md">
                 {currentUser.nome.slice(0, 2).toUpperCase()}
               </div>
             </div>
@@ -683,7 +683,7 @@ export const CollectionSimulator: React.FC = () => {
               type="button"
               disabled={isSaving}
               onClick={handleSubmitFinal}
-              className="flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition active:scale-95 disabled:opacity-50 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition active:scale-95 disabled:opacity-50 w-full sm:w-auto"
             >
               <CheckCircle2 className="h-4 w-4" />
               <span>{isSaving ? 'Gravando progresso...' : 'Finalizar Pesquisa'}</span>
@@ -735,7 +735,7 @@ export const CollectionSimulator: React.FC = () => {
                       key={opt.id}
                       className={`flex cursor-pointer items-center justify-between rounded-xl border p-3.5 text-xs transition ${
                         answers[currentQuestion.id] === opt.value
-                          ? 'border-blue-500 bg-accent-primary-soft text-primary font-bold'
+                          ? 'border-emerald-500 bg-accent-primary-soft text-primary font-bold'
                           : 'border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                       }`}
                     >
@@ -748,7 +748,7 @@ export const CollectionSimulator: React.FC = () => {
                         onChange={() =>
                           setAnswers({ ...answers, [currentQuestion.id]: opt.value })
                         }
-                        className="text-accent-primary-solid focus:ring-blue-500"
+                        className="text-accent-primary-solid focus:ring-emerald-500"
                       />
                     </label>
                   ))}
@@ -766,7 +766,7 @@ export const CollectionSimulator: React.FC = () => {
                         key={opt.id}
                         className={`flex cursor-pointer items-center justify-between rounded-xl border p-3.5 text-xs transition ${
                           isChecked
-                            ? 'border-blue-500 bg-accent-primary-soft text-primary font-bold'
+                            ? 'border-emerald-500 bg-accent-primary-soft text-primary font-bold'
                             : 'border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                         }`}
                       >
@@ -780,7 +780,7 @@ export const CollectionSimulator: React.FC = () => {
                               : [...currentSelected, opt.value];
                             setAnswers({ ...answers, [currentQuestion.id]: updated });
                           }}
-                          className="rounded text-accent-primary-solid focus:ring-blue-500"
+                          className="rounded text-accent-primary-solid focus:ring-emerald-500"
                         />
                       </label>
                     );
@@ -796,7 +796,7 @@ export const CollectionSimulator: React.FC = () => {
                         onClick={() => setAnswers({ ...answers, [currentQuestion.id]: opt })}
                         className={`rounded-xl border p-3.5 text-xs font-bold transition ${
                           answers[currentQuestion.id] === opt
-                            ? 'border-blue-500 bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40'
+                            ? 'border-emerald-500 bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/40'
                             : 'border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                         }`}
                       >
@@ -819,7 +819,7 @@ export const CollectionSimulator: React.FC = () => {
                           }
                           className={`flex h-10 w-10 items-center justify-center rounded-lg font-bold text-xs transition ${
                             answers[currentQuestion.id] === String(n)
-                              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40'
+                              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/40'
                               : 'border border-ui bg-surface-card text-secondary hover:bg-surface-raised'
                           }`}
                         >
@@ -843,7 +843,7 @@ export const CollectionSimulator: React.FC = () => {
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
                     placeholder="Digite a resposta do entrevistado..."
-                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                   />
                 )}
 
@@ -856,7 +856,7 @@ export const CollectionSimulator: React.FC = () => {
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
                     placeholder="Informe o valor numérico..."
-                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                   />
                 )}
 
@@ -868,7 +868,7 @@ export const CollectionSimulator: React.FC = () => {
                     onChange={(e) =>
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
-                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-ui bg-surface-card p-3 text-xs text-primary focus:border-emerald-500 focus:outline-none"
                   />
                 )}
               </div>
@@ -900,7 +900,7 @@ export const CollectionSimulator: React.FC = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
               >
                 <span>
                   {currentQuestionIndex === activeSurvey.perguntas.length - 1

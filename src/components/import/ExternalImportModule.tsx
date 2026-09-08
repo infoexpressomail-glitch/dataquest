@@ -221,7 +221,7 @@ export const ExternalImportModule: React.FC = () => {
             onClick={() => setImportType('pesquisa')}
             className={`rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
               importType === 'pesquisa'
-                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/40'
                 : 'border border-ui bg-surface-raised text-secondary hover:bg-surface-hover hover:text-primary'
             }`}
           >
@@ -234,7 +234,7 @@ export const ExternalImportModule: React.FC = () => {
             onClick={() => setImportType('respostas')}
             className={`rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
               importType === 'respostas'
-                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/40'
                 : 'border border-ui bg-surface-raised text-secondary hover:bg-surface-hover hover:text-primary'
             }`}
           >
@@ -255,7 +255,7 @@ export const ExternalImportModule: React.FC = () => {
               value={novaPesquisaNome}
               onChange={(e) => setNovaPesquisaNome(e.target.value)}
               placeholder="Ex: PESQUISA DE SATISFAÇÃO - IMPORTAÇÃO EXTERNA"
-              className="mt-1 w-full max-w-md rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+              className="mt-1 w-full max-w-md rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <p className="mt-1 text-[11px] text-muted">
               Se deixado em branco, o nome do arquivo é usado automaticamente.
@@ -288,7 +288,7 @@ export const ExternalImportModule: React.FC = () => {
           <select
             value={selectedSurveyId}
             onChange={(e) => setSelectedSurveyId(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none max-w-md"
+            className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none max-w-md"
           >
             {surveys.map((s) => (
               <option key={s.id} value={s.id}>
@@ -307,7 +307,7 @@ export const ExternalImportModule: React.FC = () => {
         onDrop={handleDrop}
         className={`relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 text-center transition ${
           dragActive
-            ? 'border-blue-500 bg-accent-primary-soft'
+            ? 'border-emerald-500 bg-accent-primary-soft'
             : 'border-ui bg-surface hover:border-ui'
         }`}
       >
@@ -322,7 +322,7 @@ export const ExternalImportModule: React.FC = () => {
         </p>
 
         {/* Input file manual click */}
-        <label className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors">
+        <label className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors">
           <span>Selecionar Arquivo do Computador</span>
           <input
             type="file"

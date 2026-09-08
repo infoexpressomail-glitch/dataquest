@@ -108,7 +108,7 @@ const MainContent: React.FC = () => {
           </p>
           <button
             onClick={() => setActiveModule('home')}
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:opacity-90 transition-colors"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:opacity-90 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Retornar ao Início</span>

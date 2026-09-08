@@ -80,7 +80,7 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3.5">
             <div className="relative">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-lg font-bold text-primary shadow-lg shadow-blue-900/30">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 text-lg font-bold text-primary shadow-lg shadow-emerald-900/30">
                 {activeResearcher.nome.charAt(0)}
               </div>
               <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-success-solid ring-2 ring-[#16171d]">
@@ -110,7 +110,7 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                 <select
                   value={selectedResearcherId}
                   onChange={(e) => setSelectedResearcherId(e.target.value)}
-                  className="rounded-xl border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                  className="rounded-xl border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-emerald-500 focus:outline-none"
                 >
                   {collaborators
                     .filter((c) => c.ativo)
@@ -228,7 +228,7 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                 progress.isConcluida
                   ? 'border-emerald-800/60 bg-accent-success-soft'
                   : progress.percentual >= 75
-                  ? 'border-blue-800/50 bg-accent-primary-soft'
+                  ? 'border-emerald-800/50 bg-accent-primary-soft'
                   : 'border-ui bg-surface'
               }`}
             >

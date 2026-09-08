@@ -107,7 +107,7 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
                   key={idx}
                   className={`w-1.5 rounded-full transition-all duration-300 ${
                     isPassed
-                      ? 'bg-accent-primary-solid shadow-sm shadow-blue-500/50'
+                      ? 'bg-accent-primary-solid shadow-sm shadow-emerald-500/50'
                       : 'bg-surface-raised'
                   }`}
                   style={{ height: `${height}%` }}
@@ -134,7 +134,7 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
 
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
             >
               {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
             </button>

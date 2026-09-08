@@ -137,7 +137,7 @@ export const FieldTeamSizingCard: React.FC<FieldTeamSizingCardProps> = ({
             onClick={() => setIsCalculatorOpen(!isCalculatorOpen)}
             className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
               isCalculatorOpen
-                ? 'bg-accent-primary-solid border-blue-500 text-on-accent'
+                ? 'bg-accent-primary-solid border-emerald-500 text-on-accent'
                 : 'border-ui bg-surface-raised text-primary hover:bg-surface-hover hover:text-primary'
             }`}
           >

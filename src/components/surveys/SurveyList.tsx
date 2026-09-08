@@ -261,7 +261,7 @@ export const SurveyList: React.FC = () => {
               <button
                 id="btn-survey-create-new"
                 onClick={handleCreateNew}
-                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
               >
                 <PlusCircle className="h-4 w-4" />
                 <span>Criar Pesquisa (Abrir Wizard)</span>
@@ -341,7 +341,7 @@ export const SurveyList: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por nome, código ou descrição..."
-            className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-8 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 focus:outline-none"
+            className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-8 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 focus:outline-none"
           />
           {searchTerm && (
             <button
@@ -361,7 +361,7 @@ export const SurveyList: React.FC = () => {
       <div
         className={`sticky top-16 z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-2.5 shadow-md transition-colors ${
           selectedSurveyIds.length > 0
-            ? 'border-accent-primary/40 bg-surface-raised ring-1 ring-blue-500/20'
+            ? 'border-accent-primary/40 bg-surface-raised ring-1 ring-emerald-500/20'
             : 'border-ui bg-surface'
         }`}
       >
@@ -380,7 +380,7 @@ export const SurveyList: React.FC = () => {
                   setSelectedSurveyIds((prev) => Array.from(new Set([...prev, ...currentIds])));
                 }
               }}
-              className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-blue-500 focus:ring-offset-surface cursor-pointer"
+              className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-emerald-500 focus:ring-offset-surface cursor-pointer"
             />
             <span>Selecionar todas ({filteredSurveys.length})</span>
           </label>
@@ -510,7 +510,7 @@ export const SurveyList: React.FC = () => {
               key={survey.id}
               className={`flex flex-col justify-between rounded-2xl border bg-surface p-5 shadow-xl transition ${
                 isSelected
-                  ? 'border-accent-primary-soft-border ring-1 ring-blue-500/30 bg-surface-raised'
+                  ? 'border-accent-primary-soft-border ring-1 ring-emerald-500/30 bg-surface-raised'
                   : 'border-ui hover:border-ui'
               }`}
             >
@@ -529,7 +529,7 @@ export const SurveyList: React.FC = () => {
                             : [...prev, survey.id]
                         );
                       }}
-                      className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-blue-500 focus:ring-offset-surface cursor-pointer mr-0.5"
+                      className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-emerald-500 focus:ring-offset-surface cursor-pointer mr-0.5"
                     />
                     <span className="rounded bg-accent-primary-soft border border-accent-primary-soft-border px-2 py-0.5 text-xs font-bold text-accent-primary">
                       {survey.codigo}

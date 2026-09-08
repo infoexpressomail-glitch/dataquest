@@ -56,8 +56,8 @@ export const GeoMapModal: React.FC<GeoMapModalProps> = ({ submissions, surveyNam
             >
               <line x1="10%" y1="20%" x2="90%" y2="80%" stroke="#334155" strokeWidth="2" />
               <line x1="20%" y1="80%" x2="80%" y2="10%" stroke="#334155" strokeWidth="2" />
-              <circle cx="50%" cy="50%" r="180" fill="none" stroke="#2563eb" strokeWidth="1" strokeDasharray="6,6" opacity="0.3" />
-              <circle cx="50%" cy="50%" r="90" fill="none" stroke="#2563eb" strokeWidth="1" strokeDasharray="4,4" opacity="0.4" />
+              <circle cx="50%" cy="50%" r="180" fill="none" stroke="#059669" strokeWidth="1" strokeDasharray="6,6" opacity="0.3" />
+              <circle cx="50%" cy="50%" r="90" fill="none" stroke="#059669" strokeWidth="1" strokeDasharray="4,4" opacity="0.4" />
             </svg>
 
             {/* GPS Markers on Map */}
@@ -84,7 +84,7 @@ export const GeoMapModal: React.FC<GeoMapModalProps> = ({ submissions, surveyNam
                     <div
                       className={`relative flex items-center justify-center rounded-full p-2 shadow-lg transition ${
                         isSelected
-                          ? 'bg-accent-primary-solid text-on-accent ring-4 ring-blue-400/50 scale-110 shadow-blue-900/50'
+                          ? 'bg-accent-primary-solid text-on-accent ring-4 ring-emerald-400/50 scale-110 shadow-emerald-900/50'
                           : 'bg-surface-raised text-primary ring-2 ring-slate-700'
                       }`}
                     >

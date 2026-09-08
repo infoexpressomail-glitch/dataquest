@@ -280,7 +280,7 @@ export const ActionHistory: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por operador, código de pesquisa, justificativa de compliance ou campo alterado..."
-              className="w-full pl-9 pr-8 py-2 bg-surface-app border border-ui rounded-lg text-xs text-primary placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full pl-9 pr-8 py-2 bg-surface-app border border-ui rounded-lg text-xs text-primary placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
             />
             {searchTerm && (
               <button
@@ -336,7 +336,7 @@ export const ActionHistory: React.FC = () => {
               id="select-filter-operator"
               value={selectedUserLogin}
               onChange={(e) => setSelectedUserLogin(e.target.value)}
-              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-blue-500"
+              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-emerald-500"
             >
               <option value="all">Todos os Operadores ({collaborators.length})</option>
               {collaborators.map((c) => (
@@ -354,7 +354,7 @@ export const ActionHistory: React.FC = () => {
               id="select-filter-target"
               value={selectedTargetType}
               onChange={(e) => setSelectedTargetType(e.target.value)}
-              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-blue-500"
+              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-emerald-500"
             >
               <option value="all">Qualquer Tipo de Alvo</option>
               <option value="resposta">Somente Respostas / Coletas</option>
@@ -369,7 +369,7 @@ export const ActionHistory: React.FC = () => {
               id="select-filter-time"
               value={timeFilter}
               onChange={(e) => setTimeFilter(e.target.value)}
-              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-blue-500"
+              className="w-full bg-surface-app border border-ui rounded-lg px-2.5 py-1.5 text-xs text-primary focus:outline-none focus:border-emerald-500"
             >
               <option value="all">Todo o Histórico</option>
               <option value="24h">Últimas 24 horas</option>
@@ -467,7 +467,7 @@ export const ActionHistory: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-3 pt-1">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-primary shadow-xs shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-600 flex items-center justify-center text-xs font-bold text-primary shadow-xs shrink-0">
                         {(log.autor?.nome || 'U').slice(0, 2).toUpperCase()}
                       </div>
                       <div className="overflow-hidden min-w-0 flex-1">

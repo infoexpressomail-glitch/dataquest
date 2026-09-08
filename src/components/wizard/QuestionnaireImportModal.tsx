@@ -322,7 +322,7 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
             onClick={() => setActiveStep('input')}
             className={`flex items-center gap-2 transition ${
               activeStep === 'input'
-                ? 'text-accent-primary font-bold border-b-2 border-blue-500 pb-1'
+                ? 'text-accent-primary font-bold border-b-2 border-emerald-500 pb-1'
                 : 'text-muted hover:text-secondary'
             }`}
           >
@@ -339,7 +339,7 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
             }}
             className={`flex items-center gap-2 transition ${
               activeStep === 'review'
-                ? 'text-accent-primary font-bold border-b-2 border-blue-500 pb-1'
+                ? 'text-accent-primary font-bold border-b-2 border-emerald-500 pb-1'
                 : 'text-muted hover:text-secondary'
             }`}
           >
@@ -458,7 +458,7 @@ D) 60 anos ou mais
 
 5. Deixe um comentário com sugestões de melhoria:`}
                   rows={14}
-                  className="w-full rounded-xl border border-ui bg-surface-app p-4 text-xs font-mono text-primary placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition leading-relaxed"
+                  className="w-full rounded-xl border border-ui bg-surface-app p-4 text-xs font-mono text-primary placeholder-slate-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition leading-relaxed"
                 />
 
                 <div className="flex items-center gap-2 text-[11px] text-muted mt-1">
@@ -559,7 +559,7 @@ D) 60 anos ou mais
                           onChange={(e) =>
                             handleUpdateQuestionType(qIdx, e.target.value as QuestionType)
                           }
-                          className="rounded-lg border border-accent-primary-soft-border bg-surface-app px-3 py-1.5 text-xs font-semibold text-accent-primary focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                          className="rounded-lg border border-accent-primary-soft-border bg-surface-app px-3 py-1.5 text-xs font-semibold text-accent-primary focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
                         >
                           <option value="multipla_escolha">Múltipla Escolha (Opção Única)</option>
                           <option value="multipla_selecao">Múltipla Seleção (Múltiplas Opções)</option>
@@ -600,7 +600,7 @@ D) 60 anos ou mais
                         value={q.enunciado}
                         onChange={(e) => handleUpdateEnunciado(qIdx, e.target.value)}
                         placeholder="Enunciado da pergunta"
-                        className="w-full rounded-lg border border-ui bg-surface-app px-3 py-2 text-xs font-medium text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                        className="w-full rounded-lg border border-ui bg-surface-app px-3 py-2 text-xs font-medium text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                       />
                     </div>
 
@@ -704,7 +704,7 @@ D) 60 anos ou mais
                 value="append"
                 checked={importMode === 'append'}
                 onChange={() => setImportMode('append')}
-                className="text-accent-primary-solid focus:ring-blue-500"
+                className="text-accent-primary-solid focus:ring-emerald-500"
               />
               <span>Adicionar às perguntas existentes</span>
             </label>
@@ -715,7 +715,7 @@ D) 60 anos ou mais
                 value="replace"
                 checked={importMode === 'replace'}
                 onChange={() => setImportMode('replace')}
-                className="text-accent-primary-solid focus:ring-blue-500"
+                className="text-accent-primary-solid focus:ring-emerald-500"
               />
               <span>Substituir todo o questionário</span>
             </label>
@@ -734,7 +734,7 @@ D) 60 anos ou mais
               <button
                 type="button"
                 onClick={handleParse}
-                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition"
+                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition"
               >
                 <span>Analisar e Organizar Questões</span>
                 <ArrowRight className="h-4 w-4" />

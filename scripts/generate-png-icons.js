@@ -100,7 +100,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
     let cr = 30, cg = 41, cb = 59; // slate-800
     // Clipboard header clip
     if (nx >= -0.22 && nx <= 0.22 && ny >= -0.65 && ny <= -0.5) {
-      return [37, 99, 235, 255]; // blue-600
+      return [5, 150, 105, 255]; // emerald-600
     }
 
     // Row 1: Checkbox & bar
@@ -119,7 +119,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
       const rx = nx - (-0.32);
       const ry = ny - (-0.02);
       if (rx * rx + ry * ry <= 0.08 * 0.08) {
-        return [59, 130, 246, 255]; // Blue radio
+        return [16, 185, 129, 255]; // Emerald radio
       }
       if (nx >= -0.15 && nx <= 0.3) {
         return [203, 213, 225, 255]; // line
@@ -129,7 +129,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
     // Row 3: Bar chart metric
     if (ny >= 0.18 && ny <= 0.34) {
       if (nx >= -0.42 && nx <= -0.22) {
-        return [99, 102, 241, 255]; // Indigo box
+        return [5, 150, 105, 255]; // Emerald box
       }
       if (nx >= -0.15 && nx <= 0.42) {
         return [148, 163, 184, 255];

@@ -155,7 +155,7 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
                 value={verificationCode}
                 onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
                 placeholder="Ex: 123456"
-                className="mt-1 w-full text-center tracking-widest font-mono text-base font-bold rounded-lg border border-ui bg-surface-card py-2 text-primary focus:border-blue-500 focus:outline-none"
+                className="mt-1 w-full text-center tracking-widest font-mono text-base font-bold rounded-lg border border-ui bg-surface-card py-2 text-primary focus:border-emerald-500 focus:outline-none"
               />
               <span className="text-[10px] text-muted">
                 Dica de demonstração: digite qualquer código de 6 dígitos (ex: 123456).
@@ -185,7 +185,7 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-accent-primary-solid px-4 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="rounded-lg bg-accent-primary-solid px-4 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   Validar Código
                 </button>

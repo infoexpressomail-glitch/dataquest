@@ -141,7 +141,7 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
       <div className="bg-gradient-to-b from-[#161822] to-[#0d0e12] px-5 pt-4 pb-4 border-b border-ui/80">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-sm font-black text-primary shadow-md shadow-blue-900/40">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-emerald-600 text-sm font-black text-primary shadow-md shadow-emerald-900/40">
               {activeResearcher.nome.charAt(0)}
             </div>
             <div>
@@ -198,7 +198,7 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
 
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-raised">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-500 transition-all duration-500"
               style={{ width: `${percentualGeral}%` }}
             />
           </div>
@@ -243,7 +243,7 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
               onClick={() => setFilterSegment(seg)}
               className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold shrink-0 transition-all ${
                 filterSegment === seg
-                  ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-900/30'
                   : 'bg-surface-raised text-muted hover:bg-surface-raised hover:text-primary'
               }`}
             >
@@ -265,7 +265,7 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
                 progress.isConcluida
                   ? 'border-emerald-800/60 bg-accent-success-soft'
                   : progress.percentual >= 75
-                  ? 'border-blue-800/50 bg-accent-primary-soft'
+                  ? 'border-emerald-800/50 bg-accent-primary-soft'
                   : 'border-ui bg-surface'
               }`}
             >
@@ -365,7 +365,7 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
         <button
           type="button"
           onClick={handleStartCollection}
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid py-3 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover active:scale-[0.98] transition-all"
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid py-3 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover active:scale-[0.98] transition-all"
         >
           <PlusCircle className="h-4 w-4" />
           <span>Realizar Nova Entrevista de Campo</span>
@@ -396,7 +396,7 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
               <select
                 value={selectedResearcherId}
                 onChange={(e) => setSelectedResearcherId(e.target.value)}
-                className="rounded-xl border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                className="rounded-xl border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-emerald-500 focus:outline-none"
               >
                 {collaborators
                   .filter((c) => c.ativo)

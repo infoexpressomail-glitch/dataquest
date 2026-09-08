@@ -118,7 +118,7 @@ export const ResearcherEnvironment: React.FC = () => {
       <div className="relative overflow-hidden rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-[#121629] via-[#111624] to-[#0e121d] p-6 shadow-2xl">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-start sm:items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-primary font-black text-xl shadow-lg shadow-blue-900/50 shrink-0">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-emerald-500 text-primary font-black text-xl shadow-lg shadow-emerald-900/50 shrink-0">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div>
@@ -206,7 +206,7 @@ export const ResearcherEnvironment: React.FC = () => {
           onClick={() => setActiveTab('painel')}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 transition whitespace-nowrap ${
             activeTab === 'painel'
-              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30 font-bold'
+              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-900/30 font-bold'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -218,7 +218,7 @@ export const ResearcherEnvironment: React.FC = () => {
           onClick={() => setActiveTab('pesquisas')}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 transition whitespace-nowrap ${
             activeTab === 'pesquisas'
-              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30 font-bold'
+              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-900/30 font-bold'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -236,7 +236,7 @@ export const ResearcherEnvironment: React.FC = () => {
           }}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 transition whitespace-nowrap ${
             activeTab === 'coleta'
-              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30 font-bold'
+              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-900/30 font-bold'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -248,7 +248,7 @@ export const ResearcherEnvironment: React.FC = () => {
           onClick={() => setActiveTab('metas')}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 transition whitespace-nowrap ${
             activeTab === 'metas'
-              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30 font-bold'
+              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-900/30 font-bold'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -260,7 +260,7 @@ export const ResearcherEnvironment: React.FC = () => {
           onClick={() => setActiveTab('historico')}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 transition whitespace-nowrap ${
             activeTab === 'historico'
-              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30 font-bold'
+              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-900/30 font-bold'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -272,7 +272,7 @@ export const ResearcherEnvironment: React.FC = () => {
           onClick={() => setActiveTab('sync')}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 transition whitespace-nowrap ${
             activeTab === 'sync'
-              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30 font-bold'
+              ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-900/30 font-bold'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -312,7 +312,7 @@ export const ResearcherEnvironment: React.FC = () => {
                 </div>
                 <div className="h-2 w-full rounded-full bg-surface-raised overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full transition-all duration-500"
                     style={{ width: `${todayProgressPercent}%` }}
                   />
                 </div>
@@ -379,7 +379,7 @@ export const ResearcherEnvironment: React.FC = () => {
           {/* Quick Collection CTA Banner */}
           <div className="rounded-2xl border border-accent-primary-soft-border bg-surface-raised p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/50 shrink-0">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/50 shrink-0">
                 <Play className="h-6 w-6 fill-current" />
               </div>
               <div>
@@ -400,7 +400,7 @@ export const ResearcherEnvironment: React.FC = () => {
                   setActiveTab('coleta');
                 }
               }}
-              className="flex items-center gap-2 rounded-xl bg-accent-primary-solid px-6 py-3 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/50 hover:bg-accent-primary-solid-hover transition active:scale-95 shrink-0"
+              className="flex items-center gap-2 rounded-xl bg-accent-primary-solid px-6 py-3 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/50 hover:bg-accent-primary-solid-hover transition active:scale-95 shrink-0"
             >
               <span>Iniciar Coleta de Campo</span>
               <ArrowRight className="h-4 w-4" />
@@ -481,7 +481,7 @@ export const ResearcherEnvironment: React.FC = () => {
                       </button>
                       <button
                         onClick={() => handleStartColetaForSurvey(survey)}
-                        className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-1.5 text-xs font-bold text-on-accent hover:bg-accent-primary-solid-hover shadow-md shadow-blue-900/30 transition"
+                        className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-1.5 text-xs font-bold text-on-accent hover:bg-accent-primary-solid-hover shadow-md shadow-emerald-900/30 transition"
                       >
                         <Play className="h-3.5 w-3.5 fill-current" />
                         <span>Coletar Agora</span>
@@ -548,7 +548,7 @@ export const ResearcherEnvironment: React.FC = () => {
                       </button>
                       <button
                         onClick={() => handleStartColetaForSurvey(survey)}
-                        className="flex items-center gap-2 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition active:scale-95"
+                        className="flex items-center gap-2 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition active:scale-95"
                       >
                         <Play className="h-4 w-4 fill-current" />
                         <span>Iniciar Coleta</span>
@@ -599,7 +599,7 @@ export const ResearcherEnvironment: React.FC = () => {
                     setEditingSurvey(s);
                   }
                 }}
-                className="rounded-lg border border-ui bg-surface-app px-3 py-1.5 text-xs font-semibold text-primary focus:border-blue-500 focus:outline-none"
+                className="rounded-lg border border-ui bg-surface-app px-3 py-1.5 text-xs font-semibold text-primary focus:border-emerald-500 focus:outline-none"
               >
                 {researcherSurveys.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -786,7 +786,7 @@ export const ResearcherEnvironment: React.FC = () => {
               <button
                 onClick={handleManualSync}
                 disabled={isSyncing || !effectiveOnline}
-                className="flex items-center gap-2 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-50 transition"
               >
                 <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
                 <span>{isSyncing ? 'Sincronizando...' : 'Transmitir Coletas para o Servidor Central'}</span>

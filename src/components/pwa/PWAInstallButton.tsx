@@ -156,7 +156,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
               <div className="flex items-center gap-2 pt-2">
                 <button
                   onClick={() => setShowIOSGuide(false)}
-                  className="w-full rounded-lg bg-accent-primary-solid py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="w-full rounded-lg bg-accent-primary-solid py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   Entendi
                 </button>

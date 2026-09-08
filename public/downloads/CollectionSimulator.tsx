@@ -300,7 +300,7 @@ export const CollectionSimulator: React.FC = () => {
             onClick={() => setSimulatorTab('amostragem')}
             className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-all ${
               simulatorTab === 'amostragem'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-900/40'
+                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-900/40'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -314,7 +314,7 @@ export const CollectionSimulator: React.FC = () => {
             onClick={() => setSimulatorTab('coleta')}
             className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-all ${
               simulatorTab === 'coleta'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-900/40'
+                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-900/40'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -335,13 +335,13 @@ export const CollectionSimulator: React.FC = () => {
       {activeSurvey && (
         <div className="rounded-xl border border-slate-800 bg-[#16171d] p-3 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 shrink-0">
               <Zap className="h-4 w-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-white">Níveis de Confiança Padrão</span>
-                <span className="text-[10px] text-blue-400 font-mono">
+                <span className="text-[10px] text-emerald-400 font-mono">
                   (Atual: {activeSurvey.nivelConfiancaPercentual || 95}%)
                 </span>
               </div>
@@ -363,13 +363,13 @@ export const CollectionSimulator: React.FC = () => {
                   title={`${std.title} - Z=${std.zScore.toFixed(3)}`}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                     isSelected
-                      ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-400/40'
+                      ? 'bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-400/40'
                       : 'bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
                   }`}
                 >
                   <span>{std.label}</span>
                   <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                    isSelected ? 'bg-blue-700 text-white' : 'bg-slate-800 text-blue-400'
+                    isSelected ? 'bg-emerald-700 text-white' : 'bg-slate-800 text-emerald-400'
                   }`}>
                     Z = {std.zScore.toFixed(3).replace('.', ',')}
                   </span>
@@ -382,7 +382,7 @@ export const CollectionSimulator: React.FC = () => {
                 type="button"
                 id="btn-ver-grafico-dispersao-quick"
                 onClick={() => setSimulatorTab('amostragem')}
-                className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition-colors ml-1"
+                className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors ml-1"
               >
                 <Calculator className="h-3.5 w-3.5" />
                 <span>Ver Dispersão</span>
@@ -416,7 +416,7 @@ export const CollectionSimulator: React.FC = () => {
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => setSimulatorTab('amostragem')}
-              className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition-colors"
             >
               <Calculator className="h-4 w-4" />
               <span>Abrir Calculadora Amostral & Dispersão</span>
@@ -434,7 +434,7 @@ export const CollectionSimulator: React.FC = () => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="rounded-md bg-blue-600/20 border border-blue-500/30 px-2.5 py-1 text-xs font-bold text-blue-400">
+              <span className="rounded-md bg-emerald-600/20 border border-emerald-500/30 px-2.5 py-1 text-xs font-bold text-emerald-400">
                 Coleta em Tempo Real & Coleta Web
               </span>
               <h1 className="mt-1 text-lg font-bold text-white">
@@ -450,7 +450,7 @@ export const CollectionSimulator: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSimulatorTab('amostragem')}
-                className="hidden sm:flex items-center gap-1 rounded-lg border border-blue-500/30 bg-blue-600/10 px-2 py-1 text-[11px] font-semibold text-blue-400 hover:bg-blue-600/20 transition-colors"
+                className="hidden sm:flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-600/10 px-2 py-1 text-[11px] font-semibold text-emerald-400 hover:bg-emerald-600/20 transition-colors"
               >
                 <Calculator className="h-3 w-3" />
                 <span>Calcular Amostra (n)</span>
@@ -531,7 +531,7 @@ export const CollectionSimulator: React.FC = () => {
               <div className="grid grid-cols-2 gap-2 text-xs text-slate-400 pt-1">
                 <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800/80">
                   <span className="block text-[10px] text-slate-500 uppercase font-bold">Respondidas</span>
-                  <span className="text-sm font-bold text-blue-400">
+                  <span className="text-sm font-bold text-emerald-400">
                     {Object.keys(answers).length} de {activeSurvey.perguntas.length}
                   </span>
                 </div>
@@ -624,7 +624,7 @@ export const CollectionSimulator: React.FC = () => {
             <button
               id="btn-ver-respostas-coletadas"
               onClick={() => setActiveModule('respostas')}
-              className="rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-colors"
+              className="rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition-colors"
             >
               Ver Respostas Registradas
             </button>
@@ -635,7 +635,7 @@ export const CollectionSimulator: React.FC = () => {
         <div className="rounded-2xl border border-slate-800 bg-[#16171d] p-6 shadow-xl space-y-6">
           <div className="flex items-center justify-between border-b border-slate-800 pb-4">
             <div>
-              <span className="rounded-md bg-blue-600/20 border border-blue-500/30 px-2.5 py-0.5 text-xs font-bold text-blue-400">
+              <span className="rounded-md bg-emerald-600/20 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-bold text-emerald-400">
                 Etapa Final
               </span>
               <h2 className="text-lg font-bold text-white mt-1">Finalizar Pesquisa de Campo</h2>
@@ -643,13 +643,13 @@ export const CollectionSimulator: React.FC = () => {
                 Confirme os dados antes de gravar e encerrar oficialmente o formulário.
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
               <CheckSquare className="h-5 w-5" />
             </div>
           </div>
 
           {/* Nome do pesquisador atualmente logado marcado como padrão */}
-          <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4">
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
             <div className="flex items-start justify-between">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -669,7 +669,7 @@ export const CollectionSimulator: React.FC = () => {
                   <span>Perfil: <strong className="text-slate-300">{currentProfile?.name || 'Pesquisador'}</strong></span>
                 </div>
               </div>
-              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md">
+              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md">
                 {currentUser.nome.slice(0, 2).toUpperCase()}
               </div>
             </div>
@@ -741,7 +741,7 @@ export const CollectionSimulator: React.FC = () => {
               type="button"
               disabled={isSaving}
               onClick={handleSubmitFinal}
-              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition active:scale-95 disabled:opacity-50 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition active:scale-95 disabled:opacity-50 w-full sm:w-auto"
             >
               <CheckCircle2 className="h-4 w-4" />
               <span>{isSaving ? 'Gravando progresso...' : 'Finalizar Pesquisa'}</span>
@@ -757,7 +757,7 @@ export const CollectionSimulator: React.FC = () => {
               <span>
                 Pergunta {currentQuestionIndex + 1} de {activeSurvey.perguntas.length}
               </span>
-              <span className="font-bold text-blue-400">
+              <span className="font-bold text-emerald-400">
                 ({currentQuestion?.codigo || 'Q'})
               </span>
             </div>
@@ -780,7 +780,7 @@ export const CollectionSimulator: React.FC = () => {
               <h3 className="text-base font-bold text-white">
                 {currentQuestion.enunciado}
                 {currentQuestion.obrigatoria && (
-                  <span className="ml-1 text-blue-400">*</span>
+                  <span className="ml-1 text-emerald-400">*</span>
                 )}
               </h3>
 
@@ -793,7 +793,7 @@ export const CollectionSimulator: React.FC = () => {
                       key={opt.id}
                       className={`flex cursor-pointer items-center justify-between rounded-xl border p-3.5 text-xs transition ${
                         answers[currentQuestion.id] === opt.value
-                          ? 'border-blue-500 bg-blue-600/20 text-white font-bold'
+                          ? 'border-emerald-500 bg-emerald-600/20 text-white font-bold'
                           : 'border-slate-800 bg-[#111218] text-slate-300 hover:bg-slate-800/60'
                       }`}
                     >
@@ -806,7 +806,7 @@ export const CollectionSimulator: React.FC = () => {
                         onChange={() =>
                           setAnswers({ ...answers, [currentQuestion.id]: opt.value })
                         }
-                        className="text-blue-600 focus:ring-blue-500"
+                        className="text-emerald-600 focus:ring-emerald-500"
                       />
                     </label>
                   ))}
@@ -824,7 +824,7 @@ export const CollectionSimulator: React.FC = () => {
                         key={opt.id}
                         className={`flex cursor-pointer items-center justify-between rounded-xl border p-3.5 text-xs transition ${
                           isChecked
-                            ? 'border-blue-500 bg-blue-600/20 text-white font-bold'
+                            ? 'border-emerald-500 bg-emerald-600/20 text-white font-bold'
                             : 'border-slate-800 bg-[#111218] text-slate-300 hover:bg-slate-800/60'
                         }`}
                       >
@@ -838,7 +838,7 @@ export const CollectionSimulator: React.FC = () => {
                               : [...currentSelected, opt.value];
                             setAnswers({ ...answers, [currentQuestion.id]: updated });
                           }}
-                          className="rounded text-blue-600 focus:ring-blue-500"
+                          className="rounded text-emerald-600 focus:ring-emerald-500"
                         />
                       </label>
                     );
@@ -854,7 +854,7 @@ export const CollectionSimulator: React.FC = () => {
                         onClick={() => setAnswers({ ...answers, [currentQuestion.id]: opt })}
                         className={`rounded-xl border p-3.5 text-xs font-bold transition ${
                           answers[currentQuestion.id] === opt
-                            ? 'border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-900/40'
+                            ? 'border-emerald-500 bg-emerald-600 text-white shadow-lg shadow-emerald-900/40'
                             : 'border-slate-800 bg-[#111218] text-slate-300 hover:bg-slate-800'
                         }`}
                       >
@@ -877,7 +877,7 @@ export const CollectionSimulator: React.FC = () => {
                           }
                           className={`flex h-10 w-10 items-center justify-center rounded-lg font-bold text-xs transition ${
                             answers[currentQuestion.id] === String(n)
-                              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
+                              ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/40'
                               : 'border border-slate-800 bg-[#111218] text-slate-300 hover:bg-slate-800'
                           }`}
                         >
@@ -901,7 +901,7 @@ export const CollectionSimulator: React.FC = () => {
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
                     placeholder="Digite a resposta do entrevistado..."
-                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                   />
                 )}
 
@@ -914,7 +914,7 @@ export const CollectionSimulator: React.FC = () => {
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
                     placeholder="Informe o valor numérico..."
-                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                   />
                 )}
 
@@ -926,7 +926,7 @@ export const CollectionSimulator: React.FC = () => {
                     onChange={(e) =>
                       setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
                     }
-                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-800 bg-[#111218] p-3 text-xs text-slate-200 focus:border-emerald-500 focus:outline-none"
                   />
                 )}
               </div>
@@ -958,7 +958,7 @@ export const CollectionSimulator: React.FC = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-900/40 transition hover:bg-blue-500 active:scale-95"
+                className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 transition hover:bg-emerald-500 active:scale-95"
               >
                 <span>
                   {currentQuestionIndex === activeSurvey.perguntas.length - 1

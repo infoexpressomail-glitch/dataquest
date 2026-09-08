@@ -166,7 +166,7 @@ export const ResponsesModule: React.FC = () => {
               <button
                 id="btn-export-all-pdf"
                 onClick={handleExportPDF}
-                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
               >
                 <FileText className="h-4 w-4" />
                 <span>Exportar PDF Oficial</span>
@@ -186,7 +186,7 @@ export const ResponsesModule: React.FC = () => {
           <select
             value={selectedSurveyId}
             onChange={(e) => setSelectedSurveyId(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-1.5 text-xs text-primary focus:border-emerald-500 focus:outline-none"
           >
             <option value="all">Todas as Pesquisas ({submissions.length} coletas)</option>
             {surveys.map((s) => (
@@ -205,7 +205,7 @@ export const ResponsesModule: React.FC = () => {
           <select
             value={selectedResearcherId}
             onChange={(e) => setSelectedResearcherId(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-1.5 text-xs text-primary focus:border-emerald-500 focus:outline-none"
           >
             <option value="all">Todos os Pesquisadores</option>
             {collaborators.map((c) => (
@@ -228,7 +228,7 @@ export const ResponsesModule: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Digite termo, palavra ou código..."
-              className="w-full rounded-lg border border-ui bg-surface-card py-1.5 pl-8 pr-2.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-ui bg-surface-card py-1.5 pl-8 pr-2.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
             />
           </div>
         </div>
@@ -460,7 +460,7 @@ export const ResponsesModule: React.FC = () => {
                         [resp.perguntaId]: e.target.value,
                       })
                     }
-                    className="w-full rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
                   />
                 </div>
               ))}
@@ -473,7 +473,7 @@ export const ResponsesModule: React.FC = () => {
                   rows={2}
                   value={editReason}
                   onChange={(e) => setEditReason(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
+                  className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -489,7 +489,7 @@ export const ResponsesModule: React.FC = () => {
               <button
                 type="button"
                 onClick={handleSaveEditedAnswers}
-                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
               >
                 <Save className="h-4 w-4" />
                 <span>Salvar Correções de Auditoria</span>

@@ -218,7 +218,7 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
               id="select-home-evolution-survey"
               value={selectedSurveyId}
               onChange={(e) => setSelectedSurveyId(e.target.value)}
-              className="appearance-none rounded-lg border border-ui bg-surface-raised py-1.5 pl-3 pr-8 text-xs font-semibold text-primary focus:border-blue-500 focus:outline-none cursor-pointer max-w-xs truncate"
+              className="appearance-none rounded-lg border border-ui bg-surface-raised py-1.5 pl-3 pr-8 text-xs font-semibold text-primary focus:border-emerald-500 focus:outline-none cursor-pointer max-w-xs truncate"
             >
               <optgroup label="Pesquisas em Andamento (Ativas)">
                 {surveys
@@ -383,7 +383,7 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
                   yAxisId="left"
                   dataKey="coletasDoDia"
                   name="Coletas no Dia"
-                  fill="#3b82f6"
+                  fill="#059669"
                   radius={[4, 4, 0, 0]}
                   barSize={20}
                 />

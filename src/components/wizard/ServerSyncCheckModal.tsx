@@ -214,7 +214,7 @@ export const ServerSyncCheckModal: React.FC<ServerSyncCheckModalProps> = ({
                 id="btn-confirm-server-sync"
                 onClick={handleExecuteSync}
                 disabled={!effectiveOnline}
-                className="flex items-center gap-2 rounded-xl bg-accent-primary-solid hover:bg-accent-primary-solid-hover px-5 py-2.5 text-xs font-bold text-on-accent transition shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 rounded-xl bg-accent-primary-solid hover:bg-accent-primary-solid-hover px-5 py-2.5 text-xs font-bold text-on-accent transition shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <RefreshCw className="h-4 w-4" />
                 <span>Sincronizar com o Servidor Agora</span>
@@ -226,7 +226,7 @@ export const ServerSyncCheckModal: React.FC<ServerSyncCheckModalProps> = ({
         {step === 'syncing' && (
           <div className="py-8 text-center space-y-4">
             <div className="flex justify-center">
-              <div className="h-12 w-12 rounded-full border-2 border-accent-primary-soft-border border-t-blue-500 animate-spin flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full border-2 border-accent-primary-soft-border border-t-emerald-500 animate-spin flex items-center justify-center">
                 <Server className="h-5 w-5 text-accent-primary animate-pulse" />
               </div>
             </div>

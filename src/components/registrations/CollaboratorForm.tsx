@@ -154,7 +154,7 @@ export const CollaboratorForm: React.FC = () => {
           <button
             id="btn-new-collaborator"
             onClick={handleOpenNew}
-            className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+            className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
           >
             <Plus className="h-4 w-4" />
             <span>Cadastrar Novo Colaborador</span>
@@ -179,7 +179,7 @@ export const CollaboratorForm: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por nome, CPF, login ou email..."
-              className="w-full rounded-lg border border-ui bg-surface-card py-1.5 pl-8 pr-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-ui bg-surface-card py-1.5 pl-8 pr-3 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
             />
           </div>
           <div className="text-xs text-muted whitespace-nowrap">
@@ -210,7 +210,7 @@ export const CollaboratorForm: React.FC = () => {
                     setSelectedColabIds((prev) => Array.from(new Set([...prev, ...currentIds])));
                   }
                 }}
-                className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-blue-500 focus:ring-offset-surface cursor-pointer"
+                className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-emerald-500 focus:ring-offset-surface cursor-pointer"
               />
               <span>Selecionar todos ({filteredCollaborators.length})</span>
             </label>
@@ -347,7 +347,7 @@ export const CollaboratorForm: React.FC = () => {
                         );
                       }
                     }}
-                    className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-blue-500 focus:ring-offset-surface cursor-pointer"
+                    className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-emerald-500 focus:ring-offset-surface cursor-pointer"
                   />
                 </th>
                 <th className="py-3 px-4 whitespace-nowrap">Nome & CPF</th>
@@ -386,7 +386,7 @@ export const CollaboratorForm: React.FC = () => {
                               : [...prev, c.id]
                           );
                         }}
-                        className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-blue-500 focus:ring-offset-surface cursor-pointer"
+                        className="h-4 w-4 rounded border-ui bg-surface-raised text-accent-primary-solid focus:ring-emerald-500 focus:ring-offset-surface cursor-pointer"
                       />
                     </td>
                     <td className="py-3 px-4">
@@ -518,7 +518,7 @@ export const CollaboratorForm: React.FC = () => {
                       value={formData.nome}
                       onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                       placeholder="Ex: Carlos Eduardo de Souza"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -532,7 +532,7 @@ export const CollaboratorForm: React.FC = () => {
                       value={formData.cpf}
                       onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
                       placeholder="000.000.000-00"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -545,7 +545,7 @@ export const CollaboratorForm: React.FC = () => {
                       value={formData.rg || ''}
                       onChange={(e) => setFormData({ ...formData, rg: e.target.value })}
                       placeholder="Ex: 12.345.678-9 SSP/SP"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -557,7 +557,7 @@ export const CollaboratorForm: React.FC = () => {
                       type="date"
                       value={formData.dataNascimento || ''}
                       onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -570,7 +570,7 @@ export const CollaboratorForm: React.FC = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, sexo: e.target.value as 'M' | 'F' | 'Outro' })
                       }
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary focus:border-emerald-500 focus:outline-none"
                     >
                       <option value="M">Masculino</option>
                       <option value="F">Feminino</option>
@@ -596,7 +596,7 @@ export const CollaboratorForm: React.FC = () => {
                       value={formData.celular || ''}
                       onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
                       placeholder="(11) 98765-4321"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -611,7 +611,7 @@ export const CollaboratorForm: React.FC = () => {
                         setFormData({ ...formData, nomeContatoCelular: e.target.value })
                       }
                       placeholder="Próprio / Contato emergencial"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -624,7 +624,7 @@ export const CollaboratorForm: React.FC = () => {
                       value={formData.telefoneFixo || ''}
                       onChange={(e) => setFormData({ ...formData, telefoneFixo: e.target.value })}
                       placeholder="(11) 3456-7890"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -639,7 +639,7 @@ export const CollaboratorForm: React.FC = () => {
                         setFormData({ ...formData, nomeContatoFixo: e.target.value })
                       }
                       placeholder="Ex: Residência / Escritório"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -662,7 +662,7 @@ export const CollaboratorForm: React.FC = () => {
                       value={formData.login}
                       onChange={(e) => setFormData({ ...formData, login: e.target.value })}
                       placeholder="usuario.sobrenome"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -676,7 +676,7 @@ export const CollaboratorForm: React.FC = () => {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="colaborador@organizacao.com.br"
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
 
@@ -691,7 +691,7 @@ export const CollaboratorForm: React.FC = () => {
                         value={formData.senha || ''}
                         onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
                         placeholder="Mínimo de 6 dígitos"
-                        className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                        className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                       />
                     </div>
                   )}
@@ -703,7 +703,7 @@ export const CollaboratorForm: React.FC = () => {
                     <select
                       value={formData.perfilAcessoId}
                       onChange={(e) => setFormData({ ...formData, perfilAcessoId: e.target.value })}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary focus:border-emerald-500 focus:outline-none"
                     >
                       {profiles.map((p) => (
                         <option key={p.id} value={p.id}>
@@ -743,7 +743,7 @@ export const CollaboratorForm: React.FC = () => {
                                 : [...list, s.id];
                               setFormData({ ...formData, pesquisasVinculadasIds: updated });
                             }}
-                            className="rounded text-accent-primary-solid focus:ring-blue-500"
+                            className="rounded text-accent-primary-solid focus:ring-emerald-500"
                           />
                           <span className="font-bold text-primary">
                             [{s.codigo}] {s.nome}
@@ -766,7 +766,7 @@ export const CollaboratorForm: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   Salvar Colaborador
                 </button>
@@ -814,7 +814,7 @@ export const CollaboratorForm: React.FC = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Digite a nova senha..."
-                  className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                  className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                 />
               </div>
 
@@ -828,7 +828,7 @@ export const CollaboratorForm: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-accent-primary-solid px-4 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="rounded-lg bg-accent-primary-solid px-4 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   Confirmar Nova Senha
                 </button>
@@ -872,7 +872,7 @@ export const CollaboratorForm: React.FC = () => {
                 <select
                   value={bulkTargetProfileId}
                   onChange={(e) => setBulkTargetProfileId(e.target.value)}
-                  className="w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
                 >
                   {profiles.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -903,7 +903,7 @@ export const CollaboratorForm: React.FC = () => {
                     setSuccessNotice('Perfis de acesso atualizados com sucesso em lote.');
                     setTimeout(() => setSuccessNotice(null), 4000);
                   }}
-                  className="rounded-lg bg-accent-primary-solid px-4 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="rounded-lg bg-accent-primary-solid px-4 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   Aplicar Perfil
                 </button>

@@ -221,7 +221,7 @@ export function exportConsolidatedSurveysToPDF(surveys: Survey[], allSubmissions
   };
 
   // Header banner principal
-  doc.setFillColor(37, 99, 235); // Blue-600 oficial do DataQuest
+  doc.setFillColor(5, 150, 105); // Emerald-600 oficial do DataQuest
   doc.rect(14, y, pageWidth - 28, 16, 'F');
 
   doc.setTextColor(255, 255, 255);
@@ -299,7 +299,7 @@ export function exportConsolidatedSurveysToPDF(surveys: Survey[], allSubmissions
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
-    doc.setTextColor(37, 99, 235);
+    doc.setTextColor(5, 150, 105);
     doc.text(survey.codigo, 16, y + 4);
 
     doc.setFont('helvetica', 'normal');
@@ -376,7 +376,7 @@ export function exportConsolidatedSurveysToPDF(surveys: Survey[], allSubmissions
         checkPageBreak(5);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7);
-        doc.setTextColor(37, 99, 235);
+        doc.setTextColor(5, 150, 105);
         doc.text(`${q.codigo}:`, 16, y);
 
         doc.setFont('helvetica', 'normal');

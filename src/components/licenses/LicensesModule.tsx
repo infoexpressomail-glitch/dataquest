@@ -185,7 +185,7 @@ export const LicensesModule: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por nome, login ou e-mail..."
-              className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-4 text-xs text-primary placeholder-muted focus:border-blue-500 focus:outline-none transition-colors"
+              className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-4 text-xs text-primary placeholder-muted focus:border-emerald-500 focus:outline-none transition-colors"
             />
           </div>
 

@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
         </button>
 
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-solid font-bold text-on-accent shadow-lg shadow-blue-900/40">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-solid font-bold text-on-accent shadow-lg shadow-emerald-900/40">
             Q
           </div>
           <div>
@@ -110,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           <button
             id="btn-header-new-survey"
             onClick={handleStartNewSurvey}
-            className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+            className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-1.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
           >
             <PlusCircle className="h-4 w-4" />
             <span className="hidden sm:inline">{t('newSurvey')}</span>
@@ -124,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
           title="Monitor de Status de Conexão e Sincronização IndexedDB/Supabase"
           className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold border transition ${
             syncProgress.isActive
-              ? 'bg-accent-primary-soft border-accent-primary-soft-border text-accent-primary animate-pulse shadow-lg shadow-blue-500/10'
+              ? 'bg-accent-primary-soft border-accent-primary-soft-border text-accent-primary animate-pulse shadow-lg shadow-emerald-500/10'
               : !effectiveOnline
               ? 'bg-accent-warning-soft border-accent-warning-soft-border text-accent-warning hover:bg-accent-warning-soft'
               : pendingIndexedDbCount > 0 || offlineQueue.length > 0
@@ -181,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                   }}
                   className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-xs rounded-lg transition-colors ${
                     language === lang
-                      ? 'bg-accent-primary-soft font-bold text-accent-primary border border-blue-600/20'
+                      ? 'bg-accent-primary-soft font-bold text-accent-primary border border-emerald-600/20'
                       : 'text-secondary hover:bg-surface-raised hover:text-primary'
                   }`}
                 >
@@ -214,7 +214,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
             onClick={() => setUserDropdownOpen(!userDropdownOpen)}
             className="flex items-center gap-2.5 rounded-xl border border-ui bg-surface p-1.5 pr-2.5 text-left text-xs transition hover:bg-surface-raised"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 text-xs font-bold text-primary shadow-md shadow-blue-900/40">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 text-xs font-bold text-primary shadow-md shadow-emerald-900/40">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div className="hidden text-left lg:block">
@@ -270,7 +270,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
                       }}
                       className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-left transition-colors ${
                         currentUser.id === c.id
-                          ? 'bg-accent-primary-soft font-bold text-accent-primary border border-blue-600/20'
+                          ? 'bg-accent-primary-soft font-bold text-accent-primary border border-emerald-600/20'
                           : 'text-secondary hover:bg-surface-raised hover:text-primary'
                       }`}
                     >

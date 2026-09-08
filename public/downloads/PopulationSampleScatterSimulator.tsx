@@ -268,12 +268,12 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3.5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600/15 text-blue-500 border border-blue-500/30 shrink-0">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-600/15 text-emerald-500 border border-emerald-500/30 shrink-0">
               <Calculator className="h-6 w-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="rounded-md bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-500">
+                <span className="rounded-md bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-500">
                   Teoria Amostral de Cochran & Yamane
                 </span>
                 <span className="rounded-md bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
@@ -306,7 +306,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 title="Baixar samplingUtils.ts"
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               >
-                <Download className="h-3.5 w-3.5 text-blue-400" />
+                <Download className="h-3.5 w-3.5 text-emerald-400" />
                 <span>samplingUtils.ts</span>
               </a>
               <span className="text-slate-700">|</span>
@@ -316,7 +316,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 title="Baixar PopulationSampleScatterSimulator.tsx"
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               >
-                <Download className="h-3.5 w-3.5 text-blue-400" />
+                <Download className="h-3.5 w-3.5 text-emerald-400" />
                 <span>ScatterSimulator.tsx</span>
               </a>
               <span className="text-slate-700">|</span>
@@ -326,7 +326,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 title="Baixar CollectionSimulator.tsx"
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               >
-                <Download className="h-3.5 w-3.5 text-blue-400" />
+                <Download className="h-3.5 w-3.5 text-emerald-400" />
                 <span>CollectionSimulator.tsx</span>
               </a>
             </div>
@@ -334,7 +334,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
             <button
               id="btn-adotar-amostra-simulador"
               onClick={handleApplyToSurvey}
-              className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-900/30 hover:bg-blue-500 active:scale-95 transition-all"
+              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-900/30 hover:bg-emerald-500 active:scale-95 transition-all"
             >
               {appliedSuccess ? (
                 <>
@@ -364,12 +364,12 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
         >
           <div className="flex items-center justify-between border-b pb-3 border-slate-800/80">
             <div className="flex items-center gap-2">
-              <Percent className="h-4 w-4 text-blue-500" />
+              <Percent className="h-4 w-4 text-emerald-500" />
               <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Parâmetros Amostrais
               </h3>
             </div>
-            <span className="text-[11px] font-mono font-semibold text-blue-500">
+            <span className="text-[11px] font-mono font-semibold text-emerald-500">
               Z = {zScore.toFixed(3)}
             </span>
           </div>
@@ -383,7 +383,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                     darkMode ? 'text-white' : 'text-slate-900'
                   }`}>
                     <span>Níveis de Confiança Padrão</span>
-                    <span className="rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-blue-400 font-mono">
+                    <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 font-mono">
                       (1 - α)
                     </span>
                   </label>
@@ -398,7 +398,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 id="btn-toggle-custom-confidence"
                 onClick={() => setShowCustomConfidenceControls(!showCustomConfidenceControls)}
                 className={`text-[11px] font-semibold flex items-center gap-1 transition-colors self-start sm:self-auto ${
-                  showCustomConfidenceControls ? 'text-blue-400' : 'text-slate-400 hover:text-slate-300'
+                  showCustomConfidenceControls ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-300'
                 }`}
               >
                 <SlidersHorizontal className="h-3 w-3" />
@@ -418,7 +418,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                     onClick={() => handleSelectStandardConfidence(std.level, std.zScore, std.title)}
                     className={`relative flex flex-col p-3 rounded-xl border text-left transition-all group ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-600/15 ring-2 ring-blue-500/30 shadow-md shadow-blue-950/40'
+                        ? 'border-emerald-500 bg-emerald-600/15 ring-2 ring-emerald-500/30 shadow-md shadow-emerald-950/40'
                         : darkMode
                         ? 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-900'
                         : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-slate-100'
@@ -433,23 +433,23 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                     <div className="flex items-baseline justify-between w-full">
                       <div className="flex items-center gap-1.5">
                         <span className={`text-base font-black ${
-                          isSelected ? 'text-blue-400' : darkMode ? 'text-white' : 'text-slate-900'
+                          isSelected ? 'text-emerald-400' : darkMode ? 'text-white' : 'text-slate-900'
                         }`}>
                           {std.label}
                         </span>
-                        {isSelected && <Check className="h-3.5 w-3.5 text-blue-400" />}
+                        {isSelected && <Check className="h-3.5 w-3.5 text-emerald-400" />}
                       </div>
                       <span className={`font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${
                         isSelected
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-800/80 text-blue-400 border border-blue-500/20'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-slate-800/80 text-emerald-400 border border-emerald-500/20'
                       }`}>
                         Z = {std.zScore.toFixed(3).replace('.', ',')}
                       </span>
                     </div>
 
                     <div className="mt-1 text-[11px] font-semibold leading-tight">
-                      <span className={isSelected ? 'text-blue-300' : darkMode ? 'text-slate-300' : 'text-slate-700'}>
+                      <span className={isSelected ? 'text-emerald-300' : darkMode ? 'text-slate-300' : 'text-slate-700'}>
                         {std.level === 90 && 'Sondagens Rápidas'}
                         {std.level === 95 && 'Oficial TSE & Institutos'}
                         {std.level === 99 && 'Máxima Certeza & Rigor'}
@@ -485,7 +485,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                   >
                     <Zap className="h-3.5 w-3.5 text-amber-400" />
                     <span>Campo de Escore Z Correspondente (Z-score)</span>
-                    <span className="text-[10px] font-mono text-blue-400">(Z_α/2)</span>
+                    <span className="text-[10px] font-mono text-emerald-400">(Z_α/2)</span>
                   </label>
                   <p className={`text-[11px] leading-tight ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                     Preenchido automaticamente pelo seletor de confiança. Pode ser ajustado pelo pesquisador.
@@ -494,7 +494,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
 
                 <div className="flex items-center gap-2 self-start sm:self-center">
                   <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-xs font-bold text-blue-400">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-xs font-bold text-emerald-400">
                       Z =
                     </span>
                     <input
@@ -503,7 +503,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                       value={zScoreInput}
                       onChange={(e) => handleZScoreInputChange(e.target.value)}
                       placeholder="1.960"
-                      className={`w-28 rounded-lg border py-1.5 pl-9 pr-2.5 text-right font-mono text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+                      className={`w-28 rounded-lg border py-1.5 pl-9 pr-2.5 text-right font-mono text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/50 ${
                         darkMode
                           ? 'bg-slate-950 border-slate-700 text-white'
                           : 'bg-white border-slate-300 text-slate-900'
@@ -545,11 +545,11 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                       }}
                       className={`w-20 rounded-lg border px-2 py-1 text-right text-xs font-mono font-bold ${
                         darkMode
-                          ? 'bg-slate-900 border-slate-700 text-blue-400'
-                          : 'bg-slate-50 border-slate-300 text-blue-700'
+                          ? 'bg-slate-900 border-slate-700 text-emerald-400'
+                          : 'bg-slate-50 border-slate-300 text-emerald-700'
                       }`}
                     />
-                    <span className="text-xs font-bold text-blue-500">%</span>
+                    <span className="text-xs font-bold text-emerald-500">%</span>
                   </div>
                 </div>
 
@@ -560,7 +560,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                   step="0.1"
                   value={confidencePercent}
                   onChange={(e) => handleConfidencePercentChange(parseFloat(e.target.value))}
-                  className="w-full accent-blue-600 cursor-pointer"
+                  className="w-full accent-emerald-600 cursor-pointer"
                 />
 
                 <div className="flex justify-between text-[10px] text-slate-500 font-mono">
@@ -652,7 +652,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                   type="checkbox"
                   checked={hasFinitePopulation}
                   onChange={(e) => setHasFinitePopulation(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-emerald-600 focus:ring-emerald-500"
                 />
                 <span
                   className={`text-xs font-semibold flex items-center gap-1.5 ${
@@ -735,7 +735,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
             <button
               type="button"
               onClick={() => setShowAdvancedParams(!showAdvancedParams)}
-              className="text-[11px] font-semibold text-blue-500 hover:underline flex items-center gap-1"
+              className="text-[11px] font-semibold text-emerald-500 hover:underline flex items-center gap-1"
             >
               <span>{showAdvancedParams ? 'Ocultar' : 'Ajustar'} Proporção Populacional (p = {(heterogeneity * 100).toFixed(0)}%)</span>
             </button>
@@ -744,7 +744,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
               <div className="mt-2.5 p-3 rounded-xl border border-slate-800 bg-slate-900/40 space-y-2 text-xs">
                 <div className="flex justify-between items-center text-slate-300">
                   <span>Proporção Esperada do Evento (p):</span>
-                  <span className="font-mono font-bold text-blue-400">{(heterogeneity * 100).toFixed(0)}%</span>
+                  <span className="font-mono font-bold text-emerald-400">{(heterogeneity * 100).toFixed(0)}%</span>
                 </div>
                 <input
                   type="range"
@@ -753,11 +753,11 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                   step="0.05"
                   value={heterogeneity}
                   onChange={(e) => setHeterogeneity(parseFloat(e.target.value))}
-                  className="w-full accent-blue-500"
+                  className="w-full accent-emerald-500"
                 />
                 <div className="flex justify-between text-[10px] text-slate-500">
                   <span>p = 10% (Alta homogeneidade)</span>
-                  <span className="text-blue-400 font-bold">p = 50% (Pior caso - Máx. variabilidade)</span>
+                  <span className="text-emerald-400 font-bold">p = 50% (Pior caso - Máx. variabilidade)</span>
                   <span>p = 90%</span>
                 </div>
               </div>
@@ -771,17 +771,17 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
           <div
             className={`rounded-2xl border p-5 relative overflow-hidden transition-all ${
               darkMode
-                ? 'bg-gradient-to-br from-blue-950/40 via-[#16171d] to-[#111218] border-blue-500/40 shadow-xl'
-                : 'bg-gradient-to-br from-blue-50 via-white to-slate-50 border-blue-300 shadow-md'
+                ? 'bg-gradient-to-br from-emerald-950/40 via-[#16171d] to-[#111218] border-emerald-500/40 shadow-xl'
+                : 'bg-gradient-to-br from-emerald-50 via-white to-slate-50 border-emerald-300 shadow-md'
             }`}
           >
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-500">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-500">
                   Tamanho Amostral Mínimo Necessário
                 </span>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-4xl font-extrabold text-blue-500 font-mono tracking-tight">
+                  <span className="text-4xl font-extrabold text-emerald-500 font-mono tracking-tight">
                     {calculationResult.sampleSize.toLocaleString('pt-BR')}
                   </span>
                   <span className={`text-xs font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -790,13 +790,13 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 </div>
               </div>
 
-              <div className="h-10 w-10 rounded-xl bg-blue-600/20 text-blue-500 border border-blue-500/30 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-emerald-600/20 text-emerald-500 border border-emerald-500/30 flex items-center justify-center">
                 <Target className="h-5 w-5" />
               </div>
             </div>
 
             {/* Detalhes de Segurança e Reserva */}
-            <div className="mt-4 pt-3 border-t border-blue-500/20 grid grid-cols-2 gap-3 text-xs">
+            <div className="mt-4 pt-3 border-t border-emerald-500/20 grid grid-cols-2 gap-3 text-xs">
               <div>
                 <span className={`block text-[10px] ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                   Com Reserva Técnica (+15%):
@@ -825,7 +825,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 : 'bg-slate-50 border-slate-300 text-slate-800'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-500">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Fórmula e Demonstração do Cálculo</span>
             </div>
@@ -833,11 +833,11 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
             <div
               className={`p-2.5 rounded-xl font-mono text-[11px] border leading-relaxed ${
                 darkMode
-                  ? 'bg-slate-950 border-slate-800 text-blue-300'
-                  : 'bg-white border-slate-300 text-blue-900 font-semibold'
+                  ? 'bg-slate-950 border-slate-800 text-emerald-300'
+                  : 'bg-white border-slate-300 text-emerald-900 font-semibold'
               }`}
             >
-              <div className="font-bold text-center pb-1 border-b border-blue-500/20 mb-1">
+              <div className="font-bold text-center pb-1 border-b border-emerald-500/20 mb-1">
                 n₀ = [Z² · p(1 - p)] / E²
               </div>
               <div className="flex justify-between text-[10px] pt-0.5">
@@ -845,7 +845,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 <span>p(1-p) = {variance.toFixed(2)}</span>
                 <span>E² = {(eDec * eDec).toFixed(6)}</span>
               </div>
-              <div className="mt-1 pt-1 border-t border-blue-500/20 text-center font-bold">
+              <div className="mt-1 pt-1 border-t border-emerald-500/20 text-center font-bold">
                 n₀ = [({zScore.toFixed(3)})² · {variance.toFixed(2)}] / ({eDec}²) = {n0Infinite}
               </div>
               {hasFinitePopulation && parsedPopulation && (
@@ -877,7 +877,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4 border-slate-800/80">
           <div>
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-blue-500" />
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
               <h3 className={`text-sm sm:text-base font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Gráfico de Dispersão Amostral
               </h3>
@@ -894,7 +894,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
               onClick={() => setChartViewMode('error_vs_sample')}
               className={`rounded-lg px-3 py-1.5 transition-all ${
                 chartViewMode === 'error_vs_sample'
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -905,7 +905,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
               onClick={() => setChartViewMode('pop_vs_sample')}
               className={`rounded-lg px-3 py-1.5 transition-all ${
                 chartViewMode === 'pop_vs_sample'
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -963,7 +963,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 />
                 <ZAxis type="number" range={[40, 250]} />
                 <Tooltip
-                  cursor={{ strokeDasharray: '3 3', stroke: '#3b82f6' }}
+                  cursor={{ strokeDasharray: '3 3', stroke: '#10b981' }}
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
@@ -979,7 +979,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                           <div className="flex items-center gap-2 border-b border-slate-800 pb-1 font-bold">
                             <span
                               className={`h-2.5 w-2.5 rounded-full ${
-                                isUser ? 'bg-amber-400 animate-pulse' : 'bg-blue-500'
+                                isUser ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'
                               }`}
                             />
                             <span>
@@ -990,7 +990,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                             <span className="text-slate-400">Margem de Erro:</span>
                             <span className="font-mono font-bold text-amber-500">±{data.marginOfError}%</span>
                             <span className="text-slate-400">Amostra (n):</span>
-                            <span className="font-mono font-bold text-blue-500">
+                            <span className="font-mono font-bold text-emerald-500">
                               {data.sampleSize?.toLocaleString('pt-BR')} coletas
                             </span>
                             <span className="text-slate-400">Nível Confiança:</span>
@@ -1023,7 +1023,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 />
                 <ReferenceLine
                   y={calculationResult.sampleSize}
-                  stroke="#3b82f6"
+                  stroke="#10b981"
                   strokeDasharray="4 4"
                   strokeWidth={1.5}
                 />
@@ -1041,8 +1041,8 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                 <Scatter
                   name={`Nível Escolhido: ${confidencePercent}%`}
                   data={scatterDataByError.currentConfSeries}
-                  fill="#3b82f6"
-                  line={{ stroke: '#2563eb', strokeWidth: 2 }}
+                  fill="#10b981"
+                  line={{ stroke: '#059669', strokeWidth: 2 }}
                 />
 
                 {/* Ponto Ativo do Usuário com Destaque Máximo */}
@@ -1128,7 +1128,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
                               {data.population?.toLocaleString('pt-BR')}
                             </span>
                             <span className="text-slate-400">Amostra (n):</span>
-                            <span className="font-mono font-bold text-blue-500">
+                            <span className="font-mono font-bold text-emerald-500">
                               {data.sampleSize?.toLocaleString('pt-BR')} coletas
                             </span>
                             <span className="text-slate-400">Margem Erro:</span>
@@ -1182,7 +1182,7 @@ export const PopulationSampleScatterSimulator: React.FC<PopulationSampleScatterS
         >
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-full bg-blue-500" />
+              <span className="h-3 w-3 rounded-full bg-emerald-500" />
               <span>Pontos Amostrais Calculados</span>
             </div>
             <div className="flex items-center gap-1.5">

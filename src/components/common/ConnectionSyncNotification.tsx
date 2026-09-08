@@ -92,7 +92,7 @@ export const ConnectionSyncNotification: React.FC = () => {
           ? 'border-accent-success-soft-border bg-surface-raised shadow-emerald-950/40'
           : isError
           ? 'border-accent-danger-soft-border bg-surface-raised shadow-rose-950/40'
-          : 'border-accent-primary-soft-border bg-surface-raised shadow-blue-950/40'
+          : 'border-accent-primary-soft-border bg-surface-raised shadow-emerald-950/40'
       }`}
     >
       {/* Header */}
@@ -175,7 +175,7 @@ export const ConnectionSyncNotification: React.FC = () => {
                   ? 'bg-accent-success-solid'
                   : isError
                   ? 'bg-accent-danger-solid'
-                  : 'bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400'
+                  : 'bg-gradient-to-r from-emerald-500 via-emerald-500 to-emerald-400'
               }`}
               style={{ width: `${Math.min(Math.max(syncProgress.percent, 5), 100)}%` }}
             />

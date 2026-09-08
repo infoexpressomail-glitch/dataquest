@@ -335,7 +335,7 @@ export const TeamSizingModule: React.FC = () => {
                 value={selectedSurveyId}
                 onChange={(e) => setSelectedSurveyId(e.target.value)}
                 className={`w-full text-xs font-semibold px-3 py-2 rounded-lg border appearance-none pr-8 transition-colors ${
-                  'bg-surface-raised border-ui text-primary focus:border-blue-500'
+                  'bg-surface-raised border-ui text-primary focus:border-emerald-500'
                 }`}
               >
                 {activeSurveys.map((s) => (
@@ -395,7 +395,7 @@ export const TeamSizingModule: React.FC = () => {
               <button
                 id="btn-save-dimensionamento"
                 onClick={handleSaveToSurvey}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-accent-primary-solid text-on-accent shadow-md shadow-blue-600/30 hover:bg-accent-primary-solid-hover transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-600/30 hover:bg-accent-primary-solid-hover transition-colors"
                 title="Gravar estes parâmetros na pesquisa selecionada"
               >
                 <Save className="h-3.5 w-3.5" />
@@ -419,7 +419,7 @@ export const TeamSizingModule: React.FC = () => {
         {/* Card 1: Quantidade Mínima Necessária */}
         <div
           className={`p-5 rounded-2xl border transition-all ${
-            'bg-surface border-accent-primary-soft-border shadow-lg shadow-blue-950/20'
+            'bg-surface border-accent-primary-soft-border shadow-lg shadow-emerald-950/20'
           }`}
         >
           <div className="flex items-center justify-between">
@@ -625,7 +625,7 @@ export const TeamSizingModule: React.FC = () => {
               value={metaTotalInput}
               onChange={(e) => setMetaTotalInput(Math.max(10, parseInt(e.target.value) || 0))}
               className={`w-full text-sm font-semibold px-3 py-2 rounded-lg border transition-colors ${
-                'bg-surface-raised border-ui text-primary focus:border-blue-500'
+                'bg-surface-raised border-ui text-primary focus:border-emerald-500'
               }`}
             />
             {/* Margem de Confiança & Erro em Tempo Real */}
@@ -651,7 +651,7 @@ export const TeamSizingModule: React.FC = () => {
                   onClick={() => setMetaTotalInput(val)}
                   className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-colors ${
                     metaTotalInput === val
-                      ? 'bg-accent-primary-solid text-on-accent border-blue-500'
+                      ? 'bg-accent-primary-solid text-on-accent border-emerald-500'
                       : 'bg-surface-raised text-muted border-ui hover:text-primary'
                   }`}
                 >
@@ -678,7 +678,7 @@ export const TeamSizingModule: React.FC = () => {
                 step={1}
                 value={produtividadeInput}
                 onChange={(e) => setProdutividadeInput(parseInt(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer"
+                className="w-full accent-emerald-600 cursor-pointer"
               />
               <input
                 id="input-produtividade-dia"
@@ -716,7 +716,7 @@ export const TeamSizingModule: React.FC = () => {
                 step={1}
                 value={diasCampoInput}
                 onChange={(e) => setDiasCampoInput(parseInt(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer"
+                className="w-full accent-emerald-600 cursor-pointer"
               />
               <input
                 id="input-dias-campo"
@@ -754,7 +754,7 @@ export const TeamSizingModule: React.FC = () => {
                 step={1}
                 value={tempoMinutosEntrevista}
                 onChange={(e) => setTempoMinutosEntrevista(parseInt(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer"
+                className="w-full accent-emerald-600 cursor-pointer"
               />
               <input
                 id="input-tempo-entrevista"
@@ -790,7 +790,7 @@ export const TeamSizingModule: React.FC = () => {
                 step={1}
                 value={jornadaHorasDia}
                 onChange={(e) => setJornadaHorasDia(parseInt(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer"
+                className="w-full accent-emerald-600 cursor-pointer"
               />
               <input
                 id="input-jornada-horas"
@@ -826,7 +826,7 @@ export const TeamSizingModule: React.FC = () => {
                 step={5}
                 value={reservaTecnicaPercent}
                 onChange={(e) => setReservaTecnicaPercent(parseInt(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer"
+                className="w-full accent-emerald-600 cursor-pointer"
               />
               <input
                 id="input-reserva-tecnica"
@@ -882,7 +882,7 @@ export const TeamSizingModule: React.FC = () => {
                 max={80}
                 value={masculinoPercent}
                 onChange={(e) => setMasculinoPercent(parseInt(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer"
+                className="w-full accent-emerald-600 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-muted">
                 <span>Mais Masculino</span>
@@ -984,7 +984,7 @@ export const TeamSizingModule: React.FC = () => {
                             }}
                             className={`w-full py-1.5 px-2 rounded-lg font-bold text-xs transition-all ${
                               isCurrentCell
-                                ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-600/40 ring-2 ring-blue-400'
+                                ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-600/40 ring-2 ring-emerald-400'
                                 : count <= 5
                                 ? 'bg-accent-success-soft text-accent-success hover:bg-accent-success-solid/20 border border-emerald-800/30'
                                 : count <= 12

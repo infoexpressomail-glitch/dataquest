@@ -390,7 +390,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
             id="btn-trigger-sync-queue"
             disabled={syncing || offlineQueue.length === 0 || !effectiveOnline}
             onClick={handleSync}
-            className="flex items-center gap-2 rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-95"
+            className="flex items-center gap-2 rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-95"
           >
             <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
             <span>

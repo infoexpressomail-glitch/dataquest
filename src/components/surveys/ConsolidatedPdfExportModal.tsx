@@ -233,7 +233,7 @@ export const ConsolidatedPdfExportModal: React.FC<ConsolidatedPdfExportModalProp
             id="btn-confirm-consolidated-pdf-export"
             onClick={handleExecuteExport}
             disabled={isExporting || exportComplete}
-            className="flex items-center gap-2 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-50 transition-all active:scale-95"
+            className="flex items-center gap-2 rounded-lg bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-50 transition-all active:scale-95"
           >
             {isExporting ? (
               <>

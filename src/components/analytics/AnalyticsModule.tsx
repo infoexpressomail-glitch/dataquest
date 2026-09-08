@@ -101,7 +101,7 @@ export const AnalyticsModule: React.FC = () => {
           </button>
           <button
             onClick={() => exportSubmissionsToPDF(currentSubs, selectedSurvey)}
-            className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+            className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3.5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
           >
             <FileText className="h-4 w-4" />
             <span>Exportar Relatório PDF</span>
@@ -117,7 +117,7 @@ export const AnalyticsModule: React.FC = () => {
         <select
           value={selectedSurveyId}
           onChange={(e) => setSelectedSurveyId(e.target.value)}
-          className="w-full rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-blue-500 focus:outline-none sm:w-auto"
+          className="w-full rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-emerald-500 focus:outline-none sm:w-auto"
         >
           <option value="all">Visão Consolidada (Todas as Pesquisas)</option>
           {surveys.map((s) => (
@@ -134,7 +134,7 @@ export const AnalyticsModule: React.FC = () => {
           onClick={() => setActiveTab('crosstab')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'crosstab'
-              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/30'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -146,7 +146,7 @@ export const AnalyticsModule: React.FC = () => {
           onClick={() => setActiveTab('dimensionamento')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'dimensionamento'
-              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/30'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -163,7 +163,7 @@ export const AnalyticsModule: React.FC = () => {
           onClick={() => setActiveTab('perguntas')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'perguntas'
-              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/30'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >

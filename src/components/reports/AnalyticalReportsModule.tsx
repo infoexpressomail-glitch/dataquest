@@ -250,7 +250,7 @@ export const AnalyticalReportsModule: React.FC = () => {
               type="text"
               value={draft.titulo}
               onChange={(e) => setDraft({ ...draft, titulo: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-sm font-bold text-primary focus:border-blue-500 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-sm font-bold text-primary focus:border-emerald-500 focus:outline-none"
             />
             <p className="mt-1 flex items-center gap-3 text-[11px] text-muted">
               <span className="flex items-center gap-1">
@@ -308,7 +308,7 @@ export const AnalyticalReportsModule: React.FC = () => {
                     type="text"
                     value={block.titulo}
                     onChange={(e) => handleUpdateBlock(block.id, 'titulo', e.target.value)}
-                    className="flex-1 min-w-[200px] rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-sm font-bold text-primary focus:border-blue-500 focus:outline-none"
+                    className="flex-1 min-w-[200px] rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-sm font-bold text-primary focus:border-emerald-500 focus:outline-none"
                   />
                   <div className="flex items-center gap-1">
                     <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap ${badge.className}`}>
@@ -352,7 +352,7 @@ export const AnalyticalReportsModule: React.FC = () => {
                     onChange={(e) => handleUpdateBlock(block.id, 'conteudo', e.target.value)}
                     rows={10}
                     placeholder="Escreva aqui a análise deste bloco. Use **texto** para negrito e linhas iniciadas com '- ' para listas."
-                    className="w-full rounded-lg border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none leading-relaxed font-mono"
+                    className="w-full rounded-lg border border-ui bg-surface-card p-3 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none leading-relaxed font-mono"
                   />
                 )}
               </div>
@@ -382,7 +382,7 @@ export const AnalyticalReportsModule: React.FC = () => {
               setNewReportSurveyId(surveys[0]?.id || '');
               setNewReportTitle('');
             }}
-            className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+            className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Novo Relatório</span>
@@ -404,7 +404,7 @@ export const AnalyticalReportsModule: React.FC = () => {
               <select
                 value={newReportSurveyId}
                 onChange={(e) => setNewReportSurveyId(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
               >
                 {surveys.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -420,7 +420,7 @@ export const AnalyticalReportsModule: React.FC = () => {
                 value={newReportTitle}
                 onChange={(e) => setNewReportTitle(e.target.value)}
                 placeholder="Ex: Relatório Final — Ciclo 1"
-                className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
               />
             </div>
           </div>

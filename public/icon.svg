@@ -5,9 +5,9 @@
       <stop offset="50%" stop-color="#0f172a" />
       <stop offset="100%" stop-color="#1e1b4b" />
     </linearGradient>
-    <linearGradient id="blueCyan" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="100%" stop-color="#2563eb" />
+    <linearGradient id="emeraldAccentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
     </linearGradient>
     <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#34d399" />
@@ -23,13 +23,13 @@
   <rect width="512" height="512" rx="110" fill="url(#bgGrad)" />
 
   <!-- Subtle glow ring -->
-  <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.15" />
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#34d399" stroke-width="2" opacity="0.15" />
 
   <!-- Clipboard / Shield base -->
   <rect x="116" y="100" width="280" height="340" rx="36" fill="#1e293b" stroke="#334155" stroke-width="6" />
   
   <!-- Clipboard top clip -->
-  <rect x="196" y="74" width="120" height="48" rx="14" fill="#3b82f6" stroke="#60a5fa" stroke-width="3" />
+  <rect x="196" y="74" width="120" height="48" rx="14" fill="#10b981" stroke="#34d399" stroke-width="3" />
   <circle cx="256" cy="98" r="8" fill="#ffffff" />
 
   <!-- Survey list rows -->
@@ -39,12 +39,12 @@
   <rect x="210" y="168" width="146" height="18" rx="6" fill="#94a3b8" />
 
   <!-- Row 2: Radio button active with audio wave -->
-  <circle cx="174" cy="242" r="18" fill="#2563eb" />
+  <circle cx="174" cy="242" r="18" fill="#059669" />
   <circle cx="174" cy="242" r="7" fill="#ffffff" />
   <rect x="210" y="233" width="120" height="18" rx="6" fill="#cbd5e1" />
 
   <!-- Row 3: Survey bar metric -->
-  <rect x="156" y="304" width="36" height="36" rx="10" fill="#6366f1" />
+  <rect x="156" y="304" width="36" height="36" rx="10" fill="#10b981" />
   <path d="M167 326 l4 -8 l5 5 l7 -11" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
   <rect x="210" y="300" width="156" height="14" rx="5" fill="#94a3b8" />
   <rect x="210" y="322" width="90" height="10" rx="4" fill="#64748b" />
