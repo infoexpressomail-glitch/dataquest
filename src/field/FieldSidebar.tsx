@@ -5,8 +5,6 @@ import { FieldSection } from './fieldTypes';
 import {
   LayoutDashboard,
   ClipboardList,
-  Target,
-  History,
   RefreshCw,
   ArrowLeft,
   X,
@@ -33,8 +31,6 @@ interface FieldSidebarProps {
 const NAV_ITEMS: { id: FieldSection; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" /> },
   { id: 'coleta', label: 'Coleta', icon: <ClipboardList className="h-4 w-4" /> },
-  { id: 'metas', label: 'Minhas Metas & Cotas', icon: <Target className="h-4 w-4" /> },
-  { id: 'historico', label: 'Histórico', icon: <History className="h-4 w-4" /> },
   { id: 'sync', label: 'Sincronização', icon: <RefreshCw className="h-4 w-4" /> },
 ];
 

@@ -3,8 +3,6 @@ import { FieldSection, FieldSession } from './fieldTypes';
 import { FieldLayout } from './FieldLayout';
 import { FieldDashboard } from './FieldDashboard';
 import { FieldColeta } from './FieldColeta';
-import { FieldMetas } from './FieldMetas';
-import { FieldHistorico } from './FieldHistorico';
 import { FieldSync } from './FieldSync';
 import { FieldLogin } from './FieldLogin';
 import { loadFieldSession, clearFieldSession, persistFieldSession } from '../services/fieldSessionStore';
@@ -85,13 +83,10 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
         <FieldDashboard
           session={session}
           onStartColeta={() => navigate('coleta')}
-          onGoHistorico={() => navigate('historico')}
           onGoSync={() => navigate('sync')}
         />
       )}
       {section === 'coleta' && <FieldColeta session={session} />}
-      {section === 'metas' && <FieldMetas session={session} />}
-      {section === 'historico' && <FieldHistorico session={session} />}
       {section === 'sync' && (
         <FieldSync session={session} onResync={handleResync} />
       )}

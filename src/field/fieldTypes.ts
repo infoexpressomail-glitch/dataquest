@@ -7,8 +7,6 @@ import { Collaborator, AccessProfile, Survey } from '../types';
 export type FieldSection =
   | 'dashboard'
   | 'coleta'
-  | 'metas'
-  | 'historico'
   | 'sync';
 
 /**
@@ -24,7 +22,5 @@ export interface FieldSession {
 export const FIELD_SECTION_LABELS: Record<FieldSection, string> = {
   dashboard: 'Dashboard',
   coleta: 'Coleta',
-  metas: 'Minhas Metas & Cotas',
-  historico: 'Histórico',
   sync: 'Sincronização',
 };

@@ -1,23 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
+import { ResearcherIndividualGoalsView } from '../components/metas/ResearcherIndividualGoalsView';
 import { FieldSession } from './fieldTypes';
 import {
   ClipboardList,
   WifiOff,
-  Mic,
   ArrowRight,
   CheckCircle2,
   Inbox,
   TrendingUp,
   Sparkles,
+  Target,
+  ChevronDown,
 } from 'lucide-react';
 
 interface FieldDashboardProps {
   /** Sessão autenticada no sub-app (opcional — usa o contexto quando ausente). */
   session?: FieldSession;
   onStartColeta: () => void;
-  onGoHistorico: () => void;
   onGoSync: () => void;
 }
 
@@ -27,7 +28,6 @@ interface FieldDashboardProps {
 export const FieldDashboard: React.FC<FieldDashboardProps> = ({
   session,
   onStartColeta,
-  onGoHistorico,
   onGoSync,
 }) => {
   const {
@@ -62,14 +62,7 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
     (sub) => sub.dataHora && sub.dataHora.slice(0, 10) === todayStr
   );
 
-  // Métricas de conformidade
-  const withAudio = researcherSubmissions.filter((sub) => sub.audioGravacao).length;
-  const withGeo = researcherSubmissions.filter((sub) => sub.geolocalizacao).length;
   const totalCount = researcherSubmissions.length;
-  const audioRate =
-    totalCount > 0 ? Math.round((withAudio / totalCount) * 100) : 100;
-  const geoRate =
-    totalCount > 0 ? Math.round((withGeo / totalCount) * 100) : 100;
 
   // Meta diária simples (reaproveita a mesma premissa do ResearcherEnvironment)
   const dailyTarget = 20;
@@ -79,6 +72,9 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
   );
 
   const pendingCount = offlineQueue.length + pendingIndexedDbCount;
+
+  // Pesquisa cujas metas estão expandidas no card do dashboard.
+  const [expandedGoalsSurveyId, setExpandedGoalsSurveyId] = useState<string | null>(null);
 
   return (
     <div className="space-y-6">
@@ -155,13 +151,6 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
           value={String(pendingCount)}
           hint={pendingCount > 0 ? 'Pendentes de sincronização' : 'Tudo sincronizado'}
           tone={pendingCount > 0 ? 'warning' : 'success'}
-        />
-        <SummaryCard
-          icon={<Mic className="h-4 w-4" />}
-          label="Conformidade Áudio/GPS"
-          value={`${audioRate}% / ${geoRate}%`}
-          hint="Áudio / geolocalização"
-          tone="info"
         />
       </div>
 
@@ -245,6 +234,35 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
                       <CheckCircle2 className="h-3.5 w-3.5 text-accent-success" />
                       {doneCount} coletas feitas por você
                     </div>
+
+                    {/* Metas relacionadas à pesquisa liberada (apenas pesquisador de campo) */}
+                    <div className="mt-3 border-t border-subtle pt-3">
+                      <button
+                        onClick={() =>
+                          setExpandedGoalsSurveyId((prev) =>
+                            prev === survey.id ? null : survey.id
+                          )
+                        }
+                        className="w-full inline-flex items-center justify-between gap-2 rounded-lg border border-ui bg-surface-raised px-3 py-2 text-[11px] font-bold text-primary hover:bg-surface-hover transition"
+                      >
+                        <span className="inline-flex items-center gap-1.5">
+                          <Target className="h-3.5 w-3.5 text-accent-primary" />
+                          Metas desta pesquisa
+                        </span>
+                        <ChevronDown
+                          className={`h-3.5 w-3.5 text-muted transition-transform ${
+                            expandedGoalsSurveyId === survey.id ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+
+                      {expandedGoalsSurveyId === survey.id && (
+                        <div className="mt-2">
+                          <ResearcherIndividualGoalsView activeSurvey={survey} />
+                        </div>
+                      )}
+                    </div>
+
                     <button
                       onClick={onStartColeta}
                       className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-md shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
