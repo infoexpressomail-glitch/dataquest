@@ -64,6 +64,22 @@ export function buildFieldLink(surveyCode?: string): string {
   return path;
 }
 
+/**
+ * Lê o parâmetro `?pesquisa=<CODIGO>` da URL atual (link compartilhado).
+ * Usado pelo Modo Pesquisador para pré-selecionar a pesquisa habilitada,
+ * levando o pesquisador direto à coleta, sem precisar selecioná-la.
+ */
+export function getFieldTargetSurveyCode(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('pesquisa');
+    return code ? code.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
 export type ShareFieldLinkResult = 'shared' | 'copied' | 'failed';
 
 /**

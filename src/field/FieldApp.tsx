@@ -7,7 +7,9 @@ import { FieldColeta } from './FieldColeta';
 import { FieldMetas } from './FieldMetas';
 import { FieldSync } from './FieldSync';
 import { FieldLogin } from './FieldLogin';
+import { useApp } from '../context/AppContext';
 import { resyncFieldSurveys } from '../services/fieldSyncService';
+import { getFieldTargetSurveyCode } from './fieldRoute';
 import {
   persistFieldSession,
   loadFieldSession,
@@ -32,6 +34,33 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
   const [section, setSection] = useState<FieldSection>('home');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
+  // Permite pré-selecionar a pesquisa-alvo no contexto (usada pela tela de Coleta).
+  const { setEditingSurvey } = useApp();
+
+  // Pré-seleciona a pesquisa a partir do parâmetro `?pesquisa=<CODIGO>` na URL
+  // (link compartilhado). Se encontrada e habilitada (ativa) para o pesquisador,
+  // leva direto à Coleta dessa pesquisa — sem precisar selecioná-la. Caso
+  // contrário (código ausente/inválido ou pesquisa não liberada), vai ao painel.
+  const applyUrlTarget = (s: FieldSession) => {
+    const code = getFieldTargetSurveyCode();
+    if (!code) {
+      setSection('home');
+      return;
+    }
+    const target = s.surveys.find(
+      (sv) =>
+        (sv.codigo && sv.codigo.toLowerCase() === code.toLowerCase()) ||
+        sv.id === code
+    );
+    if (target && target.status === 'ativa') {
+      setEditingSurvey(target);
+      setSection('coleta');
+    } else {
+      // Código não corresponde a uma pesquisa habilitada para este login.
+      setSection('home');
+    }
+  };
+
   // Re-sincroniza automaticamente na montagem quando já havia uma sessão
   // persistida: garante que remoções/alterações feitas pela coordenação no
   // sistema base (ex.: tirar uma pesquisa do pesquisador) se reflitam ao entrar,
@@ -46,6 +75,7 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
         if (active) {
           setSession(updated);
           persistFieldSession(updated);
+          applyUrlTarget(updated);
         }
       })
       .catch(() => {
@@ -58,10 +88,11 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
   }, []);
 
   // Autentica (vindo do FieldLogin): persiste e segue para o ambiente.
+  // Se o link compartilhado tinha `?pesquisa=<CODIGO>`, vai direto à coleta dela.
   const handleAuthenticated = (s: FieldSession) => {
     setSession(s);
     persistFieldSession(s);
-    setSection('home');
+    applyUrlTarget(s);
   };
 
   // Re-sincroniza as pesquisas do pesquisador (usado pelo FieldHome e FieldMetas).
