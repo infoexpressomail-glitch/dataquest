@@ -183,7 +183,7 @@ export const HomeDashboard: React.FC = () => {
         />
         <div className={painelGridClass}>
           {/* Card 1: Total de Pesquisas */}
-          <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
+          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-primary-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -201,13 +201,13 @@ export const HomeDashboard: React.FC = () => {
                 {activeSurveysCount} ativas
               </span>
             </div>
-            <div className="mt-2 text-xs text-muted">
+            <div className="mt-auto pt-2 text-xs text-muted">
               {inativeSurveysCount} inativas no repositório
             </div>
           </div>
 
           {/* Card 2: Entrevistas Realizadas */}
-          <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
+          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-info-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -225,13 +225,13 @@ export const HomeDashboard: React.FC = () => {
                 100% validadas
               </span>
             </div>
-            <div className="mt-2 text-xs text-muted">
+            <div className="mt-auto pt-2 text-xs text-muted">
               Coletas com áudio e coordenadas GPS
             </div>
           </div>
 
           {/* Card 3: Licenças e Dispositivos */}
-          <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
+          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-success-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -256,14 +256,14 @@ export const HomeDashboard: React.FC = () => {
                 style={{ width: `${activeLicenses > 0 ? (usedLicenses / activeLicenses) * 100 : 0}%` }}
               />
             </div>
-            <div className="mt-2 text-xs text-muted">
+            <div className="mt-auto pt-2 text-xs text-muted">
               Licenças em uso / disponibilizáveis
             </div>
           </div>
 
           {/* Card 4: Colaboradores Ativos — só para quem administra a equipe */}
           {canViewEquipe && (
-            <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
+            <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
               <div className="absolute top-0 right-0 w-24 h-24 bg-accent-purple-soft rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -281,7 +281,7 @@ export const HomeDashboard: React.FC = () => {
                   colaboradores
                 </span>
               </div>
-              <div className="mt-2 text-xs text-muted">
+              <div className="mt-auto pt-2 text-xs text-muted">
                 Pesquisadores, coordenadores e analistas
               </div>
             </div>
@@ -336,6 +336,13 @@ export const HomeDashboard: React.FC = () => {
             </div>
 
             <div className="mt-4 space-y-3">
+              {surveys.filter((s) => s.status === 'ativa').length === 0 && (
+                <div className="rounded-xl border border-dashed border-ui bg-surface-raised p-8 text-center">
+                  <Activity className="mx-auto h-8 w-8 text-muted" />
+                  <p className="mt-2 text-sm font-semibold text-primary">Nenhuma pesquisa em execução</p>
+                  <p className="mt-1 text-xs text-muted">Ative uma pesquisa para acompanhar metas e volume coletado aqui.</p>
+                </div>
+              )}
               {surveys
                 .filter((s) => s.status === 'ativa')
                 .map((survey) => {
@@ -443,7 +450,10 @@ export const HomeDashboard: React.FC = () => {
                 </span>
               </div>
 
-              <div className="mt-3 divide-y divide-ui/60">
+              <div className="mt-3 max-h-72 divide-y divide-ui/60 overflow-y-auto pr-1">
+                {connections.length === 0 && (
+                  <p className="py-4 text-center text-xs text-muted">Nenhuma conexão registrada recentemente.</p>
+                )}
                 {connections.map((conn) => (
                   <div key={conn.id} className="py-2.5 first:pt-0 last:pb-0 text-xs">
                     <div className="flex items-center justify-between">
