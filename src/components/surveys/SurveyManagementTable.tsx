@@ -12,14 +12,12 @@ import {
   FileText,
   Smartphone,
   Search,
-  Users,
   CheckCircle2,
   RotateCcw,
   BarChart3,
   X,
   History,
   Upload,
-  Server,
   Share2,
   Database,
   FileQuestion,
@@ -33,7 +31,6 @@ import { AudioExportModal } from './AudioExportModal';
 import { GeoMapModal } from './GeoMapModal';
 import { SurveyDailyTrackingModal } from './SurveyDailyTrackingModal';
 import { ConsolidatedPdfExportModal } from './ConsolidatedPdfExportModal';
-import { ServerSyncCheckModal } from '../wizard/ServerSyncCheckModal';
 import { QuestionnaireImportModal } from '../wizard/QuestionnaireImportModal';
 import { shareFieldLink } from '../../field/fieldRoute';
 
@@ -72,7 +69,6 @@ export const SurveyManagementTable: React.FC = () => {
     bulkUpdateSurveysStatus,
     bulkDeleteSurveys,
     bulkReplicateSurveys,
-    isSurveyInProgress,
   } = useApp();
 
   // --- Filtros / estado de tabela ---
@@ -88,7 +84,6 @@ export const SurveyManagementTable: React.FC = () => {
   const [trackingModalOpen, setTrackingModalOpen] = useState(false);
   const [trackingSurveys, setTrackingSurveys] = useState<Survey[]>([]);
   const [trackingInitialId, setTrackingInitialId] = useState<string | undefined>(undefined);
-  const [syncModalSurvey, setSyncModalSurvey] = useState<Survey | null>(null);
   const [consolidatedPdfModalOpen, setConsolidatedPdfModalOpen] = useState(false);
   const [questionnaireImportModalOpen, setQuestionnaireImportModalOpen] = useState(false);
   const [audioExportModalOpen, setAudioExportModalOpen] = useState(false);
@@ -481,12 +476,11 @@ export const SurveyManagementTable: React.FC = () => {
                   className="h-3.5 w-3.5 rounded border-ui bg-surface-card text-accent-primary-solid cursor-pointer"
                 />
               </th>
-              <th className="w-[15%] px-2 py-2.5 font-bold">Código</th>
-              <th className="w-[30%] px-2 py-2.5 font-bold">Descrição</th>
-              <th className="w-[16%] px-2 py-2.5 font-bold">Status</th>
-              <th className="w-[15%] px-2 py-2.5 font-bold">Pesquisadores</th>
-              <th className="w-[11%] px-2 py-2.5 font-bold">Data</th>
-              <th className="w-[15%] px-2 py-2.5 font-bold text-right">Ações</th>
+              <th className="w-[16%] px-2 py-2.5 font-bold">Código</th>
+              <th className="w-[34%] px-2 py-2.5 font-bold">Descrição</th>
+              <th className="w-[18%] px-2 py-2.5 font-bold">Status</th>
+              <th className="w-[14%] px-2 py-2.5 font-bold">Data</th>
+              <th className="w-[24%] px-2 py-2.5 font-bold text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ui">
@@ -495,7 +489,6 @@ export const SurveyManagementTable: React.FC = () => {
               const concluida = survey.status === 'concluida';
               const ativa = survey.status === 'ativa';
               const surveySubs = submissions.filter((sub) => sub.pesquisaId === survey.id);
-              const assignedResearchers = collaborators.filter((c) => survey.pesquisadoresIds.includes(c.id));
               const isSelected = selectedSurveyIds.includes(survey.id);
 
               return (
@@ -538,37 +531,12 @@ export const SurveyManagementTable: React.FC = () => {
                     <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold border ${statusPill(survey.status)}`}>
                       {survey.status.toUpperCase()}
                     </span>
-                    {isSurveyInProgress(survey) && (
-                      <button
-                        type="button"
-                        onClick={() => setSyncModalSurvey(survey)}
-                        className={`mt-1 flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-bold border transition ${
-                          survey.serverSyncToken
-                            ? 'bg-accent-success-soft border-accent-success-soft-border text-accent-success'
-                            : 'bg-accent-warning-soft border-accent-warning-soft-border text-accent-warning'
-                        }`}
-                        title={survey.serverSyncToken ? 'Sincronizado com o servidor.' : 'Sync obrigatório antes de subir alterações.'}
-                      >
-                        <Server className="h-2.5 w-2.5" />
-                        {survey.serverSyncToken ? 'Servidor: Autorizado' : 'Servidor: Sync Obrigatório'}
-                      </button>
-                    )}
-                  </td>
-
-                  <td className="px-2 py-2.5 text-secondary">
-                    <span className="flex items-center gap-1">
-                      <Users className="h-3 w-3 text-muted shrink-0" />
-                      <span className="truncate">{assignedResearchers.length}</span>
-                    </span>
-                    <span className="mt-0.5 block w-full truncate text-[10px] text-muted">
-                      {assignedResearchers.map((r) => r.nome.split(' ')[0]).join(', ') || '—'}
-                    </span>
                   </td>
 
                   <td className="px-2 py-2.5 text-muted whitespace-nowrap">{formatarData(survey.criadaEm)}</td>
 
                   <td className="px-2 py-2.5">
-                    <div className="flex items-center justify-end gap-0.5">
+                    <div className="flex flex-wrap items-center justify-end gap-0.5">
                       {/* Compartilhar link de coleta */}
                       {!excluida && (
                         <button
@@ -741,7 +709,7 @@ export const SurveyManagementTable: React.FC = () => {
             })}
             {ordenados.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-3 py-12 text-center">
+                <td colSpan={6} className="px-3 py-12 text-center">
                   <FileQuestion className="mx-auto h-9 w-9 text-muted" />
                   <p className="mt-2 text-xs font-semibold text-muted">Nenhuma pesquisa encontrada nesta categoria.</p>
                 </td>
@@ -779,15 +747,6 @@ export const SurveyManagementTable: React.FC = () => {
           submissions={submissions}
           initialSurveyId={trackingInitialId}
           onClose={() => setTrackingModalOpen(false)}
-        />
-      )}
-      {syncModalSurvey && (
-        <ServerSyncCheckModal
-          isOpen={!!syncModalSurvey}
-          onClose={() => setSyncModalSurvey(null)}
-          survey={syncModalSurvey}
-          hasLocalModifications={false}
-          onUploadSuccess={() => setSyncModalSurvey(null)}
         />
       )}
       {consolidatedPdfModalOpen && (
