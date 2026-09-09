@@ -290,7 +290,17 @@ export const HomeDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Seção 2: Monitoramento de Coleta + Conexões Recentes */}
+      {/* Seção 2: Consulta de Pesquisas (quadro abaixo dos cards de indicadores) */}
+      <div className="space-y-3">
+        <SectionHeader
+          icon={<Table2 className="h-4 w-4" />}
+          title="Consulta de Pesquisas"
+          subtitle="Gerencie, ative e compartilhe o link de coleta de campo"
+        />
+        <SurveyConsultaTable />
+      </div>
+
+      {/* Seção 3: Monitoramento de Coleta + Conexões Recentes */}
       <div className="space-y-3">
       <SectionHeader
         icon={<MonitorCog className="h-4 w-4" />}
@@ -518,16 +528,6 @@ export const HomeDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      </div>
-
-      {/* Seção 3: Consulta de Pesquisas (quadro abaixo dos cards) */}
-      <div className="space-y-3">
-        <SectionHeader
-          icon={<Table2 className="h-4 w-4" />}
-          title="Consulta de Pesquisas"
-          subtitle="Gerencie, ative e compartilhe o link de coleta de campo"
-        />
-        <SurveyConsultaTable />
       </div>
 
       {/* Toast de feedback do compartilhamento de link */}

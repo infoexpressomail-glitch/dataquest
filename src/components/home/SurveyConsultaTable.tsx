@@ -288,8 +288,8 @@ export const SurveyConsultaTable: React.FC = () => {
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex items-center justify-end gap-1.5">
-                      {/* Compartilhar link de coleta (login de campo) — só para pesquisa habilitada/ativa */}
-                      {survey.status === 'ativa' && !excluida && (
+                      {/* Compartilhar link de coleta (login de campo) — disponível para toda pesquisa não excluída */}
+                      {!excluida && (
                         <button
                           type="button"
                           onClick={() => handleShare(survey)}
