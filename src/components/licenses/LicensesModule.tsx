@@ -12,6 +12,12 @@ import {
   CheckCircle2,
   Info,
   SearchX,
+  Plus,
+  Minus,
+  AlertTriangle,
+  Pencil,
+  Save,
+  X,
 } from 'lucide-react';
 import { Collaborator } from '../../types';
 
@@ -36,11 +42,16 @@ export const LicensesModule: React.FC = () => {
     toggleCollaboratorStatus,
     currentProfile,
     hasPermission,
+    licenseQuota,
+    setLicenseQuota,
   } = useApp();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'todos' | 'em_uso' | 'disponivel'>('todos');
   const [profileFilter, setProfileFilter] = useState<string>('todos');
+  const [quotaEditing, setQuotaEditing] = useState(false);
+  const [quotaDraft, setQuotaDraft] = useState<string>(licenseQuota !== null ? String(licenseQuota) : '');
+  const [quotaMessage, setQuotaMessage] = useState<string | null>(null);
 
   // Pode gerenciar licenças? (licença = colaborador ativo => mesmas permissões de gestão de colaboradores)
   const canManageLicenses =
@@ -50,6 +61,18 @@ export const LicensesModule: React.FC = () => {
   const usedLicenses = collaborators.filter((c) => c.ativo).length;
   const availableLicenses = totalLicenses - usedLicenses;
   const usagePercent = totalLicenses > 0 ? Math.round((usedLicenses / totalLicenses) * 100) : 0;
+
+  // Quota pré-definida (teto). Quando definida, a base de comparação passa a ser a quota.
+  const quota = licenseQuota;
+  const quotaUsadaPct = quota && quota > 0 ? Math.min(100, Math.round((usedLicenses / quota) * 100)) : 0;
+  const quotaDisponiveis = quota !== null ? Math.max(0, quota - usedLicenses) : availableLicenses;
+  const estourouQuota = quota !== null && usedLicenses > quota;
+  const excedente = quota !== null ? Math.max(0, usedLicenses - quota) : 0;
+  const quotaUsagePercent = quota && quota > 0 ? Math.round((usedLicenses / quota) * 100) : 0;
+
+  // Bloqueio: não permite ativar um colaborador se a quota (teto) já estiver preenchida.
+  const podeAtivarLicenca = () =>
+    quota === null || usedLicenses < quota;
 
   const profileName = (id: string) => profiles.find((p) => p.id === id)?.name || 'Perfil não definido';
   const profileBadge = (id: string) => {
@@ -79,7 +102,35 @@ export const LicensesModule: React.FC = () => {
 
   const toggleLicense = (c: Collaborator) => {
     if (!canManageLicenses) return;
+    // Bloqueio de teto: não ativa se a quota já estiver cheia.
+    if (!c.ativo && !podeAtivarLicenca()) {
+      setQuotaMessage(`Limite de ${quota} licenças atingido. Revogue uma licença antes de disponibilizar outra.`);
+      setTimeout(() => setQuotaMessage(null), 6000);
+      return;
+    }
     toggleCollaboratorStatus(c.id);
+  };
+
+  const saveQuota = () => {
+    if (!canManageLicenses) return;
+    const parsed = Number(quotaDraft.trim());
+    if (!quotaDraft.trim() || !Number.isFinite(parsed) || parsed < 1) {
+      setQuotaMessage('Informe um número válido de licenças (mínimo 1).');
+      setTimeout(() => setQuotaMessage(null), 5000);
+      return;
+    }
+    const novo = Math.round(parsed);
+    setLicenseQuota(novo);
+    setQuotaEditing(false);
+    setQuotaMessage(null);
+  };
+
+  const clearQuota = () => {
+    if (!canManageLicenses) return;
+    setLicenseQuota(null);
+    setQuotaEditing(false);
+    setQuotaDraft('');
+    setQuotaMessage(null);
   };
 
   const hasAnyFilter =
@@ -167,10 +218,177 @@ export const LicensesModule: React.FC = () => {
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-bold tracking-tight text-primary">{availableLicenses}</span>
-            <span className="text-xs font-medium text-muted">sem acesso ativo</span>
+            <span className="text-3xl font-bold tracking-tight text-primary">{quotaDisponiveis}</span>
+            <span className="text-xs font-medium text-muted">
+              {quota !== null ? `vagas da quota de ${quota}` : 'sem acesso ativo'}
+            </span>
+          </div>
+          {quota !== null && estourouQuota && (
+            <div className="mt-1 text-[11px] font-semibold text-accent-danger">
+              {excedente} acima do teto
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Painel de configuração da Quota (teto pré-definido) */}
+      <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-primary">Quota de Licenças (Teto)</span>
+              {quota !== null && (
+                <span
+                  className={`rounded px-2 py-0.5 text-[10px] font-bold border ${
+                    estourouQuota
+                      ? 'bg-accent-danger-soft text-accent-danger border-accent-danger-soft-border'
+                      : 'bg-accent-success-soft text-accent-success border-accent-success-soft-border'
+                  }`}
+                >
+                  {estourouQuota ? `${excedente} acima do teto` : 'dentro do teto'}
+                </span>
+              )}
+            </div>
+            <p className="mt-0.5 text-xs text-muted max-w-xl">
+              {quota === null
+                ? 'Defina um número mínimo de licenças contratadas. Quando definida, o sistema passa a usar a quota como teto e bloqueia a ativação além do limite.'
+                : `Teto contratado: ${quota} licença(s). ${usedLicenses} em uso, ${quotaDisponiveis} disponível(is).`}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {canManageLicenses ? (
+              quotaEditing ? (
+                <>
+                  <div className="flex items-center gap-1 rounded-lg border border-ui bg-surface-raised px-1 py-0.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setQuotaDraft((v) => {
+                          const n = Number(v || '0');
+                          return String(Math.max(1, n - 1));
+                        })
+                      }
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-surface-hover hover:text-primary transition-colors"
+                    >
+                      <Minus className="h-3.5 w-3.5" />
+                    </button>
+                    <input
+                      type="number"
+                      min={1}
+                      value={quotaDraft}
+                      onChange={(e) => setQuotaDraft(e.target.value)}
+                      className="w-16 border-0 bg-transparent text-center text-sm font-bold text-primary focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setQuotaDraft((v) => {
+                          const n = Number(v || '0');
+                          return String(n + 1);
+                        })
+                      }
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-surface-hover hover:text-primary transition-colors"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={saveQuota}
+                    className="flex h-8 items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3 text-xs font-bold text-on-accent transition hover:bg-accent-primary-solid-hover active:scale-95"
+                  >
+                    <Save className="h-3.5 w-3.5" />
+                    Salvar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuotaEditing(false);
+                      setQuotaDraft(quota !== null ? String(quota) : '');
+                      setQuotaMessage(null);
+                    }}
+                    className="flex h-8 items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 text-xs font-semibold text-primary transition hover:bg-surface-hover"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    id="btn-edit-quota"
+                    onClick={() => {
+                      setQuotaEditing(true);
+                      setQuotaDraft(quota !== null ? String(quota) : '');
+                      setQuotaMessage(null);
+                    }}
+                    className="flex h-8 items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 text-xs font-bold text-primary transition hover:bg-surface-hover"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    {quota === null ? 'Definir quota' : 'Editar quota'}
+                  </button>
+                  {quota !== null && (
+                    <button
+                      type="button"
+                      onClick={clearQuota}
+                      className="flex h-8 items-center gap-1.5 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft px-3 text-xs font-bold text-accent-danger transition hover:bg-accent-danger-soft"
+                    >
+                      <AlertTriangle className="h-3.5 w-3.5" />
+                      Remover quota
+                    </button>
+                  )}
+                </>
+              )
+            ) : (
+              <div className="flex items-center gap-1.5 text-xs text-muted">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Sem permissão para alterar a quota.
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Barra de progresso da quota + aviso de bloqueio */}
+        {quota !== null && (
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted">Uso da quota</span>
+              <span className={`font-bold ${estourouQuota ? 'text-accent-danger' : quotaUsadaPct >= 90 ? 'text-accent-warning' : 'text-accent-success'}`}>
+                {usedLicenses} / {quota} ({quotaUsagePercent}%)
+              </span>
+            </div>
+            <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-surface-raised">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  estourouQuota
+                    ? 'bg-accent-danger-solid'
+                    : quotaUsadaPct >= 90
+                    ? 'bg-accent-warning-solid'
+                    : 'bg-accent-success-solid'
+                }`}
+                style={{ width: `${Math.min(100, quotaUsagePercent)}%` }}
+              />
+            </div>
+            {estourouQuota && (
+              <div className="mt-2 flex items-start gap-2 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft px-3 py-2 text-[11px] text-accent-danger">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                <span>
+                  Você tem {usedLicenses} licenças em uso, acima do teto de {quota}. Reduza a quota ou
+                  revogue licenças para voltar ao limite contratado.
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {quotaMessage && (
+          <div className="mt-3 flex items-start gap-2 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-3 py-2 text-[11px] text-accent-warning">
+            <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+            <span>{quotaMessage}</span>
+          </div>
+        )}
       </div>
 
       {/* Toolbar: busca + filtros */}
@@ -299,8 +517,16 @@ export const LicensesModule: React.FC = () => {
                     {canManageLicenses ? (
                       <button
                         onClick={() => toggleLicense(c)}
+                        disabled={!licensed && quota !== null && usedLicenses >= quota}
+                        title={
+                          !licensed && quota !== null && usedLicenses >= quota
+                            ? `Quota de ${quota} licenças atingida. Revogue uma antes de disponibilizar.`
+                            : undefined
+                        }
                         className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold border transition-colors shrink-0 ${
-                          licensed
+                          !licensed && quota !== null && usedLicenses >= quota
+                            ? 'cursor-not-allowed bg-surface border-ui text-muted opacity-60'
+                            : licensed
                             ? 'bg-accent-danger-soft text-accent-danger border-accent-danger-soft-border hover:bg-accent-danger-soft'
                             : 'bg-accent-success-soft text-accent-success border-accent-success-soft-border hover:bg-accent-success-soft'
                         }`}

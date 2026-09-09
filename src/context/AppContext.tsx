@@ -75,6 +75,8 @@ interface AppContextType {
   collaborators: Collaborator[];
   saveCollaborator: (c: Collaborator, senha?: string) => Promise<boolean>;
   toggleCollaboratorStatus: (id: string) => void;
+  licenseQuota: number | null;
+  setLicenseQuota: (q: number | null) => void;
   surveys: Survey[];
   saveSurvey: (s: Survey) => void;
   replicateSurvey: (surveyId: string) => Survey;
@@ -181,6 +183,7 @@ const STORAGE_KEYS = {
   DARK_MODE: 'dataquest_dark',
   PROFILES: 'dataquest_profiles_v1',
   COLLABORATORS: 'dataquest_collaborators_v1',
+  LICENSE_QUOTA: 'dataquest_license_quota_v1',
   SURVEYS: 'dataquest_surveys_v1',
   SUBMISSIONS: 'dataquest_submissions_v1',
   IMPORTS: 'dataquest_imports_v1',
@@ -227,6 +230,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const saved = localStorage.getItem(STORAGE_KEYS.COLLABORATORS);
     return saved ? JSON.parse(saved) : initialCollaborators;
   });
+
+  // Quota de licenças (teto pré-definido). null = sem quota configurada.
+  const [licenseQuota, setLicenseQuotaState] = useState<number | null>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.LICENSE_QUOTA);
+    if (saved === null || saved === '' || saved === 'null') return null;
+    const n = Number(saved);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  });
+
+  const setLicenseQuota = (q: number | null) => {
+    setLicenseQuotaState(q);
+    if (q === null || q <= 0) {
+      localStorage.removeItem(STORAGE_KEYS.LICENSE_QUOTA);
+    } else {
+      localStorage.setItem(STORAGE_KEYS.LICENSE_QUOTA, String(Math.round(q)));
+    }
+  };
 
   const [currentUser, setCurrentUser] = useState<Collaborator>(() => {
     const savedId = localStorage.getItem(STORAGE_KEYS.CURRENT_USER_ID);
@@ -2330,6 +2350,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.clear();
     setProfiles(initialProfiles);
     setCollaborators(initialCollaborators);
+    setLicenseQuotaState(null);
     setSurveys(initialSurveys);
     setSubmissions(initialSubmissions);
     setImports(initialImports);
@@ -2366,6 +2387,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         collaborators,
         saveCollaborator,
         toggleCollaboratorStatus,
+        licenseQuota,
+        setLicenseQuota,
         surveys,
         saveSurvey,
         replicateSurvey,
