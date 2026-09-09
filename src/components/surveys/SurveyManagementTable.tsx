@@ -252,9 +252,9 @@ export const SurveyManagementTable: React.FC = () => {
           <button
             id="btn-nav-to-audit-from-surveys"
             onClick={() => setActiveModule('historico_acoes')}
-            className="flex items-center gap-1.5 rounded-lg border border-accent-primary-soft-border bg-accent-primary-soft px-3.5 py-2 text-xs font-bold text-accent-primary hover:bg-accent-primary-soft transition-colors shadow-xs"
+            className="flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg border border-accent-primary-soft-border bg-accent-primary-soft px-3 text-xs font-bold text-accent-primary hover:bg-accent-primary-soft transition-colors shadow-xs"
           >
-            <History className="h-4 w-4" />
+            <History className="h-4 w-4 shrink-0" />
             <span>Histórico de Auditoria</span>
           </button>
 
@@ -262,10 +262,10 @@ export const SurveyManagementTable: React.FC = () => {
             <button
               id="btn-export-audios-by-survey"
               onClick={() => { setAudioExportSurveyId(undefined); setAudioExportModalOpen(true); }}
-              className="flex items-center gap-1.5 rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3.5 py-2 text-xs font-bold text-accent-purple hover:bg-accent-purple-soft transition-colors shadow-xs"
+              className="flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3 text-xs font-bold text-accent-purple hover:bg-accent-purple-soft transition-colors shadow-xs"
             >
-              <Volume2 className="h-4 w-4" />
-              <span>Exportar Áudios (.ZIP)</span>
+              <Volume2 className="h-4 w-4 shrink-0" />
+              <span>Exportar Áudios</span>
             </button>
           )}
 
@@ -274,19 +274,19 @@ export const SurveyManagementTable: React.FC = () => {
               <button
                 id="btn-survey-import-questionnaire"
                 onClick={() => setQuestionnaireImportModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3.5 py-2 text-xs font-bold text-accent-purple hover:bg-accent-purple-soft transition-colors shadow-xs"
+                className="flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3 text-xs font-bold text-accent-purple hover:bg-accent-purple-soft transition-colors shadow-xs"
               >
-                <Upload className="h-4 w-4" />
+                <Upload className="h-4 w-4 shrink-0" />
                 <span>Importar Questionário</span>
               </button>
 
               <button
                 id="btn-survey-create-new"
                 onClick={handleCreateNew}
-                className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                className="flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg bg-accent-primary-solid px-4 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
               >
-                <PlusCircle className="h-4 w-4" />
-                <span>Criar Pesquisa (Abrir Wizard)</span>
+                <PlusCircle className="h-4 w-4 shrink-0" />
+                <span>Criar Pesquisa</span>
               </button>
             </>
           )}
@@ -395,7 +395,7 @@ export const SurveyManagementTable: React.FC = () => {
                 setTrackingInitialId(selected[0]?.id);
                 setTrackingModalOpen(true);
               }}
-              className="flex items-center gap-1.5 rounded-lg border border-accent-primary-soft-border bg-accent-primary-soft px-3 py-1.5 text-xs font-bold text-accent-primary hover:bg-accent-primary-solid-hover hover:text-on-accent transition-colors shadow-xs"
+              className="flex h-8 items-center gap-1.5 rounded-lg border border-accent-primary-soft-border bg-accent-primary-soft px-3 text-xs font-bold text-accent-primary hover:bg-accent-primary-solid-hover hover:text-on-accent transition-colors shadow-xs"
             >
               <BarChart3 className="h-3.5 w-3.5" />
               <span>Gráfico Diário ({selectedSurveyIds.length})</span>
@@ -405,7 +405,7 @@ export const SurveyManagementTable: React.FC = () => {
               <button
                 id="btn-bulk-export-consolidated-pdf"
                 onClick={() => setConsolidatedPdfModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft px-3 py-1.5 text-xs font-bold text-accent-danger hover:bg-accent-danger-solid-hover hover:text-on-accent transition-colors shadow-xs"
+                className="flex h-8 items-center gap-1.5 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft px-3 text-xs font-bold text-accent-danger hover:bg-accent-danger-solid-hover hover:text-on-accent transition-colors shadow-xs"
               >
                 <FileText className="h-3.5 w-3.5" />
                 <span>Exportar PDF Consolidado ({selectedSurveyIds.length})</span>
@@ -416,13 +416,13 @@ export const SurveyManagementTable: React.FC = () => {
               <>
                 <button
                   onClick={() => bulkUpdateSurveysStatus(selectedSurveyIds, 'ativa')}
-                  className="flex items-center gap-1 rounded-lg border border-accent-success-soft-border bg-accent-success-soft px-2.5 py-1.5 text-xs font-semibold text-accent-success hover:bg-accent-success-soft transition-colors"
+                  className="flex h-8 items-center gap-1 rounded-lg border border-accent-success-soft-border bg-accent-success-soft px-2.5 text-xs font-semibold text-accent-success hover:bg-accent-success-soft transition-colors"
                 >
                   <Power className="h-3.5 w-3.5" /> Ativar
                 </button>
                 <button
                   onClick={() => bulkUpdateSurveysStatus(selectedSurveyIds, 'inativa')}
-                  className="flex items-center gap-1 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-2.5 py-1.5 text-xs font-semibold text-accent-warning hover:bg-accent-warning-soft transition-colors"
+                  className="flex h-8 items-center gap-1 rounded-lg border border-accent-warning-soft-border bg-accent-warning-soft px-2.5 text-xs font-semibold text-accent-warning hover:bg-accent-warning-soft transition-colors"
                 >
                   <Power className="h-3.5 w-3.5" /> Inativar
                 </button>
@@ -436,7 +436,7 @@ export const SurveyManagementTable: React.FC = () => {
                   setReplicationNotice(`${selectedSurveyIds.length} pesquisa(s) replicada(s) para novo ciclo com sucesso!`);
                   setTimeout(() => setReplicationNotice(null), 5000);
                 }}
-                className="flex items-center gap-1 rounded-lg border border-ui bg-surface-raised px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-surface-hover transition-colors"
+                className="flex h-8 items-center gap-1 rounded-lg border border-ui bg-surface-raised px-2.5 text-xs font-semibold text-primary hover:bg-surface-hover transition-colors"
               >
                 <Copy className="h-3.5 w-3.5" /> Replicar
               </button>
@@ -450,13 +450,13 @@ export const SurveyManagementTable: React.FC = () => {
                     setSelectedSurveyIds([]);
                   }
                 }}
-                className="flex items-center gap-1 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft px-2.5 py-1.5 text-xs font-semibold text-accent-danger hover:bg-accent-danger-soft transition-colors"
+                className="flex h-8 items-center gap-1 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft px-2.5 text-xs font-semibold text-accent-danger hover:bg-accent-danger-soft transition-colors"
               >
                 <Trash2 className="h-3.5 w-3.5" /> Excluir
               </button>
             )}
 
-            <button onClick={() => setSelectedSurveyIds([])} className="text-xs text-muted hover:text-primary px-2 py-1 transition-colors">
+            <button onClick={() => setSelectedSurveyIds([])} className="flex h-8 items-center text-xs text-muted hover:text-primary px-2 transition-colors">
               Desmarcar
             </button>
           </div>
@@ -543,7 +543,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => handleShare(survey)}
                           title="Compartilhar link de coleta (login de campo)"
-                          className="rounded-md p-1 text-accent-primary hover:bg-accent-primary-soft transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-accent-primary hover:bg-accent-primary-soft transition-colors"
                         >
                           <Share2 className="h-4 w-4" />
                         </button>
@@ -554,7 +554,7 @@ export const SurveyManagementTable: React.FC = () => {
                         type="button"
                         onClick={() => { setEditingSurvey(survey); setActiveModule('simulador'); }}
                         title="Coleta (simulador)"
-                        className="rounded-md p-1 text-accent-primary hover:bg-surface-raised transition-colors"
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-accent-primary hover:bg-surface-raised transition-colors"
                       >
                         <Smartphone className="h-4 w-4" />
                       </button>
@@ -565,7 +565,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => handleEdit(survey)}
                           title="Editar pesquisa (Wizard)"
-                          className="rounded-md p-1 text-muted hover:bg-surface-raised hover:text-primary transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-surface-raised hover:text-primary transition-colors"
                         >
                           <Edit3 className="h-4 w-4" />
                         </button>
@@ -577,7 +577,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => handleReplicate(survey)}
                           title="Replicar ciclo"
-                          className="rounded-md p-1 text-accent-primary hover:bg-surface-raised transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-accent-primary hover:bg-surface-raised transition-colors"
                         >
                           <Copy className="h-4 w-4" />
                         </button>
@@ -588,7 +588,7 @@ export const SurveyManagementTable: React.FC = () => {
                         type="button"
                         onClick={() => { setTrackingSurveys([survey]); setTrackingInitialId(survey.id); setTrackingModalOpen(true); }}
                         title="Acompanhamento diário"
-                        className="rounded-md p-1 text-accent-primary hover:bg-surface-raised transition-colors"
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-accent-primary hover:bg-surface-raised transition-colors"
                       >
                         <BarChart3 className="h-4 w-4" />
                       </button>
@@ -599,7 +599,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => { setAudioExportSurveyId(survey.id); setAudioExportModalOpen(true); }}
                           title="Exportar/ouvir áudios"
-                          className="rounded-md p-1 text-accent-purple hover:bg-surface-raised transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-accent-purple hover:bg-surface-raised transition-colors"
                         >
                           <Volume2 className="h-4 w-4" />
                         </button>
@@ -611,7 +611,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => { setGeoModalSurvey(survey); setGeoModalOpen(true); }}
                           title="Georreferenciamento em mapa"
-                          className="rounded-md p-1 text-accent-success hover:bg-surface-raised transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-accent-success hover:bg-surface-raised transition-colors"
                         >
                           <MapPin className="h-4 w-4" />
                         </button>
@@ -624,7 +624,7 @@ export const SurveyManagementTable: React.FC = () => {
                             type="button"
                             onClick={() => handleExportCSV(survey)}
                             title="Exportar CSV"
-                            className="rounded-md p-1 text-accent-success hover:bg-surface-raised transition-colors"
+                            className="flex h-7 w-7 items-center justify-center rounded-md text-accent-success hover:bg-surface-raised transition-colors"
                           >
                             <FileSpreadsheet className="h-4 w-4" />
                           </button>
@@ -632,7 +632,7 @@ export const SurveyManagementTable: React.FC = () => {
                             type="button"
                             onClick={() => handleExportPDF(survey)}
                             title="Exportar PDF"
-                            className="rounded-md p-1 text-accent-danger hover:bg-surface-raised transition-colors"
+                            className="flex h-7 w-7 items-center justify-center rounded-md text-accent-danger hover:bg-surface-raised transition-colors"
                           >
                             <FileText className="h-4 w-4" />
                           </button>
@@ -645,7 +645,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => toggleSurveyStatus(survey.id)}
                           title={ativa ? 'Desativar pesquisa' : 'Ativar pesquisa'}
-                          className="rounded-md p-1 text-accent-warning hover:bg-surface-raised transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-accent-warning hover:bg-surface-raised transition-colors"
                         >
                           <Power className="h-4 w-4" />
                         </button>
@@ -658,7 +658,7 @@ export const SurveyManagementTable: React.FC = () => {
                             type="button"
                             onClick={() => reopenSurvey(survey.id)}
                             title="Reabrir pesquisa"
-                            className="rounded-md p-1 text-accent-success hover:bg-surface-raised transition-colors"
+                            className="flex h-7 w-7 items-center justify-center rounded-md text-accent-success hover:bg-surface-raised transition-colors"
                           >
                             <RotateCcw className="h-4 w-4" />
                           </button>
@@ -671,7 +671,7 @@ export const SurveyManagementTable: React.FC = () => {
                               }
                             }}
                             title="Finalizar pesquisa (concluir)"
-                            className="rounded-md p-1 text-accent-purple hover:bg-surface-raised transition-colors"
+                            className="flex h-7 w-7 items-center justify-center rounded-md text-accent-purple hover:bg-surface-raised transition-colors"
                           >
                             <CheckCircle2 className="h-4 w-4" />
                           </button>
@@ -684,7 +684,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => restoreSurvey(survey.id)}
                           title="Restaurar pesquisa"
-                          className="rounded-md p-1 text-accent-success hover:bg-surface-raised transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-accent-success hover:bg-surface-raised transition-colors"
                         >
                           <RotateCcw className="h-4 w-4" />
                         </button>
@@ -696,7 +696,7 @@ export const SurveyManagementTable: React.FC = () => {
                               if (window.confirm(`Deseja mover a pesquisa "${survey.nome}" para a lixeira?`)) deleteSurvey(survey.id);
                             }}
                             title="Excluir pesquisa"
-                            className="rounded-md p-1 text-accent-info hover:bg-accent-danger-soft hover:text-accent-danger transition-colors"
+                            className="flex h-7 w-7 items-center justify-center rounded-md text-accent-info hover:bg-accent-danger-soft hover:text-accent-danger transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
