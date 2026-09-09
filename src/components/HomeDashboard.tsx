@@ -21,6 +21,8 @@ import {
   Share2,
   MonitorCog,
   Link2,
+  Database,
+  CalendarDays,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
 import { shareFieldLink } from '../field/fieldRoute';
@@ -65,6 +67,15 @@ export const HomeDashboard: React.FC = () => {
   const inativeSurveysCount = surveys.filter((s) => s.status === 'inativa').length;
   const totalSurveysCount = surveys.filter((s) => s.status !== 'excluida').length;
   const totalInterviews = submissions.length;
+  // Coletas realizadas hoje
+  const hojeKey = new Date().toLocaleDateString('pt-BR');
+  const coletasHoje = submissions.filter((s) => {
+    if (!s.dataHora) return false;
+    const d = new Date(s.dataHora);
+    if (isNaN(d.getTime())) return false;
+    return d.toLocaleDateString('pt-BR') === hojeKey;
+  }).length;
+  const pendentesSync = pendingIndexedDbCount + offlineQueue.length;
   // Licença = colaborador ativo. O total de licenças é o total de colaboradores
   // cadastrados; as licenças em uso são os colaboradores ativos.
   const activeLicenses = collaborators.length; // Total de licenças disponibilizáveis
@@ -109,13 +120,76 @@ export const HomeDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Welcome & Quick Action Header */}
-      <div className="relative overflow-hidden flex flex-col justify-between gap-4 rounded-2xl border border-ui bg-surface p-6 text-primary shadow-xl md:flex-row md:items-center">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-accent-primary-soft rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10">
+      {/* Faixa de status ao vivo (substitui o antigo quadro de boas-vindas) */}
+      <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-4 shadow-xl">
+        <div className="absolute -top-10 -right-10 w-52 h-52 bg-accent-primary-soft rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          {/* Título compacto + ações rápidas */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl font-bold tracking-tight text-primary">
+                  Painel Geral de Controle
+                </h1>
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-bold border ${
+                    syncProgress.isActive
+                      ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border'
+                      : effectiveOnline
+                      ? 'bg-accent-success-soft text-accent-success border-accent-success-soft-border'
+                      : 'bg-accent-warning-soft text-accent-warning border-accent-warning-soft-border'
+                  }`}
+                >
+                  {syncProgress.isActive ? (
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                  ) : effectiveOnline ? (
+                    <Wifi className="h-3 w-3" />
+                  ) : (
+                    <WifiOff className="h-3 w-3" />
+                  )}
+                  {syncProgress.isActive
+                    ? `Sincronizando (${syncProgress.percent}%)`
+                    : effectiveOnline
+                    ? 'Online'
+                    : 'Offline'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Ações rápidas */}
           <div className="flex flex-wrap items-center gap-2">
+            {hasPermission('pesquisa_criar') && (
+              <button
+                id="btn-home-quick-new-survey"
+                onClick={() => {
+                  setEditingSurvey(null);
+                  setActiveModule('wizard');
+                }}
+                className="flex h-8 items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span>{t('newSurvey')}</span>
+              </button>
+            )}
+
+            <button
+              id="btn-home-quick-simulator"
+              onClick={() => setActiveModule('simulador')}
+              className="flex h-8 items-center gap-1.5 rounded-lg bg-surface-raised px-3 text-xs font-semibold text-primary border border-ui transition hover:bg-surface-hover hover:text-primary active:scale-95"
+            >
+              <Smartphone className="h-3.5 w-3.5 text-accent-primary" />
+              <span>Simulador de Coleta</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Faixa de status ao vivo em cards compactos */}
+        <div className="relative z-10 mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Conexão */}
+          <div className="flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3">
             <span
-              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold border ${
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
                 syncProgress.isActive
                   ? 'bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border'
                   : effectiveOnline
@@ -124,50 +198,59 @@ export const HomeDashboard: React.FC = () => {
               }`}
             >
               {syncProgress.isActive ? (
-                <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                <RefreshCw className="h-4 w-4 animate-spin" />
               ) : effectiveOnline ? (
-                <Wifi className="h-3.5 w-3.5" />
+                <Wifi className="h-4 w-4" />
               ) : (
-                <WifiOff className="h-3.5 w-3.5" />
+                <WifiOff className="h-4 w-4" />
               )}
-              {syncProgress.isActive
-                ? `Sincronizando (${syncProgress.percent}%)`
-                : effectiveOnline
-                ? 'Online'
-                : 'Offline'}
             </span>
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted">Conexão</div>
+              <div className="truncate text-xs font-bold text-primary">
+                {syncProgress.isActive
+                  ? `Sincronizando ${syncProgress.percent}%`
+                  : effectiveOnline
+                  ? 'Online — conectado'
+                  : 'Offline — local'}
+              </div>
+            </div>
           </div>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl text-primary">
-            Painel Geral de Controle
-          </h1>
-          <p className="mt-1 text-sm text-muted max-w-2xl leading-relaxed">
-            Monitoramento em tempo real de coletas, regras condicionais, metas quantitativas e sincronização de dados.
-          </p>
-        </div>
 
-        <div className="relative z-10 flex flex-wrap items-center gap-2.5">
-          {hasPermission('pesquisa_criar') && (
-            <button
-              id="btn-home-quick-new-survey"
-              onClick={() => {
-                setEditingSurvey(null);
-                setActiveModule('wizard');
-              }}
-              className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
-            >
-              <PlusCircle className="h-4 w-4" />
-              <span>{t('newSurvey')}</span>
-            </button>
-          )}
+          {/* Sincronização */}
+          <div className="flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-info-soft text-accent-info border-accent-info-soft-border">
+              <Database className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted">Sincronização</div>
+              <div className={`truncate text-xs font-bold ${pendentesSync > 0 ? 'text-accent-warning' : 'text-accent-success'}`}>
+                {pendentesSync > 0 ? `${pendentesSync} pendente(s)` : 'Em dia'}
+              </div>
+            </div>
+          </div>
 
-          <button
-            id="btn-home-quick-simulator"
-            onClick={() => setActiveModule('simulador')}
-            className="flex items-center gap-1.5 rounded-lg bg-surface-raised px-4 py-2 text-xs font-semibold text-primary border border-ui transition hover:bg-surface-hover hover:text-primary active:scale-95"
-          >
-            <Smartphone className="h-4 w-4 text-accent-primary" />
-            <span>Simulador de Coleta</span>
-          </button>
+          {/* Pesquisas ativas */}
+          <div className="flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border">
+              <Gauge className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted">Pesquisas ativas</div>
+              <div className="truncate text-xs font-bold text-primary">{activeSurveysCount}</div>
+            </div>
+          </div>
+
+          {/* Coletas hoje */}
+          <div className="flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-success-soft text-accent-success border-accent-success-soft-border">
+              <CalendarDays className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted">Coletas hoje</div>
+              <div className="truncate text-xs font-bold text-primary">{coletasHoje}</div>
+            </div>
+          </div>
         </div>
       </div>
 
