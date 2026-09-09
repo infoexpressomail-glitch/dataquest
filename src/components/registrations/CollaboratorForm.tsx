@@ -16,6 +16,8 @@ import {
   Shield,
   X,
   FileCheck,
+  ArrowUpRight,
+  UserCheck,
 } from 'lucide-react';
 import { Collaborator } from '../../types';
 
@@ -31,6 +33,7 @@ export const CollaboratorForm: React.FC = () => {
     bulkUpdateCollaboratorsProfile,
     bulkDeleteCollaborators,
     bulkAssignCollaboratorsToSurveys,
+    setActiveModule,
   } = useApp();
 
   const canAdd = hasPermission('colaboradores_incluir');
@@ -183,6 +186,66 @@ export const CollaboratorForm: React.FC = () => {
             <span>Cadastrar Novo Colaborador</span>
           </button>
         )}
+      </div>
+
+      {/* Resumo de colaboradores (cards clicáveis) */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <button
+          type="button"
+          onClick={() => setActiveModule('colaboradores')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-4 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl"
+        >
+          <div className="absolute top-0 right-0 w-20 h-20 bg-accent-primary-soft rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Total de Colaboradores</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
+              <Users className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-3xl font-bold tracking-tight text-primary">{collaborators.length}</span>
+            <span className="text-xs font-medium text-muted">cadastrados</span>
+          </div>
+          <ArrowUpRight className="mt-1 h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveModule('colaboradores')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-4 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl"
+        >
+          <div className="absolute top-0 right-0 w-20 h-20 bg-accent-success-soft rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Ativos</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-success-soft text-accent-success border border-accent-success-soft-border">
+              <UserCheck className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-3xl font-bold tracking-tight text-primary">{collaborators.filter((c) => c.ativo).length}</span>
+            <span className="text-xs font-medium text-muted">licenças em uso</span>
+          </div>
+          <ArrowUpRight className="mt-1 h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveModule('licencas')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-4 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl"
+        >
+          <div className="absolute top-0 right-0 w-20 h-20 bg-accent-info-soft rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Inativos / Licenças Disponíveis</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-info-soft text-accent-info border border-accent-info-soft-border">
+              <UserCheck className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-3xl font-bold tracking-tight text-primary">{collaborators.filter((c) => !c.ativo).length}</span>
+            <span className="text-xs font-medium text-muted">sem acesso ativo</span>
+          </div>
+          <ArrowUpRight className="mt-1 h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+        </button>
       </div>
 
       {successNotice && (

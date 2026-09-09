@@ -32,6 +32,7 @@ import {
   Sliders,
   Check,
   Percent,
+  ArrowUpRight,
 } from 'lucide-react';
 import { FieldTeamSizingCard } from './FieldTeamSizingCard';
 
@@ -51,6 +52,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
     deleteGlobalTarget,
     assignResearcherQuota,
     saveSurvey,
+    setActiveModule,
   } = useApp();
 
   const [expandedTargetId, setExpandedTargetId] = useState<string | null>(null);
@@ -258,7 +260,11 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
       {/* Top Banner & KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
+        <button
+          type="button"
+          onClick={() => setActiveModule('metas')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-4 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted">Metas Globais Ativas</span>
             <div className="rounded-lg bg-accent-primary-soft p-2 text-accent-primary">
@@ -269,12 +275,17 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
             <span className="text-2xl font-bold text-primary">{totalMetas}</span>
             <span className="text-xs text-muted">demográficas</span>
           </div>
-          <p className="mt-1 text-[11px] text-muted">
-            Amostragens agregadas por idade, sexo e bairro
+          <p className="mt-1 flex items-center justify-between text-[11px] text-muted">
+            <span>Amostragens agregadas por idade, sexo e bairro</span>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:opacity-100" />
           </p>
-        </div>
+        </button>
 
-        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
+        <button
+          type="button"
+          onClick={() => setActiveModule('respostas')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-4 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted">Progresso Amostral Geral</span>
             <div className="rounded-lg bg-accent-success-soft p-2 text-accent-success">
@@ -287,15 +298,20 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               {totalAtingidoGeral} / {totalAlvoGeral}
             </span>
           </div>
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
+          <div className="mt-2 flex h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
             <div
               className="h-full rounded-full bg-accent-success-solid transition-all duration-500"
               style={{ width: `${percentualConsolidado}%` }}
             />
           </div>
-        </div>
+          <ArrowUpRight className="mt-2 h-3.5 w-3.5 shrink-0 self-end text-muted opacity-0 transition group-hover:opacity-100" />
+        </button>
 
-        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
+        <button
+          type="button"
+          onClick={() => setActiveModule('colaboradores')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-4 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-purple-soft-border hover:shadow-2xl"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted">Pesquisadores Vinculados</span>
             <div className="rounded-lg bg-accent-purple-soft p-2 text-accent-purple">
@@ -306,12 +322,17 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
             <span className="text-2xl font-bold text-primary">{surveyResearchers.length}</span>
             <span className="text-xs text-accent-purple">perfis alocados</span>
           </div>
-          <p className="mt-1 text-[11px] text-muted">
-            Cada pesquisador visualiza apenas seu progresso
+          <p className="mt-1 flex items-center justify-between text-[11px] text-muted">
+            <span>Cada pesquisador visualiza apenas seu progresso</span>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:opacity-100" />
           </p>
-        </div>
+        </button>
 
-        <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
+        <button
+          type="button"
+          onClick={() => setActiveModule('metas')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-4 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted">Metas Concluídas</span>
             <div className="rounded-lg bg-accent-info-soft p-2 text-accent-info">
@@ -322,10 +343,11 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
             <span className="text-2xl font-bold text-primary">{metasConcluidasCount}</span>
             <span className="text-xs text-muted">de {totalMetas}</span>
           </div>
-          <p className="mt-1 text-[11px] text-muted">
-            Segmentos que já alcançaram 100% da cota
+          <p className="mt-1 flex items-center justify-between text-[11px] text-muted">
+            <span>Segmentos que já alcançaram 100% da cota</span>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:opacity-100" />
           </p>
-        </div>
+        </button>
       </div>
 
       {/* Action Bar & Dimension Filters */}

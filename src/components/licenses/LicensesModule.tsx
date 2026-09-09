@@ -18,6 +18,7 @@ import {
   Pencil,
   Save,
   X,
+  ArrowUpRight,
 } from 'lucide-react';
 import { Collaborator } from '../../types';
 
@@ -44,6 +45,7 @@ export const LicensesModule: React.FC = () => {
     hasPermission,
     licenseQuota,
     setLicenseQuota,
+    setActiveModule,
   } = useApp();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -172,7 +174,11 @@ export const LicensesModule: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+        <button
+          type="button"
+          onClick={() => setActiveModule('colaboradores')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl"
+        >
           <div className="absolute top-0 right-0 w-24 h-24 bg-accent-primary-soft rounded-full blur-xl pointer-events-none" />
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -186,9 +192,14 @@ export const LicensesModule: React.FC = () => {
             <span className="text-3xl font-bold tracking-tight text-primary">{totalLicenses}</span>
             <span className="text-xs font-medium text-muted">colaboradores cadastrados</span>
           </div>
-        </div>
+          <ArrowUpRight className="mt-2 h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+        </button>
 
-        <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+        <button
+          type="button"
+          onClick={() => setActiveModule('colaboradores')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl"
+        >
           <div className="absolute top-0 right-0 w-24 h-24 bg-accent-success-soft rounded-full blur-xl pointer-events-none" />
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -205,9 +216,14 @@ export const LicensesModule: React.FC = () => {
           <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
             <div className="h-full rounded-full bg-accent-success-solid shadow-sm" style={{ width: `${usagePercent}%` }} />
           </div>
-        </div>
+          <ArrowUpRight className="mt-2 h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+        </button>
 
-        <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+        <button
+          type="button"
+          onClick={() => setActiveModule('colaboradores')}
+          className="group relative w-full overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl"
+        >
           <div className="absolute top-0 right-0 w-24 h-24 bg-accent-info-soft rounded-full blur-xl pointer-events-none" />
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -228,7 +244,8 @@ export const LicensesModule: React.FC = () => {
               {excedente} acima do teto
             </div>
           )}
-        </div>
+          <ArrowUpRight className="mt-2 h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+        </button>
       </div>
 
       {/* Painel de configuração da Quota (teto pré-definido) */}
