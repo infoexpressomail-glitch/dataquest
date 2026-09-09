@@ -24,7 +24,7 @@ import {
   Link2,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
-import { SurveyManagementTable } from '../surveys/SurveyManagementTable';
+import { SurveyManagementTable } from './surveys/SurveyManagementTable';
 import { shareFieldLink } from '../field/fieldRoute';
 import { Survey } from '../types';
 
