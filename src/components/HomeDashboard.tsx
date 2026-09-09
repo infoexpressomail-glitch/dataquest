@@ -20,11 +20,9 @@ import {
   Gauge,
   Share2,
   MonitorCog,
-  Table2,
   Link2,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
-import { SurveyManagementTable } from './surveys/SurveyManagementTable';
 import { shareFieldLink } from '../field/fieldRoute';
 import { Survey } from '../types';
 
@@ -290,17 +288,7 @@ export const HomeDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Seção 2: Consulta de Pesquisas (quadro abaixo dos cards de indicadores) */}
-      <div className="space-y-3">
-        <SectionHeader
-          icon={<Table2 className="h-4 w-4" />}
-          title="Consulta de Pesquisas"
-          subtitle="Gerencie, ative e compartilhe o link de coleta de campo"
-        />
-        <SurveyManagementTable />
-      </div>
-
-      {/* Seção 3: Monitoramento de Coleta + Conexões Recentes */}
+      {/* Seção 2: Monitoramento de Coleta + Conexões Recentes */}
       <div className="space-y-3">
       <SectionHeader
         icon={<MonitorCog className="h-4 w-4" />}
