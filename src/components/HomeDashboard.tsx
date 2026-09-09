@@ -290,7 +290,11 @@ export const HomeDashboard: React.FC = () => {
         />
         <div className={painelGridClass}>
           {/* Card 1: Total de Pesquisas */}
-          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl">
+          <button
+            type="button"
+            onClick={() => setActiveModule('pesquisas')}
+            className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl"
+          >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-primary-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -308,13 +312,18 @@ export const HomeDashboard: React.FC = () => {
                 {activeSurveysCount} ativas
               </span>
             </div>
-            <div className="mt-auto pt-2 text-xs text-muted">
-              {inativeSurveysCount} inativas no repositório
+            <div className="mt-auto flex items-center justify-between pt-2 text-xs text-muted">
+              <span>{inativeSurveysCount} inativas no repositório</span>
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:opacity-100" />
             </div>
-          </div>
+          </button>
 
           {/* Card 2: Entrevistas Realizadas */}
-          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl">
+          <button
+            type="button"
+            onClick={() => setActiveModule('respostas')}
+            className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl"
+          >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-info-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -332,13 +341,18 @@ export const HomeDashboard: React.FC = () => {
                 100% validadas
               </span>
             </div>
-            <div className="mt-auto pt-2 text-xs text-muted">
-              Coletas com áudio e coordenadas GPS
+            <div className="mt-auto flex items-center justify-between pt-2 text-xs text-muted">
+              <span>Coletas com áudio e coordenadas GPS</span>
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:opacity-100" />
             </div>
-          </div>
+          </button>
 
           {/* Card 3: Licenças e Dispositivos */}
-          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl">
+          <button
+            type="button"
+            onClick={() => setActiveModule('licencas')}
+            className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl"
+          >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-success-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -363,14 +377,19 @@ export const HomeDashboard: React.FC = () => {
                 style={{ width: `${activeLicenses > 0 ? (usedLicenses / activeLicenses) * 100 : 0}%` }}
               />
             </div>
-            <div className="mt-auto pt-2 text-xs text-muted">
-              Licenças em uso / disponibilizáveis
+            <div className="mt-auto flex items-center justify-between pt-2 text-xs text-muted">
+              <span>Licenças em uso / disponibilizáveis</span>
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:opacity-100" />
             </div>
-          </div>
+          </button>
 
           {/* Card 4: Colaboradores Ativos — só para quem administra a equipe */}
           {canViewEquipe && (
-            <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-purple-soft-border hover:shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setActiveModule('colaboradores')}
+              className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-purple-soft-border hover:shadow-2xl"
+            >
               <div className="absolute top-0 right-0 w-24 h-24 bg-accent-purple-soft rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -388,10 +407,11 @@ export const HomeDashboard: React.FC = () => {
                   colaboradores
                 </span>
               </div>
-              <div className="mt-auto pt-2 text-xs text-muted">
-                Pesquisadores, coordenadores e analistas
+              <div className="mt-auto flex items-center justify-between pt-2 text-xs text-muted">
+                <span>Pesquisadores, coordenadores e analistas</span>
+                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:opacity-100" />
               </div>
-            </div>
+            </button>
           )}
         </div>
         </div>
@@ -533,7 +553,11 @@ export const HomeDashboard: React.FC = () => {
         {/* Coluna 3: Conexões Recentes (Conforme requisito do Módulo Home) */}
         <div className="space-y-6">
           {canViewConexoes && (
-            <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+            <button
+              type="button"
+              onClick={() => setSyncModalOpen(true)}
+              className="group w-full rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl"
+            >
               <div className="flex items-center justify-between border-b border-ui pb-3">
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-accent-success" />
@@ -541,6 +565,7 @@ export const HomeDashboard: React.FC = () => {
                     {t('recentConnections')}
                   </h3>
                 </div>
+                <ArrowUpRight className="h-4 w-4 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
                 <span className="flex h-2 w-2 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-success-solid opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-success-solid"></span>
@@ -583,14 +608,21 @@ export const HomeDashboard: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </button>
           )}
 
           {/* Status de Sincronização em Nuvem — dados reais do sistema */}
-          <div className="rounded-2xl border border-accent-primary-soft-border bg-surface p-5 text-xs shadow-xl">
-            <div className="flex items-center gap-2 font-bold text-primary">
-              <CloudOff className="h-4 w-4 text-accent-primary" />
-              <span>Sincronização em Nuvem</span>
+          <button
+            type="button"
+            onClick={() => setSyncModalOpen(true)}
+            className="group w-full rounded-2xl border border-accent-primary-soft-border bg-surface p-5 text-left text-xs shadow-xl transition-all hover:-translate-y-0.5 hover:bg-surface-raised hover:shadow-2xl"
+          >
+            <div className="flex items-center justify-between gap-2 font-bold text-primary">
+              <div className="flex items-center gap-2">
+                <CloudOff className="h-4 w-4 text-accent-primary" />
+                <span>Sincronização em Nuvem</span>
+              </div>
+              <ArrowUpRight className="h-4 w-4 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
             </div>
             <p className="mt-2 text-secondary leading-relaxed">
               Dados são persistidos localmente e sincronizados quando a conexão é restabelecida.
@@ -632,7 +664,7 @@ export const HomeDashboard: React.FC = () => {
                 <span>Repositório sincronizado — nada pendente</span>
               </div>
             )}
-          </div>
+          </button>
         </div>
       </div>
       </div>
