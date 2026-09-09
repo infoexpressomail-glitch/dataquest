@@ -52,8 +52,6 @@ import {
 } from 'lucide-react';
 import { ServerSyncCheckModal } from './ServerSyncCheckModal';
 import { QuestionnaireImportModal } from './QuestionnaireImportModal';
-import { MetaCatalogPicker } from './MetaCatalogPicker';
-import { GlobalDemographicTarget } from '../../types';
 
 export const SurveyWizard: React.FC = () => {
   const {
@@ -478,10 +476,6 @@ export const SurveyWizard: React.FC = () => {
       ...formData,
       metas: formData.metas.filter((m) => m.id !== metaId),
     });
-  };
-
-  const handleApplyMetasBase = (metasGlobais: GlobalDemographicTarget[]) => {
-    setFormData((prev) => ({ ...prev, metasGlobais }));
   };
 
   const toggleResearcher = (colabId: string) => {
@@ -1950,28 +1944,8 @@ export const SurveyWizard: React.FC = () => {
                 <li>• Todas as {formData.perguntas.length} perguntas possuem identificador único válido.</li>
                 <li>• {formData.regras.length} regras de salto ativas e validadas contra o fluxo de perguntas.</li>
                 <li>• {formData.metas.length} metas cadastradas em conformidade (Questão, Condição e Resposta).</li>
-                <li>• {formData.metasGlobais?.length || 0} metas base do catálogo aplicadas com cotas por pesquisador.</li>
               </ul>
             </div>
-          </div>
-
-          {/* Metas Base do Catálogo (reutilizáveis) — aplicação na pesquisa */}
-          <div className="mt-6 rounded-2xl border border-ui bg-surface p-6 shadow-xl">
-            <div className="mb-4">
-              <h2 className="text-lg font-bold text-primary">
-                Metas do Catálogo Base
-              </h2>
-              <p className="text-xs text-muted">
-                Selecione metas amostrais cadastradas no sistema base (idade, sexo, escolaridade,
-                bairro) e configure as cotas por pesquisador desta pesquisa.
-              </p>
-            </div>
-
-            <MetaCatalogPicker
-              survey={formData}
-              researcherIds={formData.pesquisadoresIds}
-              onApplyMetas={handleApplyMetasBase}
-            />
           </div>
         </div>
       )}

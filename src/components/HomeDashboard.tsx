@@ -25,6 +25,7 @@ import {
   CalendarDays,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
+import { OfflineSyncModal } from './OfflineSyncModal';
 import { shareFieldLink } from '../field/fieldRoute';
 import { Survey } from '../types';
 
@@ -87,6 +88,7 @@ export const HomeDashboard: React.FC = () => {
 
   // Feedback visual (toast) para o compartilhamento do link de coleta de campo
   const [toast, setToast] = useState<string | null>(null);
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
   const toastTimer = useRef<number | null>(null);
   const notify = (msg: string) => {
     setToast(msg);
@@ -184,10 +186,15 @@ export const HomeDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Faixa de status ao vivo em cards compactos */}
+        {/* Faixa de status ao vivo em cards compactos (clicáveis) */}
         <div className="relative z-10 mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Conexão */}
-          <div className="flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3">
+          {/* Conexão → abre sincronização */}
+          <button
+            type="button"
+            id="btn-status-conexao"
+            onClick={() => setSyncModalOpen(true)}
+            className="group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-primary-soft-border hover:bg-surface-raised active:scale-[0.99]"
+          >
             <span
               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
                 syncProgress.isActive
@@ -205,7 +212,7 @@ export const HomeDashboard: React.FC = () => {
                 <WifiOff className="h-4 w-4" />
               )}
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-wider text-muted">Conexão</div>
               <div className="truncate text-xs font-bold text-primary">
                 {syncProgress.isActive
@@ -215,42 +222,61 @@ export const HomeDashboard: React.FC = () => {
                   : 'Offline — local'}
               </div>
             </div>
-          </div>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+          </button>
 
-          {/* Sincronização */}
-          <div className="flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3">
+          {/* Sincronização → abre monitor de sync */}
+          <button
+            type="button"
+            id="btn-status-sync"
+            onClick={() => setSyncModalOpen(true)}
+            className="group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-info-soft-border hover:bg-surface-raised active:scale-[0.99]"
+          >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-info-soft text-accent-info border-accent-info-soft-border">
               <Database className="h-4 w-4" />
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-wider text-muted">Sincronização</div>
               <div className={`truncate text-xs font-bold ${pendentesSync > 0 ? 'text-accent-warning' : 'text-accent-success'}`}>
                 {pendentesSync > 0 ? `${pendentesSync} pendente(s)` : 'Em dia'}
               </div>
             </div>
-          </div>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+          </button>
 
-          {/* Pesquisas ativas */}
-          <div className="flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3">
+          {/* Pesquisas ativas → tela de pesquisas */}
+          <button
+            type="button"
+            id="btn-status-pesquisas"
+            onClick={() => setActiveModule('pesquisas')}
+            className="group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-primary-soft-border hover:bg-surface-raised active:scale-[0.99]"
+          >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border">
               <Gauge className="h-4 w-4" />
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-wider text-muted">Pesquisas ativas</div>
               <div className="truncate text-xs font-bold text-primary">{activeSurveysCount}</div>
             </div>
-          </div>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+          </button>
 
-          {/* Coletas hoje */}
-          <div className="flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3">
+          {/* Coletas hoje → tela de respostas/coletas */}
+          <button
+            type="button"
+            id="btn-status-coletas"
+            onClick={() => setActiveModule('respostas')}
+            className="group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-success-soft-border hover:bg-surface-raised active:scale-[0.99]"
+          >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-success-soft text-accent-success border-accent-success-soft-border">
               <CalendarDays className="h-4 w-4" />
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-wider text-muted">Coletas hoje</div>
               <div className="truncate text-xs font-bold text-primary">{coletasHoje}</div>
             </div>
-          </div>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
+          </button>
         </div>
       </div>
 
@@ -264,7 +290,7 @@ export const HomeDashboard: React.FC = () => {
         />
         <div className={painelGridClass}>
           {/* Card 1: Total de Pesquisas */}
-          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
+          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl">
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-primary-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -288,7 +314,7 @@ export const HomeDashboard: React.FC = () => {
           </div>
 
           {/* Card 2: Entrevistas Realizadas */}
-          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
+          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl">
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-info-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -312,7 +338,7 @@ export const HomeDashboard: React.FC = () => {
           </div>
 
           {/* Card 3: Licenças e Dispositivos */}
-          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
+          <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl">
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-success-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -344,7 +370,7 @@ export const HomeDashboard: React.FC = () => {
 
           {/* Card 4: Colaboradores Ativos — só para quem administra a equipe */}
           {canViewEquipe && (
-            <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
+            <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-purple-soft-border hover:shadow-2xl">
               <div className="absolute top-0 right-0 w-24 h-24 bg-accent-purple-soft rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -610,6 +636,9 @@ export const HomeDashboard: React.FC = () => {
         </div>
       </div>
       </div>
+
+      {/* Monitor de sincronização (aberto pelos cards de status) */}
+      {syncModalOpen && <OfflineSyncModal onClose={() => setSyncModalOpen(false)} />}
 
       {/* Toast de feedback do compartilhamento de link */}
       {toast && (
