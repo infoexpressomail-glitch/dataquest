@@ -468,12 +468,12 @@ export const SurveyManagementTable: React.FC = () => {
         )}
       </div>
 
-      {/* Tabela */}
-      <div className="overflow-x-auto rounded-xl border border-ui">
-        <table className="w-full min-w-[980px] text-left text-xs">
+      {/* Tabela — largura 100% sem esticar/horizontal scroll */}
+      <div className="overflow-hidden rounded-xl border border-ui">
+        <table className="w-full table-fixed text-left text-xs">
           <thead className="bg-surface-raised text-muted">
             <tr>
-              <th className="w-10 px-3 py-2.5">
+              <th className="w-8 px-2 py-2.5">
                 <input
                   type="checkbox"
                   checked={ordenados.length > 0 && ordenados.every((s) => selectedSurveyIds.includes(s.id))}
@@ -481,12 +481,12 @@ export const SurveyManagementTable: React.FC = () => {
                   className="h-3.5 w-3.5 rounded border-ui bg-surface-card text-accent-primary-solid cursor-pointer"
                 />
               </th>
-              <th className="px-3 py-2.5 font-bold">Código</th>
-              <th className="px-3 py-2.5 font-bold">Descrição</th>
-              <th className="px-3 py-2.5 font-bold">Status</th>
-              <th className="px-3 py-2.5 font-bold">Pesquisadores</th>
-              <th className="px-3 py-2.5 font-bold">Data</th>
-              <th className="px-3 py-2.5 font-bold text-right">Ações</th>
+              <th className="w-[15%] px-2 py-2.5 font-bold">Código</th>
+              <th className="w-[30%] px-2 py-2.5 font-bold">Descrição</th>
+              <th className="w-[16%] px-2 py-2.5 font-bold">Status</th>
+              <th className="w-[15%] px-2 py-2.5 font-bold">Pesquisadores</th>
+              <th className="w-[11%] px-2 py-2.5 font-bold">Data</th>
+              <th className="w-[15%] px-2 py-2.5 font-bold text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ui">
@@ -503,7 +503,7 @@ export const SurveyManagementTable: React.FC = () => {
                   key={survey.id}
                   className={`${isSelected ? 'bg-accent-primary-soft/20' : 'bg-surface'} ${excluida ? 'opacity-70' : ''}`}
                 >
-                  <td className="px-3 py-2.5">
+                  <td className="px-2 py-2.5">
                     <input
                       type="checkbox"
                       checked={isSelected}
@@ -516,16 +516,16 @@ export const SurveyManagementTable: React.FC = () => {
                     />
                   </td>
 
-                  <td className="px-3 py-2.5">
-                    <span className="rounded bg-surface-raised border border-ui/60 px-2 py-0.5 font-mono font-bold text-primary whitespace-nowrap">
+                  <td className="px-2 py-2.5">
+                    <span className="inline-block w-full truncate rounded bg-surface-raised border border-ui/60 px-1.5 py-0.5 font-mono font-bold text-primary">
                       {survey.codigo}
                     </span>
                   </td>
 
-                  <td className="px-3 py-2.5">
-                    <span className="font-semibold text-primary">{survey.nome}</span>
+                  <td className="px-2 py-2.5">
+                    <span className="block w-full truncate font-semibold text-primary">{survey.nome}</span>
                     {survey.descricao && (
-                      <span className="mt-0.5 block max-w-[300px] truncate text-[11px] text-muted">{survey.descricao}</span>
+                      <span className="mt-0.5 block w-full truncate text-[11px] text-muted">{survey.descricao}</span>
                     )}
                     {survey.habilitarColetaWeb && (
                       <span className="mt-0.5 inline-block rounded bg-accent-info-soft border border-accent-info-soft-border px-1.5 py-0.5 text-[9px] font-semibold text-accent-info">
@@ -534,7 +534,7 @@ export const SurveyManagementTable: React.FC = () => {
                     )}
                   </td>
 
-                  <td className="px-3 py-2.5">
+                  <td className="px-2 py-2.5">
                     <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold border ${statusPill(survey.status)}`}>
                       {survey.status.toUpperCase()}
                     </span>
@@ -555,27 +555,27 @@ export const SurveyManagementTable: React.FC = () => {
                     )}
                   </td>
 
-                  <td className="px-3 py-2.5 text-secondary">
+                  <td className="px-2 py-2.5 text-secondary">
                     <span className="flex items-center gap-1">
-                      <Users className="h-3 w-3 text-muted" />
-                      {assignedResearchers.length}
+                      <Users className="h-3 w-3 text-muted shrink-0" />
+                      <span className="truncate">{assignedResearchers.length}</span>
                     </span>
-                    <span className="mt-0.5 block max-w-[140px] truncate text-[10px] text-muted">
+                    <span className="mt-0.5 block w-full truncate text-[10px] text-muted">
                       {assignedResearchers.map((r) => r.nome.split(' ')[0]).join(', ') || '—'}
                     </span>
                   </td>
 
-                  <td className="px-3 py-2.5 text-muted whitespace-nowrap">{formatarData(survey.criadaEm)}</td>
+                  <td className="px-2 py-2.5 text-muted whitespace-nowrap">{formatarData(survey.criadaEm)}</td>
 
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-center justify-end gap-1">
+                  <td className="px-2 py-2.5">
+                    <div className="flex items-center justify-end gap-0.5">
                       {/* Compartilhar link de coleta */}
                       {!excluida && (
                         <button
                           type="button"
                           onClick={() => handleShare(survey)}
                           title="Compartilhar link de coleta (login de campo)"
-                          className="rounded-lg p-1.5 text-accent-primary hover:bg-accent-primary-soft transition-colors"
+                          className="rounded-md p-1 text-accent-primary hover:bg-accent-primary-soft transition-colors"
                         >
                           <Share2 className="h-4 w-4" />
                         </button>
@@ -586,7 +586,7 @@ export const SurveyManagementTable: React.FC = () => {
                         type="button"
                         onClick={() => { setEditingSurvey(survey); setActiveModule('simulador'); }}
                         title="Coleta (simulador)"
-                        className="rounded-lg p-1.5 text-accent-primary hover:bg-surface-raised transition-colors"
+                        className="rounded-md p-1 text-accent-primary hover:bg-surface-raised transition-colors"
                       >
                         <Smartphone className="h-4 w-4" />
                       </button>
@@ -597,7 +597,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => handleEdit(survey)}
                           title="Editar pesquisa (Wizard)"
-                          className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-primary transition-colors"
+                          className="rounded-md p-1 text-muted hover:bg-surface-raised hover:text-primary transition-colors"
                         >
                           <Edit3 className="h-4 w-4" />
                         </button>
@@ -609,7 +609,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => handleReplicate(survey)}
                           title="Replicar ciclo"
-                          className="rounded-lg p-1.5 text-accent-primary hover:bg-surface-raised transition-colors"
+                          className="rounded-md p-1 text-accent-primary hover:bg-surface-raised transition-colors"
                         >
                           <Copy className="h-4 w-4" />
                         </button>
@@ -620,7 +620,7 @@ export const SurveyManagementTable: React.FC = () => {
                         type="button"
                         onClick={() => { setTrackingSurveys([survey]); setTrackingInitialId(survey.id); setTrackingModalOpen(true); }}
                         title="Acompanhamento diário"
-                        className="rounded-lg p-1.5 text-accent-primary hover:bg-surface-raised transition-colors"
+                        className="rounded-md p-1 text-accent-primary hover:bg-surface-raised transition-colors"
                       >
                         <BarChart3 className="h-4 w-4" />
                       </button>
@@ -631,7 +631,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => { setAudioExportSurveyId(survey.id); setAudioExportModalOpen(true); }}
                           title="Exportar/ouvir áudios"
-                          className="rounded-lg p-1.5 text-accent-purple hover:bg-surface-raised transition-colors"
+                          className="rounded-md p-1 text-accent-purple hover:bg-surface-raised transition-colors"
                         >
                           <Volume2 className="h-4 w-4" />
                         </button>
@@ -643,7 +643,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => { setGeoModalSurvey(survey); setGeoModalOpen(true); }}
                           title="Georreferenciamento em mapa"
-                          className="rounded-lg p-1.5 text-accent-success hover:bg-surface-raised transition-colors"
+                          className="rounded-md p-1 text-accent-success hover:bg-surface-raised transition-colors"
                         >
                           <MapPin className="h-4 w-4" />
                         </button>
@@ -656,7 +656,7 @@ export const SurveyManagementTable: React.FC = () => {
                             type="button"
                             onClick={() => handleExportCSV(survey)}
                             title="Exportar CSV"
-                            className="rounded-lg p-1.5 text-accent-success hover:bg-surface-raised transition-colors"
+                            className="rounded-md p-1 text-accent-success hover:bg-surface-raised transition-colors"
                           >
                             <FileSpreadsheet className="h-4 w-4" />
                           </button>
@@ -664,7 +664,7 @@ export const SurveyManagementTable: React.FC = () => {
                             type="button"
                             onClick={() => handleExportPDF(survey)}
                             title="Exportar PDF"
-                            className="rounded-lg p-1.5 text-accent-danger hover:bg-surface-raised transition-colors"
+                            className="rounded-md p-1 text-accent-danger hover:bg-surface-raised transition-colors"
                           >
                             <FileText className="h-4 w-4" />
                           </button>
@@ -677,7 +677,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => toggleSurveyStatus(survey.id)}
                           title={ativa ? 'Desativar pesquisa' : 'Ativar pesquisa'}
-                          className="rounded-lg p-1.5 text-accent-warning hover:bg-surface-raised transition-colors"
+                          className="rounded-md p-1 text-accent-warning hover:bg-surface-raised transition-colors"
                         >
                           <Power className="h-4 w-4" />
                         </button>
@@ -690,7 +690,7 @@ export const SurveyManagementTable: React.FC = () => {
                             type="button"
                             onClick={() => reopenSurvey(survey.id)}
                             title="Reabrir pesquisa"
-                            className="rounded-lg p-1.5 text-accent-success hover:bg-surface-raised transition-colors"
+                            className="rounded-md p-1 text-accent-success hover:bg-surface-raised transition-colors"
                           >
                             <RotateCcw className="h-4 w-4" />
                           </button>
@@ -703,7 +703,7 @@ export const SurveyManagementTable: React.FC = () => {
                               }
                             }}
                             title="Finalizar pesquisa (concluir)"
-                            className="rounded-lg p-1.5 text-accent-purple hover:bg-surface-raised transition-colors"
+                            className="rounded-md p-1 text-accent-purple hover:bg-surface-raised transition-colors"
                           >
                             <CheckCircle2 className="h-4 w-4" />
                           </button>
@@ -716,7 +716,7 @@ export const SurveyManagementTable: React.FC = () => {
                           type="button"
                           onClick={() => restoreSurvey(survey.id)}
                           title="Restaurar pesquisa"
-                          className="rounded-lg p-1.5 text-accent-success hover:bg-surface-raised transition-colors"
+                          className="rounded-md p-1 text-accent-success hover:bg-surface-raised transition-colors"
                         >
                           <RotateCcw className="h-4 w-4" />
                         </button>
@@ -728,7 +728,7 @@ export const SurveyManagementTable: React.FC = () => {
                               if (window.confirm(`Deseja mover a pesquisa "${survey.nome}" para a lixeira?`)) deleteSurvey(survey.id);
                             }}
                             title="Excluir pesquisa"
-                            className="rounded-lg p-1.5 text-accent-info hover:bg-accent-danger-soft hover:text-accent-danger transition-colors"
+                            className="rounded-md p-1 text-accent-info hover:bg-accent-danger-soft hover:text-accent-danger transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
