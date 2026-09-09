@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTranslation } from '../i18n';
 import {
@@ -17,9 +17,33 @@ import {
   WifiOff,
   RefreshCw,
   CloudOff,
+  Gauge,
+  Share2,
+  MonitorCog,
+  Table2,
+  Link2,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
 import { SurveyConsultaTable } from './home/SurveyConsultaTable';
+import { shareFieldLink } from '../field/fieldRoute';
+import { Survey } from '../types';
+
+/** Cabeçalho de seção do dashboard — melhora a organização e a leitura. */
+const SectionHeader: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  subtitle?: string;
+}> = ({ icon, title, subtitle }) => (
+  <div className="flex items-center gap-2.5">
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
+      {icon}
+    </span>
+    <div className="min-w-0">
+      <h2 className="text-sm font-bold tracking-tight text-primary">{title}</h2>
+      {subtitle && <p className="text-xs text-muted">{subtitle}</p>}
+    </div>
+  </div>
+);
 
 export const HomeDashboard: React.FC = () => {
   const {
@@ -51,6 +75,30 @@ export const HomeDashboard: React.FC = () => {
   const canViewPaineis = hasPermission('home_visualiza_paineis_superiores');
   const canViewConexoes = hasPermission('home_visualiza_conexoes_recentes');
   const canViewEquipe = hasPermission('colaboradores_acesso');
+
+  // Feedback visual (toast) para o compartilhamento do link de coleta de campo
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<number | null>(null);
+  const notify = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 4000);
+  };
+
+  // Compartilha o link do Modo Pesquisador (login de campo) da pesquisa ativa
+  const handleShare = async (survey: Survey) => {
+    const result = await shareFieldLink({
+      surveyName: survey.nome,
+      surveyCode: survey.codigo,
+    });
+    if (result === 'shared') {
+      notify(`Link de coleta compartilhado: ${survey.nome}.`);
+    } else if (result === 'copied') {
+      notify(`Link de coleta copiado! Compartilhe com o pesquisador de ${survey.nome}.`);
+    } else {
+      notify('Não foi possível copiar o link automaticamente. Abra /campo no navegador.');
+    }
+  };
 
   // Grade de cards do topo é dinâmica: só entra o que o perfil pode agir sobre.
   // Isso evita "dashboard showcase" (mostrar tudo que existe) para perfis
@@ -125,8 +173,14 @@ export const HomeDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Paineis Superiores com quantidades de todas as pesquisas, entrevistas e licenças */}
+      {/* Seção 1: Indicadores Gerais (cards de topo) */}
       {canViewPaineis && (
+        <div className="space-y-3">
+        <SectionHeader
+          icon={<Gauge className="h-4 w-4" />}
+          title="Indicadores Gerais"
+          subtitle="Visão consolidada de pesquisas, coletas e equipe"
+        />
         <div className={painelGridClass}>
           {/* Card 1: Total de Pesquisas */}
           <div className="relative overflow-hidden rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all hover:border-ui">
@@ -233,9 +287,16 @@ export const HomeDashboard: React.FC = () => {
             </div>
           )}
         </div>
+        </div>
       )}
 
-      {/* Main Grid: Pesquisas em Andamento + Conexões Recentes */}
+      {/* Seção 2: Monitoramento de Coleta + Conexões Recentes */}
+      <div className="space-y-3">
+      <SectionHeader
+        icon={<MonitorCog className="h-4 w-4" />}
+        title="Monitoramento de Coleta"
+        subtitle="Acompanhamento de metas, volume coletado e conexões em tempo real"
+      />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Coluna 1 & 2: Pesquisas Ativas e Monitoramento */}
         <div className="space-y-6 lg:col-span-2">
@@ -302,6 +363,15 @@ export const HomeDashboard: React.FC = () => {
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            id={`btn-survey-share-${survey.id}`}
+                            onClick={() => handleShare(survey)}
+                            title="Compartilhar link de coleta (login de campo)"
+                            className="inline-flex items-center gap-1 rounded-lg bg-surface-raised px-3 py-1.5 text-xs font-semibold text-accent-primary border border-ui hover:bg-accent-primary-soft hover:text-accent-primary transition-colors"
+                          >
+                            <Share2 className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">Compartilhar</span>
+                          </button>
                           <button
                             id={`btn-survey-detail-${survey.id}`}
                             onClick={() => {
@@ -448,9 +518,32 @@ export const HomeDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      </div>
 
-      {/* Nova seção: Consulta de Pesquisas em formato de tabela (sem remover as seções acima) */}
-      <SurveyConsultaTable />
+      {/* Seção 3: Consulta de Pesquisas (quadro abaixo dos cards) */}
+      <div className="space-y-3">
+        <SectionHeader
+          icon={<Table2 className="h-4 w-4" />}
+          title="Consulta de Pesquisas"
+          subtitle="Gerencie, ative e compartilhe o link de coleta de campo"
+        />
+        <SurveyConsultaTable />
+      </div>
+
+      {/* Toast de feedback do compartilhamento de link */}
+      {toast && (
+        <div
+          role="status"
+          className="pointer-events-none fixed bottom-14 right-4 z-50 flex max-w-sm items-center gap-2.5 rounded-xl border border-accent-success-soft-border bg-surface-raised px-4 py-3 text-xs font-semibold text-primary shadow-2xl"
+        >
+          {toast.includes('copiado') || toast.includes('compartilhado') ? (
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-accent-success" />
+          ) : (
+            <Link2 className="h-4 w-4 shrink-0 text-accent-primary" />
+          )}
+          <span className="leading-snug">{toast}</span>
+        </div>
+      )}
     </div>
   );
 };

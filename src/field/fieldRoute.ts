@@ -43,6 +43,87 @@ export function navigateToFieldRoute(): void {
   window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
+/**
+ * Retorna a URL absoluta da tela de login de campo (Modo Pesquisador).
+ *
+ * Usada no botão "Compartilhar link de coleta": o link leva o pesquisador
+ * direto para a tela de login de campo (/campo), onde ele entra com o login
+ * e a senha previamente cadastrados no sistema. Ao autenticar, só aparecem
+ * as pesquisas HABILITADAS (ativas) e vinculadas ao login dele.
+ *
+ * Quando `surveyCode` é informado, o código é anexado à URL como parâmetro
+ * (?pesquisa=...) para que o login de campo possa destacar a pesquisa alvo.
+ */
+export function buildFieldLink(surveyCode?: string): string {
+  if (typeof window === 'undefined') return FIELD_ROUTE_PATH;
+  const base = window.location.origin;
+  const path = `${base}${FIELD_ROUTE_PATH}`;
+  if (surveyCode) {
+    return `${path}?pesquisa=${encodeURIComponent(surveyCode)}`;
+  }
+  return path;
+}
+
+export type ShareFieldLinkResult = 'shared' | 'copied' | 'failed';
+
+/**
+ * Compartilha o link do Modo Pesquisador (login de campo).
+ *
+ * 1. Usa a Web Share API nativa (navigator.share) quando disponível
+ *    (celulares e desktops compatíveis).
+ * 2. Caso contrário, copia o link para a área de transferência
+ *    (navigator.clipboard), com fallback legado via execCommand.
+ */
+export async function shareFieldLink(opts: {
+  surveyName?: string;
+  surveyCode?: string;
+} = {}): Promise<ShareFieldLinkResult> {
+  const url = buildFieldLink(opts.surveyCode);
+  const title = opts.surveyName
+    ? `DataQuest — Coleta: ${opts.surveyName}`
+    : 'DataQuest — Modo Pesquisador de Campo';
+  const text = `Acesse a coleta de campo no DataQuest: ${url}`;
+
+  // 1) Compartilhamento nativo (Web Share API)
+  if (typeof navigator !== 'undefined' && navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+      return 'shared';
+    } catch (e: any) {
+      // AbortError = usuário cancelou a folha de compartilhamento.
+      if (e?.name === 'AbortError') return 'failed';
+      // Qualquer outra falha cai no fallback de copiar link.
+    }
+  }
+
+  // 2) Copiar para a área de transferência
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      return 'copied';
+    }
+  } catch {
+    // segue para o fallback legado
+  }
+
+  // 3) Fallback legado (navegadores sem Clipboard API)
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    return 'copied';
+  } catch {
+    return 'failed';
+  }
+}
+
 /** Sai do Modo Pesquisador (volta ao ambiente de gestão). */
 export function leaveFieldRoute(): void {
   if (!isFieldRoute()) return;

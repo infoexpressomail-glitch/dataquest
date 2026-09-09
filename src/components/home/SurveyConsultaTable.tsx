@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   PlusCircle,
@@ -11,8 +11,12 @@ import {
   ChevronRight,
   FileQuestion,
   Database,
+  Share2,
+  Link2,
+  CheckCircle2,
 } from 'lucide-react';
 import { Survey } from '../../types';
+import { shareFieldLink } from '../../field/fieldRoute';
 
 /**
  * Nova seção "Consulta de Pesquisas" do Dashboard principal, em formato de tabela.
@@ -39,6 +43,16 @@ export const SurveyConsultaTable: React.FC = () => {
   const [termo, setTermo] = useState('');
   const [porPagina, setPorPagina] = useState(10);
   const [pagina, setPagina] = useState(1);
+
+  // Feedback visual (toast) para o compartilhamento de link de coleta
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<number | null>(null);
+
+  const notify = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 4000);
+  };
 
   const canCreate = hasPermission('pesquisa_criar');
   const canDelete = hasPermission('pesquisa_excluir');
@@ -115,6 +129,24 @@ export const SurveyConsultaTable: React.FC = () => {
   const handleCreateNew = () => {
     setEditingSurvey(null);
     setActiveModule('wizard');
+  };
+
+  // Compartilha o link do Modo Pesquisador (login de campo) relacionado à pesquisa.
+  // O link leva o pesquisador à tela de login de campo (/campo), onde ele entra
+  // com login e senha cadastrados; ao autenticar, só veem as pesquisas habilitadas
+  // (ativas) vinculadas ao login.
+  const handleShare = async (survey: Survey) => {
+    const result = await shareFieldLink({
+      surveyName: survey.nome,
+      surveyCode: survey.codigo,
+    });
+    if (result === 'shared') {
+      notify(`Link de coleta compartilhado: ${survey.nome}.`);
+    } else if (result === 'copied') {
+      notify(`Link de coleta copiado! Compartilhe com o pesquisador de ${survey.nome}.`);
+    } else {
+      notify('Não foi possível copiar o link automaticamente. Abra /campo no navegador.');
+    }
   };
 
   return (
@@ -256,6 +288,18 @@ export const SurveyConsultaTable: React.FC = () => {
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex items-center justify-end gap-1.5">
+                      {/* Compartilhar link de coleta (login de campo) — só para pesquisa habilitada/ativa */}
+                      {survey.status === 'ativa' && !excluida && (
+                        <button
+                          type="button"
+                          onClick={() => handleShare(survey)}
+                          title="Compartilhar link de coleta (login de campo)"
+                          className="rounded-lg p-1.5 text-accent-primary hover:bg-accent-primary-soft hover:text-accent-primary transition-colors"
+                        >
+                          <Share2 className="h-4 w-4" />
+                        </button>
+                      )}
+
                       {/* Toggle ativo/inativo */}
                       {canToggleActive && !excluida && survey.status !== 'concluida' && (
                         <button
@@ -365,6 +409,21 @@ export const SurveyConsultaTable: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Toast de feedback do compartilhamento de link */}
+      {toast && (
+        <div
+          role="status"
+          className="pointer-events-none fixed bottom-14 right-4 z-50 flex max-w-sm items-center gap-2.5 rounded-xl border border-accent-success-soft-border bg-surface-raised px-4 py-3 text-xs font-semibold text-primary shadow-2xl"
+        >
+          {toast.includes('copiado') || toast.includes('compartilhado') ? (
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-accent-success" />
+          ) : (
+            <Link2 className="h-4 w-4 shrink-0 text-accent-primary" />
+          )}
+          <span className="leading-snug">{toast}</span>
+        </div>
+      )}
     </div>
   );
 };
