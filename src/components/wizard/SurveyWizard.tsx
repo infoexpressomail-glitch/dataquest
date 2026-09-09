@@ -44,6 +44,7 @@ import {
   ChevronDown,
   ChevronUp,
   ListOrdered,
+  Search,
   X,
   Mic,
   Volume2,
@@ -173,6 +174,10 @@ export const SurveyWizard: React.FC = () => {
   const [metaCondicao, setMetaCondicao] = useState<ConditionOperator>('igual');
   const [metaResposta, setMetaResposta] = useState<string>('');
   const [metaQuantidadeAlvo, setMetaQuantidadeAlvo] = useState<number>(100);
+
+  // Painel lateral de Metas (à direita): busca e filtro de status
+  const [metaLateralBusca, setMetaLateralBusca] = useState('');
+  const [metaLateralFiltro, setMetaLateralFiltro] = useState<'todas' | 'ativa' | 'pausada' | 'concluida'>('todas');
 
   // Success message modal / toast
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -878,6 +883,10 @@ export const SurveyWizard: React.FC = () => {
           );
         })}
       </div>
+
+      {/* Corpo do wizard: conteúdo principal à esquerda + painel de Metas à direita */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="space-y-6 lg:col-span-2">
 
       {/* TAB 1: DADOS E CONFIGURAÇÕES GERAIS (Matching Screenshot 2) */}
       {currentStep === 1 && (
@@ -2126,6 +2135,126 @@ export const SurveyWizard: React.FC = () => {
           )}
         </div>
       </div>
+
+      </div>{/* fim coluna principal do wizard */}
+
+      {/* Painel lateral de Metas (à direita) — conforme referência visual */}
+      <aside className="lg:col-span-1">
+        <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+          {/* Cabeçalho do painel */}
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-primary">Metas</h3>
+            <button
+              type="button"
+              id="btn-wizard-lateral-nova-meta"
+              onClick={() => setCurrentStep(4)}
+              className="flex h-8 items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3 text-xs font-bold text-on-accent shadow-sm hover:bg-accent-primary-solid-hover transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Nova Meta</span>
+            </button>
+          </div>
+
+          {/* Filtros: busca + status */}
+          <div className="mt-4 space-y-2">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
+              <input
+                type="text"
+                value={metaLateralBusca}
+                onChange={(e) => setMetaLateralBusca(e.target.value)}
+                placeholder="Digite para buscar..."
+                className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-8 pr-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 focus:outline-none"
+              />
+            </div>
+            <select
+              value={metaLateralFiltro}
+              onChange={(e) => setMetaLateralFiltro(e.target.value as typeof metaLateralFiltro)}
+              className="w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+            >
+              <option value="todas">Todas</option>
+              <option value="ativa">Ativas</option>
+              <option value="pausada">Pausadas</option>
+              <option value="concluida">Concluídas</option>
+            </select>
+          </div>
+
+          {/* Lista de metas (cards de progresso) */}
+          <div className="mt-4 space-y-3">
+            {(() => {
+              const busca = metaLateralBusca.trim().toLowerCase();
+              const metasLateral = [
+                ...(formData.metas || []).map((m) => ({
+                  id: m.id,
+                  titulo: m.nome || m.resposta || 'Meta sem nome',
+                  alvo: m.quantidadeAlvo || 0,
+                  atingida: m.quantidadeAtingida || 0,
+                  status: (m.status || 'ativa') as 'ativa' | 'pausada' | 'concluida',
+                  atualizadoEm: m.atualizadoEm || m.criadoEm || '',
+                })),
+                ...(formData.metasGlobais || []).map((g) => ({
+                  id: g.id,
+                  titulo: g.titulo,
+                  alvo: g.metaGlobalAlvo || 0,
+                  atingida: g.metaGlobalAtingida || 0,
+                  status: (g.status || 'ativa') as 'ativa' | 'pausada' | 'concluida',
+                  atualizadoEm: g.atualizadoEm || g.criadoEm || '',
+                })),
+              ];
+              const filtradas = metasLateral.filter((m) => {
+                const okBusca = !busca || m.titulo.toLowerCase().includes(busca);
+                const okStatus = metaLateralFiltro === 'todas' || m.status === metaLateralFiltro;
+                return okBusca && okStatus;
+              });
+              const statusLabel: Record<string, string> = { ativa: 'Ativa', pausada: 'Pausada', concluida: 'Concluída' };
+              const pct = (m: typeof filtradas[number]) => (m.alvo > 0 ? Math.min(100, Math.round((m.atingida / m.alvo) * 100)) : 0);
+              const formatarDataLateral = (iso?: string) => {
+                if (!iso) return '—';
+                const d = new Date(iso);
+                return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+              };
+
+              if (filtradas.length === 0) {
+                return (
+                  <div className="rounded-xl border border-dashed border-ui p-4 text-center text-xs text-muted">
+                    Nenhuma meta cadastrada.
+                  </div>
+                );
+              }
+
+              return filtradas.map((m, idx) => (
+                <div key={m.id} className="rounded-xl border border-ui bg-surface-card p-3.5">
+                  <div className="flex items-start justify-between">
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-accent-primary">
+                        {idx + 1}. {m.titulo}
+                      </span>
+                      <span className="mt-0.5 block text-[10px] text-muted">{statusLabel[m.status]}</span>
+                    </div>
+                    <span className="shrink-0 text-xs font-bold text-accent-primary">
+                      {m.atingida} / {m.alvo}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
+                      <div
+                        className="h-full rounded-full bg-accent-primary-solid transition-all duration-500"
+                        style={{ width: `${pct(m)}%` }}
+                      />
+                    </div>
+                    <span className="shrink-0 text-[10px] font-bold text-accent-primary">{pct(m)}%</span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-1 text-[10px] text-muted">
+                    <Clock className="h-3 w-3" />
+                    <span>Alterada em {formatarDataLateral(m.atualizadoEm)}</span>
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+      </aside>
+      </div>{/* fim grid do wizard */}
 
       {/* Central Server Sync Modal */}
       <ServerSyncCheckModal
