@@ -24,7 +24,7 @@ import {
   Link2,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
-import { SurveyConsultaTable } from './home/SurveyConsultaTable';
+import { SurveyManagementTable } from '../surveys/SurveyManagementTable';
 import { shareFieldLink } from '../field/fieldRoute';
 import { Survey } from '../types';
 
@@ -297,7 +297,7 @@ export const HomeDashboard: React.FC = () => {
           title="Consulta de Pesquisas"
           subtitle="Gerencie, ative e compartilhe o link de coleta de campo"
         />
-        <SurveyConsultaTable />
+        <SurveyManagementTable />
       </div>
 
       {/* Seção 3: Monitoramento de Coleta + Conexões Recentes */}

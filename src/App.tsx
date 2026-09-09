@@ -3,7 +3,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { HomeDashboard } from './components/HomeDashboard';
-import { SurveyList } from './components/surveys/SurveyList';
+import { SurveyManagementTable } from './components/surveys/SurveyManagementTable';
 import { SurveyWizard } from './components/wizard/SurveyWizard';
 import { ResponsesModule } from './components/responses/ResponsesModule';
 import { AnalyticsModule } from './components/analytics/AnalyticsModule';
@@ -130,7 +130,7 @@ const MainContent: React.FC = () => {
         return isResearcher ? <ResearcherEnvironment /> : <HomeDashboard />;
       case 'pesquisas':
       case 'pesquisa':
-        return <SurveyList />;
+        return <SurveyManagementTable />;
       case 'wizard':
         return <SurveyWizard />;
       case 'respostas':
