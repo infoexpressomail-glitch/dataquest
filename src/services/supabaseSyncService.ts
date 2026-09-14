@@ -1,16 +1,33 @@
-import { SupabaseClient } from '@supabase/supabase-js';
 import { Survey } from '../types';
 import { logSyncEventToDB } from '../utils/indexedDBStorage';
-import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from './supabaseClient';
+import { isSupabaseBrowserConfigured } from './supabaseClient';
+import { uploadSurveyToServer } from './serverSurveyService';
 
-// NOTA: a instanciação do cliente foi centralizada em ./supabaseClient.ts para ser
-// reaproveitada por outras partes do frontend sem duplicar lógica. As funções abaixo
-// mantêm exatamente os mesmos nomes e contrato usados pelo restante do app
-// (getSupabaseClient, isSupabaseConfigured, syncSurveyToSupabase, syncBatchSurveysToSupabase).
-
-export function getSupabaseClient(): SupabaseClient | null {
-  return getSupabaseBrowserClient();
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// POR QUE ESTE ARQUIVO NÃO ESCREVE MAIS DIRETO NO SUPABASE A PARTIR DO NAVEGADOR
+// ─────────────────────────────────────────────────────────────────────────────
+// As políticas de RLS da tabela `pesquisas` (supabase/migrations/0001_initial_schema.sql)
+// só liberam escrita para quem tem uma sessão REAL do Supabase Auth — elas checam
+// `auth.uid()` via `public.has_permission()` / `public.current_permissions()`.
+//
+// Hoje o DataQuest nunca cria essa sessão: o login do painel web compara a senha no
+// próprio frontend contra o registro em memória/mockData, e o login do app de campo
+// (`POST /api/auth`) autentica contra a função `autenticar_campo` usando a
+// SUPABASE_SERVICE_ROLE_KEY no servidor — nenhum dos dois chama
+// `supabase.auth.signInWithPassword` (ver seção "Sobre autenticação" do README).
+//
+// Ou seja: o cliente anônimo do navegador (`supabaseClient.ts`) NUNCA fica autenticado
+// aos olhos do RLS, então qualquer `insert`/`update`/`upsert` feito diretamente daqui
+// seria sempre rejeitado em produção com RLS habilitado (mesmo que pareça funcionar
+// em ambientes onde as variáveis de ambiente ainda não estão configuradas e o app cai
+// no modo simulado).
+//
+// A persistência de verdade já existe e funciona: as rotas `/api/surveys*` usam a
+// SUPABASE_SERVICE_ROLE_KEY no servidor (que ignora RLS por design) — é o mesmo
+// caminho usado por `serverSurveyService.ts`. Este arquivo agora delega para lá,
+// mantendo os mesmos nomes/contrato usados pelo restante do app (`isSupabaseConfigured`,
+// `syncSurveyToSupabase`, `syncBatchSurveysToSupabase`), para não exigir nenhuma
+// mudança em `AppContext.tsx`.
 
 export function isSupabaseConfigured(): boolean {
   return isSupabaseBrowserConfigured();
@@ -25,98 +42,66 @@ export interface SupabaseSyncResult {
 }
 
 /**
- * Transmite uma pesquisa para o Supabase (ao vivo se configurado, ou simulador seguro)
+ * Transmite uma pesquisa para o servidor central (que persiste no Supabase com a
+ * service role, contornando o RLS). Respeita a sincronização prévia mandatória:
+ * se a pesquisa estiver em andamento sem um syncToken válido, retorna erro
+ * `SYNC_REQUIRED_BEFORE_UPLOAD` em vez de tentar forçar a escrita.
  */
 export async function syncSurveyToSupabase(survey: Survey): Promise<SupabaseSyncResult> {
   const timestamp = new Date().toISOString();
-  const client = getSupabaseClient();
 
-  if (client) {
-    try {
-      // Upsert na tabela 'pesquisas'
-      const { error } = await client
-        .from('pesquisas')
-        .upsert(
-          {
-            id: survey.id,
-            codigo: survey.codigo,
-            nome: survey.nome,
-            descricao: survey.descricao,
-            status: survey.status,
-            ciclo_atual: survey.cicloAtual,
-            versao: survey.versao,
-            dados_completos: survey,
-            atualizada_em: survey.atualizadaEm || timestamp,
-          },
-          { onConflict: 'id' }
-        );
+  try {
+    const result = await uploadSurveyToServer(survey);
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
+    if (result.success) {
       await logSyncEventToDB({
         type: 'SUPABASE_SYNC_SURVEY',
         status: 'success',
-        details: `Pesquisa "${survey.nome}" (${survey.codigo}) sincronizada no Supabase em ${import.meta.env.VITE_SUPABASE_URL || ''}`,
+        details: `Pesquisa "${survey.nome}" (${survey.codigo}) sincronizada com o servidor central.`,
       });
 
       return {
         success: true,
         mode: 'live',
-        message: `Pesquisa sincronizada com o Supabase cloud com sucesso.`,
-        timestamp,
-      };
-    } catch (err: any) {
-      console.error('[Supabase Sync Error]', err);
-      await logSyncEventToDB({
-        type: 'SUPABASE_SYNC_SURVEY',
-        status: 'failed',
-        details: `Falha ao sincronizar pesquisa "${survey.nome}" no Supabase: ${err?.message || err}`,
-      });
-
-      return {
-        success: false,
-        mode: 'live',
-        message: `Erro na comunicação com Supabase: ${err?.message || 'Falha de rede'}`,
-        error: err?.message,
+        message: result.message || 'Pesquisa sincronizada com o servidor central com sucesso.',
         timestamp,
       };
     }
-  }
 
-  // Modo de simulação Supabase (quando as variáveis não estão configuradas na nuvem de dev)
-  await new Promise((res) => setTimeout(res, 400));
+    await logSyncEventToDB({
+      type: 'SUPABASE_SYNC_SURVEY',
+      status: 'failed',
+      details: `Falha ao sincronizar pesquisa "${survey.nome}" com o servidor: ${result.message}`,
+    });
 
-  // Grava no armazenamento de espelho local
-  try {
-    const mirrorKey = 'dataquest_supabase_mirror_surveys';
-    const existing = JSON.parse(localStorage.getItem(mirrorKey) || '{}');
-    existing[survey.id] = {
-      ...survey,
-      _syncedToSupabaseAt: timestamp,
+    return {
+      success: false,
+      mode: 'live',
+      message: result.message || 'Falha ao sincronizar com o servidor central.',
+      error: result.error,
+      timestamp,
     };
-    localStorage.setItem(mirrorKey, JSON.stringify(existing));
-  } catch {
-    // ignore
+  } catch (err: any) {
+    console.error('[Sync Error]', err);
+    await logSyncEventToDB({
+      type: 'SUPABASE_SYNC_SURVEY',
+      status: 'failed',
+      details: `Falha ao sincronizar pesquisa "${survey.nome}": ${err?.message || err}`,
+    });
+
+    return {
+      success: false,
+      mode: 'live',
+      message: `Erro na comunicação com o servidor: ${err?.message || 'Falha de rede'}`,
+      error: err?.message,
+      timestamp,
+    };
   }
-
-  await logSyncEventToDB({
-    type: 'SUPABASE_SYNC_SURVEY_SIMULATED',
-    status: 'success',
-    details: `Pesquisa "${survey.nome}" (${survey.codigo}) transmitida via canal Supabase (modo simulado/preview).`,
-  });
-
-  return {
-    success: true,
-    mode: 'simulated',
-    message: `Pesquisa transmitida com sucesso para o canal Supabase (modo preview/conectado).`,
-    timestamp,
-  };
 }
 
 /**
- * Transmite um lote de pesquisas pendentes para o Supabase
+ * Transmite um lote de pesquisas pendentes para o servidor central, uma a uma
+ * (cada uma passa pela mesma validação de sincronização prévia mandatória).
  */
 export async function syncBatchSurveysToSupabase(
   surveys: Survey[]
@@ -130,80 +115,35 @@ export async function syncBatchSurveysToSupabase(
     };
   }
 
-  const client = getSupabaseClient();
-  const timestamp = new Date().toISOString();
+  let successCount = 0;
+  const failures: string[] = [];
 
-  if (client) {
-    try {
-      const records = surveys.map((s) => ({
-        id: s.id,
-        codigo: s.codigo,
-        nome: s.nome,
-        descricao: s.descricao,
-        status: s.status,
-        ciclo_atual: s.cicloAtual,
-        versao: s.versao,
-        dados_completos: s,
-        atualizada_em: s.atualizadaEm || timestamp,
-      }));
-
-      const { error } = await client.from('pesquisas').upsert(records, { onConflict: 'id' });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      await logSyncEventToDB({
-        type: 'SUPABASE_BATCH_SYNC',
-        status: 'success',
-        details: `${surveys.length} pesquisa(s) do cache IndexedDB sincronizadas em lote no Supabase.`,
-      });
-
-      return {
-        success: true,
-        count: surveys.length,
-        mode: 'live',
-        message: `${surveys.length} pesquisa(s) sincronizadas no Supabase com sucesso!`,
-      };
-    } catch (err: any) {
-      await logSyncEventToDB({
-        type: 'SUPABASE_BATCH_SYNC',
-        status: 'failed',
-        details: `Erro no lote Supabase: ${err?.message || err}`,
-      });
-
-      return {
-        success: false,
-        count: 0,
-        mode: 'live',
-        message: `Falha ao sincronizar lote no Supabase: ${err?.message}`,
-      };
+  for (const survey of surveys) {
+    const res = await syncSurveyToSupabase(survey);
+    if (res.success) {
+      successCount++;
+    } else {
+      failures.push(`${survey.nome}: ${res.message}`);
     }
   }
 
-  // Simulado
-  await new Promise((res) => setTimeout(res, 500));
-  try {
-    const mirrorKey = 'dataquest_supabase_mirror_surveys';
-    const existing = JSON.parse(localStorage.getItem(mirrorKey) || '{}');
-    surveys.forEach((s) => {
-      existing[s.id] = { ...s, _syncedToSupabaseAt: timestamp };
-    });
-    localStorage.setItem(mirrorKey, JSON.stringify(existing));
-  } catch {
-    // ignore
-  }
-
   await logSyncEventToDB({
-    type: 'SUPABASE_BATCH_SYNC_SIMULATED',
-    status: 'success',
-    details: `${surveys.length} pesquisa(s) do cache IndexedDB sincronizadas com o canal Supabase.`,
+    type: 'SUPABASE_BATCH_SYNC',
+    status: failures.length === 0 ? 'success' : 'failed',
+    details:
+      failures.length === 0
+        ? `${successCount} pesquisa(s) do cache IndexedDB sincronizadas em lote com o servidor.`
+        : `${successCount}/${surveys.length} sincronizadas. Falhas: ${failures.join(' | ')}`,
   });
 
   return {
-    success: true,
-    count: surveys.length,
-    mode: 'simulated',
-    message: `${surveys.length} pesquisa(s) sincronizadas no canal Supabase com sucesso!`,
+    success: failures.length === 0,
+    count: successCount,
+    mode: 'live',
+    message:
+      failures.length === 0
+        ? `${successCount} pesquisa(s) sincronizadas com o servidor com sucesso!`
+        : `${successCount}/${surveys.length} pesquisa(s) sincronizadas. ${failures.length} falharam.`,
   };
 }
+

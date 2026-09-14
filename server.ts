@@ -417,6 +417,153 @@ app.post('/api/surveys', async (req: Request, res: Response) => {
   }
 });
 
+// 7. AUTENTICAÇÃO DO APP DE CAMPO (Modo Pesquisador)
+// Mesmo contrato de api/auth.ts: valida login/senha via RPC `autenticar_campo`
+// (hash bcrypt feito no banco) e nunca retorna o hash da senha.
+app.post('/api/auth', async (req: Request, res: Response) => {
+  const { login, senha } = (req.body || {}) as { login?: string; senha?: string };
+
+  if (!login || !senha) {
+    return res.status(400).json({
+      success: false,
+      message: 'Informe login e senha de acesso.',
+    });
+  }
+
+  try {
+    const db = getDb();
+    const { data, error } = await db.rpc('autenticar_campo', {
+      p_login: String(login).trim(),
+      p_senha: String(senha),
+    });
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        message: `Erro ao autenticar no servidor: ${error.message}`,
+      });
+    }
+
+    const payload = data as {
+      success: boolean;
+      error?: string;
+      colaborador?: Record<string, any>;
+      perfil?: Record<string, any>;
+      pesquisador?: boolean;
+    } | null;
+
+    if (!payload?.success) {
+      return res.status(401).json({
+        success: false,
+        message: payload?.error || 'Credenciais inválidas.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      colaborador: payload.colaborador,
+      perfil: payload.perfil,
+      pesquisador: Boolean(payload.pesquisador),
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: `Falha na autenticação: ${err?.message || err}` });
+  }
+});
+
+// 8. CADASTRO/EDIÇÃO DE COLABORADORES (área administrativa)
+// Mesmo contrato de api/collaborators.ts: grava via RPC `salvar_colaborador`
+// (migration 0004), com hash bcrypt feito no banco. Senha vazia preserva a atual.
+app.post('/api/collaborators', async (req: Request, res: Response) => {
+  const body = (req.body || {}) as { colaborador?: Record<string, any>; senha?: string };
+  const colab = body.colaborador;
+  const senha = body.senha;
+
+  if (!colab || !colab.login || !colab.cpf || !colab.nome) {
+    return res.status(400).json({
+      success: false,
+      message: 'Dados do colaborador incompletos (login, CPF e nome são obrigatórios).',
+    });
+  }
+
+  try {
+    const db = getDb();
+    const { data, error } = await db.rpc('salvar_colaborador', {
+      p_collab: colab,
+      p_senha: typeof senha === 'string' ? senha : null,
+    });
+
+    if (error) {
+      return res.status(500).json({ success: false, message: `Erro ao salvar colaborador no servidor: ${error.message}` });
+    }
+
+    return res.status(200).json({ success: true, colaborador: data, message: 'Colaborador salvo com sucesso no servidor.' });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: `Falha ao salvar colaborador: ${err?.message || err}` });
+  }
+});
+
+// 9. PESQUISAS LIBERADAS PARA O PESQUISADOR DE CAMPO
+// Mesmo contrato de api/collaborators/[id]/pesquisas.ts. Fonte de verdade única:
+// pesquisas.pesquisadores_ids contém o id do colaborador (ver nota no arquivo original).
+function isSurveyPassed(row: ServerSurveyRow): boolean {
+  if (row.status === 'excluida' || (row.status as string) === 'inativa') return true;
+  if (!row.data_fim) return false;
+  try {
+    const end = new Date(row.data_fim);
+    end.setHours(23, 59, 59, 999);
+    return Date.now() > end.getTime();
+  } catch {
+    return false;
+  }
+}
+
+app.get('/api/collaborators/:id/pesquisas', async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const db = getDb();
+
+    const { data: colab, error: colabErr } = await db
+      .from('colaboradores')
+      .select('id, pesquisas_reabilitadas_ids')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (colabErr) throw colabErr;
+    if (!colab) {
+      return res.status(404).json({ success: false, message: 'Colaborador não encontrado.' });
+    }
+
+    const reabilitadas: string[] = colab.pesquisas_reabilitadas_ids || [];
+
+    const { data: rows, error: surveysErr } = await db
+      .from('pesquisas')
+      .select('*')
+      .contains('pesquisadores_ids', [id]);
+
+    if (surveysErr) throw surveysErr;
+
+    const list = [];
+    for (const row of (rows || []) as ServerSurveyRow[]) {
+      const status = row.status as string;
+      if (status === 'excluida' || status === 'inativa') continue;
+      if (status === 'concluida') {
+        if (!reabilitadas.includes(row.id)) continue;
+      } else if (status === 'ativa') {
+        if (isSurveyPassed(row)) continue;
+      } else {
+        continue;
+      }
+      const count = await getSubmissionsCount(db, row.id);
+      list.push(toDTO(row, count));
+    }
+
+    return res.status(200).json({ success: true, pesquisadorId: id, pesquisas: list, count: list.length });
+  } catch (err: any) {
+    handleDbError(res, err);
+  }
+});
+
 // -------------------------------------------------------------------------------------
 // INTEGRAÇÃO COM O VITE (FRONTEND)
 // -------------------------------------------------------------------------------------
