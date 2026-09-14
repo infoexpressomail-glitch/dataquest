@@ -53,13 +53,24 @@ npm install
 
 ### 3. Configurar o Supabase
 1. Crie um novo projeto no [painel do Supabase](https://supabase.com/dashboard).
-2. Vá em **SQL Editor** e execute, **nesta ordem**:
-   - `supabase/migrations/0001_initial_schema.sql` (cria todas as tabelas, RLS, funções,
-     views e buckets de Storage)
-   - `supabase/migrations/0002_survey_field_plan.sql` (adiciona as colunas de plano
-     amostral, cotas por sexo, datas de campo e configuração de gravação de áudio)
+2. Vá em **SQL Editor** e execute, **nesta ordem**, todos os arquivos de
+   `supabase/migrations/`:
+   - `0001_initial_schema.sql` (cria todas as tabelas, RLS, funções, views e buckets
+     de Storage)
+   - `0002_survey_field_plan.sql` (adiciona as colunas de plano amostral, cotas por
+     sexo, datas de campo e configuração de gravação de áudio)
+   - `0003_field_auth.sql` (cria a função `autenticar_campo`, usada pelo login do
+     app de campo em `POST /api/auth`)
+   - `0004_save_collaborator.sql` (cria a rotina de upsert de colaboradores usada por
+     `POST /api/collaborators`)
+   - `0005_researcher_profile.sql` (ajustes no perfil do pesquisador de campo —
+     substitui a rotina de upsert criada em `0004`)
    - `supabase/seed.sql` (popula com os perfis, colaboradores demo e as pesquisas
      padrão do sistema)
+
+   ⚠️ Pular `0003`–`0005` deixa o projeto sem a função `autenticar_campo`: o login do
+   app de campo e o cadastro de colaboradores falham em produção mesmo com tudo o
+   resto configurado corretamente.
 3. Em **Project Settings → API**, copie:
    - **Project URL** → vai em `VITE_SUPABASE_URL`
    - **anon public key** → vai em `VITE_SUPABASE_ANON_KEY`
@@ -117,7 +128,10 @@ dataquest/
 ├── supabase/
 │   ├── migrations/
 │   │   ├── 0001_initial_schema.sql          # Schema completo, RLS, funções, views, storage
-│   │   └── 0002_survey_field_plan.sql       # Plano amostral, cotas por sexo, config. de áudio
+│   │   ├── 0002_survey_field_plan.sql       # Plano amostral, cotas por sexo, config. de áudio
+│   │   ├── 0003_field_auth.sql              # Função autenticar_campo (login do app de campo)
+│   │   ├── 0004_save_collaborator.sql       # Upsert de colaboradores
+│   │   └── 0005_researcher_profile.sql      # Ajustes no perfil do pesquisador de campo
 │   ├── seed.sql                             # Dados iniciais (perfis, colaboradores, pesquisas)
 │   └── config.toml                          # Configuração do Supabase CLI
 ├── src/                             # Código do frontend (React/Vite/TS) — inalterado
