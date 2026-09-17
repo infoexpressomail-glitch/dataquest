@@ -24,7 +24,7 @@ interface FieldSyncProps {
  *  - Descarregar: envia as coletas offline pendentes para o servidor.
  */
 export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
-  const { effectiveOnline, offlineQueue, pendingIndexedDbCount } = useApp();
+  const { effectiveOnline, offlineQueue, pendingIndexedDbCount, syncOfflineQueue, forceSyncPendingWithSupabase } = useApp();
 
   const [busy, setBusy] = useState<'load' | 'unload' | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -53,12 +53,29 @@ export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
     setFeedback(null);
     setError(null);
     try {
-      await onResync(session);
-      setFeedback(
-        pendingCount > 0
-          ? `${pendingCount} coleta(s) pendente(s) de envio. Conecte-se para descarregar.`
-          : 'Todas as coletas já foram descarregadas (enviadas ao servidor).'
-      );
+      // Envia de verdade o que está pendente: entrevistas coletadas (fila offline
+      // em localStorage) e pesquisas salvas offline (cache IndexedDB). Antes, este
+      // botão só chamava onResync — que apenas BAIXA pesquisas do servidor — e nunca
+      // enviava nada.
+      const [queueResult, surveyResult] = await Promise.all([
+        syncOfflineQueue(),
+        forceSyncPendingWithSupabase(false),
+      ]);
+
+      const totalSent = queueResult.count + surveyResult.count;
+      const totalFailed = pendingCount - totalSent;
+
+      if (totalFailed > 0) {
+        setError(
+          `${totalSent} item(ns) enviado(s). ${totalFailed} continuam pendentes (${queueResult.message} ${surveyResult.message})`
+        );
+      } else {
+        setFeedback(
+          totalSent > 0
+            ? `${totalSent} coleta(s)/pesquisa(s) enviada(s) com sucesso ao servidor.`
+            : 'Não havia nada pendente para enviar.'
+        );
+      }
     } catch (e: any) {
       setError(e?.message || 'Falha ao descarregar coletas.');
     } finally {

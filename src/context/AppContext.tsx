@@ -55,6 +55,7 @@ import {
 } from '../services/serverSurveyService';
 import { ServerSyncCheckResult } from '../types';
 import { saveCollaboratorToServer } from '../services/serverCollaboratorService';
+import { uploadSubmissionsToServer, uploadSubmissionToServer } from '../services/serverSubmissionService';
 
 interface AppContextType {
   isAuthenticated: boolean;
@@ -857,6 +858,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       console.log('[ConnectionMonitor] Sinal de rede restabelecido (navigator.onLine = true). Forçando fila de sincronização IndexedDB -> Supabase...');
       setConnectionState('reconnecting');
       forceSyncPendingWithSupabase(true);
+      syncOfflineQueue().catch((err) =>
+        console.warn('[ConnectionMonitor] Falha ao sincronizar fila offline automaticamente:', err)
+      );
       refreshSurveysFromServer();
     } else if (!isNowOnline) {
       setConnectionState('offline');
@@ -1915,6 +1919,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         resumo: `Pesquisador: ${sub.pesquisadorNome} • ${sub.respostas?.length || 0} respostas coletadas`,
         payload: sub,
       });
+    } else {
+      // Envia imediatamente ao servidor central (grava em `respostas` com a service
+      // role). Antes desta correção, nada aqui de fato chegava ao banco — a coleta
+      // ficava só no estado React do navegador, mesmo estando online.
+      uploadSubmissionToServer(sub)
+        .then((res) => {
+          if (!res.success) {
+            console.warn(`[Submissions] Falha ao enviar coleta ${sub.id} ao servidor: ${res.message}`);
+            // Não perde a coleta: guarda na fila offline para tentar de novo depois
+            // (via "Sincronizar" ou na próxima reconexão).
+            addOfflineItem({
+              tipo: 'RESPOSTA_COLETA',
+              titulo: `Coleta: ${sub.codigoPesquisa} (#${sub.id})`,
+              resumo: `Pesquisador: ${sub.pesquisadorNome} • falha ao enviar: ${res.message}`,
+              payload: sub,
+            });
+          }
+        })
+        .catch((err) => {
+          console.warn(`[Submissions] Erro de rede ao enviar coleta ${sub.id}:`, err);
+          addOfflineItem({
+            tipo: 'RESPOSTA_COLETA',
+            titulo: `Coleta: ${sub.codigoPesquisa} (#${sub.id})`,
+            resumo: `Pesquisador: ${sub.pesquisadorNome} • erro de rede ao enviar`,
+            payload: sub,
+          });
+        });
     }
 
     addAuditLog({
@@ -2090,43 +2121,97 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (offlineQueue.length === 0) {
       return { success: true, count: 0, message: 'Nenhum registro pendente para sincronização.' };
     }
+    if (!effectiveOnline) {
+      return { success: false, count: 0, message: 'Sem conexão: não é possível sincronizar agora.' };
+    }
 
-    const count = offlineQueue.length;
-    // Mark as synchronizing
+    const itemsToProcess = offlineQueue;
     setOfflineQueue((prev) => prev.map((item) => ({ ...item, status: 'sincronizando' })));
 
-    // Simulate server synchronization delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    const succeededIds: string[] = [];
+    const failedItems: { id: string; message: string }[] = [];
 
-    // Ensure all items are safely merged into active state
-    offlineQueue.forEach((item) => {
-      if (item.tipo === 'PESQUISA_SALVA' && item.payload) {
-        const s = item.payload as Survey;
-        setSurveys((prev) => {
-          const idx = prev.findIndex((x) => x.id === s.id);
-          if (idx >= 0) {
-            const arr = [...prev];
-            arr[idx] = s;
-            return arr;
+    // 1) Pesquisas pendentes — mesmo caminho real usado por forceSyncPendingWithSupabase
+    // (server-side, ignora RLS). Se a mesma pesquisa já tiver sido sincronizada por
+    // aquele fluxo, uploadSurveyToServer é idempotente (upsert por id).
+    const surveyItems = itemsToProcess.filter((item) => item.tipo === 'PESQUISA_SALVA' && item.payload);
+    for (const item of surveyItems) {
+      const survey = item.payload as Survey;
+      try {
+        const res = await uploadSurveyToServer(survey);
+        if (res.success) {
+          succeededIds.push(item.id);
+          setSurveys((prev) => {
+            const idx = prev.findIndex((x) => x.id === survey.id);
+            if (idx >= 0) {
+              const arr = [...prev];
+              arr[idx] = survey;
+              return arr;
+            }
+            return [survey, ...prev];
+          });
+          await markSurveySyncedInDB(survey.id);
+        } else {
+          failedItems.push({ id: item.id, message: res.message });
+        }
+      } catch (err: any) {
+        failedItems.push({ id: item.id, message: err?.message || 'Falha de rede' });
+      }
+    }
+
+    // 2) Entrevistas pendentes — envia em lote para POST /api/submissions
+    // (grava de verdade na tabela `respostas`; antes, este trecho só recolocava o
+    // payload em memória local, sem nenhuma chamada de rede).
+    const submissionItems = itemsToProcess.filter((item) => item.tipo === 'RESPOSTA_COLETA' && item.payload);
+    if (submissionItems.length > 0) {
+      const submissionsPayload = submissionItems.map((item) => item.payload as InterviewSubmission);
+      try {
+        const res = await uploadSubmissionsToServer(submissionsPayload);
+        const byId = new Map(res.results.map((r) => [r.id, r]));
+
+        submissionItems.forEach((item) => {
+          const sub = item.payload as InterviewSubmission;
+          const result = byId.get(sub.id);
+          if (result?.success) {
+            succeededIds.push(item.id);
+            setSubmissions((prev) => (prev.some((x) => x.id === sub.id) ? prev : [sub, ...prev]));
+          } else {
+            failedItems.push({ id: item.id, message: result?.message || res.message });
           }
-          return [s, ...prev];
         });
-      } else if (item.tipo === 'RESPOSTA_COLETA' && item.payload) {
-        const sub = item.payload as InterviewSubmission;
-        setSubmissions((prev) => {
-          if (!prev.some((x) => x.id === sub.id)) {
-            return [sub, ...prev];
-          }
-          return prev;
+      } catch (err: any) {
+        submissionItems.forEach((item) => {
+          failedItems.push({ id: item.id, message: err?.message || 'Falha de rede' });
         });
       }
-    });
+    }
+
+    // Remove da fila só o que realmente foi confirmado pelo servidor; mantém o que
+    // falhou (marcado como 'erro') para a próxima tentativa, em vez de descartar.
+    setOfflineQueue((prev) =>
+      prev
+        .filter((item) => !succeededIds.includes(item.id))
+        .map((item) => {
+          const failure = failedItems.find((f) => f.id === item.id);
+          return failure ? { ...item, status: 'erro' as const, erroMensagem: failure.message } : item;
+        })
+    );
+
+    const successCount = succeededIds.length;
+    const failedCount = failedItems.length;
+    const allSucceeded = failedCount === 0;
 
     addAuditLog({
       categoria: 'SISTEMA',
       tipoAcao: 'SINCRONIZACAO_OFFLINE',
-      tituloAcao: 'Sincronização de Dados Coletados Offline Concluída',
-      descricaoDetalhada: `${count} registro(s) salvo(s) offline foram transmitidos e sincronizados com sucesso com a base central.`,
+      tituloAcao: allSucceeded
+        ? 'Sincronização de Dados Coletados Offline Concluída'
+        : 'Sincronização de Dados Coletados Offline Concluída com Falhas',
+      descricaoDetalhada: allSucceeded
+        ? `${successCount} registro(s) salvo(s) offline foram transmitidos e sincronizados com sucesso com a base central.`
+        : `${successCount} registro(s) sincronizados, ${failedCount} falharam e permanecem na fila para nova tentativa: ${failedItems
+            .map((f) => f.message)
+            .join(' | ')}`,
       autor: {
         id: currentUser.id,
         nome: currentUser.nome,
@@ -2140,18 +2225,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         nome: 'Fila de Dados Offline',
       },
       alteracoes: [
-        { campo: 'totalItens', rotulo: 'Itens Sincronizados', valorNovo: `${count} registros` },
-        { campo: 'statusFila', rotulo: 'Status da Fila', valorAnterior: 'Pendente', valorNovo: 'Sincronizado' },
+        { campo: 'totalItens', rotulo: 'Itens Sincronizados', valorNovo: `${successCount} registros` },
+        { campo: 'falhas', rotulo: 'Falhas de Envio', valorNovo: `${failedCount}` },
+        { campo: 'statusFila', rotulo: 'Status da Fila', valorAnterior: 'Pendente', valorNovo: allSucceeded ? 'Sincronizado' : 'Parcialmente sincronizado' },
       ],
       motivoConformidade: 'Sincronização segura de coletas e pesquisas formuladas em campo remoto sem conectividade inicial.',
-      statusConformidade: 'conforme',
+      statusConformidade: allSucceeded ? 'conforme' : 'atencao',
     });
 
-    setOfflineQueue([]);
     return {
-      success: true,
-      count,
-      message: `${count} item(ns) sincronizado(s) com sucesso com o servidor central!`,
+      success: allSucceeded,
+      count: successCount,
+      message: allSucceeded
+        ? `${successCount} item(ns) sincronizado(s) com sucesso com o servidor central!`
+        : `${successCount} sincronizado(s), ${failedCount} falharam e continuam pendentes na fila.`,
     };
   };
 
