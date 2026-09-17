@@ -25,19 +25,22 @@ export function isSurveyPassed(survey: Survey): boolean {
 }
 
 /**
- * Checks if a researcher was assigned to a given survey
- * (via survey.pesquisadoresIds or researcher.pesquisasVinculadasIds)
+ * Checks if a researcher was assigned to a given survey.
+ *
+ * Fonte de verdade única: `survey.pesquisadoresIds` — o mesmo campo usado por
+ * `GET /api/collaborators/:id/pesquisas` (o que o app de campo realmente baixa) e
+ * pela policy de RLS de `pesquisas`. `researcher.pesquisasVinculadasIds` é mantido
+ * em sincronia com este campo sempre que o colaborador é salvo (ver
+ * `saveCollaborator` em AppContext.tsx), mas não é mais consultado aqui: usar os
+ * dois lados com OR é o que fazia uma pesquisa "removida" de um lado continuar
+ * aparecendo no painel web mesmo depois de não ser mais entregue ao app de campo
+ * (ver supabase/reconciliar_vinculos_pesquisador_pesquisa.sql).
  */
 export function isResearcherAssignedToSurvey(
   survey: Survey,
   researcher: Collaborator
 ): boolean {
-  const assignedInSurvey =
-    Array.isArray(survey.pesquisadoresIds) && survey.pesquisadoresIds.includes(researcher.id);
-  const assignedInProfile =
-    Array.isArray(researcher.pesquisasVinculadasIds) &&
-    researcher.pesquisasVinculadasIds.includes(survey.id);
-  return assignedInSurvey || assignedInProfile;
+  return Array.isArray(survey.pesquisadoresIds) && survey.pesquisadoresIds.includes(researcher.id);
 }
 
 /**

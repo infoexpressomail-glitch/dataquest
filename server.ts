@@ -564,6 +564,119 @@ app.get('/api/collaborators/:id/pesquisas', async (req: Request, res: Response) 
   }
 });
 
+// 10. ENTREVISTAS COLETADAS EM CAMPO (tabela `respostas`)
+// Mesmo contrato de api/submissions.ts. Sem esta rota, uma entrevista coletada
+// nunca saía do navegador do pesquisador — ficava só em memória/IndexedDB local.
+function submissionPayloadToRowLocal(sub: any): { row?: Record<string, any>; error?: string } {
+  if (!sub || typeof sub !== 'object') return { error: 'Submissão inválida ou ausente.' };
+  if (!sub.id) return { error: 'Submissão sem id.' };
+  if (!sub.pesquisaId) return { error: `Submissão ${sub.id} sem pesquisaId.` };
+  if (!Array.isArray(sub.respostas)) return { error: `Submissão ${sub.id} sem respostas (deve ser um array).` };
+
+  return {
+    row: {
+      id: sub.id,
+      codigo_pesquisa: sub.codigoPesquisa || '',
+      pesquisa_id: sub.pesquisaId,
+      pesquisa_nome: sub.pesquisaNome || '',
+      pesquisador_id: sub.pesquisadorId || null,
+      pesquisador_nome: sub.pesquisadorNome || 'Não identificado',
+      data_hora: sub.dataHora || new Date().toISOString(),
+      status: sub.status || 'concluida',
+      respostas: sub.respostas,
+      geolocalizacao: sub.geolocalizacao || null,
+      audio_gravacao: sub.audioGravacao || null,
+      respostas_alteradas_pelo_admin: sub.respostasAlteradasPeloAdmin || false,
+      historico_edicao: sub.historicoEdicao || [],
+    },
+  };
+}
+
+function submissionRowToDTOLocal(row: any) {
+  return {
+    id: row.id,
+    codigoPesquisa: row.codigo_pesquisa,
+    pesquisaId: row.pesquisa_id,
+    pesquisaNome: row.pesquisa_nome,
+    pesquisadorId: row.pesquisador_id || undefined,
+    pesquisadorNome: row.pesquisador_nome,
+    dataHora: row.data_hora,
+    status: row.status,
+    respostas: row.respostas || [],
+    geolocalizacao: row.geolocalizacao || undefined,
+    audioGravacao: row.audio_gravacao || undefined,
+    respostasAlteradasPeloAdmin: row.respostas_alteradas_pelo_admin || undefined,
+    historicoEdicao: row.historico_edicao || undefined,
+  };
+}
+
+app.get('/api/submissions', async (req: Request, res: Response) => {
+  try {
+    const db = getDb();
+    const pesquisaId = typeof req.query.pesquisaId === 'string' ? req.query.pesquisaId : undefined;
+
+    let query = db.from('respostas').select('*').order('data_hora', { ascending: false });
+    if (pesquisaId) query = query.eq('pesquisa_id', pesquisaId);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const list = (data || []).map(submissionRowToDTOLocal);
+    return res.status(200).json({ success: true, submissions: list, count: list.length });
+  } catch (err: any) {
+    handleDbError(res, err);
+  }
+});
+
+app.post('/api/submissions', async (req: Request, res: Response) => {
+  const body = (req.body || {}) as { submissions?: any[]; submission?: any };
+  const incoming: any[] = Array.isArray(body.submissions)
+    ? body.submissions
+    : body.submission
+    ? [body.submission]
+    : [];
+
+  if (incoming.length === 0) {
+    return res.status(400).json({ success: false, message: 'Nenhuma submissão informada (envie "submission" ou "submissions").' });
+  }
+
+  try {
+    const db = getDb();
+    const rows: Record<string, any>[] = [];
+    const results: { id: string; success: boolean; message?: string }[] = [];
+
+    for (const sub of incoming) {
+      const { row, error } = submissionPayloadToRowLocal(sub);
+      if (error || !row) {
+        results.push({ id: sub?.id || '(sem id)', success: false, message: error || 'Payload inválido.' });
+        continue;
+      }
+      rows.push(row);
+    }
+
+    // Um upsert por item (não em lote): uma entrevista com dado inválido não derruba
+    // as demais válidas — ver mesmo comentário em api/submissions.ts.
+    for (const row of rows) {
+      const { error } = await db.from('respostas').upsert(row, { onConflict: 'id' });
+      results.push({ id: row.id, success: !error, message: error?.message });
+    }
+
+    const successCount = results.filter((r) => r.success).length;
+    const failedCount = results.length - successCount;
+
+    return res.status(failedCount > 0 && successCount === 0 ? 500 : 200).json({
+      success: failedCount === 0,
+      results,
+      message:
+        failedCount === 0
+          ? `${successCount} entrevista(s) gravada(s) com sucesso no servidor.`
+          : `${successCount} gravada(s), ${failedCount} falharam.`,
+    });
+  } catch (err: any) {
+    handleDbError(res, err);
+  }
+});
+
 // -------------------------------------------------------------------------------------
 // INTEGRAÇÃO COM O VITE (FRONTEND)
 // -------------------------------------------------------------------------------------

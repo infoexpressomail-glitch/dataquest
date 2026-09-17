@@ -119,16 +119,11 @@ export const SurveyManagementTable: React.FC = () => {
     return surveys.filter((s) => {
       if (isResearcher) {
         if (s.status !== 'ativa') return false;
-        const isAssociated =
-          s.pesquisadoresIds.includes(currentUser.id) ||
-          (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id));
-        if (!isAssociated) return false;
+        // Fonte de verdade única: pesquisadoresIds (ver researcherUtils.ts).
+        if (!s.pesquisadoresIds.includes(currentUser.id)) return false;
       } else {
         if (!accessAllWithoutAssociation) {
-          const isAssociated =
-            s.pesquisadoresIds.includes(currentUser.id) ||
-            (currentUser.pesquisasVinculadasIds && currentUser.pesquisasVinculadasIds.includes(s.id));
-          if (!isAssociated) return false;
+          if (!s.pesquisadoresIds.includes(currentUser.id)) return false;
         }
         if (activeTab === 'ativas' && s.status !== 'ativa') return false;
         if (activeTab === 'inativas' && s.status !== 'inativa' && s.status !== 'concluida') return false;

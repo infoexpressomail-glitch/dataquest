@@ -1176,6 +1176,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // Persiste no servidor central (grava no Supabase com senha em hash).
     // Se falhar, mantém o estado local e retorna false para o formulário exibir o erro.
     let serverOk = false;
+    const previous = collaborators.find((c) => c.id === colab.id);
+
     try {
       const result = await saveCollaboratorToServer(colab, senha);
       if (result?.success) {
@@ -1187,6 +1189,61 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     } catch {
       // Mantém apenas o estado local; o formulário decide como avisar.
+    }
+
+    // Mantém `pesquisas.pesquisadoresIds` sincronizado com `pesquisasVinculadasIds`.
+    // Os dois campos guardam o MESMO vínculo colaborador↔pesquisa em lados opostos, e só
+    // este formulário grava `pesquisasVinculadasIds` — sem este passo, o pesquisador
+    // continuaria sem acesso no app de campo (que só lê `pesquisadoresIds`, a fonte de
+    // verdade usada também pelo RLS) mesmo depois de "vinculado" aqui. Ver
+    // supabase/reconciliar_vinculos_pesquisador_pesquisa.sql para o histórico desse problema.
+    if (serverOk) {
+      const previousSurveyIds = new Set<string>(previous?.pesquisasVinculadasIds || []);
+      const nextSurveyIds = new Set<string>(colab.pesquisasVinculadasIds || []);
+      const addedSurveyIds = [...nextSurveyIds].filter((id) => !previousSurveyIds.has(id));
+      const removedSurveyIds = [...previousSurveyIds].filter((id) => !nextSurveyIds.has(id));
+      const syncFailures: string[] = [];
+
+      for (const surveyId of [...addedSurveyIds, ...removedSurveyIds]) {
+        const survey = surveys.find((s) => s.id === surveyId);
+        if (!survey) continue;
+
+        const currentResearcherIds = survey.pesquisadoresIds || [];
+        const updatedResearcherIds = addedSurveyIds.includes(surveyId)
+          ? Array.from(new Set([...currentResearcherIds, colab.id]))
+          : currentResearcherIds.filter((id) => id !== colab.id);
+
+        const updatedSurvey = { ...survey, pesquisadoresIds: updatedResearcherIds };
+
+        try {
+          const res = await uploadSurveyToServer(updatedSurvey);
+          if (res.success) {
+            setSurveys((prev) => prev.map((s) => (s.id === surveyId ? updatedSurvey : s)));
+          } else {
+            syncFailures.push(`${survey.nome}: ${res.message}`);
+          }
+        } catch (err: any) {
+          syncFailures.push(`${survey.nome}: ${err?.message || 'falha de rede ao sincronizar'}`);
+        }
+      }
+
+      if (syncFailures.length > 0) {
+        addAuditLog({
+          categoria: 'CONFIGURACAO',
+          tipoAcao: 'ACAO_EM_LOTE',
+          tituloAcao: 'Vínculo colaborador↔pesquisa não sincronizado no servidor',
+          descricaoDetalhada: `Ao salvar "${colab.nome}", não foi possível atualizar o vínculo em todas as pesquisas: ${syncFailures.join(' | ')}. Ele pode não enxergar essas pesquisas no app de campo até isso ser corrigido (provável causa: pesquisa em andamento exigindo sincronização prévia).`,
+          autor: {
+            id: currentUser.id,
+            nome: currentUser.nome,
+            login: currentUser.login,
+            perfil: currentProfile?.name || 'Administrador',
+          },
+          alvo: { tipo: 'colaborador', id: colab.id, identificador: colab.nome },
+          motivoConformidade: 'Consistência do vínculo pesquisador↔pesquisa usado pelo login de campo e pelo RLS.',
+          statusConformidade: 'atencao',
+        });
+      }
     }
 
     setCollaborators((prev) => {
@@ -2394,24 +2451,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const bulkAssignCollaboratorsToSurveys = (colabIds: string[], surveyIds: string[]) => {
+  const bulkAssignCollaboratorsToSurveys = async (colabIds: string[], surveyIds: string[]) => {
     if (colabIds.length === 0 || surveyIds.length === 0) return;
-    setCollaborators((prev) =>
-      prev.map((c) => {
-        if (!colabIds.includes(c.id)) return c;
-        const currentSurveys = c.pesquisasVinculadasIds || [];
-        const merged = Array.from(new Set([...currentSurveys, ...surveyIds]));
-        return { ...c, pesquisasVinculadasIds: merged };
-      })
-    );
-    setSurveys((prev) =>
-      prev.map((s) => {
-        if (!surveyIds.includes(s.id)) return s;
-        const currentRes = s.pesquisadoresIds || [];
-        const merged = Array.from(new Set([...currentRes, ...colabIds]));
-        return { ...s, pesquisadoresIds: merged };
-      })
-    );
+
+    // Reaproveita saveCollaborator (que já mantém pesquisas.pesquisadoresIds em
+    // sincronia com pesquisasVinculadasIds) para que esta vinculação em lote
+    // realmente persista no servidor — antes, esta função só alterava o estado
+    // local em memória e se perdia ao recarregar a página.
+    for (const colabId of colabIds) {
+      const colab = collaborators.find((c) => c.id === colabId);
+      if (!colab) continue;
+      const currentSurveys = colab.pesquisasVinculadasIds || [];
+      const merged = Array.from(new Set([...currentSurveys, ...surveyIds]));
+      await saveCollaborator({ ...colab, pesquisasVinculadasIds: merged });
+    }
+
     addAuditLog({
       categoria: 'CONFIGURACAO',
       tipoAcao: 'ACAO_EM_LOTE',
