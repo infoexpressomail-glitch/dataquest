@@ -102,6 +102,106 @@ export interface QuestionOption {
   id: string;
   label: string;
   value: string;
+  // -------- Personalização visual (Modelo Mobile First Premium) --------
+  /** id de um ícone da galeria universal (ver iconLibrary.ts) */
+  iconId?: string;
+  /** emoji exibido como resposta (galeria de emojis) */
+  emoji?: string;
+  /** id de um smile oficial (ver smileLibrary.ts) */
+  smileId?: string;
+  /** imagem (URL ou data URI) exibida como resposta */
+  imageUrl?: string;
+  /** descrição secundária curta exibida no card */
+  description?: string;
+  /** cor de destaque específica desta alternativa */
+  color?: string;
+  /** texto de selo/badge específico desta alternativa */
+  badge?: string;
+}
+
+/** Modelo de layout de renderização da pesquisa. */
+export type SurveyLayoutStyle = 'DEFAULT' | 'CARD' | 'SIDEBAR' | 'MOBILE_PREMIUM';
+
+/** Forma de apresentação das alternativas no modelo Mobile Premium. */
+export type AnswerVisualType =
+  | 'TEXTO'
+  | 'CARDS'
+  | 'ICONES'
+  | 'SMILEYS'
+  | 'IMAGEM'
+  | 'EMOJI'
+  | 'ESCALA_VISUAL';
+
+/** Tipo de escala visual (smiles/estrelas/corações/polegares/círculos/termômetro). */
+export type VisualScaleType =
+  | 'emojis'
+  | 'estrelas'
+  | 'coracoes'
+  | 'polegares'
+  | 'circulos'
+  | 'termometro';
+
+/** Aparência do enunciado da pergunta no modelo Mobile Premium. */
+export type QuestionAppearanceType =
+  | 'TEXTO'
+  | 'TEXTO_ICONE'
+  | 'TEXTO_SMILE'
+  | 'TEXTO_EMOJI'
+  | 'TEXTO_IMAGEM'
+  | 'TEXTO_COR'
+  | 'TEXTO_BADGE'
+  | 'TEXTO_FOTO';
+
+/**
+ * Configuração visual de uma pergunta. Todos os campos são opcionais;
+ * quando ausentes, o modelo Mobile Premium usa os padrões do tema.
+ */
+export interface QuestionVisualConfig {
+  /** Aparência do enunciado (texto + elemento visual). */
+  appearanceType?: QuestionAppearanceType;
+  /** Como as alternativas são renderizadas. */
+  answerVisualType?: AnswerVisualType;
+  /** Ícone do enunciado (id da galeria universal). */
+  iconId?: string;
+  /** Emoji do enunciado. */
+  emoji?: string;
+  /** Imagem/foto do enunciado (URL ou data URI). */
+  imageUrl?: string;
+  /** Texto do selo/badge do enunciado. */
+  badge?: string;
+  /** Cor de destaque do selo. */
+  badgeColor?: string;
+  /** Cor de destaque da pergunta (barra/realce). */
+  accentColor?: string;
+  // ---- Escala visual ----
+  /** Tipo de escala visual (quando answerVisualType = ESCALA_VISUAL). */
+  scaleType?: VisualScaleType;
+  /** Quantidade de níveis (5, 7, 10...). */
+  scaleSteps?: number;
+  /** Permitir meia estrela / meio coração. */
+  scaleAllowHalf?: boolean;
+  /** Cores de cada nível dos círculos coloridos. */
+  scaleColors?: string[];
+  /** Orientação do termômetro. */
+  scaleHorizontal?: boolean;
+  /** Legenda mínima/máxima da escala. */
+  scaleMinLabel?: string;
+  scaleMaxLabel?: string;
+  // ---- Cores/configuração do card ----
+  cardColor?: string;
+  iconColor?: string;
+  selectionColor?: string;
+  buttonColor?: string;
+  borderColor?: string;
+  borderRadius?: number;
+  shadow?: boolean;
+  /** Gradiente CSS aplicado ao card (ex: 'linear-gradient(...)'). */
+  gradient?: string;
+  /** Imagem de fundo do card. */
+  backgroundImage?: string;
+  // ---- Comentário opcional ----
+  commentEnabled?: boolean;
+  commentMaxLength?: number;
 }
 
 export interface Question {
@@ -117,6 +217,17 @@ export interface Question {
   escalaMaxLabel?: string;
   ordem: number;
   iniciarGravacaoAqui?: boolean; // Flag: Iniciar a gravação de áudio a partir desta pergunta
+  // -------- Personalização visual (Modelo Mobile First Premium) --------
+  /** Bloco completo de configuração visual da pergunta. */
+  visual?: QuestionVisualConfig;
+  /** Atalhos normalizados (mantidos por compatibilidade com o prompt/DB). */
+  questionIcon?: string;
+  questionEmoji?: string;
+  questionImage?: string;
+  answerVisualType?: AnswerVisualType;
+  cardColor?: string;
+  iconColor?: string;
+  badgeColor?: string;
 }
 
 export type ConditionOperator = 'igual' | 'diferente' | 'contem' | 'maior_que' | 'menor_que';
@@ -260,6 +371,38 @@ export interface Survey {
   lastServerSyncAt?: string; // Carimbo da última sincronização prévia com o servidor
   serverSyncStatus?: 'sincronizado' | 'necessita_sincronizacao' | 'sincronizando' | 'autorizado_para_subir' | 'erro_conflito';
   totalEntrevistasColetadas?: number; // Total de coletas vinculadas no servidor
+  // ===================================================================
+  // Modelo Mobile First Premium (Opção 6) — aparência/identidade da pesquisa
+  // Campo layoutStyle seleciona o renderizador. DEFAULT/CARD/SIDEBAR mantêm
+  // exatamente o comportamento atual; MOBILE_PREMIUM ativa a nova interface.
+  // ===================================================================
+  layoutStyle?: SurveyLayoutStyle;
+  /** Nome exibido da instituição (cabeçalho do modelo premium). */
+  institutionName?: string;
+  /** Logo da instituição (URL ou data URI). */
+  logoImage?: string;
+  /** Imagem de capa da tela inicial. */
+  coverImage?: string;
+  /** Imagem da tela final. */
+  finishImage?: string;
+  /** Mensagem de boas-vindas da capa. */
+  welcomeMessage?: string;
+  /** Mensagem final de agradecimento. */
+  finishMessage?: string;
+  /** Mensagem institucional (ex: Prefeitura) exibida no fim. */
+  prefeituraMessage?: string;
+  /** QR Code opcional exibido na tela final. */
+  qrCodeUrl?: string;
+  /** Cor principal do tema (padrão azul institucional GIDE). */
+  themeAccent?: string;
+  /** Cor secundária do tema. */
+  themeSecondary?: string;
+  /** Exibe a barra de progresso em percentual. */
+  showProgressPercent?: boolean;
+  /** Exibe indicador 'Pergunta X de Y'. */
+  showQuestionIndicator?: boolean;
+  /** Rótulo do botão de início da capa. */
+  startButtonLabel?: string;
 }
 
 export interface ServerSyncCheckResult {
@@ -307,6 +450,8 @@ export interface AnswerItem {
   perguntaCodigo: string;
   perguntaEnunciado: string;
   resposta: string | string[];
+  /** Comentário opcional do entrevistado (Modelo Mobile Premium). */
+  comentario?: string;
 }
 
 export interface InterviewSubmission {

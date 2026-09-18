@@ -39,6 +39,18 @@ export interface SurveyRow {
   habilitar_gravacao_audio: boolean | null;
   gravar_audio_a_partir_pergunta_id: string | null;
   tempo_limite_gravacao_minutos: number | null;
+  // Modelo Mobile First Premium (migration 0007)
+  layout_style: string | null;
+  institution_name: string | null;
+  logo_image: string | null;
+  cover_image: string | null;
+  finish_image: string | null;
+  welcome_message: string | null;
+  finish_message: string | null;
+  prefeitura_message: string | null;
+  qr_code_url: string | null;
+  theme_accent: string | null;
+  theme_secondary: string | null;
 }
 
 export interface SurveyDTO {
@@ -78,6 +90,21 @@ export interface SurveyDTO {
   habilitarGravacaoAudio?: boolean;
   gravarAudioAPartirPerguntaId?: string;
   tempoLimiteGravacaoMinutos?: number;
+  // Modelo Mobile First Premium (migration 0007)
+  layoutStyle?: string;
+  institutionName?: string;
+  logoImage?: string;
+  coverImage?: string;
+  finishImage?: string;
+  welcomeMessage?: string;
+  finishMessage?: string;
+  prefeituraMessage?: string;
+  qrCodeUrl?: string;
+  themeAccent?: string;
+  themeSecondary?: string;
+  showProgressPercent?: boolean;
+  showQuestionIndicator?: boolean;
+  startButtonLabel?: string;
 }
 
 /**
@@ -127,6 +154,18 @@ export function rowToDTO(row: SurveyRow, submissionsCount: number): SurveyDTO {
     habilitarGravacaoAudio: row.habilitar_gravacao_audio ?? undefined,
     gravarAudioAPartirPerguntaId: row.gravar_audio_a_partir_pergunta_id || undefined,
     tempoLimiteGravacaoMinutos: row.tempo_limite_gravacao_minutos ?? undefined,
+    // Modelo Mobile First Premium (migration 0007)
+    layoutStyle: (row.layout_style as any) || undefined,
+    institutionName: row.institution_name || undefined,
+    logoImage: row.logo_image || undefined,
+    coverImage: row.cover_image || undefined,
+    finishImage: row.finish_image || undefined,
+    welcomeMessage: row.welcome_message || undefined,
+    finishMessage: row.finish_message || undefined,
+    prefeituraMessage: row.prefeitura_message || undefined,
+    qrCodeUrl: row.qr_code_url || undefined,
+    themeAccent: row.theme_accent || undefined,
+    themeSecondary: row.theme_secondary || undefined,
   };
 }
 
@@ -170,6 +209,19 @@ export function surveyPayloadToRow(survey: Partial<SurveyDTO>): Record<string, a
   if (survey.habilitarGravacaoAudio !== undefined) row.habilitar_gravacao_audio = survey.habilitarGravacaoAudio;
   if (survey.gravarAudioAPartirPerguntaId !== undefined) row.gravar_audio_a_partir_pergunta_id = survey.gravarAudioAPartirPerguntaId;
   if (survey.tempoLimiteGravacaoMinutos !== undefined) row.tempo_limite_gravacao_minutos = survey.tempoLimiteGravacaoMinutos;
+
+  // Modelo Mobile First Premium (migration 0007)
+  if (survey.layoutStyle !== undefined) row.layout_style = survey.layoutStyle;
+  if (survey.institutionName !== undefined) row.institution_name = survey.institutionName;
+  if (survey.logoImage !== undefined) row.logo_image = survey.logoImage || null;
+  if (survey.coverImage !== undefined) row.cover_image = survey.coverImage || null;
+  if (survey.finishImage !== undefined) row.finish_image = survey.finishImage || null;
+  if (survey.welcomeMessage !== undefined) row.welcome_message = survey.welcomeMessage || null;
+  if (survey.finishMessage !== undefined) row.finish_message = survey.finishMessage || null;
+  if (survey.prefeituraMessage !== undefined) row.prefeitura_message = survey.prefeituraMessage || null;
+  if (survey.qrCodeUrl !== undefined) row.qr_code_url = survey.qrCodeUrl || null;
+  if (survey.themeAccent !== undefined) row.theme_accent = survey.themeAccent || null;
+  if (survey.themeSecondary !== undefined) row.theme_secondary = survey.themeSecondary || null;
 
   // dados_completos sempre acompanha o objeto inteiro recebido, para uso pelo
   // supabaseSyncService.ts e para nunca perder campos não mapeados explicitamente.

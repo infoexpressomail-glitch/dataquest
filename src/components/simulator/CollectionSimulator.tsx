@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { Survey, Question, InterviewSubmission, AnswerItem } from '../../types';
 import { filterResearcherVisibleSurveys } from '../../utils/researcherUtils';
+import { MobilePremiumSurvey } from '../surveys/mobile-premium/MobilePremiumSurvey';
 import { generatePlayableWavBlob, formatAudioDuration } from '../../utils/audioUtils';
 import { saveOfflineSubmissionToDB } from '../../utils/indexedDBStorage';
 import {
@@ -74,6 +75,8 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  // Comentários opcionais por pergunta (Modelo Mobile First Premium).
+  const [answersComments, setAnswersComments] = useState<Record<string, string>>({});
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isReviewStep, setIsReviewStep] = useState<boolean>(false);
   const [confirmFinalizeModalOpen, setConfirmFinalizeModalOpen] = useState<boolean>(false);
@@ -129,7 +132,9 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
       setAnswers((prev) => ({ ...prev, [currentQuestion.id]: lastAnswer }));
     }
     // No modo pesquisador não há etapa de revisão: grava e encerra direto.
-    if (fieldMode) {
+    // O modelo Mobile Premium também finaliza diretamente (sua tela final de
+    // agradecimento faz o papel da etapa de revisão).
+    if (fieldMode || activeSurvey?.layoutStyle === 'MOBILE_PREMIUM') {
       handleSubmitFinal(lastAnswer !== undefined && currentQuestion
         ? { [currentQuestion.id]: lastAnswer }
         : undefined);
@@ -236,11 +241,13 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
 
     const formattedAnswers: AnswerItem[] = Object.entries(finalAnswers).map(([perguntaId, resposta]) => {
       const q = activeSurvey.perguntas.find((p) => p.id === perguntaId);
+      const comentario = answersComments[perguntaId];
       return {
         perguntaId,
         perguntaCodigo: q?.codigo || 'Q',
         perguntaEnunciado: q?.enunciado || '',
         resposta: Array.isArray(resposta) ? (resposta as string[]) : String(resposta || ''),
+        ...(comentario ? { comentario } : {}),
       };
     });
 
@@ -304,6 +311,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
 
   const handleReset = () => {
     setAnswers({});
+    setAnswersComments({});
     setCurrentQuestionIndex(0);
     setIsReviewStep(false);
     setIsCompleted(false);
@@ -318,6 +326,46 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
   };
 
   const [quickConfidenceFeedback, setQuickConfidenceFeedback] = useState<string | null>(null);
+
+  // =====================================================================
+  // MODELO MOBILE FIRST PREMIUM (Opção 6)
+  // Quando a pesquisa usa layoutStyle = MOBILE_PREMIUM, delegamos toda a
+  // interface para o componente dedicado. O restante do fluxo (respostas,
+  // regras condicionais, gravação de áudio, submissão e auditoria) continua
+  // sendo o mesmo já usado pelos modelos DEFAULT/CARD/SIDEBAR — nada existente
+  // é alterado.
+  // =====================================================================
+  if (activeSurvey && hasValidQuestions && activeSurvey.layoutStyle === 'MOBILE_PREMIUM') {
+    return (
+      <MobilePremiumSurvey
+        survey={activeSurvey}
+        currentQuestionIndex={currentQuestionIndex}
+        answers={answers}
+        comments={answersComments}
+        isCompleted={isCompleted}
+        wasSavedOffline={wasSavedOffline}
+        fieldMode={fieldMode}
+        saving={isSaving}
+        audio={{
+          enabled: isAudioEnabled,
+          started: hasAudioStarted,
+          atLimit: isAudioAtLimit,
+          recording: isRecordingAudio,
+          seconds: audioSeconds,
+          limitMinutes: configuredMinutes,
+          startCode: activeSurvey.perguntas[audioStartQuestionIndex]?.codigo,
+        }}
+        onAnswer={(questionId, value) => setAnswers((prev) => ({ ...prev, [questionId]: value }))}
+        onComment={(questionId, text) =>
+          setAnswersComments((prev) => ({ ...prev, [questionId]: text }))
+        }
+        onNext={handleNext}
+        onPrev={handlePrev}
+        onSubmitFinal={handleNext}
+        onReset={handleReset}
+      />
+    );
+  }
 
   const handleQuickStandardConfidence = (level: number, zVal: number) => {
     if (!activeSurvey) return;

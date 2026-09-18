@@ -1,0 +1,808 @@
+/* ==========================================================================
+   MODELO MOBILE FIRST PREMIUM (Opção 6) — estilos do DataQuest
+   --------------------------------------------------------------------------
+   Arquivo totalmente novo e isolado sob o prefixo `.mp-`. Nada aqui altera
+   estilos globais existentes; o CSS já global (src/index.css) permanece
+   intacto. Importado apenas por MobilePremiumSurvey.tsx.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+.mp-root {
+  --mp-primary: #0b4a8f;
+  --mp-primary-dark: #083a70;
+  --mp-secondary: #16a34a;
+  --mp-bg: #f4f7fb;
+  --mp-surface: #ffffff;
+  --mp-text: #0f172a;
+  --mp-muted: #5b6b82;
+  --mp-border: #dbe4f0;
+  --mp-radius: 24px;
+  --mp-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  font-family: var(--mp-font);
+  color: var(--mp-text);
+  background: var(--mp-bg);
+  min-height: 100%;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Acessibilidade: fonte ampliada e alto contraste */
+.mp-root.mp-large-font {
+  font-size: 118%;
+}
+.mp-root.mp-high-contrast {
+  --mp-bg: #ffffff;
+  --mp-surface: #ffffff;
+  --mp-text: #000000;
+  --mp-muted: #1f2937;
+  --mp-border: #000000;
+}
+.mp-root.mp-high-contrast .mp-option,
+.mp-root.mp-high-contrast .mp-card {
+  border-width: 2px;
+}
+
+/* --------------------------- Estrutura da página -------------------------- */
+.mp-shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 14px 132px;
+}
+@media (min-width: 1024px) {
+  .mp-shell {
+    max-width: 820px;
+    padding-bottom: 140px;
+  }
+}
+@media (min-width: 1440px) {
+  .mp-shell {
+    max-width: 900px;
+  }
+}
+
+/* ------------------------------- Cabeçalho -------------------------------- */
+.mp-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: linear-gradient(160deg, var(--mp-primary) 0%, var(--mp-primary-dark) 100%);
+  color: #fff;
+  border-radius: 0 0 var(--mp-radius) var(--mp-radius);
+  box-shadow: 0 12px 30px -14px rgba(8, 40, 80, 0.55);
+  padding: 18px 18px 20px;
+  margin: 0 -14px 18px;
+}
+.mp-header-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mp-logo {
+  height: 42px;
+  width: 42px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.mp-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mp-header-titles {
+  min-width: 0;
+  flex: 1;
+}
+.mp-institution {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+.mp-survey-name {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+.mp-survey-desc {
+  font-size: 12px;
+  opacity: 0.86;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+.mp-header-tools {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.mp-tool-btn {
+  height: 34px;
+  min-width: 34px;
+  padding: 0 9px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.mp-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+.mp-tool-btn:active {
+  transform: scale(0.95);
+}
+.mp-tool-btn[aria-pressed='true'] {
+  background: #fff;
+  color: var(--mp-primary);
+}
+
+/* --------------------------- Barra de progresso --------------------------- */
+.mp-progress-wrap {
+  margin-top: 16px;
+}
+.mp-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  opacity: 0.95;
+  margin-bottom: 7px;
+}
+.mp-progress-track {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+  overflow: hidden;
+}
+.mp-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffffff 0%, var(--mp-secondary) 100%);
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --------------------- Indicador de gravação de áudio --------------------- */
+.mp-audio-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  width: fit-content;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.mp-audio-status.recording {
+  background: rgba(220, 38, 38, 0.32);
+}
+.mp-audio-status.limit {
+  background: rgba(217, 119, 6, 0.36);
+}
+.mp-audio-status.pending {
+  background: rgba(255, 255, 255, 0.14);
+  opacity: 0.94;
+}
+.mp-audio-time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+.mp-audio-label {
+  font-weight: 600;
+  opacity: 0.96;
+}
+.mp-audio-dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 999px;
+  background: #ff4d4d;
+  box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7);
+  animation: mp-rec-pulse 1.4s infinite;
+}
+@keyframes mp-rec-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(255, 77, 77, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
+}
+
+/* ------------------------------- Card da pergunta ------------------------- */
+.mp-card {
+  background: var(--mp-surface);
+  border-radius: var(--mp-radius);
+  box-shadow: 0 18px 40px -26px rgba(15, 40, 80, 0.38);
+  padding: 22px;
+  border: 1px solid var(--mp-border);
+}
+@media (max-width: 425px) {
+  .mp-card {
+    padding: 17px;
+    border-radius: 20px;
+  }
+}
+.mp-question-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mp-primary);
+  background: color-mix(in srgb, var(--mp-primary) 10%, #fff);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.mp-question-title {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-top: 12px;
+}
+@media (max-width: 425px) {
+  .mp-question-title {
+    font-size: 18px;
+  }
+}
+.mp-question-required {
+  color: #dc2626;
+  margin-left: 3px;
+}
+.mp-question-media {
+  margin-top: 14px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.mp-question-media img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  display: block;
+}
+.mp-question-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  width: 56px;
+  border-radius: 18px;
+  margin-top: 14px;
+}
+.mp-question-emoji {
+  font-size: 52px;
+  line-height: 1;
+  margin-top: 12px;
+}
+.mp-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-top: 12px;
+  color: #fff;
+}
+
+/* ------------------------------- Alternativas ----------------------------- */
+.mp-answers {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mp-answers.mp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 425px) {
+  .mp-answers.mp-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.mp-answers.mp-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 768px) {
+  .mp-answers.mp-grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 425px) {
+  .mp-answers.mp-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mp-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 2px solid var(--mp-border);
+  border-radius: 18px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  overflow: hidden;
+  color: inherit;
+}
+.mp-option:hover {
+  border-color: color-mix(in srgb, var(--mp-primary) 45%, var(--mp-border));
+  box-shadow: 0 10px 26px -20px rgba(11, 74, 143, 0.55);
+}
+.mp-option:active {
+  transform: scale(0.985);
+}
+.mp-option:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--mp-primary) 55%, #fff);
+  outline-offset: 2px;
+}
+.mp-option.selected {
+  border-color: var(--mp-primary);
+  background: color-mix(in srgb, var(--mp-primary) 7%, #fff);
+  box-shadow: 0 14px 30px -20px color-mix(in srgb, var(--mp-primary) 70%, transparent);
+  transform: scale(1.012);
+}
+.mp-option-emoji {
+  font-size: 30px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.mp-option-icon {
+  height: 46px;
+  width: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mp-option-thumb {
+  height: 64px;
+  width: 64px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.mp-option-body {
+  min-width: 0;
+  flex: 1;
+}
+.mp-option-label {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.mp-option-desc {
+  font-size: 12px;
+  color: var(--mp-muted);
+  margin-top: 3px;
+  line-height: 1.35;
+}
+.mp-option-check {
+  height: 26px;
+  width: 26px;
+  border-radius: 999px;
+  border: 2px solid var(--mp-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.mp-option.selected .mp-option-check {
+  background: var(--mp-primary);
+  border-color: var(--mp-primary);
+  animation: mp-pop 0.25s ease;
+}
+.mp-option-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* Ripple (microinteração) */
+.mp-ripple {
+  position: absolute;
+  border-radius: 999px;
+  transform: scale(0);
+  background: color-mix(in srgb, var(--mp-primary) 30%, transparent);
+  animation: mp-ripple 0.5s ease-out;
+  pointer-events: none;
+}
+
+/* Smile interativo */
+.mp-smile-option {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 18px 10px;
+}
+.mp-smile-emoji {
+  font-size: 44px;
+  line-height: 1;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.mp-smile-option:hover .mp-smile-emoji {
+  transform: scale(1.14);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18));
+}
+.mp-smile-option.selected .mp-smile-emoji {
+  animation: mp-glow 0.6s ease;
+  transform: scale(1.22);
+}
+
+/* --------------------------- Escalas visuais ------------------------------ */
+.mp-scale {
+  margin-top: 20px;
+}
+.mp-scale-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+}
+.mp-scale-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 2px;
+  border-radius: 14px;
+  transition: transform 0.15s ease;
+}
+.mp-scale-item:hover {
+  transform: translateY(-3px);
+}
+.mp-scale-item:focus-visible {
+  outline: 3px solid var(--mp-primary);
+  outline-offset: 2px;
+}
+.mp-scale-emoji {
+  font-size: 34px;
+  line-height: 1;
+  filter: grayscale(0.55) opacity(0.55);
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+.mp-scale-item.on .mp-scale-emoji {
+  filter: none;
+  transform: scale(1.14);
+}
+.mp-scale-circle {
+  height: 34px;
+  width: 34px;
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.mp-scale-item.on .mp-scale-circle {
+  transform: scale(1.16);
+  box-shadow: 0 0 0 4px rgba(11, 74, 143, 0.18);
+}
+.mp-scale-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--mp-muted);
+}
+.mp-scale-item.on .mp-scale-num {
+  color: var(--mp-primary);
+}
+.mp-scale-legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--mp-muted);
+  font-weight: 600;
+}
+/* Termômetro vertical */
+.mp-thermo {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+.mp-thermo-vertical {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 200px;
+}
+.mp-thermo-vertical .mp-scale-item {
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+}
+.mp-thermo-bar {
+  width: 100%;
+  border-radius: 10px 10px 4px 4px;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  opacity: 0.5;
+}
+.mp-thermo-vertical .mp-scale-item.on .mp-thermo-bar {
+  opacity: 1;
+  transform: scaleY(1.03);
+}
+
+/* Campo de texto / comentário */
+.mp-textarea {
+  width: 100%;
+  border: 2px solid var(--mp-border);
+  border-radius: 18px;
+  padding: 14px;
+  font-size: 14px;
+  font-family: var(--mp-font);
+  color: var(--mp-text);
+  background: #fff;
+  resize: vertical;
+  transition: border-color 0.18s ease;
+}
+.mp-textarea:focus {
+  outline: none;
+  border-color: var(--mp-primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mp-primary) 16%, transparent);
+}
+.mp-comment-wrap {
+  margin-top: 18px;
+  border-top: 1px dashed var(--mp-border);
+  padding-top: 16px;
+}
+.mp-comment-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mp-muted);
+  margin-bottom: 8px;
+}
+.mp-counter {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------- Rodapé fixo ------------------------------ */
+.mp-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--mp-border);
+  box-shadow: 0 -12px 30px -22px rgba(15, 40, 80, 0.5);
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+}
+.mp-footer-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .mp-footer-inner {
+    max-width: 820px;
+  }
+}
+.mp-btn {
+  border: none;
+  cursor: pointer;
+  font-family: var(--mp-font);
+  font-weight: 800;
+  font-size: 14px;
+  border-radius: 16px;
+  padding: 15px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+}
+.mp-btn:active {
+  transform: scale(0.97);
+}
+.mp-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.mp-btn-ghost {
+  background: #fff;
+  color: var(--mp-text);
+  border: 2px solid var(--mp-border);
+}
+.mp-btn-ghost:hover:not(:disabled) {
+  border-color: var(--mp-primary);
+  color: var(--mp-primary);
+}
+.mp-btn-primary {
+  background: var(--mp-primary);
+  color: #fff;
+  box-shadow: 0 14px 26px -16px color-mix(in srgb, var(--mp-primary) 85%, transparent);
+  flex: 1;
+}
+.mp-btn-primary:hover:not(:disabled) {
+  background: var(--mp-primary-dark);
+}
+.mp-btn-success {
+  background: var(--mp-secondary);
+  color: #fff;
+  box-shadow: 0 14px 26px -16px rgba(22, 163, 74, 0.8);
+  flex: 1;
+}
+.mp-btn-success:hover:not(:disabled) {
+  background: #15803d;
+}
+
+/* ------------------------------- Capa / final ----------------------------- */
+.mp-cover,
+.mp-finish {
+  text-align: center;
+  background: var(--mp-surface);
+  border-radius: var(--mp-radius);
+  box-shadow: 0 18px 40px -26px rgba(15, 40, 80, 0.38);
+  border: 1px solid var(--mp-border);
+  overflow: hidden;
+}
+.mp-cover-media img,
+.mp-finish-media img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+.mp-cover-body,
+.mp-finish-body {
+  padding: 26px 22px 30px;
+}
+.mp-cover-logo {
+  height: 64px;
+  width: 64px;
+  border-radius: 20px;
+  margin: -58px auto 12px;
+  background: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 12px 26px -16px rgba(15, 40, 80, 0.6);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+.mp-cover-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mp-cover-title {
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.mp-cover-desc {
+  font-size: 14px;
+  color: var(--mp-muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.mp-cover-list {
+  margin: 18px auto 0;
+  max-width: 380px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mp-cover-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mp-text);
+}
+.mp-finish-icon {
+  height: 88px;
+  width: 88px;
+  border-radius: 999px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--mp-secondary) 14%, #fff);
+  color: var(--mp-secondary);
+}
+.mp-qr {
+  margin: 18px auto 0;
+  height: 160px;
+  width: 160px;
+  border-radius: 18px;
+  border: 1px solid var(--mp-border);
+  padding: 8px;
+  background: #fff;
+}
+.mp-institution-msg {
+  margin-top: 18px;
+  border-radius: 16px;
+  padding: 14px;
+  background: color-mix(in srgb, var(--mp-primary) 8%, #fff);
+  color: var(--mp-primary-dark);
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+/* ------------------------------- Animações -------------------------------- */
+@keyframes mp-pop {
+  0% { transform: scale(0.5); opacity: 0.4; }
+  60% { transform: scale(1.18); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes mp-ripple {
+  to { transform: scale(3.2); opacity: 0; }
+}
+@keyframes mp-glow {
+  0% { filter: drop-shadow(0 0 0 rgba(255, 196, 0, 0)); }
+  50% { filter: drop-shadow(0 0 18px rgba(255, 196, 0, 0.85)); }
+  100% { filter: drop-shadow(0 0 0 rgba(255, 196, 0, 0)); }
+}
+@keyframes mp-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes mp-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.mp-anim-slide { animation: mp-fade-up 0.25s ease both; }
+.mp-anim-fade { animation: mp-fade-in 0.25s ease both; }
+.mp-anim-scale { animation: mp-pop 0.25s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-anim-slide,
+  .mp-anim-fade,
+  .mp-anim-scale,
+  .mp-ripple,
+  .mp-option.selected .mp-option-check,
+  .mp-smile-option.selected .mp-smile-emoji,
+  .mp-audio-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+}

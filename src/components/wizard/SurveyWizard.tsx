@@ -52,6 +52,8 @@ import {
 } from 'lucide-react';
 import { ServerSyncCheckModal } from './ServerSyncCheckModal';
 import { QuestionnaireImportModal } from './QuestionnaireImportModal';
+import { SurveyAppearanceStep } from './SurveyAppearanceStep';
+import { QuestionVisualEditor } from './QuestionVisualEditor';
 
 export const SurveyWizard: React.FC = () => {
   const {
@@ -581,6 +583,7 @@ export const SurveyWizard: React.FC = () => {
     { step: 3, title: '3. Pulos, Saltos e Regras' },
     { step: 4, title: '4. Consistência' },
     { step: 5, title: '5. Pesquisadores' },
+    { step: 6, title: '6. Aparência da Pesquisa' },
   ];
 
   return (
@@ -1404,6 +1407,19 @@ export const SurveyWizard: React.FC = () => {
                         </div>
                       </div>
                     )}
+
+                    {/* Aparência Visual da pergunta (Modelo Mobile Premium) */}
+                    <QuestionVisualEditor
+                      question={q}
+                      onChange={(updated) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          perguntas: prev.perguntas.map((item) =>
+                            item.id === q.id ? updated : item
+                          ),
+                        }))
+                      }
+                    />
                   </div>
                 )}
               </div>
@@ -2023,6 +2039,11 @@ export const SurveyWizard: React.FC = () => {
         </div>
       )}
 
+      {/* TAB 6: APARÊNCIA DA PESQUISA (Modelo Mobile First Premium) */}
+      {currentStep === 6 && (
+        <SurveyAppearanceStep formData={formData} setFormData={setFormData} />
+      )}
+
       {/* Navigation Buttons: Voltar, Avançar e Concluir/Salvar */}
       <div className="flex items-center justify-between border-t border-ui pt-4">
         <button
@@ -2057,7 +2078,7 @@ export const SurveyWizard: React.FC = () => {
             <span>{!effectiveOnline ? 'Salvar Offline' : 'Salvar Rascunho'}</span>
           </button>
 
-          {currentStep < 5 ? (
+          {currentStep < 6 ? (
             <button
               type="button"
               id="btn-wizard-next"
