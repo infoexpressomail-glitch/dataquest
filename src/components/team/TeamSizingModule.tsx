@@ -581,11 +581,10 @@ export const TeamSizingModule: React.FC = () => {
         initialConfidence={nivelConfiancaInput}
         initialMarginOfError={margemErroInput}
         initialPopulation={populacaoUniversoInput}
-        onApplyGoal={(minSample, conf, margin, pop) => {
+        onApplyGoal={(minSample, conf, margin) => {
           setMetaTotalInput(minSample);
           setNivelConfiancaInput(conf);
           setMargemErroInput(margin);
-          setPopulacaoUniversoInput(pop);
         }}
       />
 

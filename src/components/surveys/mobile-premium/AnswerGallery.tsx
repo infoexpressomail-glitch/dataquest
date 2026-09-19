@@ -106,7 +106,7 @@ const GalleryOptions: React.FC<{
     >
       {options.map((opt) => {
         const selected = isSelected(opt.option.value);
-        const isSmile = visual === 'SMILEYS' || (visual === 'EMOJI' && !!opt.emoji && !opt.label);
+        const isSmile = visual === 'SMILEYS' || (visual === 'EMOJI' && !!opt.emoji && !opt.option.label);
         if (visual === 'SMILEYS' || (visual === 'EMOJI' && (opt.smile || opt.emoji))) {
           return (
             <button

@@ -150,7 +150,7 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
                 <span className="h-2 w-2 rounded-full bg-accent-success-solid animate-pulse" />
               </div>
               <p className="text-[11px] text-muted">
-                {activeResearcher.cargo || 'Pesquisador'} • Campo Ativo
+                Pesquisador • Campo Ativo
               </p>
             </div>
           </div>
@@ -402,7 +402,7 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
                   .filter((c) => c.ativo)
                   .map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.nome} ({c.cargo || 'Colaborador'})
+                      {c.nome} (Colaborador)
                     </option>
                   ))}
               </select>

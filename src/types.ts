@@ -74,6 +74,11 @@ export interface Collaborator {
   login: string;
   senha?: string;
   perfilAcessoId: string;
+  // Nome do perfil de acesso (opcional) — enviado junto ao servidor para ele resolver
+  // o perfil por NOME quando perfilAcessoId é um valor local/mock (ex.: 'prof_pesq')
+  // em vez de um uuid real do banco. Ver supabase/migrations/0004_save_collaborator.sql
+  // e 0005_researcher_profile.sql.
+  perfilAcessoNome?: string;
   email: string;
   // Telefones de Contato
   celular?: string;

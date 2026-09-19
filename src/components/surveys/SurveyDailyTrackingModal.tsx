@@ -70,7 +70,7 @@ export const SurveyDailyTrackingModal: React.FC<SurveyDailyTrackingModalProps> =
 
     currentSurveySubmissions.forEach((sub) => {
       // Parse date to YYYY-MM-DD
-      const dateStr = sub.dataEnvio ? sub.dataEnvio.slice(0, 10) : '2024-08-28';
+      const dateStr = sub.dataHora.slice(0, 10);
       if (!map[dateStr]) {
         map[dateStr] = {
           total: 0,
@@ -81,7 +81,7 @@ export const SurveyDailyTrackingModal: React.FC<SurveyDailyTrackingModalProps> =
         };
       }
       map[dateStr].total += 1;
-      if (sub.status !== 'rejeitada') {
+      if (sub.status !== 'cancelada') {
         map[dateStr].validas += 1;
       }
       if (sub.audioGravacao) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Smartphone,
@@ -28,7 +28,15 @@ import {
 } from 'lucide-react';
 import { Survey, Question, InterviewSubmission, AnswerItem } from '../../types';
 import { filterResearcherVisibleSurveys } from '../../utils/researcherUtils';
-import { MobilePremiumSurvey } from '../surveys/mobile-premium/MobilePremiumSurvey';
+// Import tardio (code-splitting): o modelo Mobile Premium e a biblioteca de animação
+// `motion` só são baixados quando uma pesquisa com layoutStyle = MOBILE_PREMIUM é
+// realmente aberta — evita inflar o bundle principal (carregado por TODO usuário,
+// mesmo quem nunca usa esse layout) com ~450kB de código que a maioria não usa.
+const MobilePremiumSurvey = lazy(() =>
+  import('../surveys/mobile-premium/MobilePremiumSurvey').then((m) => ({
+    default: m.MobilePremiumSurvey,
+  }))
+);
 import { generatePlayableWavBlob, formatAudioDuration } from '../../utils/audioUtils';
 import { saveOfflineSubmissionToDB } from '../../utils/indexedDBStorage';
 import {
@@ -337,33 +345,41 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
   // =====================================================================
   if (activeSurvey && hasValidQuestions && activeSurvey.layoutStyle === 'MOBILE_PREMIUM') {
     return (
-      <MobilePremiumSurvey
-        survey={activeSurvey}
-        currentQuestionIndex={currentQuestionIndex}
-        answers={answers}
-        comments={answersComments}
-        isCompleted={isCompleted}
-        wasSavedOffline={wasSavedOffline}
-        fieldMode={fieldMode}
-        saving={isSaving}
-        audio={{
-          enabled: isAudioEnabled,
-          started: hasAudioStarted,
-          atLimit: isAudioAtLimit,
-          recording: isRecordingAudio,
-          seconds: audioSeconds,
-          limitMinutes: configuredMinutes,
-          startCode: activeSurvey.perguntas[audioStartQuestionIndex]?.codigo,
-        }}
-        onAnswer={(questionId, value) => setAnswers((prev) => ({ ...prev, [questionId]: value }))}
-        onComment={(questionId, text) =>
-          setAnswersComments((prev) => ({ ...prev, [questionId]: text }))
+      <Suspense
+        fallback={
+          <div className="flex h-full min-h-[60vh] items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-primary border-t-transparent" />
+          </div>
         }
-        onNext={handleNext}
-        onPrev={handlePrev}
-        onSubmitFinal={handleNext}
-        onReset={handleReset}
-      />
+      >
+        <MobilePremiumSurvey
+          survey={activeSurvey}
+          currentQuestionIndex={currentQuestionIndex}
+          answers={answers}
+          comments={answersComments}
+          isCompleted={isCompleted}
+          wasSavedOffline={wasSavedOffline}
+          fieldMode={fieldMode}
+          saving={isSaving}
+          audio={{
+            enabled: isAudioEnabled,
+            started: hasAudioStarted,
+            atLimit: isAudioAtLimit,
+            recording: isRecordingAudio,
+            seconds: audioSeconds,
+            limitMinutes: configuredMinutes,
+            startCode: activeSurvey.perguntas[audioStartQuestionIndex]?.codigo,
+          }}
+          onAnswer={(questionId, value) => setAnswers((prev) => ({ ...prev, [questionId]: value }))}
+          onComment={(questionId, text) =>
+            setAnswersComments((prev) => ({ ...prev, [questionId]: text }))
+          }
+          onNext={handleNext}
+          onPrev={handlePrev}
+          onSubmitFinal={handleNext}
+          onReset={handleReset}
+        />
+      </Suspense>
     );
   }
 

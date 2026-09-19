@@ -1008,7 +1008,7 @@ export const CollaboratorForm: React.FC = () => {
                 >
                   {profiles.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name} ({p.permissions.length} permissões)
+                      {p.name} ({Object.values(p.permissions).filter(Boolean).length} permissões)
                     </option>
                   ))}
                 </select>

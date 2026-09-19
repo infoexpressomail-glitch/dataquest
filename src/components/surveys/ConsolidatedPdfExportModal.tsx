@@ -58,7 +58,7 @@ export const ConsolidatedPdfExportModal: React.FC<ConsolidatedPdfExportModalProp
           ip: '192.168.1.100',
         },
         alvo: {
-          tipo: 'PESQUISA',
+          tipo: 'pesquisa',
           id: 'export_pdf_lote',
           identificador: surveys.map((s) => s.codigo).join('; '),
           nome: `Consolidação de ${surveys.length} Pesquisas em PDF`,

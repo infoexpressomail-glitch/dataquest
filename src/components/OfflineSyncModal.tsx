@@ -329,7 +329,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
                     </div>
                     <div>
                       <div className="font-semibold text-primary">
-                        {item.descricao || (item.tipo === 'survey' ? 'Pesquisa' : 'Submissão')}
+                        {item.titulo}
                       </div>
                       <div className="flex items-center gap-2 text-[10px] text-muted">
                         <span className="flex items-center gap-1">

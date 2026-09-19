@@ -1958,7 +1958,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           isResearcherReached(m, submissions, sub.pesquisadorId)
       );
       if (metasBloqueadas.length > 0) {
-        const nomes = metasBloqueadas.map((m) => m.nome || m.titulo || m.id).join(', ');
+        const nomes = metasBloqueadas.map((m) => m.nome || m.id).join(', ');
         alert(
           `Coleta bloqueada: a meta "${nomes}" já foi atingida. ` +
             `Novas coletas que se enquadram nessa composição não são permitidas.`

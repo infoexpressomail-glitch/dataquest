@@ -105,14 +105,14 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
   };
 
   // Objeto das variáveis selecionadas
-  const selectedRowVar = useMemo(() => {
+  const selectedRowVar = useMemo<CrossTabVariable>(() => {
     return (
       availableVariables.find((v) => v.id === rowVarId) ||
       availableVariables[0] || { id: 'demo_sexo', label: 'Sexo', tipo: 'demografica' }
     );
   }, [availableVariables, rowVarId]);
 
-  const selectedColVar = useMemo(() => {
+  const selectedColVar = useMemo<CrossTabVariable>(() => {
     return (
       availableVariables.find((v) => v.id === colVarId) ||
       availableVariables[1] || { id: 'demo_faixa_etaria', label: 'Faixa Etária', tipo: 'demografica' }

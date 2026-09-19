@@ -164,11 +164,10 @@ export const FieldTeamSizingCard: React.FC<FieldTeamSizingCardProps> = ({
             initialConfidence={nivelConfianca}
             initialMarginOfError={margemErro}
             initialPopulation={populacaoUniverso}
-            onApplyGoal={(minSample, conf, margin, pop) => {
+            onApplyGoal={(minSample, conf, margin) => {
               handleMetaTotalChange(minSample);
               setNivelConfianca(conf);
               setMargemErro(margin);
-              setPopulacaoUniverso(pop);
               setIsCalculatorOpen(false);
             }}
           />
@@ -319,7 +318,7 @@ export const FieldTeamSizingCard: React.FC<FieldTeamSizingCardProps> = ({
                 <label className="text-xs font-semibold text-secondary">
                   Meta Total de Coletas (N)
                 </label>
-                <span className="text-[10px] font-bold text-accent-primary">±{currentEstimatedMargin}% erro</span>
+                <span className="text-[10px] font-bold text-accent-primary">±{currentEstimatedMargin.marginOfErrorPercent}% erro</span>
               </div>
               <input
                 type="number"

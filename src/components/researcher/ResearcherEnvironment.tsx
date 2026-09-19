@@ -74,7 +74,7 @@ export const ResearcherEnvironment: React.FC = () => {
   // Submissions made today
   const todayStr = new Date().toISOString().slice(0, 10);
   const submissionsToday = researcherSubmissions.filter(
-    (sub) => sub.dataHoraInicio && sub.dataHoraInicio.slice(0, 10) === todayStr
+    (sub) => sub.dataHora && sub.dataHora.slice(0, 10) === todayStr
   );
 
   // Daily target (default to 20 or calculated from active survey goals)
@@ -670,19 +670,21 @@ export const ResearcherEnvironment: React.FC = () => {
                     return (
                       <tr key={sub.id} className="hover:bg-surface-raised transition">
                         <td className="py-3 font-mono font-bold text-accent-primary">
-                          {sub.protocolo || sub.id.slice(0, 12)}
+                          {sub.id.slice(0, 12)}
                         </td>
                         <td className="py-3 text-primary font-medium">
                           {survey?.nome || sub.pesquisaId}
                         </td>
                         <td className="py-3 text-muted">
-                          {new Date(sub.dataHoraInicio).toLocaleString('pt-BR')}
+                          {new Date(sub.dataHora).toLocaleString('pt-BR')}
                         </td>
                         <td className="py-3 text-muted">
-                          {sub.duracaoSegundos ? `${Math.floor(sub.duracaoSegundos / 60)}m ${sub.duracaoSegundos % 60}s` : '3m 45s'}
+                          {sub.audioGravacao?.duracaoSegundos
+                            ? `${Math.floor(sub.audioGravacao.duracaoSegundos / 60)}m ${sub.audioGravacao.duracaoSegundos % 60}s`
+                            : '-'}
                         </td>
                         <td className="py-3">
-                          {sub.audioGravado ? (
+                          {sub.audioGravacao ? (
                             <button
                               onClick={() => setSelectedAudioSub(sub)}
                               className="inline-flex items-center gap-1 rounded-md bg-accent-purple-soft px-2 py-0.5 text-[10px] font-bold text-accent-purple hover:bg-accent-purple-soft transition border border-accent-purple-soft-border"
@@ -695,7 +697,7 @@ export const ResearcherEnvironment: React.FC = () => {
                           )}
                         </td>
                         <td className="py-3">
-                          {sub.coordenadas ? (
+                          {sub.geolocalizacao ? (
                             <button
                               onClick={() => setSelectedGeoSub(sub)}
                               className="inline-flex items-center gap-1 rounded-md bg-accent-primary-soft px-2 py-0.5 text-[10px] font-bold text-accent-primary hover:bg-accent-primary-soft transition border border-accent-primary-soft-border"
@@ -793,20 +795,17 @@ export const ResearcherEnvironment: React.FC = () => {
       {/* Audio Modal */}
       {selectedAudioSub && (
         <AudioPlayerModal
-          isOpen={true}
           onClose={() => setSelectedAudioSub(null)}
           submission={selectedAudioSub}
-          surveyTitle={surveys.find((s) => s.id === selectedAudioSub.pesquisaId)?.nome || ''}
         />
       )}
 
       {/* Geo Map Modal */}
       {selectedGeoSub && (
         <GeoMapModal
-          isOpen={true}
           onClose={() => setSelectedGeoSub(null)}
           submissions={[selectedGeoSub]}
-          surveyTitle={surveys.find((s) => s.id === selectedGeoSub.pesquisaId)?.nome || ''}
+          surveyName={surveys.find((s) => s.id === selectedGeoSub.pesquisaId)?.nome || ''}
         />
       )}
     </div>

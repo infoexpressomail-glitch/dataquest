@@ -96,7 +96,7 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-bold text-primary">{activeResearcher.nome}</h2>
                 <span className="rounded-full bg-accent-primary-soft px-2.5 py-0.5 text-[11px] font-semibold text-accent-primary border border-accent-primary-soft-border">
-                  {activeResearcher.cargo || 'Pesquisador de Campo'}
+                  Pesquisador de Campo
                 </span>
               </div>
               <p className="text-xs text-muted mt-0.5">
@@ -120,7 +120,7 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
                     .filter((c) => c.ativo)
                     .map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.nome} ({c.cargo || 'Colaborador'})
+                        {c.nome} (Colaborador)
                       </option>
                     ))}
                 </select>

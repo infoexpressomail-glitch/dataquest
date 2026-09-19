@@ -713,6 +713,99 @@ app.post('/api/submissions', async (req: Request, res: Response) => {
   }
 });
 
+// 11. ASSETS DE PESQUISA (capa, pergunta, alternativa, logo, galeria) — Storage
+// Mesmo contrato de api/survey-assets.ts. Grava com a service role em vez do
+// navegador escrever direto no Storage com a anon key (ver justificativa lá).
+const SURVEY_ASSETS_BUCKET = 'survey-assets';
+const SURVEY_ASSET_ALLOWED_FOLDERS = ['covers', 'questions', 'answers', 'gallery', 'logos'];
+const SURVEY_ASSET_MAX_BASE64_LENGTH = 4 * 1024 * 1024;
+const SURVEY_ASSET_ALLOWED_CONTENT_TYPES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'image/webp',
+  'image/gif',
+  'image/svg+xml',
+]);
+
+function sanitizeSurveyAssetFileName(name: string): string {
+  const dot = name.lastIndexOf('.');
+  const ext = dot >= 0 ? name.slice(dot).toLowerCase() : '';
+  const base =
+    (dot >= 0 ? name.slice(0, dot) : name)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9-_]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 60) || 'imagem';
+  return `${base}-${Date.now()}${ext || '.png'}`;
+}
+
+app.post('/api/survey-assets', async (req: Request, res: Response) => {
+  const body = (req.body || {}) as { folder?: string; fileName?: string; contentType?: string; dataBase64?: string };
+  const { folder, fileName, contentType, dataBase64 } = body;
+
+  if (!folder || !SURVEY_ASSET_ALLOWED_FOLDERS.includes(folder)) {
+    return res.status(400).json({ success: false, message: `Pasta inválida. Use uma de: ${SURVEY_ASSET_ALLOWED_FOLDERS.join(', ')}.` });
+  }
+  if (!fileName || !dataBase64) {
+    return res.status(400).json({ success: false, message: 'Envie fileName e dataBase64.' });
+  }
+  if (!contentType || !SURVEY_ASSET_ALLOWED_CONTENT_TYPES.has(contentType)) {
+    return res.status(400).json({
+      success: false,
+      message: `Tipo de arquivo não permitido. Use uma imagem (${Array.from(SURVEY_ASSET_ALLOWED_CONTENT_TYPES).join(', ')}).`,
+    });
+  }
+  if (dataBase64.length > SURVEY_ASSET_MAX_BASE64_LENGTH) {
+    return res.status(413).json({ success: false, message: 'Arquivo muito grande (máximo ~3 MB).' });
+  }
+
+  try {
+    const db = getDb();
+    const buffer = Buffer.from(dataBase64, 'base64');
+    const path = `${folder}/${sanitizeSurveyAssetFileName(fileName)}`;
+
+    const { error } = await db.storage.from(SURVEY_ASSETS_BUCKET).upload(path, buffer, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType,
+    });
+
+    if (error) throw error;
+
+    const { data } = db.storage.from(SURVEY_ASSETS_BUCKET).getPublicUrl(path);
+    return res.status(200).json({ success: true, url: data.publicUrl, path });
+  } catch (err: any) {
+    handleDbError(res, err);
+  }
+});
+
+app.delete('/api/survey-assets', async (req: Request, res: Response) => {
+  const body = (req.body || {}) as { path?: string; url?: string };
+  let path = body.path;
+
+  if (!path && body.url) {
+    const marker = `/${SURVEY_ASSETS_BUCKET}/`;
+    const idx = body.url.indexOf(marker);
+    if (idx >= 0) path = body.url.slice(idx + marker.length);
+  }
+
+  if (!path) {
+    return res.status(400).json({ success: false, message: 'Envie path ou url do asset a remover.' });
+  }
+
+  try {
+    const db = getDb();
+    const { error } = await db.storage.from(SURVEY_ASSETS_BUCKET).remove([path]);
+    if (error) throw error;
+    return res.status(200).json({ success: true });
+  } catch (err: any) {
+    handleDbError(res, err);
+  }
+});
+
 // -------------------------------------------------------------------------------------
 // INTEGRAÇÃO COM O VITE (FRONTEND)
 // -------------------------------------------------------------------------------------

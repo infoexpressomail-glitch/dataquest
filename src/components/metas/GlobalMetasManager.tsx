@@ -137,7 +137,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
     setTitulo(target.titulo);
     setDescricao(target.descricao || '');
     setFaixaEtaria(target.criterios.faixaEtaria || 'Todas');
-    setSexo(target.criterios.sexo || 'Todos');
+    const sexoCriterio = target.criterios.sexo;
+    const sexoNormalizado =
+      sexoCriterio === 'Feminino' ? 'F' : sexoCriterio === 'Masculino' ? 'M' : sexoCriterio;
+    setSexo(sexoNormalizado || 'Todos');
     setBairro(target.criterios.bairro || 'Todos');
     setMetaGlobalAlvo(target.metaGlobalAlvo);
 
@@ -197,7 +200,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
       return {
         pesquisadorId: resId,
         pesquisadorNome: res?.nome || 'Pesquisador de Campo',
-        perfilAcessoNome: res?.cargo || 'Pesquisador',
+        perfilAcessoNome: 'Pesquisador',
         cotaAlvo: Number(quota),
         cotaAtingida: atingidaAnterior,
         dataAtribuicao: new Date().toISOString(),
@@ -889,7 +892,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                               {researcher.nome}
                             </label>
                             <span className="block text-[10px] text-muted">
-                              {researcher.cargo || 'Pesquisador'} • Login: {researcher.login}
+                              Pesquisador • Login: {researcher.login}
                             </span>
                           </div>
                         </div>

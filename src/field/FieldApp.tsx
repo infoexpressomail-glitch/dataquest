@@ -153,10 +153,7 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
       )}
 
       {section === 'coleta' && (
-        <FieldColeta
-          session={session}
-          onBack={() => navigate('pesquisas')}
-        />
+        <FieldColeta session={session} />
       )}
 
       {section === 'metas' && (

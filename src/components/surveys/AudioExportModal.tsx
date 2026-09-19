@@ -37,8 +37,6 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
   defaultSurveyId,
   onPlayAudio,
 }) => {
-  if (!isOpen) return null;
-
   // Lista de pesquisas que têm pelo menos 1 gravação ou pesquisas ativas
   const activeSurveysList = useMemo(() => {
     return surveys.filter((s) => s.status !== 'excluida');
@@ -120,6 +118,8 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
       ? `${q.codigo} - ${q.enunciado.slice(0, 45)}...`
       : 'Pergunta específica configurada';
   }, [selectedSurvey]);
+
+  if (!isOpen) return null;
 
   const handleExportZip = async () => {
     if (!selectedSurvey || surveyAudioSubmissions.length === 0) return;

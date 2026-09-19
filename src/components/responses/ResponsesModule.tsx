@@ -512,7 +512,9 @@ export const ResponsesModule: React.FC = () => {
         <AudioExportModal
           isOpen={audioExportModalOpen}
           onClose={() => setAudioExportModalOpen(false)}
-          initialSurveyId={selectedSurveyId !== 'all' ? selectedSurveyId : undefined}
+          surveys={surveys}
+          submissions={submissions}
+          defaultSurveyId={selectedSurveyId !== 'all' ? selectedSurveyId : undefined}
         />
       )}
 

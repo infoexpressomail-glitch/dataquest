@@ -756,8 +756,7 @@ export const SurveyManagementTable: React.FC = () => {
         <QuestionnaireImportModal
           isOpen={questionnaireImportModalOpen}
           onClose={() => setQuestionnaireImportModalOpen(false)}
-          existingQuestionsCount={0}
-          onImport={(imported) => {
+          onImportQuestions={(imported) => {
             handleImportQuestionsToList(imported);
             setQuestionnaireImportModalOpen(false);
           }}
@@ -767,7 +766,9 @@ export const SurveyManagementTable: React.FC = () => {
         <AudioExportModal
           isOpen={audioExportModalOpen}
           onClose={() => setAudioExportModalOpen(false)}
-          initialSurveyId={audioExportSurveyId}
+          surveys={surveys}
+          submissions={submissions}
+          defaultSurveyId={audioExportSurveyId}
         />
       )}
 

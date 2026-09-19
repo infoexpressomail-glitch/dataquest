@@ -9,23 +9,11 @@ interface AudioPlayerModalProps {
 }
 
 export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, onClose }) => {
-  if (!submission) return null;
-
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
-  const duration = submission.audioGravacao?.duracaoSegundos || 120;
-
-  const handleDownload = async () => {
-    try {
-      await exportSingleAudio(submission);
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err: any) {
-      alert(err.message || 'Erro ao exportar gravação.');
-    }
-  };
+  const duration = submission?.audioGravacao?.duracaoSegundos || 120;
 
   useEffect(() => {
     let interval: any;
@@ -42,6 +30,18 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
     }
     return () => clearInterval(interval);
   }, [isPlaying, duration]);
+
+  if (!submission) return null;
+
+  const handleDownload = async () => {
+    try {
+      await exportSingleAudio(submission);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.message || 'Erro ao exportar gravação.');
+    }
+  };
 
   const formatSeconds = (sec: number) => {
     const m = Math.floor(sec / 60);
