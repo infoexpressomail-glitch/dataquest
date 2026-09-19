@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-import { FieldSection, FieldSession } from './fieldTypes';
-import { FieldLayout } from './FieldLayout';
-import { FieldHome } from './FieldHome';
-import { FieldDashboard } from './FieldDashboard';
-import { FieldColeta } from './FieldColeta';
-import { FieldMetas } from './FieldMetas';
-import { FieldSync } from './FieldSync';
+import { FieldSession } from './fieldTypes';
+import { FieldWorkspace } from './FieldWorkspace';
 import { FieldLogin } from './FieldLogin';
-import { useApp } from '../context/AppContext';
 import { resyncFieldSurveys } from '../services/fieldSyncService';
 import { getFieldTargetSurveyCode } from './fieldRoute';
 import {
@@ -21,50 +15,24 @@ interface FieldAppProps {
 }
 
 /**
- * Sub-app do Modo Pesquisador.
- * Estrutura de telas:
- *   home      -> grade de ações (Pesquisas, Carregar, Descarregar, Atualizar Meta)
- *   pesquisas -> seleção da pesquisa ativa + contadores (Realizadas / Falta enviar)
- *   coleta    -> formulário de coleta (CollectionSimulator com fieldMode)
- *   metas     -> acompanhamento das metas por pesquisa ativa
- *   sync      -> Carregar/Descarregar + status de sincronização
+ * Sub-app do Modo Pesquisador (reescrito).
+ *
+ * Estrutura reduzida e direta, no padrão "modo pesquisador":
+ *   login      -> única porta de entrada (FieldLogin)
+ *   pesquisas  -> lista APENAS das pesquisas ativas atribuídas ao login
+ *   coleta     -> formulário da pesquisa selecionada (CollectionSimulator fieldMode)
+ *
+ * Não há mais menu lateral com Início/Metas/Sincronizar separados: as metas
+ * aparecem dentro de cada pesquisa e a sincronização é uma ação do cabeçalho.
+ * Toda a lógica de sessão/sincronização existente é preservada.
  */
 export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
   const [session, setSession] = useState<FieldSession | null>(() => loadFieldSession());
-  const [section, setSection] = useState<FieldSection>('home');
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
-  // Permite pré-selecionar a pesquisa-alvo no contexto (usada pela tela de Coleta).
-  const { setEditingSurvey } = useApp();
-
-  // Pré-seleciona a pesquisa a partir do parâmetro `?pesquisa=<CODIGO>` na URL
-  // (link compartilhado). Se encontrada e habilitada (ativa) para o pesquisador,
-  // leva direto à Coleta dessa pesquisa — sem precisar selecioná-la. Caso
-  // contrário (código ausente/inválido ou pesquisa não liberada), vai ao painel.
-  const applyUrlTarget = (s: FieldSession) => {
-    const code = getFieldTargetSurveyCode();
-    if (!code) {
-      setSection('home');
-      return;
-    }
-    const target = s.surveys.find(
-      (sv) =>
-        (sv.codigo && sv.codigo.toLowerCase() === code.toLowerCase()) ||
-        sv.id === code
-    );
-    if (target && target.status === 'ativa') {
-      setEditingSurvey(target);
-      setSection('coleta');
-    } else {
-      // Código não corresponde a uma pesquisa habilitada para este login.
-      setSection('home');
-    }
-  };
+  const [autoStartSurveyId, setAutoStartSurveyId] = useState<string | null>(null);
 
   // Re-sincroniza automaticamente na montagem quando já havia uma sessão
   // persistida: garante que remoções/alterações feitas pela coordenação no
-  // sistema base (ex.: tirar uma pesquisa do pesquisador) se reflitam ao entrar,
-  // sem depender do pesquisador clicar em "Re-sincronizar".
+  // sistema base (ex.: tirar uma pesquisa do pesquisador) se reflitam ao entrar.
   const initialSessionRef = React.useRef(session);
   React.useEffect(() => {
     const stored = initialSessionRef.current;
@@ -75,7 +43,8 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
         if (active) {
           setSession(updated);
           persistFieldSession(updated);
-          applyUrlTarget(updated);
+          const code = getFieldTargetSurveyCode();
+          if (code) setAutoStartSurveyId(code);
         }
       })
       .catch(() => {
@@ -87,15 +56,15 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Autentica (vindo do FieldLogin): persiste e segue para o ambiente.
-  // Se o link compartilhado tinha `?pesquisa=<CODIGO>`, vai direto à coleta dela.
+  // Autentica (vindo do FieldLogin): persiste e segue para as pesquisas.
   const handleAuthenticated = (s: FieldSession) => {
     setSession(s);
     persistFieldSession(s);
-    applyUrlTarget(s);
+    const code = getFieldTargetSurveyCode();
+    setAutoStartSurveyId(code);
   };
 
-  // Re-sincroniza as pesquisas do pesquisador (usado pelo FieldHome e FieldMetas).
+  // Re-sincroniza as pesquisas do pesquisador (ação de sincronização).
   const handleResync = async (current: FieldSession): Promise<FieldSession> => {
     const updated = await resyncFieldSurveys(current);
     setSession(updated);
@@ -103,72 +72,24 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
     return updated;
   };
 
-  // Sair do Modo Pesquisador: limpa a sessão persistida e volta ao shell.
+  // Sair do Modo Pesquisador: limpa a sessão persistida e volta ao ambiente de gestão.
   const handleLogout = () => {
     clearFieldSession();
     setSession(null);
-    setSection('home');
+    setAutoStartSurveyId(null);
   };
 
-  // Sem sessão autenticada de campo → tela de login + sincronização.
+  // Sem sessão autenticada de campo → tela de login (única porta de entrada).
   if (!session) {
-    return (
-      <FieldLogin
-        onAuthenticated={handleAuthenticated}
-        onExit={onExit}
-      />
-    );
+    return <FieldLogin onAuthenticated={handleAuthenticated} onExit={onExit} />;
   }
 
-  const navigate = (s: FieldSection) => {
-    setSection(s);
-    setMobileSidebarOpen(false);
-  };
-
   return (
-    <FieldLayout
-      section={section}
-      user={session.user}
-      profile={session.profile}
-      onNavigate={navigate}
-      onExit={handleLogout}
+    <FieldWorkspace
+      session={session}
+      onResync={handleResync}
       onLogout={handleLogout}
-      mobileSidebarOpen={mobileSidebarOpen}
-      onToggleMobileSidebar={() => setMobileSidebarOpen((v) => !v)}
-    >
-      {section === 'home' && (
-        <FieldHome
-          session={session}
-          onNavigate={navigate}
-          onResync={handleResync}
-        />
-      )}
-
-      {section === 'pesquisas' && (
-        <FieldDashboard
-          session={session}
-          onStartColeta={() => navigate('coleta')}
-          onGoSync={() => navigate('sync')}
-        />
-      )}
-
-      {section === 'coleta' && (
-        <FieldColeta session={session} />
-      )}
-
-      {section === 'metas' && (
-        <FieldMetas
-          session={session}
-          onResync={handleResync}
-        />
-      )}
-
-      {section === 'sync' && (
-        <FieldSync
-          session={session}
-          onResync={handleResync}
-        />
-      )}
-    </FieldLayout>
+      autoStartSurveyId={autoStartSurveyId}
+    />
   );
 };

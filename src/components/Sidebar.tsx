@@ -21,6 +21,7 @@ import {
   LogOut,
   Download,
   KeyRound,
+  PlusCircle,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -33,6 +34,8 @@ interface NavLeaf {
   id: string;
   module: string;
   label: string;
+  /** Descrição curta do que a funcionalidade faz (orienta o clique). */
+  hint?: string;
   icon: React.ComponentType<{ className?: string }>;
   iconClassName?: string;
   badge?: number;
@@ -109,13 +112,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
       }
     >
       {active && <span className="absolute left-1 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-accent-primary shadow-sm" />}
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-3 min-w-0">
         <leaf.icon
-          className={`h-4 w-4 shrink-0 ${
+          className={`mt-0.5 h-4 w-4 shrink-0 ${
             active ? 'text-accent-primary' : leaf.iconClassName || ''
           }`}
         />
-        <span>{leaf.label}</span>
+        <span className="min-w-0">
+          <span className="block truncate">{leaf.label}</span>
+          {leaf.hint && (
+            <span
+              className={`mt-0.5 block truncate text-[10px] font-medium leading-tight ${
+                active ? 'text-accent-primary/80' : 'text-muted/80'
+              }`}
+            >
+              {leaf.hint}
+            </span>
+          )}
+        </span>
       </div>
       {leaf.badge !== undefined && (
         <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
@@ -160,12 +174,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
   // ---------------------------------------------------------------------
   const researcherSections: NavSection[] = [
     {
-      title: 'Início',
+      title: 'Meu Espaço',
       items: [
         {
           id: 'menu-item-pesquisador-home',
           module: 'pesquisador',
           label: 'Ambiente do Pesquisador',
+          hint: 'Painel e atalhos da sua coleta',
           icon: Sparkles,
           iconClassName: 'text-accent-success',
         },
@@ -178,12 +193,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           id: 'menu-item-pesquisador-pesquisas',
           module: 'pesquisas',
           label: 'Minhas Pesquisas',
+          hint: 'Somente as ativas para você',
           icon: FileQuestion,
         },
         {
           id: 'menu-item-pesquisador-coleta',
           module: 'simulador',
           label: 'Formulário de Coleta',
+          hint: 'Responder a entrevista',
           icon: Smartphone,
           iconClassName: 'text-accent-primary',
         },
@@ -196,12 +213,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           id: 'menu-item-pesquisador-metas',
           module: 'metas',
           label: 'Minhas Metas & Cotas',
+          hint: 'Acompanhar o atingimento',
           icon: Target,
         },
         {
           id: 'menu-item-pesquisador-dimensionamento',
           module: 'dimensionamento',
           label: t('teamSizing'),
+          hint: 'Planejamento de campo',
           icon: Calculator,
           iconClassName: 'text-accent-primary',
         },
@@ -214,6 +233,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           id: 'menu-item-pesquisador-auditoria',
           module: 'historico_acoes',
           label: 'Trilha de Conformidade',
+          hint: 'Histórico das suas ações',
           icon: History,
           iconClassName: 'text-accent-primary',
         },
@@ -227,13 +247,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
   // ---------------------------------------------------------------------
   const analystSections: NavSection[] = [
     {
-      title: 'Visão Geral',
+      title: 'Painel',
       items: hasPermission('home_acesso')
         ? [
             {
               id: 'menu-item-home',
               module: 'home',
               label: t('home'),
+              hint: 'Visão geral dos indicadores',
               icon: LayoutDashboard,
             },
           ]
@@ -248,6 +269,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-pesquisas',
                 module: 'pesquisas',
                 label: t('surveys'),
+                hint: 'Instrumentos de coleta',
                 icon: FileQuestion,
               },
             ]
@@ -258,6 +280,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-respostas',
                 module: 'respostas',
                 label: t('responses'),
+                hint: 'Respostas coletadas',
                 icon: MessageSquare,
               },
             ]
@@ -265,7 +288,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
       ],
     },
     {
-      title: 'Análise',
+      title: 'Análise e Exportação',
       items: [
         ...(hasPermission('analise_acesso')
           ? [
@@ -273,6 +296,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-analise',
                 module: 'analise',
                 label: t('analytics'),
+                hint: 'Análises e cruzamentos',
                 icon: BarChart3,
               },
             ]
@@ -283,25 +307,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-relatorios',
                 module: 'relatorios',
                 label: t('analyticalReports'),
+                hint: 'Relatórios gerenciais',
                 icon: FileBarChart2,
                 iconClassName: 'text-accent-purple',
               },
             ]
           : []),
+        ...(hasPermission('pesquisa_exportar_resultados')
+          ? [
+              {
+                id: 'menu-item-analise-exportacao',
+                module: 'analise',
+                label: 'Exportações (CSV / PDF)',
+                hint: 'Baixar resultados',
+                icon: Download,
+              },
+            ]
+          : []),
       ],
-    },
-    {
-      title: 'Exportação',
-      items: hasPermission('pesquisa_exportar_resultados')
-        ? [
-            {
-              id: 'menu-item-analise-exportacao',
-              module: 'analise',
-              label: 'Exportações (CSV / PDF)',
-              icon: Download,
-            },
-          ]
-        : [],
     },
   ];
 
@@ -312,30 +335,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
   // ---------------------------------------------------------------------
   const managementSections: NavSection[] = [
     {
-      title: 'Visão Geral',
+      title: 'Painel',
       items: hasPermission('home_acesso')
         ? [
             {
               id: 'menu-item-home',
               module: 'home',
               label: t('home'),
+              hint: 'Visão geral e indicadores',
               icon: LayoutDashboard,
             },
           ]
         : [],
     },
     {
-      title: 'Pesquisa',
-      items: hasPermission('pesquisa_acesso')
-        ? [
-            {
-              id: 'menu-item-pesquisas',
-              module: 'pesquisas',
-              label: t('surveys'),
-              icon: FileQuestion,
-            },
-          ]
-        : [],
+      title: 'Pesquisas',
+      items: [
+        ...(hasPermission('pesquisa_acesso')
+          ? [
+              {
+                id: 'menu-item-pesquisas',
+                module: 'pesquisas',
+                label: t('surveys'),
+                hint: 'Criar, editar e publicar',
+                icon: FileQuestion,
+              },
+            ]
+          : []),
+        ...(hasPermission('pesquisa_criar') || hasPermission('pesquisa_alterar')
+          ? [
+              {
+                id: 'menu-item-nova-pesquisa',
+                module: 'wizard',
+                label: 'Nova Pesquisa',
+                hint: 'Assistente de criação',
+                icon: PlusCircle,
+                iconClassName: 'text-accent-success',
+              },
+            ]
+          : []),
+      ],
     },
     {
       title: 'Coleta',
@@ -346,6 +385,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-respostas',
                 module: 'respostas',
                 label: t('responses'),
+                hint: 'Coletas recebidas',
                 icon: MessageSquare,
               },
             ]
@@ -354,13 +394,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           id: 'menu-item-simulator',
           module: 'simulador',
           label: 'Simulador de Coleta',
+          hint: 'Testar o formulário',
           icon: Smartphone,
           iconClassName: 'text-accent-primary',
         },
       ],
     },
     {
-      title: 'Análise',
+      title: 'Resultados',
       items: [
         ...(hasPermission('analise_acesso')
           ? [
@@ -368,6 +409,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-analise',
                 module: 'analise',
                 label: t('analytics'),
+                hint: 'Análises e cruzamentos',
                 icon: BarChart3,
               },
             ]
@@ -378,6 +420,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-relatorios',
                 module: 'relatorios',
                 label: t('analyticalReports'),
+                hint: 'Relatórios gerenciais',
                 icon: FileBarChart2,
                 iconClassName: 'text-accent-purple',
               },
@@ -386,19 +429,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
       ],
     },
     {
-      title: 'Metas e Planejamento',
+      title: 'Metas e Equipe',
       items: hasPermission('meta_acesso')
         ? [
             {
               id: 'menu-item-metas',
               module: 'metas',
               label: t('metas'),
+              hint: 'Metas, cotas e catálogo',
               icon: Target,
             },
             {
               id: 'menu-item-dimensionamento',
               module: 'dimensionamento',
               label: t('teamSizing'),
+              hint: 'Dimensionar equipe de campo',
               icon: Calculator,
               iconClassName: 'text-accent-primary',
             },
@@ -406,7 +451,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
         : [],
     },
     {
-      title: 'Operação',
+      title: 'Administração',
       items: [
         ...(hasPermission('importacao_acesso')
           ? [
@@ -414,6 +459,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-importacao',
                 module: 'importacao',
                 label: t('imports'),
+                hint: 'Importar planilhas externas',
                 icon: FileSpreadsheet,
               },
             ]
@@ -421,31 +467,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
         ...(hasPermission('colaboradores_acesso')
           ? [
               {
-                id: 'menu-item-licencas',
-                module: 'licencas',
-                label: 'Licenças',
-                icon: KeyRound,
-                iconClassName: 'text-accent-success',
-              },
-              {
                 id: 'menu-submenu-cadastro-colaboradores',
                 module: 'colaboradores',
                 label: t('collaborators'),
+                hint: 'Usuários e vínculos',
                 icon: Users,
+              },
+              {
+                id: 'menu-item-licencas',
+                module: 'licencas',
+                label: 'Licenças',
+                hint: 'Chaves e ativações',
+                icon: KeyRound,
+                iconClassName: 'text-accent-success',
               },
             ]
           : []),
-      ],
-    },
-    {
-      title: 'Segurança e Controle',
-      items: [
         ...(hasPermission('politicas_acesso')
           ? [
               {
                 id: 'menu-submenu-politicas-acesso',
                 module: 'politicas_acesso',
                 label: t('accessPolicies'),
+                hint: 'Permissões por perfil',
                 icon: ShieldCheck,
               },
             ]
@@ -454,6 +498,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           id: 'menu-item-historico-acoes',
           module: 'historico_acoes',
           label: 'Histórico de Ações',
+          hint: 'Trilha de auditoria',
           icon: History,
           iconClassName: 'text-accent-primary',
           badge: auditLogs.length,
