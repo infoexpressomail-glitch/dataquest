@@ -103,7 +103,7 @@ export function exportTeamSizingToPDF(
   doc.text('Qtd. Mínima Necessária:', 18, y + 16);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
-  doc.setTextColor(5, 150, 105); // emerald-600
+  doc.setTextColor(5, 150, 105); // blue-600
   doc.text(`${sizing.minPesquisadores}`, 18, y + 25);
   doc.setFontSize(7);
   doc.setTextColor(100, 116, 139);
@@ -146,7 +146,7 @@ export function exportTeamSizingToPDF(
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   if (sizing.isSuficiente) {
-    doc.setTextColor(5, 150, 105); // emerald-600
+    doc.setTextColor(5, 150, 105); // blue-600
     doc.text(`${sizing.pesquisadoresAlocados}`, c4X, y + 25);
     doc.setFontSize(7);
     doc.text('Equipe Suficiente', c4X, y + 32);
@@ -160,11 +160,11 @@ export function exportTeamSizingToPDF(
   y += 46;
 
   // 4. Detalhamento da Fórmula Aplicada
-  doc.setFillColor(236, 253, 245); // emerald-50
+  doc.setFillColor(236, 253, 245); // blue-50
   doc.roundedRect(14, y, pageWidth - 28, 18, 2, 2, 'F');
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
-  doc.setTextColor(4, 120, 87); // emerald-700
+  doc.setTextColor(4, 120, 87); // blue-700
   doc.text('FÓRMULA OPERACIONAL APLICADA:', 18, y + 6);
   doc.setFont('courier', 'bold');
   doc.setFontSize(8.5);

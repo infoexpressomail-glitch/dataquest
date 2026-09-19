@@ -84,7 +84,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 onClick={() => set({ layoutStyle: opt.id })}
                 className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition ${
                   active
-                    ? 'border-emerald-500 bg-accent-primary-soft ring-2 ring-emerald-500/25'
+                    ? 'border-blue-500 bg-accent-primary-soft ring-2 ring-blue-500/25'
                     : 'border-ui bg-surface-card hover:bg-surface-raised'
                 }`}
               >
@@ -132,7 +132,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                   value={formData.institutionName || ''}
                   onChange={(e) => set({ institutionName: e.target.value })}
                   placeholder="Ex: Prefeitura Municipal"
-                  className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                  className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
               <div>
@@ -141,7 +141,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                   value={formData.startButtonLabel || ''}
                   onChange={(e) => set({ startButtonLabel: e.target.value })}
                   placeholder="Iniciar Pesquisa"
-                  className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                  className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -301,7 +301,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 value={formData.welcomeMessage || ''}
                 onChange={(e) => set({ welcomeMessage: e.target.value })}
                 placeholder="Bem-vindo(a)! Sua opinião ajuda a melhorar nossos serviços."
-                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -312,7 +312,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 value={formData.finishMessage || ''}
                 onChange={(e) => set({ finishMessage: e.target.value })}
                 placeholder="Obrigado por participar!"
-                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -323,7 +323,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 value={formData.prefeituraMessage || ''}
                 onChange={(e) => set({ prefeituraMessage: e.target.value })}
                 placeholder="Mensagem institucional exibida na tela final."
-                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -335,7 +335,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 value={formData.qrCodeUrl || ''}
                 onChange={(e) => set({ qrCodeUrl: e.target.value })}
                 placeholder="https://... (URL da imagem do QR Code)"
-                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -377,7 +377,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                   type="checkbox"
                   checked={formData.showProgressPercent !== false}
                   onChange={(e) => set({ showProgressPercent: e.target.checked })}
-                  className="rounded text-accent-primary-solid focus:ring-emerald-500"
+                  className="rounded text-accent-primary-solid focus:ring-blue-500"
                 />
                 Exibir percentual de progresso
               </label>
@@ -386,7 +386,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                   type="checkbox"
                   checked={formData.showQuestionIndicator !== false}
                   onChange={(e) => set({ showQuestionIndicator: e.target.checked })}
-                  className="rounded text-accent-primary-solid focus:ring-emerald-500"
+                  className="rounded text-accent-primary-solid focus:ring-blue-500"
                 />
                 Exibir "Pergunta X de Y"
               </label>
@@ -443,7 +443,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 key={img.id}
                 type="button"
                 onClick={() => set({ coverImage: img.url })}
-                className="overflow-hidden rounded-xl border border-ui hover:ring-2 hover:ring-emerald-500/30"
+                className="overflow-hidden rounded-xl border border-ui hover:ring-2 hover:ring-blue-500/30"
                 title={`Usar "${img.nome}" como capa`}
               >
                 <img src={img.url} alt={img.nome} className="h-16 w-full object-cover" />

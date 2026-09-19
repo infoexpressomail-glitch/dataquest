@@ -789,7 +789,7 @@ export const SurveyWizard: React.FC = () => {
                 type="button"
                 id="btn-open-sync-status-modal"
                 onClick={() => setServerSyncModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-xl bg-accent-success-solid hover:bg-accent-success-solid-hover text-on-accent font-bold px-3.5 py-2 text-xs transition shadow-md shadow-emerald-600/20"
+                className="flex items-center gap-1.5 rounded-xl bg-accent-success-solid hover:bg-accent-success-solid-hover text-on-accent font-bold px-3.5 py-2 text-xs transition shadow-md shadow-blue-600/20"
               >
                 <ShieldCheck className="h-4 w-4" />
                 <span>Pronto para Subir Alterações</span>
@@ -871,7 +871,7 @@ export const SurveyWizard: React.FC = () => {
               onClick={() => setCurrentStep(tab.step)}
               className={`rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
                 isActive
-                  ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-emerald-900/40 ring-2 ring-emerald-500/30'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/40 ring-2 ring-blue-500/30'
                   : 'border border-ui bg-surface text-secondary hover:bg-surface-raised hover:text-primary'
               }`}
             >
@@ -907,7 +907,7 @@ export const SurveyWizard: React.FC = () => {
                 value={formData.nome}
                 onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                 placeholder="Ex: LiterArraial 2025 - Prefeitura"
-                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
 
@@ -925,7 +925,7 @@ export const SurveyWizard: React.FC = () => {
                 value={formData.descricao}
                 onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
                 placeholder="Dados sobre a percepção da Feira Literária."
-                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
 
@@ -970,7 +970,7 @@ export const SurveyWizard: React.FC = () => {
                         onChange={() =>
                           setFormData({ ...formData, tipoColetaWeb: 'publico' })
                         }
-                        className="mt-1 h-4 w-4 text-accent-primary-solid focus:ring-emerald-500"
+                        className="mt-1 h-4 w-4 text-accent-primary-solid focus:ring-blue-500"
                       />
                       <div>
                         <span className="text-xs font-bold text-primary">
@@ -990,7 +990,7 @@ export const SurveyWizard: React.FC = () => {
                         onChange={() =>
                           setFormData({ ...formData, tipoColetaWeb: 'interno' })
                         }
-                        className="mt-1 h-4 w-4 text-accent-primary-solid focus:ring-emerald-500"
+                        className="mt-1 h-4 w-4 text-accent-primary-solid focus:ring-blue-500"
                       />
                       <div>
                         <span className="text-xs font-bold text-primary">
@@ -1017,7 +1017,7 @@ export const SurveyWizard: React.FC = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, colaboradorWebId: e.target.value })
                       }
-                      className="mt-2 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                      className="mt-2 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
                       <option value="">Selecione o colaborador para registro das coletas web</option>
                       {collaborators.map((c) => (
@@ -1342,7 +1342,7 @@ export const SurveyWizard: React.FC = () => {
                         <select
                           value={q.tipo}
                           onChange={(e) => handleUpdateQuestionType(q.id, e.target.value as QuestionType)}
-                          className="rounded-lg border border-accent-primary-soft-border bg-surface px-3 py-1.5 text-xs font-bold text-accent-primary focus:border-emerald-400 focus:outline-none cursor-pointer"
+                          className="rounded-lg border border-accent-primary-soft-border bg-surface px-3 py-1.5 text-xs font-bold text-accent-primary focus:border-blue-400 focus:outline-none cursor-pointer"
                         >
                           <option value="multipla_escolha">Múltipla Escolha (Opção Única)</option>
                           <option value="multipla_selecao">Múltipla Seleção (Várias Opções)</option>
@@ -1442,7 +1442,7 @@ export const SurveyWizard: React.FC = () => {
                     value={newQuestionEnunciado}
                     onChange={(e) => setNewQuestionEnunciado(e.target.value)}
                     placeholder="Ex: Como você avalia a qualidade do atendimento?"
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none"
                   />
                 </div>
 
@@ -1453,7 +1453,7 @@ export const SurveyWizard: React.FC = () => {
                   <select
                     value={newQuestionTipo}
                     onChange={(e) => setNewQuestionTipo(e.target.value as QuestionType)}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
                   >
                     <option value="multipla_escolha">Múltipla Escolha (Opção Única)</option>
                     <option value="multipla_selecao">Múltipla Seleção (Várias Opções)</option>
@@ -1477,7 +1477,7 @@ export const SurveyWizard: React.FC = () => {
                     value={newQuestionOpcoes}
                     onChange={(e) => setNewQuestionOpcoes(e.target.value)}
                     placeholder="Opção A, Opção B, Opção C"
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none"
                   />
                 </div>
               )}
@@ -1488,7 +1488,7 @@ export const SurveyWizard: React.FC = () => {
                     type="checkbox"
                     checked={newQuestionObrigatoria}
                     onChange={(e) => setNewQuestionObrigatoria(e.target.checked)}
-                    className="rounded text-accent-primary-solid focus:ring-emerald-500"
+                    className="rounded text-accent-primary-solid focus:ring-blue-500"
                   />
                   <span>Resposta Obrigatória</span>
                 </label>
@@ -1498,7 +1498,7 @@ export const SurveyWizard: React.FC = () => {
                   id="btn-add-question-to-survey"
                   onClick={handleAddQuestion}
                   disabled={!newQuestionEnunciado.trim()}
-                  className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-40 transition-colors"
+                  className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover disabled:opacity-40 transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Inserir Pergunta</span>
@@ -1607,7 +1607,7 @@ export const SurveyWizard: React.FC = () => {
                         setRuleValor(q.opcoes[0].value);
                       }
                     }}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
                   >
                     <option value="">Selecione a pergunta...</option>
                     {formData.perguntas.map((q) => (
@@ -1627,7 +1627,7 @@ export const SurveyWizard: React.FC = () => {
                     id="select-rule-condicao"
                     value={ruleCondicao}
                     onChange={(e) => setRuleCondicao(e.target.value as ConditionOperator)}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
                   >
                     <option value="igual">Igual a (=)</option>
                     <option value="diferente">Diferente de (≠)</option>
@@ -1646,7 +1646,7 @@ export const SurveyWizard: React.FC = () => {
                     value={ruleValor}
                     onChange={(e) => setRuleValor(e.target.value)}
                     placeholder="Ex: Não, Sim, ou valor..."
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none"
                   />
                 </div>
 
@@ -1659,7 +1659,7 @@ export const SurveyWizard: React.FC = () => {
                     id="select-rule-acao"
                     value={ruleAcao}
                     onChange={(e) => setRuleAcao(e.target.value as ConditionActionType)}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
                   >
                     <option value="saltar_para">Saltar para a pergunta</option>
                     <option value="esconder_pergunta">Esconder pergunta</option>
@@ -1678,7 +1678,7 @@ export const SurveyWizard: React.FC = () => {
                     id="select-rule-destino"
                     value={ruleDestinoId}
                     onChange={(e) => setRuleDestinoId(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
                   >
                     <option value="">Selecione para onde aplicar a ação...</option>
                     {formData.perguntas.map((q) => (
@@ -1695,7 +1695,7 @@ export const SurveyWizard: React.FC = () => {
                   type="button"
                   id="btn-save-rule"
                   onClick={handleAddRule}
-                  className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Cadastrar Regra</span>
@@ -1760,7 +1760,7 @@ export const SurveyWizard: React.FC = () => {
                               }
                               className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
                                 simTestAnswer[q.id] === opt.value
-                                  ? 'bg-accent-primary-solid text-on-accent font-bold shadow-sm shadow-emerald-900/50'
+                                  ? 'bg-accent-primary-solid text-on-accent font-bold shadow-sm shadow-blue-900/50'
                                   : 'border border-ui bg-surface text-secondary hover:bg-surface-raised hover:text-primary'
                               }`}
                             >
@@ -1776,7 +1776,7 @@ export const SurveyWizard: React.FC = () => {
                             setSimTestAnswer({ ...simTestAnswer, [q.id]: e.target.value })
                           }
                           placeholder="Digite para testar regra..."
-                          className="mt-2 w-full rounded-lg border border-ui bg-surface px-2.5 py-1 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                          className="mt-2 w-full rounded-lg border border-ui bg-surface px-2.5 py-1 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                         />
                       )}
                     </div>
@@ -1877,7 +1877,7 @@ export const SurveyWizard: React.FC = () => {
                         setMetaResposta(q.opcoes[0].value);
                       }
                     }}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
                   >
                     <option value="">Selecione a questão...</option>
                     {formData.perguntas.map((q) => (
@@ -1897,7 +1897,7 @@ export const SurveyWizard: React.FC = () => {
                     id="select-meta-condicao"
                     value={metaCondicao}
                     onChange={(e) => setMetaCondicao(e.target.value as ConditionOperator)}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
                   >
                     <option value="igual">Igual a (=)</option>
                     <option value="diferente">Diferente de (≠)</option>
@@ -1916,7 +1916,7 @@ export const SurveyWizard: React.FC = () => {
                     value={metaResposta}
                     onChange={(e) => setMetaResposta(e.target.value)}
                     placeholder="Ex: Sim, 18 a 25 anos..."
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:outline-none"
                   />
                 </div>
 
@@ -1931,7 +1931,7 @@ export const SurveyWizard: React.FC = () => {
                     min={1}
                     value={metaQuantidadeAlvo}
                     onChange={(e) => setMetaQuantidadeAlvo(Number(e.target.value))}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -1941,7 +1941,7 @@ export const SurveyWizard: React.FC = () => {
                   type="button"
                   id="btn-add-meta"
                   onClick={handleAddMeta}
-                  className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Cadastrar Meta da Questão</span>
@@ -1994,7 +1994,7 @@ export const SurveyWizard: React.FC = () => {
                     onClick={() => toggleResearcher(colab.id)}
                     className={`flex cursor-pointer items-start justify-between rounded-xl border p-4 transition ${
                       isSelected
-                        ? 'border-accent-primary-soft-border bg-accent-primary-soft shadow-sm shadow-emerald-950/40'
+                        ? 'border-accent-primary-soft-border bg-accent-primary-soft shadow-sm shadow-blue-950/40'
                         : 'border-ui bg-surface-card hover:border-ui'
                     }`}
                   >
@@ -2025,7 +2025,7 @@ export const SurveyWizard: React.FC = () => {
                     <div
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
                         isSelected
-                          ? 'border-emerald-600 bg-accent-primary-solid text-on-accent'
+                          ? 'border-blue-600 bg-accent-primary-solid text-on-accent'
                           : 'border-ui bg-surface-raised'
                       }`}
                     >
@@ -2083,7 +2083,7 @@ export const SurveyWizard: React.FC = () => {
               type="button"
               id="btn-wizard-next"
               onClick={() => setCurrentStep(currentStep + 1)}
-              className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+              className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
             >
               <span>Próxima Etapa</span>
               <ArrowRight className="h-4 w-4" />
@@ -2108,8 +2108,8 @@ export const SurveyWizard: React.FC = () => {
                 !effectiveOnline
                   ? 'bg-accent-warning-solid shadow-amber-900/40 hover:bg-accent-warning-solid-hover'
                   : formData.serverSyncToken
-                  ? 'bg-accent-success-solid shadow-emerald-900/40 hover:bg-accent-success-solid-hover'
-                  : 'bg-accent-success-solid shadow-emerald-900/40 hover:bg-accent-success-solid-hover'
+                  ? 'bg-accent-success-solid shadow-blue-900/40 hover:bg-accent-success-solid-hover'
+                  : 'bg-accent-success-solid shadow-blue-900/40 hover:bg-accent-success-solid-hover'
               }`}
             >
               {!effectiveOnline ? (
@@ -2159,13 +2159,13 @@ export const SurveyWizard: React.FC = () => {
                 value={metaLateralBusca}
                 onChange={(e) => setMetaLateralBusca(e.target.value)}
                 placeholder="Digite para buscar..."
-                className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-8 pr-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 focus:outline-none"
+                className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-8 pr-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 focus:outline-none"
               />
             </div>
             <select
               value={metaLateralFiltro}
               onChange={(e) => setMetaLateralFiltro(e.target.value as typeof metaLateralFiltro)}
-              className="w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary shadow-xs focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary shadow-xs focus:border-blue-500 focus:outline-none"
             >
               <option value="todas">Todas</option>
               <option value="ativa">Ativas</option>
@@ -2324,7 +2324,7 @@ export const SurveyWizard: React.FC = () => {
                   setSaveSuccess(false);
                   setActiveModule('simulador');
                 }}
-                className="rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                className="rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
               >
                 Testar Coleta no Simulador
               </button>

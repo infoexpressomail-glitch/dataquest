@@ -151,7 +151,7 @@ export const QuestionVisualEditor: React.FC<QuestionVisualEditorProps> = ({ ques
               type="checkbox"
               checked={!!visual.scaleAllowHalf}
               onChange={(e) => patch({ scaleAllowHalf: e.target.checked })}
-              className="rounded text-accent-primary-solid focus:ring-emerald-500"
+              className="rounded text-accent-primary-solid focus:ring-blue-500"
             />
             Permitir meia estrela
           </label>
@@ -272,7 +272,7 @@ export const QuestionVisualEditor: React.FC<QuestionVisualEditorProps> = ({ ques
               key={c}
               type="button"
               onClick={() => patch({ accentColor: c })}
-              className={`h-5 w-5 rounded-full border ${visual.accentColor === c ? 'ring-2 ring-emerald-500' : 'border-ui'}`}
+              className={`h-5 w-5 rounded-full border ${visual.accentColor === c ? 'ring-2 ring-blue-500' : 'border-ui'}`}
               style={{ background: c }}
               title={c}
             />
@@ -295,7 +295,7 @@ export const QuestionVisualEditor: React.FC<QuestionVisualEditorProps> = ({ ques
             type="checkbox"
             checked={!!visual.commentEnabled}
             onChange={(e) => patch({ commentEnabled: e.target.checked })}
-            className="rounded text-accent-primary-solid focus:ring-emerald-500"
+            className="rounded text-accent-primary-solid focus:ring-blue-500"
           />
           <MessageSquareText size={12} /> Comentário opcional
         </label>

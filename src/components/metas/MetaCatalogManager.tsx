@@ -131,7 +131,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
               type="button"
               id="btn-open-create-base-meta"
               onClick={handleOpenCreate}
-              className="inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-all shrink-0"
+              className="inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-all shrink-0"
             >
               <Plus className="h-4 w-4" />
               <span>Cadastrar Meta Base</span>
@@ -156,7 +156,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
               <button
                 type="button"
                 onClick={handleOpenCreate}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 Cadastrar Primeira Meta Base
@@ -306,7 +306,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                   value={titulo}
                   onChange={(e) => setTitulo(e.target.value)}
                   placeholder="Ex: Cota de Sexo Feminino, Jovens 18 a 25 anos..."
-                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -319,7 +319,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
                   placeholder="Ex: Abordar no perímetro do estande municipal..."
-                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-none"
+                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none resize-none"
                 />
               </div>
 
@@ -338,7 +338,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                     <select
                       value={faixaEtaria}
                       onChange={(e) => setFaixaEtaria(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todas">Todas as faixas</option>
                       {FAIXAS_ETARIAS_PADRAO.map((faixa) => (
@@ -356,7 +356,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                     <select
                       value={sexo}
                       onChange={(e) => setSexo(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todos">Todos os gêneros</option>
                       <option value="F">Feminino</option>
@@ -373,7 +373,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                     <select
                       value={escolaridade}
                       onChange={(e) => setEscolaridade(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todos">Todas as escolaridades</option>
                       {OPCOES_ESCOLARIDADE_PADRAO.map((e) => (
@@ -391,7 +391,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                     <select
                       value={bairro}
                       onChange={(e) => setBairro(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todos">Todos os bairros</option>
                       {OPCOES_BAIRROS_PADRAO.map((b) => (
@@ -420,7 +420,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                   required
                   value={metaGlobalAlvo}
                   onChange={(e) => setMetaGlobalAlvo(Number(e.target.value))}
-                  className="w-32 rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs font-bold text-primary text-right focus:border-emerald-500 focus:outline-none"
+                  className="w-32 rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs font-bold text-primary text-right focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -435,7 +435,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                 <button
                   type="submit"
                   id="btn-save-base-meta"
-                  className="rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   {editingId ? 'Atualizar Meta Base' : 'Salvar Meta Base'}
                 </button>

@@ -56,9 +56,9 @@ export function getActionTypeMeta(tipo: ActionType): {
       return {
         label: 'Nova Coleta Registrada',
         category: 'RESPOSTA',
-        badgeBg: 'bg-emerald-500/10',
-        badgeText: 'text-emerald-400',
-        badgeBorder: 'border-emerald-500/30',
+        badgeBg: 'bg-blue-500/10',
+        badgeText: 'text-blue-400',
+        badgeBorder: 'border-blue-500/30',
       };
     case 'CRIACAO_PESQUISA':
       return {
@@ -104,9 +104,9 @@ export function getActionTypeMeta(tipo: ActionType): {
       return {
         label: 'Restauração de Pesquisa',
         category: 'PESQUISA',
-        badgeBg: 'bg-emerald-500/10',
-        badgeText: 'text-emerald-400',
-        badgeBorder: 'border-emerald-500/30',
+        badgeBg: 'bg-blue-500/10',
+        badgeText: 'text-blue-400',
+        badgeBorder: 'border-blue-500/30',
       };
     case 'ALTERACAO_META':
       return {
@@ -136,9 +136,9 @@ export function getActionTypeMeta(tipo: ActionType): {
       return {
         label: 'Sincronização Offline',
         category: 'SISTEMA',
-        badgeBg: 'bg-emerald-500/10',
-        badgeText: 'text-emerald-400',
-        badgeBorder: 'border-emerald-500/30',
+        badgeBg: 'bg-blue-500/10',
+        badgeText: 'text-blue-400',
+        badgeBorder: 'border-blue-500/30',
       };
     default:
       return {

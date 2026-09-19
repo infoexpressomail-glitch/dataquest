@@ -288,7 +288,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
       ],
     },
     {
-      title: 'Análise e Exportação',
+      title: 'Análise e Relatórios',
       items: [
         ...(hasPermission('analise_acesso')
           ? [
@@ -296,7 +296,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 id: 'menu-item-analise',
                 module: 'analise',
                 label: t('analytics'),
-                hint: 'Análises e cruzamentos',
+                hint: 'Análises, cruzamentos e exportação',
                 icon: BarChart3,
               },
             ]
@@ -310,17 +310,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
                 hint: 'Relatórios gerenciais',
                 icon: FileBarChart2,
                 iconClassName: 'text-accent-purple',
-              },
-            ]
-          : []),
-        ...(hasPermission('pesquisa_exportar_resultados')
-          ? [
-              {
-                id: 'menu-item-analise-exportacao',
-                module: 'analise',
-                label: 'Exportações (CSV / PDF)',
-                hint: 'Baixar resultados',
-                icon: Download,
               },
             ]
           : []),
@@ -401,7 +390,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
       ],
     },
     {
-      title: 'Resultados',
+      title: 'Análise e Relatórios',
       items: [
         ...(hasPermission('analise_acesso')
           ? [
@@ -553,7 +542,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
         {/* Profile info footer (Immersive UI style) */}
         <div className="border-t border-ui/80 p-4 space-y-3 bg-surface-app">
           <div className="flex items-center gap-3 bg-surface-raised p-3 rounded-xl border border-ui shadow-sm">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center text-xs font-bold text-primary shadow-lg shadow-emerald-950/60 shrink-0">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center text-xs font-bold text-primary shadow-lg shadow-blue-950/60 shrink-0">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div className="overflow-hidden min-w-0 flex-1">

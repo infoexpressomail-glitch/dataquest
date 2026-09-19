@@ -152,7 +152,7 @@ export const VisualGalleryModal: React.FC<VisualGalleryModalProps> = ({
         type="button"
         onClick={() => toggle(icon.id)}
         className={`relative flex flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 transition ${
-          isSel ? 'border-emerald-500 bg-accent-primary-soft' : 'border-ui bg-surface-card hover:bg-surface-raised'
+          isSel ? 'border-blue-500 bg-accent-primary-soft' : 'border-ui bg-surface-card hover:bg-surface-raised'
         }`}
         title={icon.nome}
       >
@@ -191,7 +191,7 @@ export const VisualGalleryModal: React.FC<VisualGalleryModalProps> = ({
         type="button"
         onClick={() => toggle(img.id)}
         className={`relative overflow-hidden rounded-2xl border transition ${
-          isSel ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-ui hover:opacity-95'
+          isSel ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-ui hover:opacity-95'
         }`}
       >
         <img src={img.url} alt={img.nome} className="h-24 w-full object-cover" />
@@ -224,7 +224,7 @@ export const VisualGalleryModal: React.FC<VisualGalleryModalProps> = ({
         type="button"
         onClick={() => toggle(smile.id)}
         className={`relative flex flex-col items-center gap-1 rounded-2xl border p-3 transition ${
-          isSel ? 'border-emerald-500 bg-accent-primary-soft' : 'border-ui bg-surface-card hover:bg-surface-raised'
+          isSel ? 'border-blue-500 bg-accent-primary-soft' : 'border-ui bg-surface-card hover:bg-surface-raised'
         }`}
       >
         <span className="text-3xl">{smile.emoji}</span>
@@ -274,7 +274,7 @@ export const VisualGalleryModal: React.FC<VisualGalleryModalProps> = ({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Pesquisar..."
-              className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-3 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-3 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
             />
           </div>
           <select

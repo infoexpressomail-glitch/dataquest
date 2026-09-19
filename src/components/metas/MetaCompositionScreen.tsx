@@ -253,7 +253,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
                 <select
                   value={perguntaId}
                   onChange={(e) => handleSelectPergunta(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                  className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                 >
                   <option value="">Selecione...</option>
                   {perguntas.map((q) => (
@@ -270,7 +270,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
                 <select
                   value={condicao}
                   onChange={(e) => setCondicao(e.target.value as ConditionOperator)}
-                  className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                  className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                 >
                   {COMPOSITION_CONDITIONS.map((c) => (
                     <option key={c} value={c}>
@@ -287,7 +287,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
                   <select
                     value={resposta}
                     onChange={(e) => setResposta(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                   >
                     <option value="">Selecione...</option>
                     {selectedPergunta!.opcoes!.map((o) => (
@@ -302,7 +302,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
                     value={resposta}
                     onChange={(e) => setResposta(e.target.value)}
                     placeholder="Digite a resposta esperada..."
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                   />
                 )}
               </div>
@@ -387,7 +387,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
                 name="distribuicao"
                 checked={distribuicao === 'geral'}
                 onChange={() => setDistribuicao('geral')}
-                className="h-4 w-4 accent-emerald-600"
+                className="h-4 w-4 accent-blue-600"
               />
               <div>
                 <span className="block text-xs font-bold text-primary">Geral</span>
@@ -409,7 +409,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
                 name="distribuicao"
                 checked={distribuicao === 'por_pesquisador'}
                 onChange={() => setDistribuicao('por_pesquisador')}
-                className="h-4 w-4 accent-emerald-600"
+                className="h-4 w-4 accent-blue-600"
               />
               <div>
                 <span className="block text-xs font-bold text-primary">Por pesquisador</span>
@@ -438,7 +438,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
                 if (distribuicao === 'por_pesquisador') setQuantidadePorPesquisador(v);
                 else setQuantidade(v);
               }}
-              className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs font-bold text-primary focus:border-emerald-500 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs font-bold text-primary focus:border-blue-500 focus:outline-none"
             />
             <p className="mt-2 text-[11px] leading-relaxed text-muted">
               {distribuicao === 'por_pesquisador'
@@ -460,7 +460,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               placeholder="Ex: Meta de bairro Praça da Bandeira"
-              className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
             />
           </div>
 

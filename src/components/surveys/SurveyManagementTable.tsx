@@ -278,7 +278,7 @@ export const SurveyManagementTable: React.FC = () => {
               <button
                 id="btn-survey-create-new"
                 onClick={handleCreateNew}
-                className="flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg bg-accent-primary-solid px-4 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                className="flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg bg-accent-primary-solid px-4 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
               >
                 <PlusCircle className="h-4 w-4 shrink-0" />
                 <span>Criar Pesquisa</span>
@@ -341,7 +341,7 @@ export const SurveyManagementTable: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por nome, código ou descrição..."
-            className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-8 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 focus:outline-none"
+            className="w-full rounded-lg border border-ui bg-surface-card py-2 pl-9 pr-8 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 focus:outline-none"
           />
           {searchTerm && (
             <button
@@ -359,7 +359,7 @@ export const SurveyManagementTable: React.FC = () => {
       <div
         className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-2.5 shadow-md transition-colors ${
           selectedSurveyIds.length > 0
-            ? 'border-accent-primary/40 bg-surface-raised ring-1 ring-emerald-500/20'
+            ? 'border-accent-primary/40 bg-surface-raised ring-1 ring-blue-500/20'
             : 'border-ui bg-surface'
         }`}
       >

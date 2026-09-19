@@ -88,7 +88,7 @@ export const FieldMetas: React.FC<FieldMetasProps> = ({ session, onResync }) => 
           <button
             onClick={handleUpdateGoals}
             disabled={updating || !effectiveOnline}
-            className="inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-md shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-md shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`h-4 w-4 ${updating ? 'animate-spin' : ''}`} />
             {updating ? 'Atualizando...' : 'Atualizar Metas'}

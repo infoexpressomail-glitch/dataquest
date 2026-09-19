@@ -58,7 +58,7 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({
         </button>
 
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-emerald-600 to-emerald-500 text-on-accent font-bold text-sm shadow-md shadow-emerald-900/40 shrink-0">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-blue-500 text-on-accent font-bold text-sm shadow-md shadow-blue-900/40 shrink-0">
             {currentUser.nome.slice(0, 2).toUpperCase()}
           </div>
           <div className="min-w-0">

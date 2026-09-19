@@ -168,7 +168,7 @@ export const HomeDashboard: React.FC = () => {
                   setEditingSurvey(null);
                   setActiveModule('wizard');
                 }}
-                className="flex h-8 items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+                className="flex h-8 items-center gap-1.5 rounded-lg bg-accent-primary-solid px-3 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
               >
                 <PlusCircle className="h-3.5 w-3.5" />
                 <span>{t('newSurvey')}</span>

@@ -84,7 +84,7 @@ export const GeoMapModal: React.FC<GeoMapModalProps> = ({ submissions, surveyNam
                     <div
                       className={`relative flex items-center justify-center rounded-full p-2 shadow-lg transition ${
                         isSelected
-                          ? 'bg-accent-primary-solid text-on-accent ring-4 ring-emerald-400/50 scale-110 shadow-emerald-900/50'
+                          ? 'bg-accent-primary-solid text-on-accent ring-4 ring-blue-400/50 scale-110 shadow-blue-900/50'
                           : 'bg-surface-raised text-primary ring-2 ring-slate-700'
                       }`}
                     >

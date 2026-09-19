@@ -366,7 +366,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               onClick={() => setFilterDimension(dim)}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 filterDimension === dim
-                  ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-emerald-900/30'
+                  ? 'bg-accent-primary-solid text-on-accent shadow-md shadow-blue-900/30'
                   : 'bg-surface-raised text-muted hover:bg-surface-raised hover:text-primary'
               }`}
             >
@@ -386,7 +386,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
             type="button"
             id="btn-open-create-global-meta"
             onClick={handleOpenCreateModal}
-            className="flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-all shrink-0"
+            className="flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-all shrink-0"
           >
             <Plus className="h-4 w-4" />
             <span>Nova Meta Global Demográfica</span>
@@ -407,7 +407,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                 target.status === 'pausada'
                   ? 'border-amber-900/40 bg-surface/80 opacity-80'
                   : summary.status === 'concluida'
-                  ? 'border-emerald-800/50 bg-accent-success-soft'
+                  ? 'border-blue-800/50 bg-accent-success-soft'
                   : 'border-ui bg-surface'
               }`}
             >
@@ -604,7 +604,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                           key={assignment.pesquisadorId}
                           className={`rounded-xl border p-3.5 transition-all ${
                             isFechada
-                              ? 'border-emerald-800/60 bg-accent-success-soft'
+                              ? 'border-blue-800/60 bg-accent-success-soft'
                               : 'border-ui bg-surface'
                           }`}
                         >
@@ -683,7 +683,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               <button
                 type="button"
                 onClick={handleOpenCreateModal}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 Cadastrar Primeira Meta Global
@@ -732,7 +732,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   value={titulo}
                   onChange={(e) => setTitulo(e.target.value)}
                   placeholder="Ex: Jovens 18 a 25 anos - Praça da Matriz"
-                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2.5 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -745,7 +745,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
                   placeholder="Ex: Abordar no perímetro do estande municipal ou entrada sul..."
-                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-none"
+                  className="mt-1 w-full rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none resize-none"
                 />
               </div>
 
@@ -765,7 +765,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                     <select
                       value={faixaEtaria}
                       onChange={(e) => setFaixaEtaria(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todas">Todas as faixas</option>
                       {FAIXAS_ETARIAS_PADRAO.map((faixa) => (
@@ -784,7 +784,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                     <select
                       value={sexo}
                       onChange={(e) => setSexo(e.target.value as any)}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todos">Todos os gêneros</option>
                       <option value="F">Feminino</option>
@@ -801,7 +801,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                     <select
                       value={bairro}
                       onChange={(e) => setBairro(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-emerald-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
                     >
                       <option value="Todos">Todos os bairros</option>
                       {OPCOES_BAIRROS_PADRAO.map((b) => (
@@ -830,7 +830,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                   required
                   value={metaGlobalAlvo}
                   onChange={(e) => setMetaGlobalAlvo(Number(e.target.value))}
-                  className="w-32 rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs font-bold text-primary text-right focus:border-emerald-500 focus:outline-none"
+                  className="w-32 rounded-xl border border-ui bg-surface-card px-3.5 py-2 text-xs font-bold text-primary text-right focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -911,7 +911,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                                   [researcher.id]: val,
                                 }));
                               }}
-                              className="w-20 rounded-lg border border-ui bg-surface-card px-2 py-1 text-xs text-primary text-center focus:border-emerald-500 focus:outline-none"
+                              className="w-20 rounded-lg border border-ui bg-surface-card px-2 py-1 text-xs text-primary text-center focus:border-blue-500 focus:outline-none"
                             />
                           </div>
                         )}
@@ -933,7 +933,7 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                 <button
                   type="submit"
                   id="btn-save-global-meta"
-                  className="rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-emerald-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="rounded-xl bg-accent-primary-solid px-5 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   {editingTargetId ? 'Atualizar Meta Global' : 'Salvar e Atribuir Metas'}
                 </button>
