@@ -141,6 +141,16 @@ export const HomeDashboard: React.FC = () => {
     },
   ];
 
+  // Ordem personalizada: itens salvos primeiro, o restante segue a ordem do
+  // catálogo (assim nada "embaralha" antes da primeira reordenação).
+  const catalogIds = dashboardCatalog.flatMap((s) => s.items.map((i) => i.id));
+  const storedOrder = prefs.order.filter((id) => catalogIds.includes(id));
+  const orderedIds = [...storedOrder, ...catalogIds.filter((id) => !storedOrder.includes(id))];
+  const orderOf = (id: string) => {
+    const i = orderedIds.indexOf(id);
+    return i < 0 ? Number.MAX_SAFE_INTEGER : i;
+  };
+
   const vis = (id: string) => (prefs.isVisible(id) ? '' : 'hidden');
   const visibleStatusCount = statusIds.filter((id) => prefs.isVisible(id)).length;
   const visiblePainelCount = painelIds.filter((id) => prefs.isVisible(id)).length;
@@ -282,6 +292,7 @@ export const HomeDashboard: React.FC = () => {
             type="button"
             id="btn-status-conexao"
             onClick={() => setSyncModalOpen(true)}
+            style={{ order: orderOf('status-conexao') }}
             className={`group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-primary-soft-border hover:bg-surface-raised active:scale-[0.99] ${vis('status-conexao')}`}
           >
             <span
@@ -319,6 +330,7 @@ export const HomeDashboard: React.FC = () => {
             type="button"
             id="btn-status-sync"
             onClick={() => setSyncModalOpen(true)}
+            style={{ order: orderOf('status-sincronizacao') }}
             className={`group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-info-soft-border hover:bg-surface-raised active:scale-[0.99] ${vis('status-sincronizacao')}`}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-info-soft text-accent-info border-accent-info-soft-border">
@@ -338,6 +350,7 @@ export const HomeDashboard: React.FC = () => {
             type="button"
             id="btn-status-pesquisas"
             onClick={() => setActiveModule('pesquisas')}
+            style={{ order: orderOf('status-pesquisas') }}
             className={`group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-primary-soft-border hover:bg-surface-raised active:scale-[0.99] ${vis('status-pesquisas')}`}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border">
@@ -355,6 +368,7 @@ export const HomeDashboard: React.FC = () => {
             type="button"
             id="btn-status-coletas"
             onClick={() => setActiveModule('respostas')}
+            style={{ order: orderOf('status-coletas') }}
             className={`group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-success-soft-border hover:bg-surface-raised active:scale-[0.99] ${vis('status-coletas')}`}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-success-soft text-accent-success border-accent-success-soft-border">
@@ -383,6 +397,7 @@ export const HomeDashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveModule('pesquisas')}
+            style={{ order: orderOf('ind-total-pesquisas') }}
             className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl ${vis('ind-total-pesquisas')}`}
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-primary-soft rounded-full blur-xl pointer-events-none" />
@@ -412,6 +427,7 @@ export const HomeDashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveModule('respostas')}
+            style={{ order: orderOf('ind-entrevistas') }}
             className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl ${vis('ind-entrevistas')}`}
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-info-soft rounded-full blur-xl pointer-events-none" />
@@ -441,6 +457,7 @@ export const HomeDashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveModule('licencas')}
+            style={{ order: orderOf('ind-licencas') }}
             className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl ${vis('ind-licencas')}`}
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-success-soft rounded-full blur-xl pointer-events-none" />
@@ -478,6 +495,7 @@ export const HomeDashboard: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveModule('colaboradores')}
+              style={{ order: orderOf('ind-equipe') }}
               className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-purple-soft-border hover:shadow-2xl ${vis('ind-equipe')}`}
             >
               <div className="absolute top-0 right-0 w-24 h-24 bg-accent-purple-soft rounded-full blur-xl pointer-events-none" />
@@ -515,15 +533,23 @@ export const HomeDashboard: React.FC = () => {
         title="Monitoramento de Coleta"
         subtitle="Acompanhamento de metas, volume coletado e conexões em tempo real"
       />
-      <div className={`grid grid-cols-1 gap-6 ${monitorLeftVisible && monitorRightVisible ? 'lg:grid-cols-3' : ''}`}>
-        {/* Coluna 1 & 2: Pesquisas Ativas e Monitoramento */}
-        <div className={`space-y-6 ${monitorLeftVisible ? (monitorRightVisible ? 'lg:col-span-2' : '') : 'hidden'}`}>
+      <div className={`grid grid-cols-1 grid-flow-row-dense gap-6 ${monitorLeftVisible && monitorRightVisible ? 'lg:grid-cols-3' : ''}`}>
+        {/* Coluna 1 & 2: Pesquisas Ativas e Monitoramento.
+            `contents` deixa os itens serem filhos diretos do grid, para que a
+            personalização possa reordená-los livremente. */}
+        <div className="contents">
           {/* Gráfico de Evolução da Pesquisa em Andamento e Anteriores */}
-          <div className={vis('mon-evolucao')}>
+          <div
+            style={{ order: orderOf('mon-evolucao') }}
+            className={`lg:col-span-2 ${vis('mon-evolucao')}`}
+          >
             <SurveyEvolutionCard surveys={surveys} submissions={submissions} />
           </div>
 
-          <div className={`rounded-2xl border border-ui bg-surface p-5 shadow-xl ${vis('mon-em-execucao')}`}>
+          <div
+            style={{ order: orderOf('mon-em-execucao') }}
+            className={`rounded-2xl border border-ui bg-surface p-5 shadow-xl lg:col-span-2 ${vis('mon-em-execucao')}`}
+          >
             <div className="flex items-center justify-between border-b border-ui pb-4">
               <div>
                 <h3 className="text-sm font-bold text-primary flex items-center gap-2">
@@ -644,11 +670,12 @@ export const HomeDashboard: React.FC = () => {
         </div>
 
         {/* Coluna 3: Conexões Recentes (Conforme requisito do Módulo Home) */}
-        <div className={`space-y-6 ${monitorRightVisible ? '' : 'hidden'}`}>
+        <div className="contents">
           {canViewConexoes && (
             <button
               type="button"
               onClick={() => setSyncModalOpen(true)}
+              style={{ order: orderOf('mon-conexoes') }}
               className={`group w-full rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl ${vis('mon-conexoes')}`}
             >
               <div className="flex items-center justify-between border-b border-ui pb-3">
@@ -708,6 +735,7 @@ export const HomeDashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setSyncModalOpen(true)}
+            style={{ order: orderOf('mon-sync-nuvem') }}
             className={`group w-full rounded-2xl border border-accent-primary-soft-border bg-surface p-5 text-left text-xs shadow-xl transition-all hover:-translate-y-0.5 hover:bg-surface-raised hover:shadow-2xl ${vis('mon-sync-nuvem')}`}
           >
             <div className="flex items-center justify-between gap-2 font-bold text-primary">
@@ -771,9 +799,12 @@ export const HomeDashboard: React.FC = () => {
         <DashboardCustomizer
           sections={dashboardCatalog}
           hidden={prefs.hidden}
+          orderOf={orderOf}
           onToggle={prefs.toggle}
+          onMove={prefs.move}
           onShowAll={prefs.showAll}
           onHideAll={prefs.hideAll}
+          onResetOrder={prefs.resetOrder}
           onClose={() => setCustomizerOpen(false)}
         />
       )}
