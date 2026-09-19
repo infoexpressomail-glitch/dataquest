@@ -23,8 +23,11 @@ import {
   Link2,
   Database,
   CalendarDays,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
+import { DashboardCustomizer, type DashboardCatalogSection } from './home/DashboardCustomizer';
+import { useDashboardPreferences } from '../hooks/useDashboardPreferences';
 import { OfflineSyncModal } from './OfflineSyncModal';
 import { shareFieldLink } from '../field/fieldRoute';
 import { Survey } from '../types';
@@ -49,6 +52,7 @@ const SectionHeader: React.FC<{
 export const HomeDashboard: React.FC = () => {
   const {
     language,
+    currentUser,
     surveys,
     submissions,
     collaborators,
@@ -86,6 +90,64 @@ export const HomeDashboard: React.FC = () => {
   const canViewConexoes = hasPermission('home_visualiza_conexoes_recentes');
   const canViewEquipe = hasPermission('colaboradores_acesso');
 
+  // ------------------- Personalização do dashboard -------------------
+  // Preferência por usuário (localStorage) + catálogo de itens configuráveis.
+  const prefs = useDashboardPreferences(currentUser.id);
+  const [customizerOpen, setCustomizerOpen] = useState(false);
+
+  const statusIds = ['status-conexao', 'status-sincronizacao', 'status-pesquisas', 'status-coletas'];
+  const painelIds = [
+    'ind-total-pesquisas',
+    'ind-entrevistas',
+    'ind-licencas',
+    ...(canViewEquipe ? ['ind-equipe'] : []),
+  ];
+
+  const dashboardCatalog: DashboardCatalogSection[] = [
+    {
+      title: 'Faixa de status ao vivo',
+      items: [
+        { id: 'status-conexao', label: 'Conexão', description: 'Status online/offline e sincronização' },
+        { id: 'status-sincronizacao', label: 'Sincronização', description: 'Itens pendentes de envio' },
+        { id: 'status-pesquisas', label: 'Pesquisas ativas', description: 'Total de pesquisas ativas' },
+        { id: 'status-coletas', label: 'Coletas hoje', description: 'Entrevistas realizadas no dia' },
+      ],
+    },
+    ...(canViewPaineis
+      ? [
+          {
+            title: 'Indicadores Gerais',
+            items: [
+              { id: 'ind-total-pesquisas', label: t('totalSurveys'), description: 'Total, ativas e inativas' },
+              { id: 'ind-entrevistas', label: t('completedInterviews'), description: 'Coletas com áudio e GPS' },
+              { id: 'ind-licencas', label: t('activeLicenses'), description: 'Licenças em uso / disponíveis' },
+              ...(canViewEquipe
+                ? [{ id: 'ind-equipe', label: 'Equipe em Campo', description: 'Colaboradores cadastrados' }]
+                : []),
+            ],
+          },
+        ]
+      : []),
+    {
+      title: 'Monitoramento de Coleta',
+      items: [
+        { id: 'mon-evolucao', label: 'Evolução da Coleta', description: 'Gráfico de coletas por período' },
+        { id: 'mon-em-execucao', label: 'Pesquisas em Execução', description: 'Metas e volume por pesquisa' },
+        ...(canViewConexoes
+          ? [{ id: 'mon-conexoes', label: t('recentConnections'), description: 'Últimos acessos registrados' }]
+          : []),
+        { id: 'mon-sync-nuvem', label: 'Sincronização em Nuvem', description: 'Situação da base local/nuvem' },
+      ],
+    },
+  ];
+
+  const vis = (id: string) => (prefs.isVisible(id) ? '' : 'hidden');
+  const visibleStatusCount = statusIds.filter((id) => prefs.isVisible(id)).length;
+  const visiblePainelCount = painelIds.filter((id) => prefs.isVisible(id)).length;
+  const monitorLeftVisible = prefs.isVisible('mon-evolucao') || prefs.isVisible('mon-em-execucao');
+  const monitorRightVisible = prefs.isVisible('mon-conexoes') || prefs.isVisible('mon-sync-nuvem');
+  const monitorVisible = monitorLeftVisible || monitorRightVisible;
+
   // Feedback visual (toast) para o compartilhamento do link de coleta de campo
   const [toast, setToast] = useState<string | null>(null);
   const [syncModalOpen, setSyncModalOpen] = useState(false);
@@ -111,14 +173,25 @@ export const HomeDashboard: React.FC = () => {
     }
   };
 
-  // Grade de cards do topo é dinâmica: só entra o que o perfil pode agir sobre.
-  // Isso evita "dashboard showcase" (mostrar tudo que existe) para perfis
-  // como o Analista, que não administra colaboradores/licenças.
-  const painelCardCount = 3 + (canViewEquipe ? 1 : 0);
+  // Grades dinâmicas: respeitam tanto as permissões do perfil quanto a
+  // personalização do usuário (itens ocultos saem do fluxo do grid).
+  const statusGridClass =
+    visibleStatusCount >= 4
+      ? 'grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4'
+      : visibleStatusCount === 3
+      ? 'grid grid-cols-1 gap-2.5 sm:grid-cols-3'
+      : visibleStatusCount === 2
+      ? 'grid grid-cols-1 gap-2.5 sm:grid-cols-2'
+      : 'grid grid-cols-1 gap-2.5';
+
   const painelGridClass =
-    painelCardCount === 4
+    visiblePainelCount >= 4
       ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'
-      : 'grid grid-cols-1 gap-4 sm:grid-cols-3';
+      : visiblePainelCount === 3
+      ? 'grid grid-cols-1 gap-4 sm:grid-cols-3'
+      : visiblePainelCount === 2
+      ? 'grid grid-cols-1 gap-4 sm:grid-cols-2'
+      : 'grid grid-cols-1 gap-4';
 
   return (
     <div className="space-y-6">
@@ -183,17 +256,33 @@ export const HomeDashboard: React.FC = () => {
               <Smartphone className="h-3.5 w-3.5 text-accent-primary" />
               <span>Simulador de Coleta</span>
             </button>
+
+            <button
+              id="btn-home-customize"
+              onClick={() => setCustomizerOpen(true)}
+              title="Escolher quais itens aparecem no painel"
+              className="flex h-8 items-center gap-1.5 rounded-lg bg-surface-raised px-3 text-xs font-semibold text-primary border border-ui transition hover:bg-surface-hover hover:text-primary active:scale-95"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5 text-accent-primary" />
+              <span className="hidden sm:inline">Personalizar</span>
+              {prefs.hidden.length > 0 && (
+                <span className="rounded-full bg-accent-warning-solid px-1.5 text-[9px] font-bold text-on-warning">
+                  {prefs.hidden.length}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
         {/* Faixa de status ao vivo em cards compactos (clicáveis) */}
-        <div className="relative z-10 mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+        {visibleStatusCount > 0 && (
+        <div className={`relative z-10 mt-4 ${statusGridClass}`}>
           {/* Conexão → abre sincronização */}
           <button
             type="button"
             id="btn-status-conexao"
             onClick={() => setSyncModalOpen(true)}
-            className="group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-primary-soft-border hover:bg-surface-raised active:scale-[0.99]"
+            className={`group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-primary-soft-border hover:bg-surface-raised active:scale-[0.99] ${vis('status-conexao')}`}
           >
             <span
               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
@@ -230,7 +319,7 @@ export const HomeDashboard: React.FC = () => {
             type="button"
             id="btn-status-sync"
             onClick={() => setSyncModalOpen(true)}
-            className="group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-info-soft-border hover:bg-surface-raised active:scale-[0.99]"
+            className={`group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-info-soft-border hover:bg-surface-raised active:scale-[0.99] ${vis('status-sincronizacao')}`}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-info-soft text-accent-info border-accent-info-soft-border">
               <Database className="h-4 w-4" />
@@ -249,7 +338,7 @@ export const HomeDashboard: React.FC = () => {
             type="button"
             id="btn-status-pesquisas"
             onClick={() => setActiveModule('pesquisas')}
-            className="group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-primary-soft-border hover:bg-surface-raised active:scale-[0.99]"
+            className={`group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-primary-soft-border hover:bg-surface-raised active:scale-[0.99] ${vis('status-pesquisas')}`}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-primary-soft text-accent-primary border-accent-primary-soft-border">
               <Gauge className="h-4 w-4" />
@@ -266,7 +355,7 @@ export const HomeDashboard: React.FC = () => {
             type="button"
             id="btn-status-coletas"
             onClick={() => setActiveModule('respostas')}
-            className="group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-success-soft-border hover:bg-surface-raised active:scale-[0.99]"
+            className={`group flex items-center gap-3 rounded-xl border border-ui bg-surface-card p-3 text-left transition hover:border-accent-success-soft-border hover:bg-surface-raised active:scale-[0.99] ${vis('status-coletas')}`}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-accent-success-soft text-accent-success border-accent-success-soft-border">
               <CalendarDays className="h-4 w-4" />
@@ -278,10 +367,11 @@ export const HomeDashboard: React.FC = () => {
             <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted opacity-0 transition group-hover:opacity-100" />
           </button>
         </div>
+        )}
       </div>
 
       {/* Seção 1: Indicadores Gerais (cards de topo) */}
-      {canViewPaineis && (
+      {canViewPaineis && visiblePainelCount > 0 && (
         <div className="space-y-3">
         <SectionHeader
           icon={<Gauge className="h-4 w-4" />}
@@ -293,7 +383,7 @@ export const HomeDashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveModule('pesquisas')}
-            className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl"
+            className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-primary-soft-border hover:shadow-2xl ${vis('ind-total-pesquisas')}`}
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-primary-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
@@ -322,7 +412,7 @@ export const HomeDashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveModule('respostas')}
-            className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl"
+            className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-info-soft-border hover:shadow-2xl ${vis('ind-entrevistas')}`}
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-info-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
@@ -351,7 +441,7 @@ export const HomeDashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveModule('licencas')}
-            className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl"
+            className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl ${vis('ind-licencas')}`}
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-success-soft rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
@@ -388,7 +478,7 @@ export const HomeDashboard: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveModule('colaboradores')}
-              className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-purple-soft-border hover:shadow-2xl"
+              className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-purple-soft-border hover:shadow-2xl ${vis('ind-equipe')}`}
             >
               <div className="absolute top-0 right-0 w-24 h-24 bg-accent-purple-soft rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between">
@@ -418,19 +508,22 @@ export const HomeDashboard: React.FC = () => {
       )}
 
       {/* Seção 2: Monitoramento de Coleta + Conexões Recentes */}
+      {monitorVisible && (
       <div className="space-y-3">
       <SectionHeader
         icon={<MonitorCog className="h-4 w-4" />}
         title="Monitoramento de Coleta"
         subtitle="Acompanhamento de metas, volume coletado e conexões em tempo real"
       />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className={`grid grid-cols-1 gap-6 ${monitorLeftVisible && monitorRightVisible ? 'lg:grid-cols-3' : ''}`}>
         {/* Coluna 1 & 2: Pesquisas Ativas e Monitoramento */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className={`space-y-6 ${monitorLeftVisible ? (monitorRightVisible ? 'lg:col-span-2' : '') : 'hidden'}`}>
           {/* Gráfico de Evolução da Pesquisa em Andamento e Anteriores */}
-          <SurveyEvolutionCard surveys={surveys} submissions={submissions} />
+          <div className={vis('mon-evolucao')}>
+            <SurveyEvolutionCard surveys={surveys} submissions={submissions} />
+          </div>
 
-          <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
+          <div className={`rounded-2xl border border-ui bg-surface p-5 shadow-xl ${vis('mon-em-execucao')}`}>
             <div className="flex items-center justify-between border-b border-ui pb-4">
               <div>
                 <h3 className="text-sm font-bold text-primary flex items-center gap-2">
@@ -551,12 +644,12 @@ export const HomeDashboard: React.FC = () => {
         </div>
 
         {/* Coluna 3: Conexões Recentes (Conforme requisito do Módulo Home) */}
-        <div className="space-y-6">
+        <div className={`space-y-6 ${monitorRightVisible ? '' : 'hidden'}`}>
           {canViewConexoes && (
             <button
               type="button"
               onClick={() => setSyncModalOpen(true)}
-              className="group w-full rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl"
+              className={`group w-full rounded-2xl border border-ui bg-surface p-5 text-left shadow-xl transition-all hover:-translate-y-0.5 hover:border-accent-success-soft-border hover:shadow-2xl ${vis('mon-conexoes')}`}
             >
               <div className="flex items-center justify-between border-b border-ui pb-3">
                 <div className="flex items-center gap-2">
@@ -615,7 +708,7 @@ export const HomeDashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setSyncModalOpen(true)}
-            className="group w-full rounded-2xl border border-accent-primary-soft-border bg-surface p-5 text-left text-xs shadow-xl transition-all hover:-translate-y-0.5 hover:bg-surface-raised hover:shadow-2xl"
+            className={`group w-full rounded-2xl border border-accent-primary-soft-border bg-surface p-5 text-left text-xs shadow-xl transition-all hover:-translate-y-0.5 hover:bg-surface-raised hover:shadow-2xl ${vis('mon-sync-nuvem')}`}
           >
             <div className="flex items-center justify-between gap-2 font-bold text-primary">
               <div className="flex items-center gap-2">
@@ -668,9 +761,22 @@ export const HomeDashboard: React.FC = () => {
         </div>
       </div>
       </div>
+      )}
 
       {/* Monitor de sincronização (aberto pelos cards de status) */}
       {syncModalOpen && <OfflineSyncModal onClose={() => setSyncModalOpen(false)} />}
+
+      {/* Painel de personalização do dashboard */}
+      {customizerOpen && (
+        <DashboardCustomizer
+          sections={dashboardCatalog}
+          hidden={prefs.hidden}
+          onToggle={prefs.toggle}
+          onShowAll={prefs.showAll}
+          onHideAll={prefs.hideAll}
+          onClose={() => setCustomizerOpen(false)}
+        />
+      )}
 
       {/* Toast de feedback do compartilhamento de link */}
       {toast && (

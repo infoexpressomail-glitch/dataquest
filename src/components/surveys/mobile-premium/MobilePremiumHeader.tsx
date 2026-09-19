@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Clock, Contrast, Mic, TriangleAlert, Type } from 'lucide-react';
+import { Building2, Clock, Contrast, Mic, Type } from 'lucide-react';
 import type { Survey } from '../../../types';
 import { formatAudioDuration } from '../../../utils/audioUtils';
 import { ProgressBar } from './ProgressBar';
@@ -58,6 +58,48 @@ export const MobilePremiumHeader: React.FC<MobilePremiumHeaderProps> = ({
 }) => {
   return (
     <header className="mp-header">
+      {/*
+       * Indicador de gravação DISCRETO, ancorado no topo do cabeçalho (junto à
+       * área do relógio do celular). A gravação deixa de ser um elemento
+       * evidente da pesquisa. Ao atingir o tempo máximo configurado (ex.: 2 min),
+       * o indicador sai da tela por completo.
+       */}
+      {audio?.enabled && !audio.atLimit && (
+        <div className="mp-statusbar">
+          <button
+            type="button"
+            className={`mp-audio-mini ${audio.recording ? 'recording' : 'pending'}`}
+            role="status"
+            aria-live="polite"
+            title={
+              audio.recording
+                ? `Gravação de áudio em andamento — ${formatAudioDuration(audio.seconds)} / ${audio.limitMinutes}m`
+                : `Gravação de áudio inicia na pergunta ${audio.startCode || 'P01'}`
+            }
+            aria-label={
+              audio.recording
+                ? `Gravando áudio ${formatAudioDuration(audio.seconds)} de ${audio.limitMinutes} minutos`
+                : `Gravação de áudio inicia na pergunta ${audio.startCode || 'P01'}`
+            }
+          >
+            {audio.recording ? (
+              <>
+                <span className="mp-audio-dot" aria-hidden="true" />
+                <Mic size={13} />
+                <span className="mp-audio-mini-time">
+                  {formatAudioDuration(audio.seconds)}
+                </span>
+              </>
+            ) : (
+              <>
+                <Clock size={13} />
+                <span className="mp-audio-mini-time">{audio.startCode || 'P01'}</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       <div className="mp-header-top">
         {survey.logoImage ? (
           <div className="mp-logo">
@@ -112,49 +154,6 @@ export const MobilePremiumHeader: React.FC<MobilePremiumHeaderProps> = ({
         )}
         <ProgressBar percent={percent} />
       </div>
-
-      {/* Indicador de gravação de áudio (tempo e status) — coleta de campo */}
-      {audio?.enabled && (
-        <div
-          className={`mp-audio-status ${
-            audio.recording ? 'recording' : audio.atLimit ? 'limit' : 'pending'
-          }`}
-          role="status"
-          aria-live="polite"
-          aria-label={
-            audio.recording
-              ? `Gravando áudio ${formatAudioDuration(audio.seconds)} de ${audio.limitMinutes} minutos`
-              : audio.atLimit
-              ? `Limite de gravação de ${audio.limitMinutes} minutos atingido`
-              : `Gravação de áudio inicia na pergunta ${audio.startCode || 'P01'}`
-          }
-        >
-          {audio.recording ? (
-            <>
-              <span className="mp-audio-dot" aria-hidden="true" />
-              <Mic size={14} />
-              <span className="mp-audio-time">
-                {formatAudioDuration(audio.seconds)} / {audio.limitMinutes}m
-              </span>
-              <span className="mp-audio-label">Gravando áudio</span>
-            </>
-          ) : audio.atLimit ? (
-            <>
-              <TriangleAlert size={14} />
-              <span className="mp-audio-label">
-                Limite de {audio.limitMinutes} min atingido
-              </span>
-            </>
-          ) : (
-            <>
-              <Clock size={14} />
-              <span className="mp-audio-label">
-                Gravação inicia na pergunta {audio.startCode || 'P01'}
-              </span>
-            </>
-          )}
-        </div>
-      )}
     </header>
   );
 };

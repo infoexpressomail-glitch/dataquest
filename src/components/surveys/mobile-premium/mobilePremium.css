@@ -226,6 +226,52 @@
   100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
 }
 
+/*
+ * Indicador de gravação DISCRETO (coleta de campo).
+ * Fica ancorado no topo do cabeçalho, alinhado à direita — bem próximo à
+ * região do relógio do celular — com aparência low-profile para não deixar
+ * evidente que a pesquisa está sendo gravada. É removido da tela quando o
+ * tempo máximo configurado é atingido (ver MobilePremiumHeader).
+ */
+.mp-statusbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: -8px 0 8px;
+}
+.mp-audio-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  opacity: 0.68;
+  cursor: default;
+  transition: opacity 0.18s ease, background 0.18s ease;
+}
+.mp-audio-mini:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.18);
+}
+.mp-audio-mini.recording {
+  opacity: 0.92;
+}
+.mp-audio-mini .mp-audio-dot {
+  height: 6px;
+  width: 6px;
+}
+.mp-audio-mini-time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
 /* ------------------------------- Card da pergunta ------------------------- */
 .mp-card {
   background: var(--mp-surface);
