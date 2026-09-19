@@ -154,7 +154,7 @@ export const MetasModule: React.FC = () => {
             onClick={() => setActiveTab('composicao')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
               activeTab === 'composicao'
-                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-brand-900/30'
                 : 'text-muted hover:text-primary hover:bg-surface-raised'
             }`}
           >
@@ -178,7 +178,7 @@ export const MetasModule: React.FC = () => {
             onClick={() => setActiveTab('globais')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
               activeTab === 'globais'
-                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-brand-900/30'
                 : 'text-muted hover:text-primary hover:bg-surface-raised'
             }`}
           >
@@ -202,7 +202,7 @@ export const MetasModule: React.FC = () => {
             onClick={() => setActiveTab('catalogo')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
               activeTab === 'catalogo'
-                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-brand-900/30'
                 : 'text-muted hover:text-primary hover:bg-surface-raised'
             }`}
           >
@@ -226,7 +226,7 @@ export const MetasModule: React.FC = () => {
             onClick={() => setActiveTab('dimensionamento')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
               activeTab === 'dimensionamento'
-                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-brand-900/30'
                 : 'text-muted hover:text-primary hover:bg-surface-raised'
             }`}
           >
@@ -251,7 +251,7 @@ export const MetasModule: React.FC = () => {
           onClick={() => setActiveTab('individual')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'individual'
-              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-brand-900/30'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -265,7 +265,7 @@ export const MetasModule: React.FC = () => {
           onClick={() => setActiveTab('mobile')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'mobile'
-              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+              ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-brand-900/30'
               : 'text-muted hover:text-primary hover:bg-surface-raised'
           }`}
         >
@@ -279,7 +279,7 @@ export const MetasModule: React.FC = () => {
             onClick={() => setActiveTab('questoes')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
               activeTab === 'questoes'
-                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-blue-900/30'
+                ? 'bg-accent-primary-solid text-on-accent shadow-lg shadow-brand-900/30'
                 : 'text-muted hover:text-primary hover:bg-surface-raised'
             }`}
           >
@@ -468,7 +468,7 @@ export const MetasModule: React.FC = () => {
                         setResposta(q.opcoes[0].value);
                       }
                     }}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
                   >
                     <option value="">Selecione a questão...</option>
                     {activeSurvey.perguntas.map((q) => (
@@ -487,7 +487,7 @@ export const MetasModule: React.FC = () => {
                   <select
                     value={condicao}
                     onChange={(e) => setCondicao(e.target.value as ConditionOperator)}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
                   >
                     <option value="igual">Igual a (=)</option>
                     <option value="diferente">Diferente de (≠)</option>
@@ -505,7 +505,7 @@ export const MetasModule: React.FC = () => {
                     value={resposta}
                     onChange={(e) => setResposta(e.target.value)}
                     placeholder="Ex: Sim, Não, ou categoria..."
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary placeholder-slate-500 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -519,7 +519,7 @@ export const MetasModule: React.FC = () => {
                     min={1}
                     value={quantidadeAlvo}
                     onChange={(e) => setQuantidadeAlvo(Number(e.target.value))}
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-blue-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -529,7 +529,7 @@ export const MetasModule: React.FC = () => {
                   type="button"
                   id="btn-add-new-meta"
                   onClick={handleAddMeta}
-                  className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                  className="flex items-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Cadastrar Meta por Questão</span>

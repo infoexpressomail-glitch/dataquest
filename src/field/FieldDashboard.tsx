@@ -72,7 +72,7 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
       <div className="relative overflow-hidden rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-surface via-surface-raised to-surface p-6 shadow-2xl">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="flex items-start sm:items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 text-on-accent font-black text-xl shadow-lg shadow-blue-900/50 shrink-0">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 text-on-accent font-black text-xl shadow-lg shadow-brand-900/50 shrink-0">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div>
@@ -235,7 +235,7 @@ export const FieldDashboard: React.FC<FieldDashboardProps> = ({
 
                     <button
                       onClick={onStartColeta}
-                      className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-md shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition-colors"
+                      className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-md shadow-brand-900/40 hover:bg-accent-primary-solid-hover transition-colors"
                     >
                       Coletar agora <ArrowRight className="h-3.5 w-3.5" />
                     </button>

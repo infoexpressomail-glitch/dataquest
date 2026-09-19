@@ -100,7 +100,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
     let cr = 30, cg = 41, cb = 59; // slate-800
     // Clipboard header clip
     if (nx >= -0.22 && nx <= 0.22 && ny >= -0.65 && ny <= -0.5) {
-      return [5, 150, 105, 255]; // emerald-600
+      return [11, 74, 143, 255]; // brand-600 (Azul GIDE)
     }
 
     // Row 1: Checkbox & bar
@@ -151,7 +151,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
     if (Math.abs(badgeDx) <= 0.06 && Math.abs(badgeDy) <= 0.12) {
       return [255, 255, 255, 255]; // white mic
     }
-    return [16, 185, 129, 255]; // emerald badge
+    return [43, 102, 176, 255]; // brand badge
   }
 
   return [bgR, bgG, bgB, 255];

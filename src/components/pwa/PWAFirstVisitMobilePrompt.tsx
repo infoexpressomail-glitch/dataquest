@@ -63,7 +63,7 @@ export const PWAFirstVisitMobilePrompt: React.FC<PWAFirstVisitMobilePromptProps>
           {/* Header with App Brand */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 p-2 shadow-xl shadow-blue-900/50">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 p-2 shadow-xl shadow-brand-900/50">
                 <img
                   src="/icon.svg"
                   alt="DataQuest Logo"
@@ -140,7 +140,7 @@ export const PWAFirstVisitMobilePrompt: React.FC<PWAFirstVisitMobilePromptProps>
           <div className="space-y-2.5 pt-1">
             <button
               onClick={handleInstallClick}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-600 py-3 text-xs font-black text-primary shadow-xl shadow-blue-900/40 hover:from-blue-500 hover:to-blue-500 transition-all active:scale-[0.99]"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-600 py-3 text-xs font-black text-primary shadow-xl shadow-brand-900/40 hover:from-brand-500 hover:to-brand-500 transition-all active:scale-[0.99]"
             >
               <Download className="h-4 w-4" />
               <span>Instalar Aplicativo no Celular</span>

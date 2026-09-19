@@ -288,109 +288,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
       ],
     },
     {
-      title: 'Análise e Relatórios',
-      items: [
-        ...(hasPermission('analise_acesso')
-          ? [
-              {
-                id: 'menu-item-analise',
-                module: 'analise',
-                label: t('analytics'),
-                hint: 'Análises, cruzamentos e exportação',
-                icon: BarChart3,
-              },
-            ]
-          : []),
-        ...(hasPermission('relatorios_acesso')
-          ? [
-              {
-                id: 'menu-item-relatorios',
-                module: 'relatorios',
-                label: t('analyticalReports'),
-                hint: 'Relatórios gerenciais',
-                icon: FileBarChart2,
-                iconClassName: 'text-accent-purple',
-              },
-            ]
-          : []),
-      ],
-    },
-  ];
-
-  // ---------------------------------------------------------------------
-  // GESTÃO / ADMINISTRAÇÃO — organizado por blocos de tarefas (não por
-  // lista plana de módulos). Cobre Administrador Master e Coordenador de
-  // Campo, cada bloco continua condicionado às permissões reais.
-  // ---------------------------------------------------------------------
-  const managementSections: NavSection[] = [
-    {
-      title: 'Painel',
-      items: hasPermission('home_acesso')
-        ? [
-            {
-              id: 'menu-item-home',
-              module: 'home',
-              label: t('home'),
-              hint: 'Visão geral e indicadores',
-              icon: LayoutDashboard,
-            },
-          ]
-        : [],
-    },
-    {
-      title: 'Pesquisas',
-      items: [
-        ...(hasPermission('pesquisa_acesso')
-          ? [
-              {
-                id: 'menu-item-pesquisas',
-                module: 'pesquisas',
-                label: t('surveys'),
-                hint: 'Criar, editar e publicar',
-                icon: FileQuestion,
-              },
-            ]
-          : []),
-        ...(hasPermission('pesquisa_criar') || hasPermission('pesquisa_alterar')
-          ? [
-              {
-                id: 'menu-item-nova-pesquisa',
-                module: 'wizard',
-                label: 'Nova Pesquisa',
-                hint: 'Assistente de criação',
-                icon: PlusCircle,
-                iconClassName: 'text-accent-success',
-              },
-            ]
-          : []),
-      ],
-    },
-    {
-      title: 'Coleta',
-      items: [
-        ...(hasPermission('respostas_acesso')
-          ? [
-              {
-                id: 'menu-item-respostas',
-                module: 'respostas',
-                label: t('responses'),
-                hint: 'Coletas recebidas',
-                icon: MessageSquare,
-              },
-            ]
-          : []),
-        {
-          id: 'menu-item-simulator',
-          module: 'simulador',
-          label: 'Simulador de Coleta',
-          hint: 'Testar o formulário',
-          icon: Smartphone,
-          iconClassName: 'text-accent-primary',
-        },
-      ],
-    },
-    {
-      title: 'Análise e Relatórios',
+      title: 'Análise e Exportação',
       items: [
         ...(hasPermission('analise_acesso')
           ? [
@@ -415,10 +313,129 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
               },
             ]
           : []),
+        ...(hasPermission('pesquisa_exportar_resultados')
+          ? [
+              {
+                id: 'menu-item-analise-exportacao',
+                module: 'analise',
+                label: 'Exportações (CSV / PDF)',
+                hint: 'Baixar resultados',
+                icon: Download,
+              },
+            ]
+          : []),
+      ],
+    },
+  ];
+
+  // ---------------------------------------------------------------------
+  // GESTÃO / ADMINISTRAÇÃO — organizado por blocos de tarefas (não por
+  // lista plana de módulos). Cobre Administrador Master e Coordenador de
+  // Campo, cada bloco continua condicionado às permissões reais.
+  // ---------------------------------------------------------------------
+  const managementSections: NavSection[] = [
+    {
+      title: 'Início',
+      items: hasPermission('home_acesso')
+        ? [
+            {
+              id: 'menu-item-home',
+              module: 'home',
+              label: 'Painel Geral',
+              hint: 'Visão geral e indicadores',
+              icon: LayoutDashboard,
+            },
+          ]
+        : [],
+    },
+    {
+      title: 'Pesquisas',
+      items: [
+        ...(hasPermission('pesquisa_acesso')
+          ? [
+              {
+                id: 'menu-item-pesquisas',
+                module: 'pesquisas',
+                label: t('surveys'),
+                hint: 'Criar, editar e publicar',
+                icon: FileQuestion,
+              },
+            ]
+          : []),
+        // "Nova Pesquisa" só aparece como atalho quando o perfil pode criar
+        // mas não tem a listagem de pesquisas (evita item redundante).
+        ...(!hasPermission('pesquisa_acesso') &&
+        (hasPermission('pesquisa_criar') || hasPermission('pesquisa_alterar'))
+          ? [
+              {
+                id: 'menu-item-nova-pesquisa',
+                module: 'wizard',
+                label: 'Nova Pesquisa',
+                hint: 'Assistente de criação',
+                icon: PlusCircle,
+                iconClassName: 'text-accent-success',
+              },
+            ]
+          : []),
       ],
     },
     {
-      title: 'Metas e Equipe',
+      title: 'Coleta e Respostas',
+      items: [
+        ...(hasPermission('respostas_acesso')
+          ? [
+              {
+                id: 'menu-item-respostas',
+                module: 'respostas',
+                label: t('responses'),
+                hint: 'Coletas recebidas',
+                icon: MessageSquare,
+              },
+            ]
+          : []),
+        {
+          id: 'menu-item-simulator',
+          module: 'simulador',
+          label: 'Simulador de Coleta',
+          hint: 'Testar o formulário',
+          icon: Smartphone,
+          iconClassName: 'text-accent-primary',
+        },
+      ],
+    },
+    {
+      // Análise + Relatórios agora vivem no mesmo bloco, com um único
+      // ponto de entrada conceitual (antes eram "Análise" e "Relatórios"
+      // separados sob o guarda-chuva genérico "Resultados").
+      title: 'Análise e Relatórios',
+      items: [
+        ...(hasPermission('analise_acesso')
+          ? [
+              {
+                id: 'menu-item-analise',
+                module: 'analise',
+                label: 'Análise',
+                hint: 'Análises e cruzamentos',
+                icon: BarChart3,
+              },
+            ]
+          : []),
+        ...(hasPermission('relatorios_acesso')
+          ? [
+              {
+                id: 'menu-item-relatorios',
+                module: 'relatorios',
+                label: 'Relatórios',
+                hint: 'Relatórios gerenciais',
+                icon: FileBarChart2,
+                iconClassName: 'text-accent-purple',
+              },
+            ]
+          : []),
+      ],
+    },
+    {
+      title: 'Planejamento de Campo',
       items: hasPermission('meta_acesso')
         ? [
             {
@@ -440,7 +457,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
         : [],
     },
     {
-      title: 'Administração',
+      title: 'Administração e Segurança',
       items: [
         ...(hasPermission('importacao_acesso')
           ? [
@@ -542,7 +559,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
         {/* Profile info footer (Immersive UI style) */}
         <div className="border-t border-ui/80 p-4 space-y-3 bg-surface-app">
           <div className="flex items-center gap-3 bg-surface-raised p-3 rounded-xl border border-ui shadow-sm">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center text-xs font-bold text-primary shadow-lg shadow-blue-950/60 shrink-0">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-xs font-bold text-primary shadow-lg shadow-brand-950/60 shrink-0">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div className="overflow-hidden min-w-0 flex-1">

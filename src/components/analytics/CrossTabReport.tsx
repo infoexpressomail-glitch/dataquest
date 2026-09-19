@@ -46,8 +46,8 @@ interface CrossTabReportProps {
 
 // Paleta de cores de alto contraste para o gráfico
 const CHART_COLORS = [
-  '#10b981', // Esmeralda 500
-  '#059669', // Esmeralda 600
+  '#2b66b0', // Azul GIDE 500
+  '#0b4a8f', // Azul GIDE 600
   '#d97706', // Âmbar 600
   '#7c3aed', // Roxo 600
   '#e11d48', // Rosa 600
@@ -164,7 +164,7 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
             <select
               value={currentSurveyId}
               onChange={(e) => setCurrentSurveyId(e.target.value)}
-              className="rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-semibold text-primary focus:border-blue-500 focus:outline-none"
+              className="rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-semibold text-primary focus:border-brand-500 focus:outline-none"
             >
               {surveys.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -185,7 +185,7 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
             <select
               value={rowVarId}
               onChange={(e) => setRowVarId(e.target.value)}
-              className="w-full rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-medium text-primary focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-medium text-primary focus:border-brand-500 focus:outline-none"
             >
               <optgroup label="Variáveis Sociodemográficas">
                 {availableVariables
@@ -228,7 +228,7 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
             <select
               value={colVarId}
               onChange={(e) => setColVarId(e.target.value)}
-              className="w-full rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-medium text-primary focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-medium text-primary focus:border-brand-500 focus:outline-none"
             >
               <optgroup label="Variáveis Sociodemográficas">
                 {availableVariables

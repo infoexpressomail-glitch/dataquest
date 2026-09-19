@@ -89,10 +89,10 @@ export const ConnectionSyncNotification: React.FC = () => {
       aria-live="polite"
       className={`fixed bottom-10 right-4 z-50 w-96 max-w-[calc(100vw-2rem)] rounded-2xl border shadow-2xl backdrop-blur-md transition-all duration-300 ${
         isCompleted
-          ? 'border-accent-success-soft-border bg-surface-raised shadow-blue-950/40'
+          ? 'border-accent-success-soft-border bg-surface-raised shadow-brand-950/40'
           : isError
           ? 'border-accent-danger-soft-border bg-surface-raised shadow-rose-950/40'
-          : 'border-accent-primary-soft-border bg-surface-raised shadow-blue-950/40'
+          : 'border-accent-primary-soft-border bg-surface-raised shadow-brand-950/40'
       }`}
     >
       {/* Header */}
@@ -175,7 +175,7 @@ export const ConnectionSyncNotification: React.FC = () => {
                   ? 'bg-accent-success-solid'
                   : isError
                   ? 'bg-accent-danger-solid'
-                  : 'bg-gradient-to-r from-blue-500 via-blue-500 to-blue-400'
+                  : 'bg-gradient-to-r from-brand-500 via-brand-500 to-brand-400'
               }`}
               style={{ width: `${Math.min(Math.max(syncProgress.percent, 5), 100)}%` }}
             />

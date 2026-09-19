@@ -91,7 +91,7 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
 
         <div className="rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-surface via-surface-raised to-surface p-5 sm:p-8 shadow-2xl">
           <div className="flex flex-col items-center text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 text-on-accent font-black text-xl shadow-lg shadow-blue-900/50">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 text-on-accent font-black text-xl shadow-lg shadow-brand-900/50">
               <span className="sr-only">DataQuest</span>
               DQ
             </div>
@@ -135,7 +135,7 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
                   placeholder="Ex: rodrigo.pesquisador"
                   autoCapitalize="none"
                   autoCorrect="off"
-                  className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-4 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-4 text-xs text-primary placeholder-slate-500 focus:border-brand-500 focus:outline-none transition-colors"
                 />
               </div>
             </div>
@@ -155,7 +155,7 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
                   value={senhaInput}
                   onChange={(e) => setSenhaInput(e.target.value)}
                   placeholder="Sua senha cadastrada"
-                  className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-10 text-xs text-primary placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-10 text-xs text-primary placeholder-slate-500 focus:border-brand-500 focus:outline-none transition-colors"
                 />
                 <button
                   type="button"
@@ -171,7 +171,7 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid py-3 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover active:scale-[0.99] disabled:opacity-50 transition-all cursor-pointer"
+              className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid py-3 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 hover:bg-accent-primary-solid-hover active:scale-[0.99] disabled:opacity-50 transition-all cursor-pointer"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">

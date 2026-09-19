@@ -218,7 +218,7 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
               id="select-home-evolution-survey"
               value={selectedSurveyId}
               onChange={(e) => setSelectedSurveyId(e.target.value)}
-              className="appearance-none rounded-lg border border-ui bg-surface-raised py-1.5 pl-3 pr-8 text-xs font-semibold text-primary focus:border-blue-500 focus:outline-none cursor-pointer max-w-xs truncate"
+              className="appearance-none rounded-lg border border-ui bg-surface-raised py-1.5 pl-3 pr-8 text-xs font-semibold text-primary focus:border-brand-500 focus:outline-none cursor-pointer max-w-xs truncate"
             >
               <optgroup label="Pesquisas em Andamento (Ativas)">
                 {surveys
@@ -369,9 +369,9 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
                 <YAxis
                   yAxisId="right"
                   orientation="right"
-                  stroke="#10b981"
-                  tick={{ fontSize: 11, fill: '#10b981' }}
-                  tickLine={{ stroke: '#10b981' }}
+                  stroke="#2b66b0"
+                  tick={{ fontSize: 11, fill: '#2b66b0' }}
+                  tickLine={{ stroke: '#2b66b0' }}
                   allowDecimals={false}
                 />
                 <Tooltip content={<CustomChartTooltip />} />
@@ -383,7 +383,7 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
                   yAxisId="left"
                   dataKey="coletasDoDia"
                   name="Coletas no Dia"
-                  fill="#059669"
+                  fill="#0b4a8f"
                   radius={[4, 4, 0, 0]}
                   barSize={20}
                 />
@@ -392,9 +392,9 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
                   type="monotone"
                   dataKey="coletasAcumuladas"
                   name="Total Acumulado"
-                  stroke="#10b981"
+                  stroke="#2b66b0"
                   strokeWidth={2.5}
-                  dot={{ r: 3, fill: '#10b981', strokeWidth: 1 }}
+                  dot={{ r: 3, fill: '#2b66b0', strokeWidth: 1 }}
                   activeDot={{ r: 5 }}
                 />
                 <Line

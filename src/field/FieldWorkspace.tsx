@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { FieldSession } from './fieldTypes';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
 import { FieldColeta } from './FieldColeta';
+import { FieldBottomNav } from './FieldBottomNav';
 import { ResearcherIndividualGoalsView } from '../components/metas/ResearcherIndividualGoalsView';
 import {
   ArrowLeft,
@@ -171,7 +172,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
       <header className="sticky top-0 z-30 border-b border-ui bg-surface-app/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-blue-500 text-on-accent font-black text-sm shadow-lg shadow-blue-900/40">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 text-on-accent font-black text-sm shadow-lg shadow-brand-900/40">
               DQ
             </div>
             <div className="min-w-0">
@@ -294,7 +295,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
         )}
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-6 pb-24 sm:px-6 md:pb-6">
+      <main className="mx-auto max-w-3xl px-4 py-6 pb-28 sm:px-6 md:pb-6">
         {/* Boas-vindas */}
         <div className="rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-surface via-surface-raised to-surface p-5 shadow-xl">
           <h1 className="text-lg font-black text-primary">
@@ -332,7 +333,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
               </p>
               <button
                 onClick={() => setSyncOpen(true)}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 hover:bg-accent-primary-solid-hover transition"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 hover:bg-accent-primary-solid-hover transition"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Sincronizar agora
@@ -397,7 +398,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
 
                 <button
                   onClick={() => startColeta(survey.id)}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-3 text-xs font-bold text-on-accent shadow-lg shadow-blue-900/40 transition hover:bg-accent-primary-solid-hover active:scale-[0.99]"
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-3 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 transition hover:bg-accent-primary-solid-hover active:scale-[0.99]"
                 >
                   Coletar agora
                   <ArrowRight className="h-4 w-4" />
@@ -412,41 +413,14 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
         </p>
       </main>
 
-      {/* Navegação inferior (celular): Pesquisas + Sincronizar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-ui bg-surface-app/95 backdrop-blur-md md:hidden">
-        <div className="mx-auto flex max-w-3xl items-stretch">
-          <button
-            onClick={() => {
-              setSyncOpen(false);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-bold transition ${
-              !syncOpen ? 'text-accent-primary' : 'text-muted'
-            }`}
-            aria-current={!syncOpen ? 'page' : undefined}
-          >
-            <ClipboardList className="h-5 w-5" />
-            Pesquisas
-          </button>
-          <button
-            onClick={() => {
-              setSyncOpen(true);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className={`relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-bold transition ${
-              syncOpen ? 'text-accent-primary' : 'text-muted'
-            }`}
-          >
-            <RefreshCw className={`h-5 w-5 ${busy ? 'animate-spin' : ''}`} />
-            Sincronizar
-            {pendingCount > 0 && (
-              <span className="absolute right-[26%] top-1 min-w-[16px] rounded-full bg-accent-warning-solid px-1 text-center text-[9px] font-bold text-on-warning">
-                {pendingCount}
-              </span>
-            )}
-          </button>
-        </div>
-      </nav>
+      {/* Navegação inferior (mobile): aba Pesquisas + ação Sincronizar */}
+      <FieldBottomNav
+        active="pesquisas"
+        pendingCount={pendingCount}
+        onGoPesquisas={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        onSync={() => setSyncOpen(true)}
+        onLogout={onLogout}
+      />
     </div>
   );
 };
