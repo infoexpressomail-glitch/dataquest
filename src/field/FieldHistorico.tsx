@@ -5,6 +5,7 @@ import { AudioPlayerModal } from '../components/surveys/AudioPlayerModal';
 import { GeoMapModal } from '../components/surveys/GeoMapModal';
 import { FieldSession } from './fieldTypes';
 import { History, Mic, MapPin, Clock, Inbox, Download } from 'lucide-react';
+import './fieldMobile.css';
 
 interface FieldHistoricoProps {
   /** Sessão autenticada no sub-app (opcional — usa o contexto quando ausente). */
@@ -13,6 +14,7 @@ interface FieldHistoricoProps {
 
 /**
  * Histórico do sub-app: lista APENAS as coletas do pesquisador logado.
+ * Redesign mobile-first: cartões em vez de tabela, mantendo áudio e GPS.
  */
 export const FieldHistorico: React.FC<FieldHistoricoProps> = ({ session }) => {
   const { currentUser: ctxUser, submissions } = useApp();
@@ -26,128 +28,99 @@ export const FieldHistorico: React.FC<FieldHistoricoProps> = ({ session }) => {
     .filter((sub) => sub.pesquisadorId === currentUser.id)
     .sort((a, b) => (b.dataHora || '').localeCompare(a.dataHora || ''));
 
-  const fmtDate = (iso?: string) =>
-    iso ? new Date(iso).toLocaleString('pt-BR') : '—';
+  const fmtDate = (iso?: string) => (iso ? new Date(iso).toLocaleString('pt-BR') : '—');
 
-  const fmtDuration = (sec?: number) =>
-    sec ? `${Math.round(sec / 60)}min ${sec % 60}s` : '—';
+  const fmtDuration = (sec?: number) => (sec ? `${Math.round(sec / 60)}min ${sec % 60}s` : '—');
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border border-ui bg-surface-card p-5 shadow-xl">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-primary-soft text-accent-primary">
-            <History className="h-5 w-5" />
+    <div className="field-stack">
+      <div className="field-card" style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
+        <span className="field-survey-icon" aria-hidden="true">
+          <History className="h-5 w-5" />
+        </span>
+        <div>
+          <div className="field-text-sm" style={{ fontWeight: 800 }}>
+            Histórico das minhas coletas
           </div>
-          <div>
-            <h2 className="text-sm font-black text-primary">Histórico das minhas coletas</h2>
-            <p className="text-[10px] text-muted">
-              {mySubmissions.length} registro(s) realizados por você.
-            </p>
+          <div className="field-text-xs field-text-muted">
+            {mySubmissions.length} registro(s) realizados por você.
           </div>
         </div>
       </div>
 
       {mySubmissions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ui bg-surface p-12 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-raised text-muted">
+        <div className="field-empty">
+          <div className="field-empty-icon">
             <Inbox className="h-6 w-6" />
           </div>
-          <h3 className="mt-3 text-sm font-bold text-primary">
+          <div className="field-text-sm" style={{ fontWeight: 800 }}>
             Nenhuma coleta sua ainda
-          </h3>
-          <p className="mt-1 max-w-sm text-[11px] text-muted leading-relaxed">
-            Quando você concluir entrevistas, elas aparecerão aqui com protocolo,
-            áudio e geolocalização.
-          </p>
+          </div>
+          <div className="field-text-xs field-text-muted">
+            Quando você concluir entrevistas, elas aparecerão aqui com protocolo, áudio e
+            geolocalização.
+          </div>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-ui bg-surface-card shadow-xl">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-ui text-[10px] uppercase tracking-wider text-muted">
-                <th className="px-4 py-3 font-bold">Protocolo</th>
-                <th className="px-4 py-3 font-bold">Pesquisa</th>
-                <th className="px-4 py-3 font-bold">Data/Hora</th>
-                <th className="px-4 py-3 font-bold">Duração</th>
-                <th className="px-4 py-3 font-bold">Áudio</th>
-                <th className="px-4 py-3 font-bold">GPS</th>
-                <th className="px-4 py-3 font-bold">Status</th>
-                <th className="px-4 py-3 font-bold">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mySubmissions.map((sub) => (
-                <tr key={sub.id} className="border-b border-subtle last:border-0 hover:bg-surface-hover">
-                  <td className="px-4 py-3 font-mono text-accent-primary font-semibold">
-                    {sub.codigoPesquisa}
-                  </td>
-                  <td className="px-4 py-3 text-primary font-semibold max-w-[180px] truncate">
-                    {sub.pesquisaNome}
-                  </td>
-                  <td className="px-4 py-3 text-secondary whitespace-nowrap">
-                    {fmtDate(sub.dataHora)}
-                  </td>
-                  <td className="px-4 py-3 text-muted whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {fmtDuration(sub.audioGravacao?.duracaoSegundos)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {sub.audioGravacao ? (
-                      <button
-                        onClick={() => setSelectedAudioSub(sub)}
-                        className="inline-flex items-center gap-1 rounded-md bg-accent-purple-soft text-accent-purple border border-accent-purple-soft-border px-2 py-1 text-[10px] font-bold hover:opacity-90"
-                      >
-                        <Mic className="h-3 w-3" /> Ouvir
-                      </button>
-                    ) : (
-                      <span className="text-[10px] text-muted">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {sub.geolocalizacao ? (
-                      <button
-                        onClick={() => setSelectedGeoSub(sub)}
-                        className="inline-flex items-center gap-1 rounded-md bg-accent-info-soft text-accent-info border border-accent-info-soft-border px-2 py-1 text-[10px] font-bold hover:opacity-90"
-                      >
-                        <MapPin className="h-3 w-3" /> Ver
-                      </button>
-                    ) : (
-                      <span className="text-[10px] text-muted">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        sub.status === 'concluida'
-                          ? 'bg-accent-success-soft text-accent-success'
-                          : sub.status === 'cancelada'
-                          ? 'bg-accent-danger-soft text-accent-danger'
-                          : 'bg-accent-warning-soft text-accent-warning'
-                      }`}
-                    >
-                      {sub.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {sub.audioGravacao?.audioUrl && (
-                      <a
-                        href={sub.audioGravacao.audioUrl}
-                        download={sub.audioGravacao.nomeArquivo}
-                        className="inline-flex items-center gap-1 text-accent-primary hover:underline"
-                        title="Baixar áudio"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                      </a>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        mySubmissions.map((sub) => (
+          <div className="field-survey-card" key={sub.id}>
+            <div className="field-survey-top">
+              <div style={{ minWidth: 0 }}>
+                <span className="field-survey-code">{sub.codigoPesquisa}</span>
+                <div className="field-survey-name">{sub.pesquisaNome}</div>
+              </div>
+              <span
+                className={`field-status-pill ${sub.status === 'concluida' ? 'is-online' : 'is-offline'}`}
+                style={{ flexShrink: 0 }}
+              >
+                {sub.status}
+              </span>
+            </div>
+
+            <div className="field-survey-meta">
+              <span>
+                <Clock className="h-3.5 w-3.5" />
+                {fmtDate(sub.dataHora)}
+              </span>
+              <span>Duração: {fmtDuration(sub.audioGravacao?.duracaoSegundos)}</span>
+            </div>
+
+            <div className="field-actions-row">
+              {sub.audioGravacao && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedAudioSub(sub)}
+                  className="field-btn field-btn-ghost"
+                  style={{ flex: 1 }}
+                >
+                  <Mic className="h-4 w-4" /> Ouvir
+                </button>
+              )}
+              {sub.geolocalizacao && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedGeoSub(sub)}
+                  className="field-btn field-btn-ghost"
+                  style={{ flex: 1 }}
+                >
+                  <MapPin className="h-4 w-4" /> GPS
+                </button>
+              )}
+              {sub.audioGravacao?.audioUrl && (
+                <a
+                  href={sub.audioGravacao.audioUrl}
+                  download={sub.audioGravacao.nomeArquivo}
+                  className="field-btn field-btn-ghost"
+                  style={{ flex: '0 0 auto' }}
+                  title="Baixar áudio"
+                  aria-label="Baixar áudio"
+                >
+                  <Download className="h-4 w-4" />
+                </a>
+              )}
+            </div>
+          </div>
+        ))
       )}
 
       <AudioPlayerModal submission={selectedAudioSub} onClose={() => setSelectedAudioSub(null)} />

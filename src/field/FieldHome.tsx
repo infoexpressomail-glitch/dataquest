@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   AlertTriangle,
 } from 'lucide-react';
+import './fieldMobile.css';
 
 interface FieldHomeProps {
   session: FieldSession;
@@ -26,7 +27,7 @@ interface HomeAction {
 
 /**
  * Tela inicial (home) do sub-app: grade de ações do pesquisador.
- * Elementos: Pesquisas, Carregar, Descarregar, Atualizar Meta.
+ * Redesign mobile-first — lógica de Carregar/Descarregar/Metas preservada.
  */
 export const FieldHome: React.FC<FieldHomeProps> = ({ session, onNavigate, onResync }) => {
   const { effectiveOnline, offlineQueue, pendingIndexedDbCount } = useApp();
@@ -52,7 +53,6 @@ export const FieldHome: React.FC<FieldHomeProps> = ({ session, onNavigate, onRes
   };
 
   // Descarregar = enviar as coletas offline pendentes para o servidor.
-  // Re-sincroniza as pesquisas (atualiza a fila/status) e informa o total pendente.
   const handleUnload = async () => {
     setLoading('unload');
     setFeedback(null);
@@ -92,96 +92,94 @@ export const FieldHome: React.FC<FieldHomeProps> = ({ session, onNavigate, onRes
       id: 'pesquisas',
       title: 'Pesquisas',
       subtitle: 'Ver pesquisas ativas e selecionar',
-      icon: <FolderOpen className="h-6 w-6" />,
+      icon: <FolderOpen className="h-5 w-5" />,
     },
     {
       id: 'sync',
       title: 'Carregar',
       subtitle: 'Baixar pesquisas do servidor',
-      icon: <DownloadCloud className="h-6 w-6" />,
+      icon: <DownloadCloud className="h-5 w-5" />,
     },
     {
       id: 'sync',
       title: 'Descarregar',
       subtitle: 'Enviar coletas offline',
-      icon: <UploadCloud className="h-6 w-6" />,
+      icon: <UploadCloud className="h-5 w-5" />,
     },
     {
       id: 'metas',
       title: 'Atualizar Meta',
       subtitle: 'Recalcular metas das pesquisas ativas',
-      icon: <RefreshCw className="h-6 w-6" />,
+      icon: <RefreshCw className="h-5 w-5" />,
     },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho de boas-vindas */}
-      <div className="relative overflow-hidden rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-surface via-surface-raised to-surface p-6 shadow-2xl">
-        <div className="relative z-10">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-success-soft border border-accent-success-soft-border px-2.5 py-0.5 text-[10px] font-bold text-accent-success">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-success-solid animate-pulse" />
-            {effectiveOnline ? 'Conectado ao servidor' : 'Modo Offline'}
-          </span>
-          <h1 className="mt-2 text-xl font-black text-primary">
-            Olá, {session.user.nome.split(' ')[0]}
-          </h1>
-          <p className="text-xs text-muted mt-1">
-            {session.surveys.length} pesquisa(s) liberada(s) para você. Selecione uma ação abaixo.
-          </p>
+    <div className="field-stack">
+      <div className="field-hero">
+        <span className={`field-status-pill ${effectiveOnline ? 'is-online' : 'is-offline'}`}>
+          {effectiveOnline ? 'Conectado ao servidor' : 'Modo Offline'}
+        </span>
+        <div className="field-hero-greeting" style={{ marginTop: '0.5rem' }}>
+          Olá, {session.user.nome.split(' ')[0]}
         </div>
-        <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-accent-primary-soft blur-3xl" />
+        <div className="field-hero-sub">
+          {session.surveys.length} pesquisa(s) liberada(s) para você.
+        </div>
       </div>
 
-      {/* Feedback */}
       {feedback && (
-        <div className="rounded-xl border border-accent-success-soft-border bg-accent-success-soft p-3 text-xs text-accent-success flex items-center gap-2">
+        <div className="field-alert is-success" style={{ marginTop: 0 }}>
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           <span>{feedback}</span>
         </div>
       )}
       {error && (
-        <div className="rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft p-3 text-xs text-accent-danger flex items-center gap-2">
+        <div className="field-alert is-danger" style={{ marginTop: 0 }}>
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      {/* Grade de ações */}
-      <div className="grid grid-cols-2 gap-4">
-        {actions.map((a, idx) => {
-          const busy =
-            (a.title === 'Carregar' && loading === 'load') ||
-            (a.title === 'Descarregar' && loading === 'unload') ||
-            (a.title === 'Atualizar Meta' && loading === 'meta');
+      {pendingCount > 0 && (
+        <div className="field-alert is-warning" style={{ marginTop: 0 }}>
+          <UploadCloud className="h-4 w-4 shrink-0" />
+          <span>{pendingCount} coleta(s) pendente(s) de envio.</span>
+        </div>
+      )}
 
-          return (
-            <button
-              key={`${a.title}-${idx}`}
-              onClick={() => {
-                if (a.title === 'Carregar') handleLoad();
-                else if (a.title === 'Descarregar') handleUnload();
-                else if (a.title === 'Atualizar Meta') handleUpdateGoals();
-                else onNavigate(a.id);
-              }}
-              disabled={loading !== null}
-              className="group flex flex-col items-start gap-3 rounded-2xl border border-ui bg-surface-card p-5 text-left shadow-xl hover:border-accent-primary-soft-border hover:bg-surface-raised transition-colors disabled:opacity-50"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border group-hover:bg-accent-primary-solid group-hover:text-on-accent transition-colors">
-                {busy ? (
-                  <RefreshCw className="h-6 w-6 animate-spin" />
-                ) : (
-                  a.icon
-                )}
-              </div>
-              <div>
-                <div className="text-sm font-bold text-primary">{a.title}</div>
-                <div className="text-[11px] text-muted mt-0.5">{a.subtitle}</div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
+      {actions.map((a, idx) => {
+        const busy =
+          (a.title === 'Carregar' && loading === 'load') ||
+          (a.title === 'Descarregar' && loading === 'unload') ||
+          (a.title === 'Atualizar Meta' && loading === 'meta');
+
+        return (
+          <button
+            key={`${a.title}-${idx}`}
+            type="button"
+            onClick={() => {
+              if (a.title === 'Carregar') handleLoad();
+              else if (a.title === 'Descarregar') handleUnload();
+              else if (a.title === 'Atualizar Meta') handleUpdateGoals();
+              else onNavigate(a.id);
+            }}
+            disabled={loading !== null}
+            className="field-card"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+          >
+            <span className="field-survey-icon" aria-hidden="true">
+              {busy ? <RefreshCw className="h-5 w-5 animate-spin" /> : a.icon}
+            </span>
+            <span>
+              <span className="field-text-sm" style={{ display: 'block', fontWeight: 800 }}>
+                {a.title}
+              </span>
+              <span className="field-text-xs field-text-muted">{a.subtitle}</span>
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 };

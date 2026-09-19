@@ -3,14 +3,8 @@ import { useApp } from '../context/AppContext';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
 import { ResearcherIndividualGoalsView } from '../components/metas/ResearcherIndividualGoalsView';
 import { FieldSession } from './fieldTypes';
-import {
-  Target,
-  RefreshCw,
-  CheckCircle2,
-  AlertTriangle,
-  ChevronDown,
-  Inbox,
-} from 'lucide-react';
+import { Target, RefreshCw, CheckCircle2, AlertTriangle, ChevronDown, Inbox } from 'lucide-react';
+import './fieldMobile.css';
 
 interface FieldMetasProps {
   session: FieldSession;
@@ -19,10 +13,9 @@ interface FieldMetasProps {
 }
 
 /**
- * Tela de Metas do pesquisador — ACOMPANHAMENTO.
+ * Tela de Metas do pesquisador — ACOMPANHAMENTO (padrão visual de campo).
  * Apresenta as metas configuradas em cada pesquisa ativa vinculada ao
- * pesquisador, com a mesma disposição do painel individual. As metas são
- * apenas de acompanhamento e são atualizadas a cada sincronização (Carregar).
+ * pesquisador. As metas são atualizadas a cada sincronização (Carregar).
  */
 export const FieldMetas: React.FC<FieldMetasProps> = ({ session, onResync }) => {
   const {
@@ -69,99 +62,103 @@ export const FieldMetas: React.FC<FieldMetasProps> = ({ session, onResync }) => 
   };
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho + Ações */}
-      <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
+    <div className="field-stack">
+      <div className="field-card">
+        <div className="field-row-between">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0 }}>
+            <span className="field-survey-icon" aria-hidden="true">
               <Target className="h-5 w-5" />
-            </div>
+            </span>
             <div>
-              <h2 className="text-sm font-black text-primary">Minhas Metas</h2>
-              <p className="text-[11px] text-muted">
-                Acompanhamento das metas configuradas nas pesquisas ativas vinculadas a você.
-              </p>
+              <div className="field-text-sm" style={{ fontWeight: 800 }}>
+                Minhas Metas
+              </div>
+              <div className="field-text-xs field-text-muted">
+                Metas configuradas nas pesquisas ativas vinculadas a você.
+              </div>
             </div>
           </div>
-
-          <button
-            onClick={handleUpdateGoals}
-            disabled={updating || !effectiveOnline}
-            className="inline-flex items-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-2.5 text-xs font-bold text-on-accent shadow-md shadow-brand-900/40 hover:bg-accent-primary-solid-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <RefreshCw className={`h-4 w-4 ${updating ? 'animate-spin' : ''}`} />
-            {updating ? 'Atualizando...' : 'Atualizar Metas'}
-          </button>
         </div>
 
+        <button
+          type="button"
+          onClick={handleUpdateGoals}
+          disabled={updating || !effectiveOnline}
+          className="field-btn field-btn-primary field-btn-block field-mt"
+        >
+          <RefreshCw className={`h-4 w-4 ${updating ? 'animate-spin' : ''}`} />
+          {updating ? 'Atualizando...' : 'Atualizar Metas'}
+        </button>
+
         {feedback && (
-          <div className="mt-3 rounded-lg border border-accent-success-soft-border bg-accent-success-soft p-2.5 text-[11px] text-accent-success flex items-center gap-2">
-            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+          <div className="field-alert is-success">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{feedback}</span>
           </div>
         )}
         {error && (
-          <div className="mt-3 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft p-2.5 text-[11px] text-accent-danger flex items-center gap-2">
-            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+          <div className="field-alert is-danger">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
       </div>
 
-      {/* Lista de pesquisas ativas com metas */}
-      <div className="space-y-4">
-        {availableSurveys.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-ui bg-surface p-10 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-raised text-muted">
-              <Inbox className="h-6 w-6" />
-            </div>
-            <h3 className="mt-3 text-sm font-bold text-primary">
-              Nenhuma pesquisa ativa vinculada
-            </h3>
-            <p className="mt-1 text-xs text-muted">
-              As metas das pesquisas ativas relacionadas a você aparecerão aqui após o carregamento.
-            </p>
+      {availableSurveys.length === 0 ? (
+        <div className="field-empty">
+          <div className="field-empty-icon">
+            <Inbox className="h-6 w-6" />
           </div>
-        ) : (
-          availableSurveys.map((survey) => {
-            const isOpen = expandedSurveyId === survey.id;
-            return (
-              <div key={survey.id} className="rounded-2xl border border-ui bg-surface-card overflow-hidden shadow-xl">
-                <button
-                  onClick={() => setExpandedSurveyId(isOpen ? null : survey.id)}
-                  className="w-full flex items-center justify-between gap-3 px-5 py-4 hover:bg-surface-raised transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
-                      <Target className="h-4 w-4" />
-                    </div>
-                    <div className="text-left">
-                      <div className="text-sm font-bold text-primary">{survey.nome}</div>
-                      <div className="text-[11px] text-muted">
-                        <span className="font-mono text-accent-primary">{survey.codigo}</span> • Metas configuradas nesta pesquisa
-                      </div>
-                    </div>
-                  </div>
-                  <ChevronDown
-                    className={`h-4 w-4 text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                  />
-                </button>
+          <div className="field-text-sm" style={{ fontWeight: 800 }}>
+            Nenhuma pesquisa ativa vinculada
+          </div>
+          <div className="field-text-xs field-text-muted">
+            As metas das pesquisas relacionadas a você aparecerão aqui após o carregamento.
+          </div>
+        </div>
+      ) : (
+        availableSurveys.map((survey) => {
+          const isOpen = expandedSurveyId === survey.id;
+          return (
+            <div className="field-survey-card" key={survey.id}>
+              <button
+                type="button"
+                onClick={() => setExpandedSurveyId(isOpen ? null : survey.id)}
+                className="field-row-between"
+                style={{ width: '100%', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                aria-expanded={isOpen}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0 }}>
+                  <span className="field-survey-icon" aria-hidden="true">
+                    <Target className="h-4 w-4" />
+                  </span>
+                  <span style={{ textAlign: 'left', minWidth: 0 }}>
+                    <span className="field-text-sm" style={{ display: 'block', fontWeight: 800 }}>
+                      {survey.nome}
+                    </span>
+                    <span className="field-survey-code">{survey.codigo}</span>
+                  </span>
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  style={{ color: 'var(--text-muted)', flexShrink: 0 }}
+                />
+              </button>
 
-                {isOpen && (
-                  <div className="border-t border-ui p-4">
-                    <ResearcherIndividualGoalsView activeSurvey={survey} fieldMode />
-                  </div>
-                )}
-              </div>
-            );
-          })
-        )}
-      </div>
+              {isOpen && (
+                <div className="field-mt" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.7rem' }}>
+                  <ResearcherIndividualGoalsView activeSurvey={survey} fieldMode />
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
 
       {pendingCount > 0 && (
-        <p className="text-[11px] text-accent-warning">
-          Você tem {pendingCount} coleta(s) pendente(s) de descarregar. Envie-as para que as metas reflitam o progresso real.
+        <p className="field-text-xs" style={{ color: 'var(--accent-warning)' }}>
+          Você tem {pendingCount} coleta(s) pendente(s) de descarregar. Envie-as para que as metas
+          reflitam o progresso real.
         </p>
       )}
     </div>

@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { FieldSession } from './fieldTypes';
-import {
-  DownloadCloud,
-  UploadCloud,
-  Wifi,
-  WifiOff,
-  CheckCircle2,
-  AlertTriangle,
-  Layers,
-} from 'lucide-react';
+import { DownloadCloud, UploadCloud, CheckCircle2, AlertTriangle, Cloud } from 'lucide-react';
+import './fieldMobile.css';
 
 interface FieldSyncProps {
   /** Sessão autenticada de campo. */
@@ -19,9 +12,10 @@ interface FieldSyncProps {
 }
 
 /**
- * Tela de sincronização do pesquisador.
- *  - Carregar  : baixa as pesquisas/políticas de acesso do servidor.
+ * Tela de sincronização do pesquisador — padrão visual do app de campo.
+ *  - Carregar   : baixa as pesquisas/políticas de acesso do servidor.
  *  - Descarregar: envia as coletas offline pendentes para o servidor.
+ * Toda a lógica de fila offline / IndexedDB / Supabase é preservada.
  */
 export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
   const { effectiveOnline, offlineQueue, pendingIndexedDbCount, syncOfflineQueue, forceSyncPendingWithSupabase } = useApp();
@@ -38,9 +32,7 @@ export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
     setError(null);
     try {
       const updated = await onResync(session);
-      setFeedback(
-        `${updated.surveys.length} pesquisa(s) carregada(s) com sucesso do servidor.`
-      );
+      setFeedback(`${updated.surveys.length} pesquisa(s) carregada(s) com sucesso do servidor.`);
     } catch (e: any) {
       setError(e?.message || 'Falha ao carregar pesquisas.');
     } finally {
@@ -53,10 +45,6 @@ export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
     setFeedback(null);
     setError(null);
     try {
-      // Envia de verdade o que está pendente: entrevistas coletadas (fila offline
-      // em localStorage) e pesquisas salvas offline (cache IndexedDB). Antes, este
-      // botão só chamava onResync — que apenas BAIXA pesquisas do servidor — e nunca
-      // enviava nada.
       const [queueResult, surveyResult] = await Promise.all([
         syncOfflineQueue(),
         forceSyncPendingWithSupabase(false),
@@ -84,102 +72,93 @@ export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho */}
-      <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
-        <div className="flex items-center justify-between gap-3">
+    <div className="field-stack">
+      <div className="field-card">
+        <div className="field-row-between">
           <div>
-            <h2 className="text-sm font-black text-primary">Carregar / Descarregar</h2>
-            <p className="text-[11px] text-muted mt-0.5">
+            <div className="field-text-sm" style={{ fontWeight: 800 }}>
+              Carregar / Descarregar
+            </div>
+            <div className="field-text-xs field-text-muted">
               {effectiveOnline
                 ? 'Conectado. Baixe as pesquisas e envie as coletas feitas em campo.'
                 : 'Você está offline. Você ainda pode coletar; os dados serão enviados quando houver conexão.'}
-            </p>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5 rounded-full border border-ui bg-surface-card px-2.5 py-1 text-[10px] font-semibold">
-            {effectiveOnline ? (
-              <Wifi className="h-3.5 w-3.5 text-accent-success" />
-            ) : (
-              <WifiOff className="h-3.5 w-3.5 text-accent-warning" />
-            )}
-            <span className={effectiveOnline ? 'text-accent-success' : 'text-accent-warning'}>
-              {effectiveOnline ? 'Online' : 'Offline'}
-            </span>
-          </div>
+          <span className={`field-status-pill ${effectiveOnline ? 'is-online' : 'is-offline'}`}>
+            {effectiveOnline ? 'Online' : 'Offline'}
+          </span>
         </div>
 
         {feedback && (
-          <div className="mt-3 rounded-lg border border-accent-success-soft-border bg-accent-success-soft p-2.5 text-[11px] text-accent-success flex items-center gap-2">
-            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+          <div className="field-alert is-success">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{feedback}</span>
           </div>
         )}
         {error && (
-          <div className="mt-3 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft p-2.5 text-[11px] text-accent-danger flex items-center gap-2">
-            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+          <div className="field-alert is-danger">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
       </div>
 
-      {/* Ações: Carregar / Descarregar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button
-          onClick={handleLoad}
-          disabled={busy !== null || !effectiveOnline}
-          className="group flex flex-col items-start gap-3 rounded-2xl border border-ui bg-surface-card p-5 text-left shadow-xl hover:border-accent-primary-soft-border transition-colors disabled:opacity-50"
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-primary-soft text-accent-primary border border-accent-primary-soft-border">
-            {busy === 'load' ? (
-              <DownloadCloud className="h-6 w-6 animate-pulse" />
-            ) : (
-              <DownloadCloud className="h-6 w-6" />
-            )}
-          </div>
-          <div>
-            <div className="text-sm font-bold text-primary">Carregar</div>
-            <div className="text-[11px] text-muted mt-0.5">
-              Baixar as pesquisas e políticas de acesso do servidor.
-            </div>
-          </div>
-          <span className="text-[10px] font-semibold text-accent-primary">
-            {busy === 'load' ? 'Carregando...' : 'Baixar pesquisas'}
+      <button
+        type="button"
+        onClick={handleLoad}
+        disabled={busy !== null || !effectiveOnline}
+        className="field-card"
+        style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+      >
+        <span className="field-survey-icon" aria-hidden="true">
+          <DownloadCloud className={`h-5 w-5 ${busy === 'load' ? 'animate-pulse' : ''}`} />
+        </span>
+        <span>
+          <span className="field-text-sm" style={{ display: 'block', fontWeight: 800 }}>
+            {busy === 'load' ? 'Carregando...' : 'Carregar pesquisas'}
           </span>
-        </button>
+          <span className="field-text-xs field-text-muted">
+            Baixar as pesquisas e políticas de acesso do servidor.
+          </span>
+        </span>
+      </button>
 
-        <button
-          onClick={handleUnload}
-          disabled={busy !== null || !effectiveOnline || pendingCount === 0}
-          className="group flex flex-col items-start gap-3 rounded-2xl border border-ui bg-surface-card p-5 text-left shadow-xl hover:border-accent-primary-soft-border transition-colors disabled:opacity-50"
+      <button
+        type="button"
+        onClick={handleUnload}
+        disabled={busy !== null || !effectiveOnline || pendingCount === 0}
+        className="field-card"
+        style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+      >
+        <span
+          className="field-survey-icon"
+          style={{
+            background: 'var(--accent-success-soft-bg)',
+            borderColor: 'var(--accent-success-soft-border)',
+            color: 'var(--accent-success)',
+          }}
+          aria-hidden="true"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-success-soft text-accent-success border border-accent-success-soft-border">
-            {busy === 'unload' ? (
-              <UploadCloud className="h-6 w-6 animate-pulse" />
-            ) : (
-              <UploadCloud className="h-6 w-6" />
-            )}
-          </div>
-          <div>
-            <div className="text-sm font-bold text-primary">Descarregar</div>
-            <div className="text-[11px] text-muted mt-0.5">
-              Enviar as coletas offline pendentes para o servidor.
-            </div>
-          </div>
-          <span className="text-[10px] font-semibold text-accent-success">
+          <UploadCloud className={`h-5 w-5 ${busy === 'unload' ? 'animate-pulse' : ''}`} />
+        </span>
+        <span>
+          <span className="field-text-sm" style={{ display: 'block', fontWeight: 800 }}>
+            {busy === 'unload' ? 'Enviando...' : 'Descarregar coletas'}
+          </span>
+          <span className="field-text-xs field-text-muted">
             {pendingCount > 0 ? `${pendingCount} pendente(s) para enviar` : 'Tudo enviado'}
           </span>
-        </button>
-      </div>
+        </span>
+      </button>
 
-      {/* Pesquisas carregadas */}
-      <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl">
-        <div className="flex items-center gap-2 text-xs font-bold text-primary">
-          <Layers className="h-4 w-4 text-accent-primary" />
-          <span>Pesquisas carregadas no aparelho</span>
+      <div className="field-card">
+        <div className="field-row-between">
+          <span className="field-text-xs" style={{ fontWeight: 800 }}>
+            <Cloud className="h-3.5 w-3.5 inline" /> Pesquisas carregadas no aparelho
+          </span>
+          <span className="field-text-xs field-text-muted">{session.surveys.length} pesquisa(s)</span>
         </div>
-        <p className="mt-1 text-[11px] text-muted">
-          {session.surveys.length} pesquisa(s) disponível(is) para coleta.
-        </p>
       </div>
     </div>
   );

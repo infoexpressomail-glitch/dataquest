@@ -4,7 +4,8 @@ import { Survey } from '../types';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
 import { CollectionSimulator } from '../components/simulator/CollectionSimulator';
 import { FieldSession } from './fieldTypes';
-import { ClipboardList, CheckCircle2, ArrowRight, ChevronDown } from 'lucide-react';
+import { ClipboardList, CheckCircle2, ChevronDown } from 'lucide-react';
+import './fieldMobile.css';
 
 interface FieldColetaProps {
   /** Sessão autenticada no sub-app (opcional — usa o contexto quando ausente). */
@@ -12,9 +13,12 @@ interface FieldColetaProps {
 }
 
 /**
- * Tela de Coleta do sub-app.
- * Reutiliza o CollectionSimulator embutido; quando há mais de uma pesquisa
- * liberada, permite selecionar qual coletar (define o editingSurvey do contexto).
+ * Tela de Coleta do sub-app — container mobile-first.
+ *
+ * A lógica das perguntas, respostas, validações, áudio, GPS, offline e
+ * submissão continua 100% no `CollectionSimulator` (`fieldMode`). Aqui apenas
+ * apresentamos o container e o seletor de pesquisa liberada no padrão visual
+ * do app de campo.
  */
 export const FieldColeta: React.FC<FieldColetaProps> = ({ session }) => {
   const { currentUser: ctxUser, currentProfile: ctxProfile, surveys: ctxSurveys, editingSurvey, setEditingSurvey } = useApp();
@@ -44,70 +48,114 @@ export const FieldColeta: React.FC<FieldColetaProps> = ({ session }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border border-ui bg-surface-card p-5 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-black text-primary flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-accent-primary" />
-              Registro de Coleta de Campo
-            </h2>
-            <p className="text-[10px] text-muted mt-0.5">
-              Responda a entrevista abaixo. Sua submissão respeita o fluxo offline/auditoria.
-            </p>
-          </div>
-
-          {/* Seletor de pesquisa liberada */}
-          {availableSurveys.length > 1 && (
-            <div className="relative w-full sm:w-80">
-              <button
-                onClick={() => setSelectorOpen((v) => !v)}
-                className="w-full inline-flex items-center justify-between gap-2 rounded-xl border border-ui bg-surface-raised px-3 py-2.5 text-xs font-semibold text-primary hover:bg-surface-hover transition"
+    <div>
+      {/* Pesquisa ativa / seletor de pesquisa liberada */}
+      {availableSurveys.length > 1 ? (
+        <div style={{ marginBottom: '0.9rem' }}>
+          <button
+            type="button"
+            onClick={() => setSelectorOpen((v) => !v)}
+            className="field-card"
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.6rem',
+              cursor: 'pointer',
+              textAlign: 'left',
+            }}
+            aria-expanded={selectorOpen}
+          >
+            <span style={{ minWidth: 0 }}>
+              <span className="field-text-xs field-text-muted" style={{ display: 'block' }}>
+                Pesquisa ativa
+              </span>
+              <span
+                className="field-text-sm"
+                style={{
+                  display: 'block',
+                  fontWeight: 800,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
               >
-                <span className="truncate">
-                  {activeSurvey ? `${activeSurvey.codigo} — ${activeSurvey.nome}` : 'Selecionar pesquisa'}
-                </span>
-                <ChevronDown className="h-4 w-4 text-muted shrink-0" />
-              </button>
-              {selectorOpen && (
-                <div className="absolute z-30 mt-1 w-full rounded-xl border border-ui bg-surface-raised shadow-2xl overflow-hidden">
-                  {availableSurveys.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => selectSurvey(s)}
-                      className={`w-full flex items-start gap-2 px-3 py-2.5 text-left text-xs font-semibold transition ${
-                        activeSurvey?.id === s.id
-                          ? 'bg-accent-primary-soft text-accent-primary'
-                          : 'text-primary hover:bg-surface-hover'
-                      }`}
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                      <span className="min-w-0">
-                        <span className="block font-mono text-[10px] text-muted">{s.codigo}</span>
-                        <span className="block truncate">{s.nome}</span>
-                      </span>
-                      {activeSurvey?.id === s.id && (
-                        <ArrowRight className="h-3.5 w-3.5 ml-auto shrink-0" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+                {activeSurvey ? `${activeSurvey.codigo} — ${activeSurvey.nome}` : 'Selecionar pesquisa'}
+              </span>
+            </span>
+            <ChevronDown className="h-4 w-4" style={{ flexShrink: 0, color: 'var(--text-muted)' }} />
+          </button>
+
+          {selectorOpen && (
+            <div className="field-card field-stack" style={{ marginTop: '0.4rem' }}>
+              {availableSurveys.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => selectSurvey(s)}
+                  className="field-row-between"
+                  style={{
+                    width: '100%',
+                    background: activeSurvey?.id === s.id ? 'var(--accent-primary-soft-bg)' : 'none',
+                    border: 'none',
+                    padding: '0.5rem',
+                    borderRadius: '0.75rem',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{ minWidth: 0 }}>
+                    <span className="field-survey-code" style={{ display: 'block' }}>
+                      {s.codigo}
+                    </span>
+                    <span className="field-text-sm" style={{ fontWeight: 700 }}>
+                      {s.nome}
+                    </span>
+                  </span>
+                  {activeSurvey?.id === s.id && (
+                    <CheckCircle2 className="h-4 w-4" style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
+                  )}
+                </button>
+              ))}
             </div>
           )}
         </div>
+      ) : (
+        <div className="field-card" style={{ marginBottom: '0.9rem', display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+          <span className="field-survey-icon" aria-hidden="true">
+            <ClipboardList className="h-5 w-5" />
+          </span>
+          <span style={{ minWidth: 0 }}>
+            <span className="field-text-xs field-text-muted" style={{ display: 'block' }}>
+              Coleta de campo
+            </span>
+            <span
+              className="field-text-sm"
+              style={{
+                display: 'block',
+                fontWeight: 800,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {activeSurvey ? activeSurvey.nome : 'Nenhuma pesquisa liberada'}
+            </span>
+          </span>
+        </div>
+      )}
 
-        {availableSurveys.length === 0 && (
-          <p className="mt-4 rounded-xl border border-dashed border-ui bg-surface p-4 text-[11px] text-muted">
-            Nenhuma pesquisa liberada para você coletar no momento. As pesquisas
-            ativas vinculadas a você aparecerão aqui.
-          </p>
-        )}
-      </div>
+      {availableSurveys.length === 0 && (
+        <div className="field-alert is-warning">
+          Nenhuma pesquisa liberada para você coletar no momento. As pesquisas ativas vinculadas a
+          você aparecerão aqui.
+        </div>
+      )}
 
-      {/* Formulário de coleta reutilizado */}
+      {/* Formulário de coleta reutilizado — lógica existente preservada */}
       {activeSurvey && (
-        <div className="rounded-2xl border border-ui bg-surface p-4 sm:p-6 shadow-xl">
+        <div className="field-collector">
           {/* fieldMode=true: oculta elementos técnicos/estatísticos para o coletor de campo */}
           <CollectionSimulator fieldMode />
         </div>

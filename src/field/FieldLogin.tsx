@@ -9,12 +9,12 @@ import {
   EyeOff,
   AlertCircle,
   RefreshCw,
-  CheckCircle2,
-  ArrowLeft,
   ShieldCheck,
   MapPin,
   Wifi,
+  ArrowLeft,
 } from 'lucide-react';
+import './fieldMobile.css';
 
 interface FieldLoginProps {
   onAuthenticated: (session: FieldSession) => void;
@@ -22,9 +22,9 @@ interface FieldLoginProps {
 }
 
 /**
- * Tela de login do APP DE CAMPO (Modo Pesquisador).
+ * Tela de login do APP DE CAMPO (Modo Pesquisador) — redesign mobile-first.
  *
- * Fluxo:
+ * O fluxo funcional é IDÊNTICO ao existente:
  *   1. Usuário digita login/senha (definidos no sistema principal).
  *   2. Botão "Sincronizar" → autentica via POST /api/auth (fieldLogin).
  *   3. Se o perfil for pesquisador, baixa as pesquisas relacionadas +
@@ -77,57 +77,56 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-6 sm:p-4 font-sans bg-surface-app text-on-accent">
-      <div className="w-full max-w-md">
-        {/* Botão voltar */}
+    <div className="field-login-screen">
+      <div style={{ width: '100%', maxWidth: 400 }}>
         <button
+          type="button"
           onClick={onExit}
-          className="mb-4 inline-flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition"
+          className="field-btn field-btn-ghost"
+          style={{ marginBottom: '0.85rem' }}
         >
-          <span className="hidden sm:inline">Voltar</span>
-          <ArrowLeft className="h-3.5 w-3.5 text-accent-primary" />
-          <span>Voltar</span>
+          <ArrowLeft className="h-4 w-4" />
+          Voltar
         </button>
 
-        <div className="rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-surface via-surface-raised to-surface p-5 sm:p-8 shadow-2xl">
-          <div className="flex flex-col items-center text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 text-on-accent font-black text-xl shadow-lg shadow-brand-900/50">
-              <span className="sr-only">DataQuest</span>
+        <div className="field-login-card">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <div className="field-avatar" style={{ height: '3.6rem', width: '3.6rem' }} aria-hidden="true">
               DQ
             </div>
-            <h1 className="mt-4 text-lg font-black text-primary sm:text-xl">
+            <h1 style={{ marginTop: '0.75rem', fontSize: '1.05rem', fontWeight: 900 }}>
               Modo Pesquisador de Campo
             </h1>
-            <p className="mt-1 text-[11px] leading-relaxed text-muted sm:text-xs">
-              Entre com suas credenciais e clique em <strong className="text-accent-primary">Sincronizar</strong> para baixar as pesquisas e políticas relacionadas ao seu login.
+            <p className="field-text-xs field-text-muted" style={{ marginTop: '0.35rem', lineHeight: 1.5 }}>
+              Entre com suas credenciais e toque em <strong>Sincronizar</strong> para baixar as
+              pesquisas e políticas relacionadas ao seu login.
             </p>
           </div>
 
-          {/* Feedback */}
           {errorMessage && (
-            <div className="mt-5 rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft p-3 text-xs text-accent-danger flex items-start gap-2.5">
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-              <div className="font-medium">{errorMessage}</div>
+            <div className="field-alert is-danger">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{errorMessage}</span>
             </div>
           )}
           {infoMessage && !errorMessage && (
-            <div className="mt-5 rounded-xl border border-accent-info-soft-border bg-accent-info-soft p-3 text-xs text-accent-info flex items-start gap-2.5">
-              <RefreshCw className="h-4 w-4 shrink-0 mt-0.5 animate-spin" />
-              <div className="font-medium">{infoMessage}</div>
+            <div className="field-alert is-success">
+              <RefreshCw className="h-4 w-4 shrink-0 animate-spin" />
+              <span>{infoMessage}</span>
             </div>
           )}
 
-          <form onSubmit={handleSync} className="mt-5 space-y-4">
-            {/* Login */}
-            <div>
-              <label className="block text-xs font-semibold text-secondary mb-1.5">
+          <form onSubmit={handleSync} style={{ marginTop: '1rem' }}>
+            <div style={{ marginBottom: '0.85rem' }}>
+              <label className="field-field-label" htmlFor="field-login-user">
                 Login de Acesso
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
+              <div className="field-input-wrap">
+                <span className="field-input-icon">
                   <User className="h-4 w-4" />
-                </div>
+                </span>
                 <input
+                  id="field-login-user"
                   type="text"
                   required
                   value={loginInput}
@@ -135,49 +134,54 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
                   placeholder="Ex: rodrigo.pesquisador"
                   autoCapitalize="none"
                   autoCorrect="off"
-                  className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-4 text-xs text-primary placeholder-slate-500 focus:border-brand-500 focus:outline-none transition-colors"
+                  autoComplete="username"
+                  className="field-input"
                 />
               </div>
             </div>
 
-            {/* Senha */}
-            <div>
-              <label className="block text-xs font-semibold text-secondary mb-1.5">
+            <div style={{ marginBottom: '0.5rem' }}>
+              <label className="field-field-label" htmlFor="field-login-pass">
                 Senha
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
+              <div className="field-input-wrap">
+                <span className="field-input-icon">
                   <Lock className="h-4 w-4" />
-                </div>
+                </span>
                 <input
+                  id="field-login-pass"
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={senhaInput}
                   onChange={(e) => setSenhaInput(e.target.value)}
                   placeholder="Sua senha cadastrada"
-                  className="w-full rounded-xl border border-ui bg-surface-card py-2.5 pl-10 pr-10 text-xs text-primary placeholder-slate-500 focus:border-brand-500 focus:outline-none transition-colors"
+                  autoComplete="current-password"
+                  className="field-input"
+                  style={{ paddingRight: '2.6rem' }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted hover:text-primary transition-colors"
+                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                  className="field-input-icon"
+                  style={{ left: 'auto', right: '0.7rem', pointerEvents: 'auto', background: 'none', border: 'none' }}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Botão Sincronizar */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid py-3 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 hover:bg-accent-primary-solid-hover active:scale-[0.99] disabled:opacity-50 transition-all cursor-pointer"
+              className="field-btn field-btn-primary field-btn-block"
+              style={{ marginTop: '0.85rem' }}
             >
               {isLoading ? (
-                <span className="flex items-center gap-2">
-                  <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
                   Sincronizando...
-                </span>
+                </>
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4" />
@@ -187,16 +191,18 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
             </button>
           </form>
 
-          {/* Rodapé de segurança */}
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-[10px] text-muted">
-            <span className="inline-flex items-center gap-1">
-              <ShieldCheck className="h-3 w-3 text-accent-success" /> Autenticação segura
+          <div
+            className="field-text-xs field-text-muted"
+            style={{ marginTop: '1rem', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem' }}
+          >
+            <span>
+              <ShieldCheck className="h-3 w-3 inline text-accent-success" /> Autenticação segura
             </span>
-            <span className="inline-flex items-center gap-1">
-              <Wifi className="h-3 w-3 text-accent-primary" /> Sincroniza com o servidor
+            <span>
+              <Wifi className="h-3 w-3 inline text-accent-primary" /> Sincroniza com o servidor
             </span>
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="h-3 w-3 text-accent-info" /> Coleta com GPS e áudio
+            <span>
+              <MapPin className="h-3 w-3 inline text-accent-info" /> Coleta com GPS e áudio
             </span>
           </div>
         </div>

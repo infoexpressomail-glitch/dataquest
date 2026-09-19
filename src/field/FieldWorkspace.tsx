@@ -3,24 +3,29 @@ import { useApp } from '../context/AppContext';
 import { FieldSession } from './fieldTypes';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
 import { FieldColeta } from './FieldColeta';
-import { FieldBottomNav } from './FieldBottomNav';
+import { FieldBottomNav, FieldTab } from './FieldBottomNav';
+import { FieldHeader } from './FieldHeader';
 import { ResearcherIndividualGoalsView } from '../components/metas/ResearcherIndividualGoalsView';
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
   ChevronDown,
   ClipboardList,
+  Cloud,
   DownloadCloud,
   Inbox,
   LogOut,
+  MapPin,
   RefreshCw,
   Target,
+  TrendingUp,
   UploadCloud,
-  Wifi,
+  User,
   WifiOff,
-  X,
 } from 'lucide-react';
+import './fieldMobile.css';
 
 interface FieldWorkspaceProps {
   session: FieldSession;
@@ -33,17 +38,15 @@ interface FieldWorkspaceProps {
 }
 
 /**
- * Ambiente do Modo Pesquisador (reescrito).
+ * Ambiente do Modo Pesquisador (redesign UX/UI mobile-first).
  *
- * Fluxo único e direto, no padrão "modo pesquisador":
- *   1. Login (FieldLogin) — única porta de entrada.
- *   2. Aqui: lista apenas das PESQUISAS ATIVAS atribuídas ao login.
- *   3. Coleta da pesquisa selecionada (CollectionSimulator em fieldMode).
+ * O fluxo funcional é EXATAMENTE o mesmo do sub-app existente:
+ *   login → pesquisas ativas vinculadas → coleta (CollectionSimulator fieldMode)
  *
- * Não há mais menu lateral com "Início / Metas / Sincronizar" separados:
- * as metas aparecem dentro de cada pesquisa e a sincronização é uma ação
- * pontual do cabeçalho. Isso reduz ruído e direciona o pesquisador ao que
- * importa: coletar.
+ * A camada nova é apenas visual: shell mobile, header compacto, dashboard do
+ * pesquisador, cards de pesquisa, sincronização evidenciada e navegação
+ * inferior. Toda a lógica de sessão, fila offline, IndexedDB, sincronização,
+ * geolocalização, áudio e submissão continua vindo do AppContext/serviços.
  */
 export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
   session,
@@ -57,12 +60,13 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
     pendingIndexedDbCount,
     setEditingSurvey,
     editingSurvey,
+    submissions,
     syncOfflineQueue,
     forceSyncPendingWithSupabase,
   } = useApp();
 
+  const [tab, setTab] = useState<FieldTab>('home');
   const [coletaOpen, setColetaOpen] = useState(false);
-  const [syncOpen, setSyncOpen] = useState(false);
   const [expandedGoalsId, setExpandedGoalsId] = useState<string | null>(null);
   const [busy, setBusy] = useState<'load' | 'unload' | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -75,6 +79,27 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
   const activeSurveys = useMemo(
     () => filterResearcherVisibleSurveys(session.surveys, session.user),
     [session.surveys, session.user]
+  );
+
+  // Coletas REAIS do pesquisador logado (nunca dados fictícios).
+  const researcherSubmissions = useMemo(
+    () => submissions.filter((sub) => sub.pesquisadorId === session.user.id),
+    [submissions, session.user.id]
+  );
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const submissionsToday = useMemo(
+    () => researcherSubmissions.filter((sub) => sub.dataHora?.slice(0, 10) === todayStr),
+    [researcherSubmissions, todayStr]
+  );
+
+  const totalMeta = useMemo(
+    () =>
+      activeSurveys.reduce(
+        (acc, s) => acc + (typeof s.metaTotalColetas === 'number' ? s.metaTotalColetas : 0),
+        0
+      ),
+    [activeSurveys]
   );
 
   const startColeta = (surveyId: string) => {
@@ -94,6 +119,12 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
     if (target) startColeta(target.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoStartSurveyId, activeSurveys.length]);
+
+  const goToSync = () => {
+    setTab('sync');
+    setFeedback(null);
+    setError(null);
+  };
 
   const handleLoad = async () => {
     setBusy('load');
@@ -140,287 +171,483 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
     }
   };
 
+  const doneForSurvey = (surveyId: string) =>
+    researcherSubmissions.filter((s) => s.pesquisaId === surveyId).length;
+
   // ------------------------------- COLETA ---------------------------------
   if (coletaOpen) {
     const current = activeSurveys.find((s) => s.id === editingSurvey?.id) || activeSurveys[0];
     return (
-      <div className="min-h-screen bg-surface-app text-primary">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-ui bg-surface-app/90 px-4 py-3 backdrop-blur-md sm:px-6">
-          <button
-            onClick={() => setColetaOpen(false)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-ui bg-surface-raised px-3 py-2 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition"
-          >
-            <ArrowLeft className="h-4 w-4 text-accent-primary" />
-            <span>Voltar às pesquisas</span>
-          </button>
-          <div className="min-w-0 text-right">
-            <div className="truncate text-xs font-bold text-primary">{current?.nome}</div>
-            <div className="text-[10px] text-muted font-mono">{current?.codigo}</div>
+      <div className="field-app">
+        <div className="field-app-shell">
+          <header className="field-coleta-header">
+            <button
+              type="button"
+              onClick={() => setColetaOpen(false)}
+              className="field-btn field-btn-ghost"
+              style={{ flex: '0 0 auto', minHeight: '2.5rem', padding: '0 0.8rem' }}
+              aria-label="Voltar às pesquisas"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Pesquisa</span>
+            </button>
+            <div style={{ minWidth: 0, marginLeft: 'auto', textAlign: 'right' }}>
+              <div
+                className="field-text-sm"
+                style={{
+                  fontWeight: 800,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {current?.nome}
+              </div>
+              <div className="field-survey-code">{current?.codigo}</div>
+            </div>
+          </header>
+
+          <div className="field-scroll field-collector">
+            {!effectiveOnline && (
+              <div className="field-alert is-warning" style={{ marginTop: 0 }}>
+                <WifiOff className="h-4 w-4 shrink-0" />
+                <span>
+                  Você está offline. As coletas serão armazenadas e sincronizadas quando a conexão
+                  voltar.
+                </span>
+              </div>
+            )}
+
+            <FieldColeta session={session} />
           </div>
-        </header>
-        <main className="mx-auto max-w-3xl px-3 py-5 sm:px-6">
-          <FieldColeta session={session} />
-        </main>
+        </div>
       </div>
     );
   }
 
-  // --------------------------- LISTA DE PESQUISAS -------------------------
-  return (
-    <div className="min-h-screen bg-surface-app text-primary">
-      {/* Cabeçalho enxuto: identidade + status + sincronização */}
-      <header className="sticky top-0 z-30 border-b border-ui bg-surface-app/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 text-on-accent font-black text-sm shadow-lg shadow-brand-900/40">
-              DQ
-            </div>
-            <div className="min-w-0">
-              <div className="truncate text-sm font-black text-primary">DataQuest Campo</div>
-              <div className="truncate text-[10px] text-muted">
-                {session.user.nome} • {session.profile?.name}
-              </div>
-            </div>
-          </div>
+  // --------------------------- CARD DE PESQUISA ----------------------------
+  const renderSurveyCard = (survey: (typeof activeSurveys)[number], compact = false) => {
+    const done = doneForSurvey(survey.id);
+    const hasMeta = typeof survey.metaTotalColetas === 'number' && survey.metaTotalColetas > 0;
+    const pct = hasMeta ? Math.min(100, Math.round((done / survey.metaTotalColetas!) * 100)) : 0;
+    const goalOpen = expandedGoalsId === survey.id;
 
-          <div className="flex items-center gap-2">
-            <span
-              className={`hidden sm:inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold ${
-                effectiveOnline
-                  ? 'border-accent-success-soft-border bg-accent-success-soft text-accent-success'
-                  : 'border-accent-warning-soft-border bg-accent-warning-soft text-accent-warning'
-              }`}
-            >
-              {effectiveOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-              {effectiveOnline ? 'Online' : 'Offline'}
+    return (
+      <div className="field-survey-card" key={survey.id}>
+        <div className="field-survey-top">
+          <div className="field-survey-icon" aria-hidden="true">
+            <ClipboardList className="h-5 w-5" />
+          </div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="field-survey-name">{survey.nome}</div>
+            <span className="field-survey-code">{survey.codigo}</span>
+          </div>
+          {survey.layoutStyle === 'MOBILE_PREMIUM' && (
+            <span className="field-status-pill is-online" style={{ flexShrink: 0 }}>
+              Premium
             </span>
-
-            {pendingCount > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-accent-info-soft-border bg-accent-info-soft px-2.5 py-1 text-[10px] font-bold text-accent-info">
-                <RefreshCw className="h-3 w-3" />
-                {pendingCount}
-              </span>
-            )}
-
-            <button
-              onClick={() => setSyncOpen((v) => !v)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-ui bg-surface-raised px-3 py-2 text-xs font-bold text-secondary hover:bg-surface-hover hover:text-primary transition"
-              title="Sincronizar pesquisas e enviar coletas"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${busy ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Sincronizar</span>
-            </button>
-
-            <button
-              onClick={onLogout}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft px-3 py-2 text-xs font-bold text-accent-danger hover:opacity-90 transition"
-              title="Sair do modo pesquisador"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Sair</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Painel de sincronização (ação pontual, não um menu) */}
-        {syncOpen && (
-          <div className="border-t border-ui bg-surface-card">
-            <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xs font-black text-primary">Carregar / Descarregar</h3>
-                  <p className="text-[10px] text-muted">
-                    Baixe pesquisas atualizadas e envie as coletas feitas offline.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSyncOpen(false)}
-                  className="rounded-lg p-1.5 text-muted hover:bg-surface-raised hover:text-primary"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <button
-                  onClick={handleLoad}
-                  disabled={busy !== null || !effectiveOnline}
-                  className="flex items-center gap-3 rounded-xl border border-ui bg-surface p-3.5 text-left hover:border-accent-primary-soft-border transition disabled:opacity-50"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft text-accent-primary">
-                    <DownloadCloud className="h-5 w-5" />
-                  </span>
-                  <span>
-                    <span className="block text-xs font-bold text-primary">
-                      {busy === 'load' ? 'Carregando...' : 'Carregar pesquisas'}
-                    </span>
-                    <span className="block text-[10px] text-muted">
-                      Baixar as pesquisas ativas do seu login
-                    </span>
-                  </span>
-                </button>
-
-                <button
-                  onClick={handleUnload}
-                  disabled={busy !== null || !effectiveOnline || pendingCount === 0}
-                  className="flex items-center gap-3 rounded-xl border border-ui bg-surface p-3.5 text-left hover:border-accent-success-soft-border transition disabled:opacity-50"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent-success-soft-border bg-accent-success-soft text-accent-success">
-                    <UploadCloud className="h-5 w-5" />
-                  </span>
-                  <span>
-                    <span className="block text-xs font-bold text-primary">
-                      {busy === 'unload' ? 'Enviando...' : 'Descarregar coletas'}
-                    </span>
-                    <span className="block text-[10px] text-muted">
-                      {pendingCount > 0 ? `${pendingCount} pendente(s)` : 'Tudo enviado'}
-                    </span>
-                  </span>
-                </button>
-              </div>
-
-              {feedback && (
-                <div className="mt-3 flex items-center gap-2 rounded-lg border border-accent-success-soft-border bg-accent-success-soft p-2.5 text-[11px] text-accent-success">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                  <span>{feedback}</span>
-                </div>
-              )}
-              {error && (
-                <div className="mt-3 rounded-lg border border-accent-danger-soft-border bg-accent-danger-soft p-2.5 text-[11px] text-accent-danger">
-                  {error}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
-
-      <main className="mx-auto max-w-3xl px-4 py-6 pb-28 sm:px-6 md:pb-6">
-        {/* Boas-vindas */}
-        <div className="rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-surface via-surface-raised to-surface p-5 shadow-xl">
-          <h1 className="text-lg font-black text-primary">
-            Olá, {session.user.nome.split(' ')[0]}!
-          </h1>
-          <p className="mt-1 text-xs text-muted">
-            Você tem <strong className="text-accent-primary">{activeSurveys.length}</strong>{' '}
-            pesquisa(s) ativa(s) liberada(s). Selecione uma para iniciar a coleta.
-          </p>
-        </div>
-
-        {/* Lista de pesquisas ativas */}
-        <div className="mt-5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ClipboardList className="h-4 w-4 text-accent-primary" />
-            <h2 className="text-sm font-black text-primary">Pesquisas disponíveis</h2>
-          </div>
-          <span className="rounded-full border border-ui bg-surface-raised px-2.5 py-1 text-[10px] font-bold text-secondary">
-            {activeSurveys.length}
-          </span>
-        </div>
-
-        <div className="mt-3 space-y-3">
-          {activeSurveys.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ui bg-surface p-10 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-raised text-muted">
-                <Inbox className="h-6 w-6" />
-              </div>
-              <h3 className="mt-3 text-sm font-bold text-primary">
-                Nenhuma pesquisa ativa no momento
-              </h3>
-              <p className="mt-1 max-w-sm text-[11px] leading-relaxed text-muted">
-                As pesquisas ativas atribuídas ao seu login aparecerão aqui. Toque em
-                “Sincronizar” para atualizar a lista.
-              </p>
-              <button
-                onClick={() => setSyncOpen(true)}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 hover:bg-accent-primary-solid-hover transition"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Sincronizar agora
-              </button>
-            </div>
-          ) : (
-            activeSurveys.map((survey) => (
-              <div
-                key={survey.id}
-                className="rounded-2xl border border-ui bg-surface-card p-4 shadow-xl transition hover:border-accent-primary-soft-border"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <span className="inline-block rounded-md border border-ui bg-surface-raised px-2 py-0.5 font-mono text-[10px] text-accent-primary">
-                      {survey.codigo}
-                    </span>
-                    <h3 className="mt-2 text-sm font-bold leading-snug text-primary">
-                      {survey.nome}
-                    </h3>
-                    <p className="mt-1 line-clamp-2 text-[11px] text-muted">{survey.descricao}</p>
-                  </div>
-                  {survey.layoutStyle === 'MOBILE_PREMIUM' && (
-                    <span className="shrink-0 rounded-full border border-accent-primary-soft-border bg-accent-primary-soft px-2 py-0.5 text-[9px] font-bold text-accent-primary">
-                      Premium
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] text-muted">
-                  {survey.dataFim && (
-                    <span>
-                      Período até <strong className="text-secondary">{survey.dataFim}</strong>
-                    </span>
-                  )}
-                  <span className="inline-flex items-center gap-1">
-                    <CheckCircle2 className="h-3 w-3 text-accent-success" /> Pronta para coleta
-                  </span>
-                </div>
-
-                {/* Metas inline (acompanhamento) */}
-                <div className="mt-3 border-t border-subtle pt-3">
-                  <button
-                    onClick={() =>
-                      setExpandedGoalsId((prev) => (prev === survey.id ? null : survey.id))
-                    }
-                    className="inline-flex items-center gap-1.5 text-[10px] font-bold text-muted hover:text-primary transition"
-                  >
-                    <Target className="h-3.5 w-3.5 text-accent-primary" />
-                    Metas desta pesquisa
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 transition-transform ${
-                        expandedGoalsId === survey.id ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </button>
-                  {expandedGoalsId === survey.id && (
-                    <div className="mt-2">
-                      <ResearcherIndividualGoalsView activeSurvey={survey} fieldMode />
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => startColeta(survey.id)}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-4 py-3 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 transition hover:bg-accent-primary-solid-hover active:scale-[0.99]"
-                >
-                  Coletar agora
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            ))
           )}
         </div>
 
-        <p className="mt-6 text-center text-[10px] text-muted">
-          DataQuest • Modo Pesquisador — somente pesquisas ativas vinculadas ao seu login.
-        </p>
-      </main>
+        <div className="field-survey-meta">
+          <span>
+            <ClipboardList className="h-3.5 w-3.5" />
+            {survey.perguntas?.length ?? 0} perguntas
+          </span>
+          {hasMeta && (
+            <span>
+              <Target className="h-3.5 w-3.5" />
+              Meta: {done} / {survey.metaTotalColetas}
+            </span>
+          )}
+          <span>
+            <CheckCircle2 className="h-3.5 w-3.5 text-accent-success" />
+            {done} coleta(s) sua(s)
+          </span>
+        </div>
 
-      {/* Navegação inferior (mobile): aba Pesquisas + ação Sincronizar */}
-      <FieldBottomNav
-        active="pesquisas"
-        pendingCount={pendingCount}
-        onGoPesquisas={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        onSync={() => setSyncOpen(true)}
-        onLogout={onLogout}
-      />
+        {hasMeta && (
+          <>
+            <div className="field-progress" aria-hidden="true">
+              <span style={{ width: `${pct}%` }} />
+            </div>
+            <div className="field-survey-progress-label">
+              <span>Progresso da meta</span>
+              <span>{pct}%</span>
+            </div>
+          </>
+        )}
+
+        {!compact && (
+          <div className="field-mt" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.7rem' }}>
+            <button
+              type="button"
+              onClick={() => setExpandedGoalsId((prev) => (prev === survey.id ? null : survey.id))}
+              className="field-row-between"
+              style={{ width: '100%', background: 'none', border: 'none', padding: 0 }}
+              aria-expanded={goalOpen}
+            >
+              <span className="field-text-xs" style={{ fontWeight: 800, color: 'var(--text-muted)' }}>
+                <Target className="h-3.5 w-3.5 inline" /> Metas desta pesquisa
+              </span>
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${goalOpen ? 'rotate-180' : ''}`}
+                style={{ color: 'var(--text-muted)' }}
+              />
+            </button>
+            {goalOpen && (
+              <div className="field-mt">
+                <ResearcherIndividualGoalsView activeSurvey={survey} fieldMode />
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="field-actions-row">
+          <button
+            type="button"
+            onClick={() => startColeta(survey.id)}
+            className="field-btn field-btn-primary"
+          >
+            <span>Iniciar coleta</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // -------------------------------- INÍCIO ---------------------------------
+  const renderHome = () => (
+    <>
+      <div className="field-hero">
+        <div className="field-hero-greeting">
+          Olá, {session.user.nome.split(' ')[0]}! 👋
+        </div>
+        <div className="field-hero-sub">
+          {effectiveOnline ? 'Pronto para sua coleta?' : 'Modo offline — você pode coletar normalmente.'}
+        </div>
+
+        {totalMeta > 0 && (
+          <>
+            <div className="field-hero-progress" aria-hidden="true">
+              <span
+                style={{
+                  width: `${Math.min(100, Math.round((researcherSubmissions.length / totalMeta) * 100))}%`,
+                }}
+              />
+            </div>
+            <div className="field-hero-stats">
+              <span>
+                <strong>{researcherSubmissions.length}</strong> / {totalMeta} coletas
+              </span>
+              <span>Meta das pesquisas</span>
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="field-summary-grid">
+        <div className="field-summary-item">
+          <div className="field-summary-value">{submissionsToday.length}</div>
+          <div className="field-summary-label">Hoje</div>
+        </div>
+        <div className="field-summary-item">
+          <div
+            className="field-summary-value"
+            style={{ color: pendingCount > 0 ? 'var(--accent-warning)' : 'var(--accent-success)' }}
+          >
+            {pendingCount}
+          </div>
+          <div className="field-summary-label">Pendentes</div>
+        </div>
+        <div className="field-summary-item">
+          <div className="field-summary-value">{activeSurveys.length}</div>
+          <div className="field-summary-label">Pesquisas</div>
+        </div>
+      </div>
+
+      {!effectiveOnline && (
+        <div className="field-alert is-warning">
+          <WifiOff className="h-4 w-4 shrink-0" />
+          <span>
+            Você está offline. As coletas serão armazenadas e sincronizadas quando a conexão voltar.
+          </span>
+        </div>
+      )}
+
+      {pendingCount > 0 && (
+        <button
+          type="button"
+          onClick={goToSync}
+          className="field-alert is-warning"
+          style={{ width: '100%', textAlign: 'left', cursor: 'pointer' }}
+        >
+          <Cloud className="h-4 w-4 shrink-0" />
+          <span>
+            <strong>{pendingCount}</strong> registro(s) aguardando sincronização.
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0" style={{ marginLeft: 'auto' }} />
+        </button>
+      )}
+
+      <div className="field-section-title">
+        <TrendingUp className="h-4 w-4" style={{ color: 'var(--accent-primary)' }} />
+        Pesquisas disponíveis
+        <span className="field-count">{activeSurveys.length}</span>
+      </div>
+
+      {activeSurveys.length === 0 ? (
+        <div className="field-empty">
+          <div className="field-empty-icon">
+            <Inbox className="h-6 w-6" />
+          </div>
+          <div className="field-text-sm" style={{ fontWeight: 800 }}>
+            Nenhuma pesquisa ativa no momento
+          </div>
+          <div className="field-text-xs field-text-muted">
+            As pesquisas ativas atribuídas ao seu login aparecerão aqui. Toque em Sync para atualizar.
+          </div>
+          <button type="button" onClick={goToSync} className="field-btn field-btn-primary field-mt">
+            <RefreshCw className="h-4 w-4" />
+            Sincronizar agora
+          </button>
+        </div>
+      ) : (
+        activeSurveys.slice(0, 2).map((survey) => renderSurveyCard(survey, true))
+      )}
+    </>
+  );
+
+  // ------------------------------ PESQUISAS --------------------------------
+  const renderPesquisas = () => (
+    <>
+      <div className="field-section-title" style={{ marginTop: '0.25rem' }}>
+        <ClipboardList className="h-4 w-4" style={{ color: 'var(--accent-primary)' }} />
+        Minhas coletas
+        <span className="field-count">{activeSurveys.length}</span>
+      </div>
+
+      {activeSurveys.length === 0 ? (
+        <div className="field-empty">
+          <div className="field-empty-icon">
+            <Inbox className="h-6 w-6" />
+          </div>
+          <div className="field-text-sm" style={{ fontWeight: 800 }}>
+            Nenhuma pesquisa ativa no momento
+          </div>
+          <div className="field-text-xs field-text-muted">
+            Toque em Sync e use “Carregar pesquisas” para baixar as pesquisas liberadas para o seu login.
+          </div>
+          <button type="button" onClick={goToSync} className="field-btn field-btn-primary field-mt">
+            <RefreshCw className="h-4 w-4" />
+            Ir para sincronização
+          </button>
+        </div>
+      ) : (
+        activeSurveys.map((survey) => renderSurveyCard(survey))
+      )}
+    </>
+  );
+
+  // -------------------------------- SYNC -----------------------------------
+  const renderSync = () => (
+    <>
+      <div className="field-card">
+        <div className="field-row-between">
+          <div>
+            <div className="field-text-sm" style={{ fontWeight: 800 }}>
+              Sincronização
+            </div>
+            <div className="field-text-xs field-text-muted">
+              {effectiveOnline
+                ? 'Conectado. Baixe pesquisas e envie as coletas feitas em campo.'
+                : 'Offline. Você pode coletar; os dados serão enviados quando houver conexão.'}
+            </div>
+          </div>
+          <span className={`field-status-pill ${effectiveOnline ? 'is-online' : 'is-offline'}`}>
+            {effectiveOnline ? 'Online' : 'Offline'}
+          </span>
+        </div>
+
+        {feedback && (
+          <div className="field-alert is-success">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+            <span>{feedback}</span>
+          </div>
+        )}
+        {error && (
+          <div className="field-alert is-danger">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="field-mt field-stack">
+        <button
+          type="button"
+          onClick={handleLoad}
+          disabled={busy !== null || !effectiveOnline}
+          className="field-card"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            width: '100%',
+            textAlign: 'left',
+            cursor: 'pointer',
+          }}
+        >
+          <span className="field-survey-icon" aria-hidden="true">
+            <DownloadCloud className={`h-5 w-5 ${busy === 'load' ? 'animate-pulse' : ''}`} />
+          </span>
+          <span style={{ minWidth: 0 }}>
+            <span className="field-text-sm" style={{ display: 'block', fontWeight: 800 }}>
+              {busy === 'load' ? 'Carregando...' : 'Carregar pesquisas'}
+            </span>
+            <span className="field-text-xs field-text-muted">
+              Baixar as pesquisas ativas do seu login
+            </span>
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleUnload}
+          disabled={busy !== null || !effectiveOnline || pendingCount === 0}
+          className="field-card"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            width: '100%',
+            textAlign: 'left',
+            cursor: 'pointer',
+          }}
+        >
+          <span
+            className="field-survey-icon"
+            style={{
+              background: 'var(--accent-success-soft-bg)',
+              borderColor: 'var(--accent-success-soft-border)',
+              color: 'var(--accent-success)',
+            }}
+            aria-hidden="true"
+          >
+            <UploadCloud className={`h-5 w-5 ${busy === 'unload' ? 'animate-pulse' : ''}`} />
+          </span>
+          <span style={{ minWidth: 0 }}>
+            <span className="field-text-sm" style={{ display: 'block', fontWeight: 800 }}>
+              {busy === 'unload' ? 'Enviando...' : 'Descarregar coletas'}
+            </span>
+            <span className="field-text-xs field-text-muted">
+              {pendingCount > 0 ? `${pendingCount} pendente(s) para enviar` : 'Tudo enviado'}
+            </span>
+          </span>
+        </button>
+      </div>
+
+      <div className="field-card field-mt">
+        <div className="field-row-between">
+          <span className="field-text-xs" style={{ fontWeight: 800 }}>
+            <Cloud className="h-3.5 w-3.5 inline" /> Pesquisas no aparelho
+          </span>
+          <span className="field-text-xs field-text-muted">
+            {session.surveys.length} pesquisa(s)
+          </span>
+        </div>
+      </div>
+    </>
+  );
+
+  // ------------------------------- PERFIL ----------------------------------
+  const renderPerfil = () => (
+    <>
+      <div className="field-card">
+        <div className="field-profile-head">
+          <div className="field-avatar" aria-hidden="true">
+            {session.user.nome.slice(0, 2).toUpperCase()}
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div className="field-text-sm" style={{ fontWeight: 800 }}>
+              {session.user.nome}
+            </div>
+            <div className="field-text-xs field-text-muted">{session.profile?.name || 'Pesquisador'}</div>
+            <span className={`field-status-pill ${effectiveOnline ? 'is-online' : 'is-offline'} field-mt`} style={{ marginTop: '0.4rem' }}>
+              {effectiveOnline ? 'Online' : 'Offline'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="field-card field-mt">
+        <div className="field-info-row">
+          <span className="label">
+            <User className="h-3.5 w-3.5 inline" /> Login
+          </span>
+          <span className="value">{session.user.login}</span>
+        </div>
+        <div className="field-info-row">
+          <span className="label">
+            <MapPin className="h-3.5 w-3.5 inline" /> Matrícula
+          </span>
+          <span className="value">{session.user.cpf}</span>
+        </div>
+        <div className="field-info-row">
+          <span className="label">
+            <Cloud className="h-3.5 w-3.5 inline" /> Pendências
+          </span>
+          <span className="value">{pendingCount}</span>
+        </div>
+        <div className="field-info-row">
+          <span className="label">
+            <ClipboardList className="h-3.5 w-3.5 inline" /> Pesquisas
+          </span>
+          <span className="value">{activeSurveys.length}</span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={onLogout}
+        className="field-btn field-btn-danger field-btn-block field-mt"
+      >
+        <LogOut className="h-4 w-4" />
+        Sair / trocar pesquisador
+      </button>
+    </>
+  );
+
+  return (
+    <div className="field-app">
+      <div className="field-app-shell">
+        <FieldHeader
+          user={session.user}
+          profile={session.profile}
+          online={effectiveOnline}
+          pendingCount={pendingCount}
+          onSync={goToSync}
+          onLogout={onLogout}
+          syncing={busy !== null}
+        />
+
+        <div className="field-scroll">
+          {tab === 'home' && renderHome()}
+          {tab === 'pesquisas' && renderPesquisas()}
+          {tab === 'sync' && renderSync()}
+          {tab === 'perfil' && renderPerfil()}
+
+          <p
+            className="field-text-xs field-text-muted"
+            style={{ textAlign: 'center', marginTop: '1.2rem' }}
+          >
+            DataQuest • Modo Pesquisador — somente pesquisas ativas vinculadas ao seu login.
+          </p>
+        </div>
+
+        <FieldBottomNav active={tab} pendingCount={pendingCount} onSelect={setTab} />
+      </div>
     </div>
   );
 };

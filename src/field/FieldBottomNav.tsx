@@ -1,85 +1,62 @@
 import React from 'react';
-import { ClipboardList, LogOut, RefreshCw } from 'lucide-react';
+import { Home, ClipboardList, Cloud, User } from 'lucide-react';
+
+/** Abas da navegação inferior do Modo Pesquisador. */
+export type FieldTab = 'home' | 'pesquisas' | 'sync' | 'perfil';
 
 interface FieldBottomNavProps {
-  /** Aba atualmente ativa dentro do Modo Pesquisador. */
-  active: 'pesquisas' | 'coleta';
+  /** Aba atualmente ativa. */
+  active: FieldTab;
   /** Quantidade de itens pendentes de sincronização (badge). */
   pendingCount: number;
-  /** Volta para a lista de pesquisas ativas. */
-  onGoPesquisas: () => void;
-  /** Abre o painel de sincronização (Carregar / Descarregar). */
-  onSync: () => void;
-  /** Encerra a sessão de campo e volta ao login. */
-  onLogout: () => void;
+  /** Seleciona uma aba existente. */
+  onSelect: (tab: FieldTab) => void;
+}
+
+interface TabItem {
+  id: FieldTab;
+  label: string;
+  icon: React.ReactNode;
 }
 
 /**
- * Navegação inferior do Modo Pesquisador (somente mobile).
+ * Navegação inferior do Modo Pesquisador (mobile-first).
  *
- * Mantém o fluxo direto definido para o app de campo:
- *   login → pesquisas ativas → coleta
- *
- * A aba "Pesquisas" leva de volta à lista de pesquisas ativas e a ação
- * "Sincronizar" abre o mesmo painel de Carregar/Descarregar do cabeçalho,
- * preservando toda a lógica de sincronização já existente. É exibida apenas
- * em telas pequenas (`md:hidden`) — no desktop o cabeçalho continua
- * concentrando essas ações.
+ * As abas apontam para funcionalidades que JÁ existem no sub-app de campo:
+ *   Início   → dashboard/central do pesquisador
+ *   Coletas  → lista de pesquisas ativas liberadas (abre a coleta)
+ *   Sync     → painel Carregar / Descarregar
+ *   Perfil   → dados do pesquisador, status e sair/trocar pesquisador
  */
 export const FieldBottomNav: React.FC<FieldBottomNavProps> = ({
   active,
   pendingCount,
-  onGoPesquisas,
-  onSync,
-  onLogout,
+  onSelect,
 }) => {
-  const itemClass = (isActive: boolean) =>
-    `flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[10px] font-bold transition-colors ${
-      isActive
-        ? 'bg-accent-primary-soft text-accent-primary'
-        : 'text-muted hover:bg-surface-raised hover:text-primary'
-    }`;
+  const items: TabItem[] = [
+    { id: 'home', label: 'Início', icon: <Home className="h-5 w-5" /> },
+    { id: 'pesquisas', label: 'Coletas', icon: <ClipboardList className="h-5 w-5" /> },
+    { id: 'sync', label: 'Sync', icon: <Cloud className="h-5 w-5" /> },
+    { id: 'perfil', label: 'Perfil', icon: <User className="h-5 w-5" /> },
+  ];
 
   return (
-    <nav
-      aria-label="Navegação do Modo Pesquisador"
-      className="fixed bottom-0 left-0 right-0 z-30 border-t border-ui bg-surface-app/95 backdrop-blur-md md:hidden"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-    >
-      <div className="mx-auto flex max-w-3xl items-stretch justify-around gap-1 px-2 py-1.5">
+    <nav className="field-bottom-nav" aria-label="Navegação do Modo Pesquisador">
+      {items.map((item) => (
         <button
+          key={item.id}
           type="button"
-          onClick={onGoPesquisas}
-          aria-current={active === 'pesquisas' ? 'page' : undefined}
-          className={itemClass(active === 'pesquisas')}
+          onClick={() => onSelect(item.id)}
+          aria-current={active === item.id ? 'page' : undefined}
+          className={`field-tab ${active === item.id ? 'is-active' : ''}`}
         >
-          <ClipboardList className="h-5 w-5" />
-          <span>Pesquisas</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={onSync}
-          className="relative flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[10px] font-bold text-on-accent bg-accent-primary-solid shadow-lg shadow-brand-900/30 transition-colors hover:bg-accent-primary-solid-hover active:scale-[0.98]"
-        >
-          <RefreshCw className="h-5 w-5" />
-          <span>Sincronizar</span>
-          {pendingCount > 0 && (
-            <span className="absolute right-2 top-1 rounded-full bg-accent-warning-solid px-1.5 text-[9px] font-black text-on-warning">
-              {pendingCount}
-            </span>
+          {item.icon}
+          <span>{item.label}</span>
+          {item.id === 'sync' && pendingCount > 0 && (
+            <span className="field-tab-badge">{pendingCount > 99 ? '99+' : pendingCount}</span>
           )}
         </button>
-
-        <button
-          type="button"
-          onClick={onLogout}
-          className={itemClass(false)}
-        >
-          <LogOut className="h-5 w-5" />
-          <span>Sair</span>
-        </button>
-      </div>
+      ))}
     </nav>
   );
 };

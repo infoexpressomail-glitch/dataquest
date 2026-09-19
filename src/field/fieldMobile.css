@@ -1,0 +1,777 @@
+/* ==========================================================================
+   fieldMobile.css — Modo Pesquisador / App de Campo (DataQuest)
+   --------------------------------------------------------------------------
+   Folha de estilo ISOLADA do aplicativo de campo. Todas as classes usam o
+   prefixo `field-` para não colidir com o painel administrativo.
+   Consome os tokens semânticos definidos em src/index.css (tema claro/escuro),
+   portanto acompanha o tema automaticamente sem alterar o index.css global.
+   ========================================================================== */
+
+/* --------------------------------- Shell --------------------------------- */
+.field-app {
+  min-height: 100dvh;
+  width: 100%;
+  background: var(--surface-app);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Container mobile-first: 100% no celular, "moldura" de app no desktop. */
+.field-app-shell {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-app);
+  overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+  .field-app-shell {
+    min-height: 100dvh;
+    border-left: 1px solid var(--border-subtle);
+    border-right: 1px solid var(--border-subtle);
+    box-shadow: 0 25px 60px -30px rgba(0, 0, 0, 0.55);
+  }
+}
+
+.field-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem 1rem calc(6.5rem + env(safe-area-inset-bottom));
+  scroll-behavior: smooth;
+}
+
+@media (min-width: 768px) {
+  .field-scroll {
+    padding-bottom: 2.5rem;
+  }
+}
+
+/* -------------------------------- Header --------------------------------- */
+.field-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: linear-gradient(160deg, #0b2b50 0%, #0b4a8f 100%);
+  color: #ffffff;
+  padding-top: env(safe-area-inset-top);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.7);
+}
+
+.field-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+}
+
+.field-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.field-header-logo {
+  height: 2.4rem;
+  width: 2.4rem;
+  border-radius: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-weight: 900;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.field-header-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.field-header-subtitle {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.field-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.field-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.field-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.field-icon-btn:active {
+  transform: scale(0.95);
+}
+
+.field-icon-btn:focus-visible,
+.field-btn:focus-visible,
+.field-tab:focus-visible,
+.field-card-action:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.field-header-badge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.28rem;
+  border-radius: 9999px;
+  background: #f59e0b;
+  color: #1c1917;
+  font-size: 0.62rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0b2b50;
+}
+
+/* Faixa de status (Online/Offline + sincronização) */
+.field-status-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem 0.6rem;
+}
+
+.field-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.22rem 0.6rem;
+  border: 1px solid transparent;
+}
+
+.field-status-pill.is-online {
+  background: rgba(52, 211, 153, 0.18);
+  color: #6ee7b7;
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.field-status-pill.is-offline {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fcd34d;
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.field-status-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ------------------------------- Cards ----------------------------------- */
+.field-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  padding: 1rem;
+  box-shadow: 0 12px 28px -22px rgba(0, 0, 0, 0.55);
+}
+
+.field-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  padding: 1.1rem 1.15rem 1.25rem;
+  background: linear-gradient(150deg, #0b2b50 0%, #0b4a8f 100%);
+  color: #ffffff;
+  box-shadow: 0 18px 40px -26px rgba(11, 43, 80, 0.9);
+}
+
+.field-hero-greeting {
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.field-hero-sub {
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.field-hero-progress {
+  margin-top: 0.9rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.field-hero-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #34d399, #6ee7b7);
+  transition: width 0.4s ease;
+}
+
+.field-hero-stats {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.field-hero-stats strong {
+  color: #ffffff;
+  font-size: 0.92rem;
+}
+
+.field-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+}
+
+.field-summary-item {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  padding: 0.7rem 0.6rem;
+  text-align: center;
+}
+
+.field-summary-value {
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.field-summary-label {
+  margin-top: 0.3rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.field-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.2rem 0.15rem 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.field-section-title .field-count {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  background: var(--accent-primary-soft-bg);
+  border: 1px solid var(--accent-primary-soft-border);
+  border-radius: 9999px;
+  padding: 0.15rem 0.55rem;
+}
+
+/* -------------------------- Card de pesquisa ----------------------------- */
+.field-survey-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  padding: 0.95rem 1rem 1rem;
+  box-shadow: 0 12px 28px -24px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+.field-survey-card + .field-survey-card {
+  margin-top: 0.7rem;
+}
+
+.field-survey-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.field-survey-icon {
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-primary-soft-bg);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary-soft-border);
+  flex-shrink: 0;
+}
+
+.field-survey-name {
+  font-size: 0.94rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+.field-survey-code {
+  display: inline-block;
+  margin-top: 0.15rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.field-survey-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.field-survey-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.field-progress {
+  margin-top: 0.7rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background: var(--surface-raised);
+  overflow: hidden;
+}
+
+.field-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--accent-primary-solid);
+  transition: width 0.4s ease;
+}
+
+.field-survey-progress-label {
+  margin-top: 0.3rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.66rem;
+  color: var(--text-muted);
+}
+
+.field-actions-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+/* ------------------------------- Botões ---------------------------------- */
+.field-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.9rem;
+  padding: 0 1rem;
+  border-radius: 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  border: 1px solid transparent;
+  transition: filter 0.15s ease, transform 0.1s ease, background 0.15s ease;
+  cursor: pointer;
+}
+
+.field-btn:active {
+  transform: scale(0.98);
+}
+
+.field-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.field-btn-primary {
+  background: var(--accent-primary-solid);
+  color: var(--text-on-accent);
+  box-shadow: 0 12px 24px -16px rgba(11, 74, 143, 0.9);
+  flex: 1 1 auto;
+}
+
+.field-btn-primary:hover:not(:disabled) {
+  background: var(--accent-primary-solid-hover);
+}
+
+.field-btn-ghost {
+  background: var(--surface-raised);
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.field-btn-ghost:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.field-btn-success {
+  background: var(--accent-success-solid);
+  color: var(--text-on-accent);
+}
+
+.field-btn-danger {
+  background: var(--accent-danger-soft-bg);
+  border-color: var(--accent-danger-soft-border);
+  color: var(--accent-danger);
+}
+
+.field-btn-block {
+  width: 100%;
+}
+
+/* ------------------------------ Bottom nav -------------------------------- */
+.field-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  z-index: 40;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-subtle);
+  padding-bottom: env(safe-area-inset-bottom);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .field-bottom-nav {
+    display: none;
+  }
+}
+
+.field-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.55rem 0.25rem 0.6rem;
+  min-height: 3.4rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-radius: 0.9rem;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.field-tab.is-active {
+  color: var(--accent-primary);
+  background: var(--accent-primary-soft-bg);
+}
+
+.field-tab-badge {
+  position: absolute;
+  top: 0.35rem;
+  right: 22%;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background: var(--accent-warning-solid);
+  color: var(--text-on-warning);
+  font-size: 0.58rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --------------------------- Offline / feedback --------------------------- */
+.field-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  border-radius: 1rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  border: 1px solid transparent;
+  margin-top: 0.75rem;
+}
+
+.field-alert.is-warning {
+  background: var(--accent-warning-soft-bg);
+  border-color: var(--accent-warning-soft-border);
+  color: var(--accent-warning);
+}
+
+.field-alert.is-success {
+  background: var(--accent-success-soft-bg);
+  border-color: var(--accent-success-soft-border);
+  color: var(--accent-success);
+}
+
+.field-alert.is-danger {
+  background: var(--accent-danger-soft-bg);
+  border-color: var(--accent-danger-soft-border);
+  color: var(--accent-danger);
+}
+
+.field-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.4rem;
+  padding: 2rem 1.25rem;
+  border: 1px dashed var(--border);
+  border-radius: 1.25rem;
+  background: var(--surface);
+}
+
+.field-empty-icon {
+  height: 3rem;
+  width: 3rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-raised);
+  color: var(--text-muted);
+}
+
+/* --------------------------- Login de campo ------------------------------- */
+.field-login-screen {
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(1rem + env(safe-area-inset-top)) 1rem calc(1rem + env(safe-area-inset-bottom));
+  background: radial-gradient(120% 80% at 50% 0%, #0b4a8f 0%, #0a0b10 70%);
+}
+
+.field-login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.5rem;
+  padding: 1.4rem 1.25rem 1.35rem;
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
+}
+
+.field-field-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 3rem;
+  border-radius: 0.95rem;
+  border: 1px solid var(--border);
+  background: var(--surface-input);
+  color: var(--text-primary);
+  padding: 0 0.9rem 0 2.6rem;
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-primary-soft-bg);
+}
+
+.field-input-wrap {
+  position: relative;
+}
+
+.field-input-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* ------------------------------- Coleta ----------------------------------- */
+.field-coleta-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: color-mix(in srgb, var(--surface-app) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: -1rem -1rem 0.9rem;
+}
+
+.field-collector {
+  color: var(--text-primary);
+}
+
+/* Ajustes de conforto para o formulário (CollectionSimulator) em campo:
+   áreas de toque maiores e tipografia legível, sem alterar a lógica. */
+.field-collector input[type='text'],
+.field-collector input[type='number'],
+.field-collector input[type='date'],
+.field-collector input[type='time'],
+.field-collector textarea,
+.field-collector select {
+  min-height: 2.85rem;
+  font-size: 0.95rem;
+  border-radius: 0.85rem;
+}
+
+.field-collector textarea {
+  min-height: 6rem;
+  padding: 0.7rem 0.8rem;
+}
+
+.field-collector button {
+  min-height: 2.75rem;
+  border-radius: 0.85rem;
+}
+
+/* ------------------------------ Perfil ------------------------------------ */
+.field-profile-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.field-avatar {
+  height: 3.4rem;
+  width: 3.4rem;
+  border-radius: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(150deg, #0b2b50 0%, #0b4a8f 100%);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.field-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.8rem;
+}
+
+.field-info-row:last-child {
+  border-bottom: none;
+}
+
+.field-info-row .label {
+  color: var(--text-muted);
+}
+
+.field-info-row .value {
+  color: var(--text-primary);
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ------------------------------ Utilitários -------------------------------- */
+.field-stack > * + * {
+  margin-top: 0.7rem;
+}
+
+.field-mt {
+  margin-top: 0.9rem;
+}
+
+.field-mb {
+  margin-bottom: 0.9rem;
+}
+
+.field-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.field-text-muted {
+  color: var(--text-muted);
+}
+
+.field-text-sm {
+  font-size: 0.78rem;
+}
+
+.field-text-xs {
+  font-size: 0.7rem;
+}

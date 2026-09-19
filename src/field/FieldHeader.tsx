@@ -1,117 +1,93 @@
 import React from 'react';
-import { useApp } from '../context/AppContext';
+import { RefreshCw, Wifi, WifiOff, LogOut } from 'lucide-react';
 import { Collaborator, AccessProfile } from '../types';
-import { FieldSection } from './fieldTypes';
-import { Menu, ArrowLeft, Wifi, WifiOff, RefreshCw, LogOut } from 'lucide-react';
 
 interface FieldHeaderProps {
-  section: FieldSection;
-  /** Colaborador autenticado no sub-app (opcional — usa o contexto quando ausente). */
-  user?: Collaborator;
-  /** Perfil do colaborador autenticado (opcional). */
+  /** Colaborador autenticado no sub-app. */
+  user: Collaborator;
+  /** Perfil do colaborador autenticado. */
   profile?: AccessProfile;
-  onToggleMobileSidebar: () => void;
-  /** Voltar ao ambiente de gestão. */
-  onExit: () => void;
-  /** Sair do Modo Pesquisador (limpa a sessão e volta ao login de campo). */
+  /** Estado efetivo de conexão (Online/Offline). */
+  online: boolean;
+  /** Quantidade de itens pendentes de sincronização. */
+  pendingCount: number;
+  /** Abre o painel de sincronização. */
+  onSync: () => void;
+  /** Sair do Modo Pesquisador (volta ao login de campo). */
   onLogout: () => void;
+  /** Indica que a sincronização está em andamento (spinner). */
+  syncing?: boolean;
 }
 
 /**
- * Cabeçalho fixo do sub-app: identidade + status de conexão/sincronização.
+ * Cabeçalho fixo do app de campo: identidade DataQuest + pesquisador,
+ * status Online/Offline, pendências de sincronização, ação de sincronizar e
+ * sair/trocar pesquisador. Mantém todas as ações existentes do fluxo de campo.
  */
 export const FieldHeader: React.FC<FieldHeaderProps> = ({
-  section,
   user,
   profile,
-  onToggleMobileSidebar,
-  onExit,
+  online,
+  pendingCount,
+  onSync,
   onLogout,
+  syncing = false,
 }) => {
-  const {
-    currentUser: ctxUser,
-    currentProfile: ctxProfile,
-    effectiveOnline,
-    offlineQueue,
-    pendingIndexedDbCount,
-  } = useApp();
-
-  const currentUser = user ?? ctxUser;
-  const currentProfile = profile ?? ctxProfile;
-
-  const isResearcher =
-    currentProfile?.id === 'prof_pesq' ||
-    currentProfile?.name.toLowerCase().includes('pesquisador');
-
-  const pendingCount = offlineQueue.length + pendingIndexedDbCount;
-
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-ui bg-surface-header/95 backdrop-blur px-4 sm:px-6 py-3">
-      <div className="flex items-center gap-3 min-w-0">
-        {/* Hamburger (mobile) */}
-        <button
-          onClick={onToggleMobileSidebar}
-          className="md:hidden text-muted hover:text-primary"
-          aria-label="Abrir menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-brand-600 to-brand-500 text-on-accent font-bold text-sm shadow-md shadow-brand-900/40 shrink-0">
-            {currentUser.nome.slice(0, 2).toUpperCase()}
+    <header className="field-header">
+      <div className="field-header-row">
+        <div className="field-header-brand">
+          <div className="field-header-logo" aria-hidden="true">
+            DQ
           </div>
-          <div className="min-w-0">
-            <div className="truncate text-xs font-bold text-primary">
-              {currentUser.nome}
-            </div>
-            <div className="truncate text-[10px] text-muted font-mono">
-              {currentUser.login} • Matr. {currentUser.cpf}
+          <div style={{ minWidth: 0 }}>
+            <div className="field-header-title">DataQuest Campo</div>
+            <div className="field-header-subtitle">
+              {user?.nome}
+              {profile?.name ? ` • ${profile.name}` : ''}
             </div>
           </div>
         </div>
+
+        <div className="field-header-actions">
+          <button
+            type="button"
+            onClick={onSync}
+            className="field-icon-btn"
+            aria-label={pendingCount > 0 ? `Sincronizar — ${pendingCount} pendente(s)` : 'Sincronizar'}
+            title="Sincronizar pesquisas e enviar coletas"
+          >
+            <RefreshCw className={`h-5 w-5 ${syncing ? 'animate-spin' : ''}`} />
+            {pendingCount > 0 && (
+              <span className="field-header-badge">{pendingCount > 99 ? '99+' : pendingCount}</span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={onLogout}
+            className="field-icon-btn"
+            aria-label="Sair / trocar pesquisador"
+            title="Sair / trocar pesquisador"
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        {/* Status de conexão */}
-        <span
-          className={`hidden sm:inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold ${
-            effectiveOnline
-              ? 'bg-accent-success-soft text-accent-success border border-accent-success-soft-border'
-              : 'bg-accent-warning-soft text-accent-warning border border-accent-warning-soft-border'
-          }`}
-        >
-          {effectiveOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-          {effectiveOnline ? 'Online' : 'Offline'}
+      <div className="field-status-strip">
+        <span className={`field-status-pill ${online ? 'is-online' : 'is-offline'}`}>
+          {online ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
+          {online ? 'Online' : 'Offline'}
         </span>
 
-        {/* Fila pendente */}
-        {pendingCount > 0 && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-accent-info-soft text-accent-info border border-accent-info-soft-border px-2.5 py-1 text-[10px] font-bold">
-            <RefreshCw className="h-3 w-3" />
-            {pendingCount} pendente(s)
-          </span>
-        )}
-
-        {/* Trocar pesquisador (logout do modo) */}
-        <button
-          onClick={onLogout}
-          className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-accent-danger-soft-border bg-accent-danger-soft px-3 py-1.5 text-xs font-semibold text-accent-danger hover:opacity-90 transition"
-        >
-          <LogOut className="h-3.5 w-3.5" />
-          <span>Trocar pesquisador</span>
-        </button>
-
-        {/* Voltar à gestão */}
-        <button
-          onClick={onExit}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-ui bg-surface-raised px-3 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition"
-        >
-          <ArrowLeft className="h-3.5 w-3.5 text-accent-primary" />
-          <span className="hidden sm:inline">
-            {isResearcher ? 'Alternar p/ Gestão' : 'Sair'}
-          </span>
-        </button>
+        <span className="field-status-sync">
+          {syncing
+            ? '⟳ Sincronizando...'
+            : pendingCount > 0
+              ? `☁ ${pendingCount} pendente(s)`
+              : '✓ Tudo sincronizado'}
+        </span>
       </div>
     </header>
   );
