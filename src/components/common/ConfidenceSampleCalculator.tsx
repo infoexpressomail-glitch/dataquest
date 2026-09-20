@@ -11,7 +11,9 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
+  FileText,
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 import {
   calculateSampleSize,
   calculateMarginOfErrorFromSample,
@@ -74,6 +76,128 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
     }
   };
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = 16;
+
+    // Header Oficial DataQuest
+    doc.setFillColor(15, 23, 42); // Slate-900
+    doc.rect(0, 0, pageWidth, 28, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('DATAQUEST • LAUDO TÉCNICO DE DIMENSIONAMENTO AMOSTRAL', 14, y);
+
+    y += 6;
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184); // Slate-400
+    doc.text(`Cálculo de Amostra Estatística e Margem de Erro (Cochran) • Emitido em: ${new Date().toLocaleString('pt-BR')}`, 14, y);
+
+    y += 18;
+
+    // Parâmetros Selecionados
+    doc.setFillColor(241, 245, 249);
+    doc.setDrawColor(203, 213, 225);
+    doc.roundedRect(14, y, pageWidth - 28, 28, 2, 2, 'FD');
+
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('PARÂMETROS DA METODOLOGIA ESTATÍSTICA', 18, y + 6);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(51, 65, 85);
+
+    const popText = usePopulation && population ? `População Finita (N): ${population.toLocaleString('pt-BR')} indivíduos` : 'População Infinita / Ampla (N > 100.000)';
+    doc.text(`• Nível de Confiança: ${confidencePercent}% (Escore Crítico Z: ${sampleResult.zScore})`, 18, y + 12);
+    doc.text(`• Margem de Erro Máxima Aceitável: ±${marginOfError}% (pontos percentuais)`, 18, y + 17);
+    doc.text(`• Escopo Populacional: ${popText}`, 18, y + 22);
+
+    y += 34;
+
+    // Resultados Principais
+    doc.setFillColor(238, 242, 255); // Indigo 50
+    doc.setDrawColor(199, 210, 254);
+    doc.roundedRect(14, y, pageWidth - 28, 38, 2, 2, 'FD');
+
+    doc.setTextColor(30, 58, 138); // Blue-900
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('RESULTADO DO PLANO AMOSTRAL MÍNIMO REQUERIDO', 18, y + 6);
+
+    doc.setFontSize(18);
+    doc.setTextColor(37, 99, 235); // Blue-600
+    doc.text(`${sampleResult.sampleSize.toLocaleString('pt-BR')} Entrevistas Válidas`, 18, y + 15);
+
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
+    doc.text(`Recomendado com Margem de Segurança (+15% Reserva Técnica): ${sampleResult.idealRecomendadoReserva.toLocaleString('pt-BR')} entrevistas`, 18, y + 22);
+    doc.text(`Meta Atual Configurada no Sistema: ${currentGoal.toLocaleString('pt-BR')} coletas (Margem de Erro Efetiva na Meta: ±${currentGoalMargin.marginOfErrorPercent}%)`, 18, y + 27);
+    doc.text(`Fórmula Aplicada: ${sampleResult.formulaAplicada}`, 18, y + 32);
+
+    y += 44;
+
+    // Matriz de Sensibilidade
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('MATRIZ COMPARATIVA DE SENSIBILIDADE AMOSTRAL (CONFIANÇA × MARGEM DE ERRO)', 14, y);
+
+    y += 6;
+    doc.setFillColor(30, 41, 59);
+    doc.rect(14, y, pageWidth - 28, 7, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Confiança \\ Erro', 16, y + 5);
+
+    const colWidth = (pageWidth - 28 - 35) / matrixData.marginsOfError.length;
+    matrixData.marginsOfError.forEach((err, idx) => {
+      doc.text(`±${err}%`, 49 + idx * colWidth, y + 5);
+    });
+
+    y += 7;
+    matrixData.confidenceLevels.forEach((conf, cIdx) => {
+      const isOdd = cIdx % 2 === 1;
+      doc.setFillColor(isOdd ? 248 : 255, isOdd ? 250 : 255, isOdd ? 252 : 255);
+      doc.rect(14, y, pageWidth - 28, 6.5, 'F');
+      doc.setTextColor(15, 23, 42);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.text(`${conf}%`, 16, y + 4.5);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(51, 65, 85);
+      matrixData.marginsOfError.forEach((err, mIdx) => {
+        const val = matrixData.matrix[cIdx][mIdx];
+        doc.text(val.toLocaleString('pt-BR'), 49 + mIdx * colWidth, y + 4.5);
+      });
+
+      y += 6.5;
+    });
+
+    y += 8;
+    doc.setFillColor(241, 245, 249);
+    doc.roundedRect(14, y, pageWidth - 28, 14, 2, 2, 'F');
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7.5);
+    doc.setTextColor(100, 116, 139);
+    doc.text('Nota Metodológica: Baseado no modelo probabilístico de Cochran (1977) com variabilidade populacional máxima (p=0.5, q=0.5).', 18, y + 5);
+    doc.text('Para controle de quotas e distribuição demográfica, consulte as diretrizes de campo no Módulo de Metas.', 18, y + 9.5);
+
+    doc.save(`Laudo_Tecnico_Amostral_${confidencePercent}pct_${marginOfError}erro.pdf`);
+  };
+
   const confidencePresets = [90, 95, 95.5, 98, 99];
   const marginPresets = [2.0, 2.5, 3.0, 3.5, 4.0, 5.0];
 
@@ -98,29 +222,41 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
           </div>
         </div>
 
-        {onApplyGoal && (
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={handleApply}
-            className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm shrink-0 ${
-              appliedFeedback
-                ? 'bg-accent-success-solid text-on-accent'
-                : 'bg-accent-primary-solid hover:bg-accent-primary-solid-hover text-on-accent border border-brand-500'
-            }`}
+            onClick={handleExportPDF}
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-ui bg-surface-raised hover:bg-surface-hover text-primary transition-all shadow-xs"
+            title="Exportar Laudo Técnico em PDF"
           >
-            {appliedFeedback ? (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                <span>Meta Aplicada com Sucesso!</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                <span>Adotar {sampleResult.sampleSize} Coletas na Pesquisa</span>
-              </>
-            )}
+            <FileText className="h-4 w-4 text-accent-danger" />
+            <span>Laudo Técnico PDF</span>
           </button>
-        )}
+
+          {onApplyGoal && (
+            <button
+              type="button"
+              onClick={handleApply}
+              className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm shrink-0 ${
+                appliedFeedback
+                  ? 'bg-accent-success-solid text-on-accent'
+                  : 'bg-accent-primary-solid hover:bg-accent-primary-solid-hover text-on-accent border border-brand-500'
+              }`}
+            >
+              {appliedFeedback ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Meta Aplicada com Sucesso!</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span>Adotar {sampleResult.sampleSize} Coletas na Pesquisa</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Controls Grid */}

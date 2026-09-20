@@ -15,7 +15,7 @@ import {
 import { exportSubmissionsToCSV, exportSubmissionsToPDF } from '../../utils/exportUtils';
 import { CrossTabReport } from './CrossTabReport';
 import { FieldTeamSizingCard } from '../metas/FieldTeamSizingCard';
-import { calculateTeamSizing } from '../../utils/crosstabUtils';
+import { calculateTeamSizing, exportSurveyToSPSS } from '../../utils/crosstabUtils';
 
 export const AnalyticsModule: React.FC = () => {
   const { surveys, submissions, saveSurvey } = useApp();
@@ -91,7 +91,17 @@ export const AnalyticsModule: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {selectedSurvey && (
+            <button
+              onClick={() => exportSurveyToSPSS(selectedSurvey, currentSubs)}
+              className="flex items-center gap-1.5 rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3 py-2 text-xs font-bold text-accent-purple-soft-text hover:bg-accent-purple-solid hover:text-on-accent transition-colors"
+              title="Exportar Pacote IBM SPSS Statistics (.sps + .dat)"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>Exportar SPSS (.sps)</span>
+            </button>
+          )}
           <button
             onClick={() => exportSubmissionsToCSV(currentSubs, selectedSurvey)}
             className="flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3.5 py-2 text-xs font-bold text-primary shadow-sm hover:bg-surface-hover hover:text-primary transition-colors"

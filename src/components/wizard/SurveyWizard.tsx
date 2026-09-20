@@ -1640,14 +1640,46 @@ export const SurveyWizard: React.FC = () => {
                   <label className="block text-xs font-bold text-secondary">
                     Resposta de Comparação
                   </label>
-                  <input
-                    id="input-rule-valor"
-                    type="text"
-                    value={ruleValor}
-                    onChange={(e) => setRuleValor(e.target.value)}
-                    placeholder="Ex: Não, Sim, ou valor..."
-                    className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-brand-500 focus:outline-none"
-                  />
+                  {(() => {
+                    const qOrigemObj = formData.perguntas.find((x) => x.id === ruleOrigemId);
+                    if (qOrigemObj?.opcoes && qOrigemObj.opcoes.length > 0) {
+                      return (
+                        <div className="mt-1 space-y-1.5">
+                          <select
+                            id="select-rule-valor-opcao"
+                            value={ruleValor}
+                            onChange={(e) => setRuleValor(e.target.value)}
+                            className="w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-brand-500 focus:outline-none"
+                          >
+                            <option value="">Selecione uma das alternativas...</option>
+                            {qOrigemObj.opcoes.map((opt) => (
+                              <option key={opt.id} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            id="input-rule-valor"
+                            type="text"
+                            value={ruleValor}
+                            onChange={(e) => setRuleValor(e.target.value)}
+                            placeholder="Ou digite o valor exato..."
+                            className="w-full rounded-lg border border-ui bg-surface-raised px-2.5 py-1 text-[11px] text-secondary placeholder-slate-500 focus:border-brand-500 focus:outline-none"
+                          />
+                        </div>
+                      );
+                    }
+                    return (
+                      <input
+                        id="input-rule-valor"
+                        type="text"
+                        value={ruleValor}
+                        onChange={(e) => setRuleValor(e.target.value)}
+                        placeholder="Ex: Não, Sim, ou valor..."
+                        className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary placeholder-slate-500 shadow-xs focus:border-brand-500 focus:outline-none"
+                      />
+                    );
+                  })()}
                 </div>
 
                 {/* Campo de ação de acordo com o filtro */}

@@ -19,9 +19,11 @@ import {
   History,
   Save,
   X,
+  Sparkles,
 } from 'lucide-react';
 import { InterviewSubmission, Survey } from '../../types';
 import { exportSubmissionsToCSV, exportSubmissionsToPDF } from '../../utils/exportUtils';
+import { exportSurveyToSPSS } from '../../utils/crosstabUtils';
 import { exportSingleAudio } from '../../utils/audioUtils';
 import { AudioPlayerModal } from '../surveys/AudioPlayerModal';
 import { AudioExportModal } from '../surveys/AudioExportModal';
@@ -155,6 +157,22 @@ export const ResponsesModule: React.FC = () => {
 
           {canExport && (
             <>
+              {selectedSurveyId !== 'all' && (
+                <button
+                  id="btn-export-spss-responses"
+                  onClick={() => {
+                    const survey = surveys.find((s) => s.id === selectedSurveyId);
+                    if (survey) {
+                      exportSurveyToSPSS(survey, filteredSubmissions);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3 py-2 text-xs font-bold text-accent-purple-soft-text hover:bg-accent-purple-solid hover:text-on-accent transition-colors"
+                  title="Exportar Sintaxe e Dados IBM SPSS Statistics (.sps + .dat)"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span>SPSS (.sps)</span>
+                </button>
+              )}
               <button
                 id="btn-export-all-csv"
                 onClick={handleExportCSV}

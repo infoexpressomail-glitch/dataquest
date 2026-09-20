@@ -35,6 +35,7 @@ import {
   exportCrossTabToXLSX,
   exportCrossTabToXLS,
   exportCrossTabToPDF,
+  exportSurveyToSPSS,
   CrossTabVariable,
 } from '../../utils/crosstabUtils';
 
@@ -336,6 +337,18 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
             >
               <FileSpreadsheet className="h-3.5 w-3.5" />
               <span>XLS</span>
+            </button>
+
+            {/* SPSS (.sps + .dat) */}
+            <button
+              onClick={() => {
+                exportSurveyToSPSS(activeSurvey, activeSubmissions);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-accent-purple-soft-border bg-accent-purple-soft px-3 py-1.5 text-xs font-bold text-accent-purple-soft-text hover:bg-accent-purple-solid hover:text-on-accent transition-all shadow-xs"
+              title="Baixar Pacote IBM SPSS Statistics (Sintaxe .sps + Dicionário de Códigos e Dados .dat)"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>SPSS (.sps)</span>
             </button>
 
             {/* CSV */}

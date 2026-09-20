@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Survey, Collaborator } from '../../types';
-import { calculateTeamSizing, TeamSizingResult } from '../../utils/crosstabUtils';
+import { calculateTeamSizing, TeamSizingResult, exportSurveyToSPSS } from '../../utils/crosstabUtils';
 import {
   exportTeamSizingToPDF,
   exportTeamSizingToXLSX,
@@ -389,6 +389,21 @@ export const TeamSizingModule: React.FC = () => {
               <FileSpreadsheet className="h-3.5 w-3.5 text-accent-success" />
               <span>Excel</span>
             </button>
+
+            {/* Exportar SPSS */}
+            {currentSurvey && (
+              <button
+                id="btn-export-spss-dimensionamento"
+                onClick={() =>
+                  exportSurveyToSPSS(virtualSurvey, submissions)
+                }
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border transition-colors bg-accent-purple-soft border-accent-purple-soft-border text-accent-purple-soft-text hover:bg-accent-purple-solid hover:text-on-accent"
+                title="Exportar Sintaxe e Dados SPSS (.sps + .dat)"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>SPSS</span>
+              </button>
+            )}
 
             {/* Salvar na Pesquisa — apenas para quem administra metas/planejamento */}
             {canSaveSizing && (

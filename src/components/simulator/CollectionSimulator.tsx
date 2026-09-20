@@ -93,6 +93,34 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
   const [audioTranscript, setAudioTranscript] = useState<string>('Gravação ambiental de campo');
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
+  // Coordenadas GPS reais do dispositivo (quando o navegador/permissão permitir)
+  const [currentCoords, setCurrentCoords] = useState<{
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setCurrentCoords({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy,
+          });
+        },
+        (err) => {
+          console.warn(
+            'Geolocalização não disponível ou permissão negada, utilizando estimativa:',
+            err.message
+          );
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
+    }
+  }, []);
+
   // Configurações da Pesquisa para Áudio
   const isAudioEnabled = activeSurvey ? activeSurvey.habilitarGravacaoAudio !== false : false;
   // Tempo limite configurado (padrão 2 minutos quando não especificado, máximo 10 minutos)
@@ -152,10 +180,30 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
   };
 
   // Evaluate conditional rules for this question
-  const evaluateNextStep = (currentAns: any) => {
-    if (!currentQuestion || !activeSurvey?.regras) return;
+  /**
+   * Uma pergunta está oculta quando existe regra 'esconder_pergunta' apontando
+   * para ela cuja condição é satisfeita pela resposta já dada à pergunta de origem.
+   */
+  const isQuestionHiddenByRule = (candidateId: string, givenAnswers: Record<string, any>): boolean =>
+    (activeSurvey?.regras ?? []).some((r) => {
+      if (r.acao !== 'esconder_pergunta' || r.perguntaDestinoId !== candidateId) return false;
+      const ansFromOrigin = givenAnswers[r.perguntaOrigemId];
+      if (ansFromOrigin === undefined || ansFromOrigin === null) return false;
+      const valStr = String(ansFromOrigin).trim().toLowerCase();
+      const ruleValStr = String(r.valorComparacao ?? '').trim().toLowerCase();
+      return (
+        (r.condicao === 'igual' && valStr === ruleValStr) ||
+        (r.condicao === 'diferente' && valStr !== ruleValStr) ||
+        (r.condicao === 'contem' && valStr.includes(ruleValStr))
+      );
+    });
 
-    const matchedRule = activeSurvey.regras.find((r) => {
+  const evaluateNextStep = (currentAns: any) => {
+    if (!currentQuestion || !activeSurvey) return;
+
+    const regras = activeSurvey.regras ?? [];
+
+    const matchedRule = regras.find((r) => {
       if (r.perguntaOrigemId !== currentQuestion.id) return false;
       const valStr = String(currentAns).trim().toLowerCase();
       const ruleValStr = String(r.valorComparacao).trim().toLowerCase();
@@ -183,12 +231,21 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
       }
     }
 
-    // Default: Next question or finalize review
-    if (currentQuestionIndex < activeSurvey.perguntas.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      handleOpenFinalReview(currentAns);
+    // Fluxo sequencial padrão — ignora perguntas ocultadas por regras
+    // 'esconder_pergunta' cuja condição foi atendida pelas respostas já dadas.
+    const updatedAnswers = { ...answers, [currentQuestion.id]: currentAns };
+
+    let nextIdx = currentQuestionIndex + 1;
+    while (nextIdx < activeSurvey.perguntas.length) {
+      if (!isQuestionHiddenByRule(activeSurvey.perguntas[nextIdx].id, updatedAnswers)) {
+        setCurrentQuestionIndex(nextIdx);
+        return;
+      }
+      nextIdx++;
     }
+
+    // Chegou ao fim das perguntas visíveis
+    handleOpenFinalReview(currentAns);
   };
 
   const handleNext = () => {
@@ -234,9 +291,23 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
     }
   };
 
+  const hasPrevVisibleQuestion = (() => {
+    if (!activeSurvey) return false;
+    for (let i = currentQuestionIndex - 1; i >= 0; i--) {
+      if (!isQuestionHiddenByRule(activeSurvey.perguntas[i].id, answers)) return true;
+    }
+    return false;
+  })();
+
   const handlePrev = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    if (!activeSurvey) return;
+    // Recua até a pergunta anterior que NÃO esteja oculta por regra.
+    let prevIdx = currentQuestionIndex - 1;
+    while (prevIdx >= 0 && isQuestionHiddenByRule(activeSurvey.perguntas[prevIdx].id, answers)) {
+      prevIdx--;
+    }
+    if (prevIdx >= 0) {
+      setCurrentQuestionIndex(prevIdx);
     }
   };
 
@@ -293,8 +364,8 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
             }
           : undefined,
         geolocalizacao: {
-          latitude: -23.55052 + (Math.random() - 0.5) * 0.02,
-          longitude: -46.633308 + (Math.random() - 0.5) * 0.02,
+          latitude: currentCoords?.latitude ?? -23.55052 + (Math.random() - 0.5) * 0.02,
+          longitude: currentCoords?.longitude ?? -46.633308 + (Math.random() - 0.5) * 0.02,
           bairro: 'Região de Coleta em Campo',
           cidade: 'São Paulo',
         },
@@ -1022,7 +1093,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
             <button
               type="button"
               onClick={handlePrev}
-              disabled={currentQuestionIndex === 0}
+              disabled={!hasPrevVisibleQuestion}
               className="flex items-center gap-1 rounded-lg px-3.5 py-2 text-xs font-semibold text-muted hover:bg-surface-raised hover:text-primary disabled:opacity-40 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />

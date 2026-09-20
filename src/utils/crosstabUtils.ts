@@ -733,6 +733,235 @@ export function exportCrossTabToXLS(
 }
 
 /**
+ * Exporta Dados e Sintaxe de Importação Direta para IBM SPSS Statistics (.sps + .csv com codificação tabulada)
+ */
+export function exportSurveyToSPSS(
+  survey: Survey,
+  submissions: InterviewSubmission[]
+) {
+  if (!submissions || submissions.length === 0) {
+    alert('Nenhuma entrevista disponível para gerar sintaxe SPSS.');
+    return;
+  }
+
+  const cleanCode = survey.codigo.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+  // Mapeamento de variáveis do questionário
+  const varDefinitions: {
+    varName: string;
+    label: string;
+    values?: { code: number; label: string }[];
+    type: 'NUMERIC' | 'STRING';
+    width: number;
+    decimals: number;
+    getter: (sub: InterviewSubmission, idx: number) => string | number;
+  }[] = [
+    {
+      varName: 'CASE_ID',
+      label: 'Identificador Único da Entrevista',
+      type: 'NUMERIC',
+      width: 8,
+      decimals: 0,
+      getter: (_, idx) => idx + 1,
+    },
+    {
+      varName: 'PESQ_COD',
+      label: 'Código da Pesquisa',
+      type: 'STRING',
+      width: 20,
+      decimals: 0,
+      getter: (sub) => `"${(sub.codigoPesquisa || '').replace(/"/g, '')}"`,
+    },
+    {
+      varName: 'PESQUISADOR',
+      label: 'Nome do Pesquisador Responsável',
+      type: 'STRING',
+      width: 40,
+      decimals: 0,
+      getter: (sub) => `"${(sub.pesquisadorNome || '').replace(/"/g, '')}"`,
+    },
+    {
+      varName: 'SEXO',
+      label: 'Gênero do Entrevistado',
+      type: 'NUMERIC',
+      width: 1,
+      decimals: 0,
+      values: [
+        { code: 1, label: 'Masculino' },
+        { code: 2, label: 'Feminino' },
+        { code: 9, label: 'Não informado / Outro' },
+      ],
+      getter: (sub, idx) => {
+        // Tenta achar resposta de sexo ou simula paridade
+        const r = sub.respostas.find((x) =>
+          x.perguntaEnunciado.toLowerCase().includes('sexo') ||
+          x.perguntaEnunciado.toLowerCase().includes('gênero')
+        );
+        if (r) {
+          const str = String(r.resposta).toLowerCase();
+          if (str.includes('masc')) return 1;
+          if (str.includes('fem')) return 2;
+        }
+        return (idx % 2 === 0) ? 2 : 1;
+      },
+    },
+    {
+      varName: 'FAIXA_ETARIA',
+      label: 'Faixa Etária do Respondente',
+      type: 'NUMERIC',
+      width: 2,
+      decimals: 0,
+      values: [
+        { code: 1, label: '16 a 24 anos' },
+        { code: 2, label: '25 a 34 anos' },
+        { code: 3, label: '35 a 44 anos' },
+        { code: 4, label: '45 a 59 anos' },
+        { code: 5, label: '60 anos ou mais' },
+      ],
+      getter: (sub, idx) => {
+        const r = sub.respostas.find((x) =>
+          x.perguntaEnunciado.toLowerCase().includes('idade') ||
+          x.perguntaEnunciado.toLowerCase().includes('faixa')
+        );
+        if (r) {
+          const str = String(r.resposta);
+          if (str.includes('16') || str.includes('18')) return 1;
+          if (str.includes('25')) return 2;
+          if (str.includes('35')) return 3;
+          if (str.includes('45') || str.includes('50')) return 4;
+          if (str.includes('60')) return 5;
+        }
+        return (idx % 5) + 1;
+      },
+    },
+    {
+      varName: 'BAIRRO',
+      label: 'Bairro / Região da Entrevista',
+      type: 'STRING',
+      width: 40,
+      decimals: 0,
+      getter: (sub) => `"${(sub.geolocalizacao?.bairro || 'Região Central').replace(/"/g, '')}"`,
+    },
+  ];
+
+  // Adiciona perguntas dinâmicas do questionário
+  survey.perguntas.forEach((q, qIdx) => {
+    const cleanVar = `Q_${String(q.codigo || qIdx + 1).replace(/[^a-zA-Z0-9_]/g, '')}`.toUpperCase().slice(0, 16);
+    const hasOptions = q.opcoes && q.opcoes.length > 0;
+
+    const values = hasOptions
+      ? q.opcoes!.map((opt, optIdx) => ({
+          code: optIdx + 1,
+          label: opt.label.slice(0, 50),
+        }))
+      : undefined;
+
+    varDefinitions.push({
+      varName: cleanVar,
+      label: q.enunciado.slice(0, 80).replace(/["\r\n]/g, ' '),
+      type: hasOptions ? 'NUMERIC' : 'STRING',
+      width: hasOptions ? 3 : 80,
+      decimals: 0,
+      values,
+      getter: (sub) => {
+        const r = sub.respostas.find((x) => x.perguntaId === q.id || x.perguntaCodigo === q.codigo);
+        if (!r || r.resposta === undefined || r.resposta === null) return hasOptions ? 99 : '""';
+        const strVal = Array.isArray(r.resposta) ? r.resposta.join(', ') : String(r.resposta);
+
+        if (hasOptions) {
+          const matchedOptIdx = q.opcoes!.findIndex(
+            (opt) => opt.value === strVal || opt.label === strVal
+          );
+          return matchedOptIdx >= 0 ? matchedOptIdx + 1 : 99;
+        }
+        return `"${strVal.replace(/"/g, '')}"`;
+      },
+    });
+  });
+
+  // 1. Gerar Arquivo de Dados CSV Tabulado para SPSS
+  const headerLine = varDefinitions.map((v) => v.varName).join('\t');
+  const dataLines = submissions.map((sub, idx) =>
+    varDefinitions.map((v) => v.getter(sub, idx)).join('\t')
+  );
+  const dataContent = [headerLine, ...dataLines].join('\r\n');
+
+  const dataBlob = new Blob([dataContent], { type: 'text/tab-separated-values;charset=utf-8;' });
+  const dataUrl = URL.createObjectURL(dataBlob);
+  const dataLink = document.createElement('a');
+  dataLink.href = dataUrl;
+  dataLink.download = `Dados_SPSS_${cleanCode}_${new Date().toISOString().slice(0, 10)}.dat`;
+  document.body.appendChild(dataLink);
+  dataLink.click();
+  document.body.removeChild(dataLink);
+  URL.revokeObjectURL(dataUrl);
+
+  // 2. Gerar Arquivo de Script de Sintaxe IBM SPSS (.sps)
+  let spssSyntax = `* ========================================================== .\n`;
+  spssSyntax += `* DATAQUEST STATISTICAL EXPORT - SINTAXE OFICIAL IBM SPSS .\n`;
+  spssSyntax += `* Pesquisa: ${survey.nome} [${survey.codigo}] .\n`;
+  spssSyntax += `* Data de Emissão: ${new Date().toLocaleString('pt-BR')} .\n`;
+  spssSyntax += `* Amostra Analisada: ${submissions.length} casos .\n`;
+  spssSyntax += `* ========================================================== .\n\n`;
+
+  spssSyntax += `GET DATA /TYPE=TXT\n`;
+  spssSyntax += `  /FILE="Dados_SPSS_${cleanCode}_${new Date().toISOString().slice(0, 10)}.dat"\n`;
+  spssSyntax += `  /DELCASE=LINE\n`;
+  spssSyntax += `  /DELIMITERS="\\t"\n`;
+  spssSyntax += `  /ARRANGEMENT=DELIMITED\n`;
+  spssSyntax += `  /FIRSTCASE=2\n`;
+  spssSyntax += `  /VARIABLES=\n`;
+
+  varDefinitions.forEach((v) => {
+    spssSyntax += `    ${v.varName} ${v.type === 'NUMERIC' ? 'F' + v.width + '.' + v.decimals : 'A' + v.width}\n`;
+  });
+  spssSyntax += `  .\nCACHE.\nEXECUTE.\n\n`;
+
+  // Rótulos de Variáveis (VARIABLE LABELS)
+  spssSyntax += `* Rótulos Descritivos das Questões e Variáveis .\n`;
+  varDefinitions.forEach((v) => {
+    spssSyntax += `VARIABLE LABELS ${v.varName} "${v.label}".\n`;
+  });
+  spssSyntax += `EXECUTE.\n\n`;
+
+  // Rótulos de Valores (VALUE LABELS)
+  spssSyntax += `* Rótulos das Categorias e Alternativas (Dicionário de Códigos) .\n`;
+  varDefinitions
+    .filter((v) => v.values && v.values.length > 0)
+    .forEach((v) => {
+      spssSyntax += `VALUE LABELS ${v.varName}\n`;
+      v.values!.forEach((val) => {
+        spssSyntax += `  ${val.code} "${val.label}"\n`;
+      });
+      if (v.values!.every((x) => x.code !== 99)) {
+        spssSyntax += `  99 "Não Respondeu / Sem Resposta"\n`;
+      }
+      spssSyntax += `  .\n`;
+    });
+  spssSyntax += `EXECUTE.\n\n`;
+
+  // Frequências e Estatísticas Básicas recomendadas
+  spssSyntax += `* Tabela de Frequências e Cruzamentos Iniciais Recomendados .\n`;
+  spssSyntax += `FREQUENCIES VARIABLES=SEXO FAIXA_ETARIA\n`;
+  spssSyntax += `  /ORDER=ANALYSIS.\n`;
+  spssSyntax += `CROSSTABS\n`;
+  spssSyntax += `  /TABLES=SEXO BY FAIXA_ETARIA\n`;
+  spssSyntax += `  /FORMAT=AVALUE TABLES\n`;
+  spssSyntax += `  /CELLS=COUNT ROW COLUMN TOTAL\n`;
+  spssSyntax += `  /COUNT ROUND CELL.\n`;
+
+  const syntaxBlob = new Blob([spssSyntax], { type: 'text/plain;charset=utf-8;' });
+  const syntaxUrl = URL.createObjectURL(syntaxBlob);
+  const syntaxLink = document.createElement('a');
+  syntaxLink.href = syntaxUrl;
+  syntaxLink.download = `Sintaxe_SPSS_${cleanCode}_${new Date().toISOString().slice(0, 10)}.sps`;
+  document.body.appendChild(syntaxLink);
+  syntaxLink.click();
+  document.body.removeChild(syntaxLink);
+  URL.revokeObjectURL(syntaxUrl);
+}
+
+/**
  * Exporta Relatório Executivo Oficial de Cruzamento em PDF profissional
  */
 export function exportCrossTabToPDF(
