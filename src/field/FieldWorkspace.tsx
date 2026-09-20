@@ -317,6 +317,22 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
     );
   };
 
+  // Botão de retorno ao início. A barra inferior (FieldBottomNav) é ocultada em
+  // telas largas (>= 768px), então as demais abas precisam de um caminho de volta
+  // que não dependa dela.
+  const renderBackToHome = () => (
+    <button
+      type="button"
+      onClick={() => setTab('home')}
+      className="field-btn field-btn-ghost"
+      style={{ minHeight: '2.5rem', padding: '0 0.9rem', marginBottom: '0.85rem' }}
+      aria-label="Voltar à tela inicial do pesquisador"
+    >
+      <ArrowLeft className="h-4 w-4" />
+      <span>Voltar ao início</span>
+    </button>
+  );
+
   // -------------------------------- INÍCIO ---------------------------------
   const renderHome = () => (
     <>
@@ -422,6 +438,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
   // ------------------------------ PESQUISAS --------------------------------
   const renderPesquisas = () => (
     <>
+      {renderBackToHome()}
       <div className="field-section-title" style={{ marginTop: '0.25rem' }}>
         <ClipboardList className="h-4 w-4" style={{ color: 'var(--accent-primary)' }} />
         Minhas coletas
@@ -453,6 +470,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
   // -------------------------------- SYNC -----------------------------------
   const renderSync = () => (
     <>
+      {renderBackToHome()}
       <div className="field-card">
         <div className="field-row-between">
           <div>
@@ -564,6 +582,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
   // ------------------------------- PERFIL ----------------------------------
   const renderPerfil = () => (
     <>
+      {renderBackToHome()}
       <div className="field-card">
         <div className="field-profile-head">
           <div className="field-avatar" aria-hidden="true">
