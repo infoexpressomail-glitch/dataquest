@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   ShieldCheck,
@@ -13,6 +13,7 @@ import {
   Search,
   ChevronDown,
   ChevronRight,
+  Undo2,
 } from 'lucide-react';
 import { AccessProfile, AccessPolicyPermissions } from '../../types';
 
@@ -245,25 +246,64 @@ const PERMISSION_GROUPS: PermissionGroup[] = [
 ];
 
 export const AccessPolicies: React.FC = () => {
-  const { profiles, updateProfile } = useApp();
+  const { profiles, updateProfile, currentProfile } = useApp();
   const [selectedProfileId, setSelectedProfileId] = useState<string>(profiles[0]?.id || '');
-  const [activeProfile, setActiveProfile] = useState<AccessProfile>(
-    profiles.find((p) => p.id === selectedProfileId) || profiles[0]
-  );
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [activeProfile, setActiveProfile] = useState<AccessProfile | null>(() => {
+    const first = profiles.find((p) => p.id === (profiles[0]?.id || '')) || profiles[0];
+    return first ? (JSON.parse(JSON.stringify(first)) as AccessProfile) : null;
+  });
+  const [feedback, setFeedback] = useState<
+    { tone: 'success' | 'info' | 'error'; text: string } | null
+  >(null);
   const [searchTerm, setSearchTerm] = useState('');
   // Por padrão, grupos totalmente vazios ficam recolhidos — reduz a "parede de
   // checkboxes" e ajuda a responder rápido "o que este perfil PODE fazer?"
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
+  // Versão gravada do perfil em edição (a que está no contexto/localStorage).
+  const savedProfile = useMemo(
+    () => profiles.find((p) => p.id === activeProfile?.id) || null,
+    [profiles, activeProfile?.id]
+  );
+
+  // Quantas permissões foram mexidas desde o último salvamento deste perfil.
+  const pendingChanges = useMemo(() => {
+    if (!activeProfile || !savedProfile) return 0;
+    let n = 0;
+    PERMISSION_GROUPS.forEach((g) =>
+      g.items.forEach((item) => {
+        if (Boolean(activeProfile.permissions[item.key]) !== Boolean(savedProfile.permissions[item.key])) {
+          n += 1;
+        }
+      })
+    );
+    return n;
+  }, [activeProfile, savedProfile]);
+
+  const isDirty = pendingChanges > 0;
+
   const handleSelectProfile = (id: string) => {
+    if (id === activeProfile?.id) return;
+    if (isDirty) {
+      const ok = window.confirm(
+        `Você tem ${pendingChanges} alteração(ões) não salva(s) no perfil "${activeProfile?.name}". Trocar de perfil vai descartá-las. Deseja continuar?`
+      );
+      if (!ok) return;
+    }
     setSelectedProfileId(id);
     const found = profiles.find((p) => p.id === id);
     if (found) {
       setActiveProfile(JSON.parse(JSON.stringify(found)));
       setCollapsedGroups({});
       setSearchTerm('');
+      setFeedback(null);
     }
+  };
+
+  const handleDiscard = () => {
+    if (!savedProfile) return;
+    setActiveProfile(JSON.parse(JSON.stringify(savedProfile)));
+    setFeedback(null);
   };
 
   const toggleGroupCollapse = (category: string) => {
@@ -271,17 +311,24 @@ export const AccessPolicies: React.FC = () => {
   };
 
   const handleTogglePermission = (key: keyof AccessPolicyPermissions) => {
-    setActiveProfile((prev) => ({
-      ...prev,
-      permissions: {
-        ...prev.permissions,
-        [key]: !prev.permissions[key],
-      },
-    }));
+    setFeedback(null);
+    setActiveProfile((prev) =>
+      prev
+        ? {
+            ...prev,
+            permissions: {
+              ...prev.permissions,
+              [key]: !prev.permissions[key],
+            },
+          }
+        : prev
+    );
   };
 
   const handleToggleCategory = (group: PermissionGroup, enableAll: boolean) => {
+    setFeedback(null);
     setActiveProfile((prev) => {
+      if (!prev) return prev;
       const updated = { ...prev.permissions };
       group.items.forEach((item) => {
         updated[item.key] = enableAll;
@@ -293,10 +340,51 @@ export const AccessPolicies: React.FC = () => {
     });
   };
 
+  const setAllPermissions = (value: boolean) => {
+    setFeedback(null);
+    setActiveProfile((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev.permissions };
+      PERMISSION_GROUPS.forEach((g) =>
+        g.items.forEach((item) => {
+          updated[item.key] = value;
+        })
+      );
+      return { ...prev, permissions: updated };
+    });
+  };
+
   const handleSave = () => {
-    updateProfile(activeProfile);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+    if (!activeProfile) return;
+
+    if (!isDirty) {
+      setFeedback({ tone: 'info', text: 'Nenhuma alteração para salvar neste perfil.' });
+      return;
+    }
+
+    // Proteção contra bloqueio: o administrador logado não pode remover, do
+    // próprio perfil, o acesso a este módulo — ninguém mais conseguiria restaurá-lo.
+    const removingOwnAccess =
+      activeProfile.id === currentProfile?.id &&
+      Boolean(savedProfile?.permissions.politicas_acesso) &&
+      !activeProfile.permissions.politicas_acesso;
+    if (removingOwnAccess) {
+      setFeedback({
+        tone: 'error',
+        text: 'Não é possível remover "Acesso e Gestão de Políticas de Acesso" do seu próprio perfil: você perderia o acesso a esta tela. Peça a outro administrador ou mantenha esta opção marcada.',
+      });
+      return;
+    }
+
+    const result = updateProfile(activeProfile);
+    if (!result.changed) {
+      setFeedback({ tone: 'info', text: 'Nenhuma alteração para salvar neste perfil.' });
+      return;
+    }
+    setFeedback({
+      tone: 'success',
+      text: `Perfil "${activeProfile.name}" salvo: ${result.changes.length} permissão(ões) alterada(s). A alteração vale neste navegador e é registrada no Histórico de Ações.`,
+    });
   };
 
   // Filtra os grupos/itens pelo termo de busca (nome do módulo, permissão ou descrição).
@@ -313,6 +401,15 @@ export const AccessPolicies: React.FC = () => {
         ),
       })).filter((group) => group.items.length > 0)
     : PERMISSION_GROUPS;
+
+  if (!activeProfile) {
+    return (
+      <div className="rounded-2xl border border-dashed border-ui bg-surface p-8 text-center text-xs text-muted">
+        Nenhum perfil de acesso disponível. Use "Restaurar padrões" nas configurações do sistema
+        para recriar os perfis padrão.
+      </div>
+    );
+  }
 
   // Resumo geral do perfil: quantos módulos têm acesso total, parcial ou nenhum.
   // Responde de forma imediata "o que este perfil pode fazer?" sem precisar
@@ -348,19 +445,62 @@ export const AccessPolicies: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
-        >
-          <Save className="h-4 w-4" />
-          <span>Salvar Alterações de Política</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {isDirty && (
+            <button
+              type="button"
+              onClick={handleDiscard}
+              className="flex items-center gap-1.5 rounded-xl border border-ui bg-surface-raised px-3 py-2 text-xs font-semibold text-secondary transition hover:bg-surface-hover hover:text-primary"
+            >
+              <Undo2 className="h-4 w-4" />
+              <span>Descartar</span>
+            </button>
+          )}
+          <button
+            id="btn-salvar-politica-topo"
+            type="button"
+            onClick={handleSave}
+            disabled={!isDirty}
+            className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-4 py-2 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
+          >
+            <Save className="h-4 w-4" />
+            <span>
+              {isDirty ? `Salvar Alterações (${pendingChanges})` : 'Salvar Alterações de Política'}
+            </span>
+          </button>
+        </div>
       </div>
 
-      {saveSuccess && (
-        <div className="flex items-center gap-2 rounded-2xl border border-accent-success-soft-border bg-accent-success-soft p-4 text-xs font-bold text-accent-success">
-          <CheckCircle2 className="h-4 w-4 text-accent-success" />
-          <span>Políticas de acesso do perfil salvas e propagadas com sucesso!</span>
+      {isDirty && !feedback && (
+        <div
+          role="status"
+          className="flex items-center gap-2 rounded-2xl border border-accent-warning-soft-border bg-accent-warning-soft p-3 text-xs font-bold text-accent-warning"
+        >
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>
+            {pendingChanges} alteração(ões) não salva(s) em "{activeProfile.name}". Clique em Salvar
+            para aplicar.
+          </span>
+        </div>
+      )}
+
+      {feedback && (
+        <div
+          role={feedback.tone === 'error' ? 'alert' : 'status'}
+          className={`flex items-start gap-2 rounded-2xl border p-4 text-xs font-bold ${
+            feedback.tone === 'success'
+              ? 'border-accent-success-soft-border bg-accent-success-soft text-accent-success'
+              : feedback.tone === 'error'
+                ? 'border-accent-danger-soft-border bg-accent-danger-soft text-accent-danger'
+                : 'border-ui bg-surface-raised text-secondary'
+          }`}
+        >
+          {feedback.tone === 'success' ? (
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+          ) : (
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          )}
+          <span>{feedback.text}</span>
         </div>
       )}
 
@@ -403,30 +543,14 @@ export const AccessPolicies: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => {
-                const updated = { ...activeProfile.permissions };
-                PERMISSION_GROUPS.forEach((g) => {
-                  g.items.forEach((item) => {
-                    updated[item.key] = true;
-                  });
-                });
-                setActiveProfile({ ...activeProfile, permissions: updated });
-              }}
+              onClick={() => setAllPermissions(true)}
               className="rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition-colors"
             >
               Marcar Todos
             </button>
             <button
               type="button"
-              onClick={() => {
-                const updated = { ...activeProfile.permissions };
-                PERMISSION_GROUPS.forEach((g) => {
-                  g.items.forEach((item) => {
-                    updated[item.key] = false;
-                  });
-                });
-                setActiveProfile({ ...activeProfile, permissions: updated });
-              }}
+              onClick={() => setAllPermissions(false)}
               className="rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-hover hover:text-primary transition-colors"
             >
               Desmarcar Todos
@@ -585,11 +709,16 @@ export const AccessPolicies: React.FC = () => {
 
       <div className="flex justify-end pt-4">
         <button
+          id="btn-salvar-politica-rodape"
+          type="button"
           onClick={handleSave}
-          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95"
+          disabled={!isDirty}
+          className="flex items-center gap-1.5 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 transition hover:bg-accent-primary-solid-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
         >
           <Save className="h-4 w-4" />
-          <span>Salvar Alterações de Política</span>
+          <span>
+            {isDirty ? `Salvar Alterações (${pendingChanges})` : 'Salvar Alterações de Política'}
+          </span>
         </button>
       </div>
     </div>

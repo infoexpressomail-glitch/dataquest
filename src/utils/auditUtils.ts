@@ -116,6 +116,14 @@ export function getActionTypeMeta(tipo: ActionType): {
         badgeText: 'text-pink-400',
         badgeBorder: 'border-pink-500/30',
       };
+    case 'ALTERACAO_POLITICA_ACESSO':
+      return {
+        label: 'Política de Acesso',
+        category: 'CONFIGURACAO',
+        badgeBg: 'bg-fuchsia-500/10',
+        badgeText: 'text-fuchsia-400',
+        badgeBorder: 'border-fuchsia-500/30',
+      };
     case 'IMPORTACAO_DADOS':
       return {
         label: 'Importação Externa',

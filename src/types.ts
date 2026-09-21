@@ -526,6 +526,7 @@ export type ActionType =
   | 'EXCLUSAO_RESPOSTA'
   | 'NOVA_COLETA'
   | 'ALTERACAO_META'
+  | 'ALTERACAO_POLITICA_ACESSO'
   | 'IMPORTACAO_DADOS'
   | 'ACAO_EM_LOTE'
   | 'SINCRONIZACAO_OFFLINE'
@@ -556,7 +557,15 @@ export interface ActionAuditLog {
   };
   // O quê
   alvo: {
-    tipo: 'pesquisa' | 'resposta' | 'meta' | 'importacao' | 'sistema' | 'colaborador' | 'relatorio';
+    tipo:
+      | 'pesquisa'
+      | 'resposta'
+      | 'meta'
+      | 'importacao'
+      | 'sistema'
+      | 'colaborador'
+      | 'relatorio'
+      | 'perfil';
     id: string;
     identificador: string;
     nome?: string;

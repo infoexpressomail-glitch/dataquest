@@ -72,7 +72,7 @@ interface AppContextType {
   setTwoFactorVerified: (v: boolean) => void;
   verify2FA: (code: string) => boolean;
   profiles: AccessProfile[];
-  updateProfile: (p: AccessProfile) => void;
+  updateProfile: (p: AccessProfile) => { changed: boolean; changes: FieldChange[] };
   collaborators: Collaborator[];
   saveCollaborator: (c: Collaborator, senha?: string) => Promise<boolean>;
   toggleCollaboratorStatus: (id: string) => void;
@@ -211,17 +211,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!saved) return initialProfiles;
     try {
       const parsed: AccessProfile[] = JSON.parse(saved);
-      return parsed.map((p) => {
-        const init = initialProfiles.find((x) => x.id === p.id);
-        return {
-          ...p,
-          permissions: {
-            ...(init ? init.permissions : {}),
-            ...p.permissions,
-            meta_acesso: p.id === 'prof_pesq' ? true : p.permissions.meta_acesso,
-          },
-        };
-      });
+      // Lista vazia ou inválida derrubaria a tela de Políticas de Acesso
+      // (profiles[0] indefinido) e deixaria o usuário logado sem perfil.
+      if (!Array.isArray(parsed) || parsed.length === 0) return initialProfiles;
+
+      const merged = parsed
+        .filter((p) => p && typeof p.id === 'string')
+        .map((p) => {
+          const init = initialProfiles.find((x) => x.id === p.id);
+          return {
+            ...p,
+            // Completa chaves de permissão criadas depois do perfil ter sido salvo,
+            // sem sobrescrever nenhum valor que o administrador já tenha definido.
+            permissions: {
+              ...(init ? init.permissions : {}),
+              ...(p.permissions || {}),
+            } as AccessPolicyPermissions,
+          };
+        });
+
+      // Garante que os perfis padrão nunca desapareçam (colaboradores apontam para eles).
+      const missing = initialProfiles.filter((init) => !merged.some((p) => p.id === init.id));
+      return merged.length > 0 ? [...merged, ...missing] : initialProfiles;
     } catch {
       return initialProfiles;
     }
@@ -1121,10 +1132,57 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return false;
   };
 
-  const updateProfile = (updatedProfile: AccessProfile) => {
-    setProfiles((prev) =>
-      prev.map((p) => (p.id === updatedProfile.id ? updatedProfile : p))
-    );
+  const updateProfile = (
+    updatedProfile: AccessProfile
+  ): { changed: boolean; changes: FieldChange[] } => {
+    const previous = profiles.find((p) => p.id === updatedProfile.id);
+    const keys = Array.from(
+      new Set([
+        ...Object.keys(previous?.permissions || {}),
+        ...Object.keys(updatedProfile.permissions || {}),
+      ])
+    ) as (keyof AccessPolicyPermissions)[];
+
+    const changes: FieldChange[] = keys
+      .filter((k) => Boolean(previous?.permissions?.[k]) !== Boolean(updatedProfile.permissions?.[k]))
+      .map((k) => ({
+        campo: String(k),
+        rotulo: String(k),
+        valorAnterior: Boolean(previous?.permissions?.[k]),
+        valorNovo: Boolean(updatedProfile.permissions?.[k]),
+      }));
+
+    if (changes.length === 0) {
+      return { changed: false, changes };
+    }
+
+    setProfiles((prev) => prev.map((p) => (p.id === updatedProfile.id ? updatedProfile : p)));
+
+    const ativadas = changes.filter((c) => c.valorNovo === true).length;
+    const removidas = changes.length - ativadas;
+    addAuditLog({
+      categoria: 'CONFIGURACAO',
+      tipoAcao: 'ALTERACAO_POLITICA_ACESSO',
+      tituloAcao: `Política de acesso alterada: ${updatedProfile.name}`,
+      descricaoDetalhada: `${changes.length} permissão(ões) alterada(s) no perfil "${updatedProfile.name}" (${ativadas} concedida(s), ${removidas} revogada(s)).`,
+      autor: {
+        id: currentUser.id,
+        nome: currentUser.nome,
+        login: currentUser.login,
+        perfil: currentProfile?.name || 'Administrador',
+      },
+      alvo: {
+        tipo: 'perfil',
+        id: updatedProfile.id,
+        identificador: updatedProfile.name,
+        nome: updatedProfile.name,
+      },
+      alteracoes: changes,
+      motivoConformidade: 'Ajuste da matriz de privilégios (RBAC) pelo administrador.',
+      statusConformidade: removidas > 0 || ativadas > 0 ? 'atencao' : 'conforme',
+    });
+
+    return { changed: true, changes };
   };
 
   const addAuditLog = (
