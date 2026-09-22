@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/Header';
-import { Sidebar } from './components/Sidebar';
+import { AreaNav } from './components/navigation/AreaNav';
+import { GlobalSearch } from './components/navigation/GlobalSearch';
 import { HomeDashboard } from './components/HomeDashboard';
 import { SurveyManagementTable } from './components/surveys/SurveyManagementTable';
 import { SurveyWizard } from './components/wizard/SurveyWizard';
@@ -175,7 +176,7 @@ const MainContent: React.FC = () => {
 
       {/* Main layout container with Sidebar & Content */}
       <div className="flex flex-1">
-        <Sidebar
+        <AreaNav
           isOpenMobile={mobileSidebarOpen}
           onCloseMobile={() => setMobileSidebarOpen(false)}
         />
@@ -203,6 +204,9 @@ const MainContent: React.FC = () => {
           <span className="text-muted font-mono">UTC -03:00</span>
         </div>
       </footer>
+
+      {/* Busca global (Ctrl K) */}
+      <GlobalSearch />
 
       {/* 2FA Modal */}
       <TwoFactorModal

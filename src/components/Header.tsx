@@ -13,6 +13,7 @@ import {
   Menu,
   CheckCircle2,
   AlertTriangle,
+  Search,
   Wifi,
   WifiOff,
   CloudOff,
@@ -76,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
         </button>
 
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary-solid font-bold text-on-accent shadow-lg shadow-brand-900/40">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-400 font-bold text-on-accent shadow-lg shadow-brand-900/40">
             Q
           </div>
           <div>
@@ -91,6 +92,18 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Busca global (Ctrl K) */}
+        <button
+          id="btn-header-search"
+          onClick={() => window.dispatchEvent(new CustomEvent('dq:open-search'))}
+          title="Buscar pesquisa, pessoa ou ação (Ctrl K)"
+          className="flex items-center gap-2 rounded-lg border border-ui bg-surface px-2.5 py-1.5 text-xs text-muted transition hover:border-accent-primary hover:text-primary"
+        >
+          <Search className="h-4 w-4" />
+          <span className="hidden lg:inline">Buscar</span>
+          <span className="hidden rounded border border-ui bg-surface-raised px-1.5 py-0.5 text-[10px] font-bold lg:inline">Ctrl K</span>
+        </button>
+
         {/* Researcher Environment Badge */}
         {isResearcher && (
           <button
@@ -214,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
             onClick={() => setUserDropdownOpen(!userDropdownOpen)}
             className="flex items-center gap-2.5 rounded-xl border border-ui bg-surface p-1.5 pr-2.5 text-left text-xs transition hover:bg-surface-raised"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-brand-600 to-brand-400 text-xs font-bold text-primary shadow-md shadow-brand-900/40">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-brand-500 to-brand-400 text-xs font-bold text-primary shadow-md shadow-brand-900/40">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div className="hidden text-left lg:block">
