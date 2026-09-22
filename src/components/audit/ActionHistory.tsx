@@ -318,7 +318,7 @@ export const ActionHistory: React.FC = () => {
               onClick={() => setSelectedCategory('PESQUISA')}
               className={`px-2.5 py-1 rounded text-xs font-semibold whitespace-nowrap transition-colors ${
                 selectedCategory === 'PESQUISA'
-                  ? 'bg-accent-info-solid text-primary shadow-xs'
+                  ? 'bg-accent-info-solid text-on-accent shadow-xs'
                   : 'text-muted hover:text-primary'
               }`}
             >
@@ -467,7 +467,7 @@ export const ActionHistory: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-3 pt-1">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-brand-600 flex items-center justify-center text-xs font-bold text-primary shadow-xs shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-brand-600 flex items-center justify-center text-xs font-bold text-on-accent shadow-xs shrink-0">
                         {(log.autor?.nome || 'U').slice(0, 2).toUpperCase()}
                       </div>
                       <div className="overflow-hidden min-w-0 flex-1">

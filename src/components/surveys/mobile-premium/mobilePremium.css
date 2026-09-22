@@ -9,9 +9,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 .mp-root {
-  --mp-primary: #0b4a8f;
-  --mp-primary-dark: #083a70;
-  --mp-secondary: #16a34a;
+  --mp-primary: #2b66b0;
+  --mp-primary-dark: #1d4f8f;
+  --mp-secondary: #047857;
   --mp-bg: #f4f7fb;
   --mp-surface: #ffffff;
   --mp-text: #0f172a;
@@ -216,12 +216,12 @@
   height: 8px;
   width: 8px;
   border-radius: 999px;
-  background: #ff4d4d;
-  box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7);
+  background: #e11d48;
+  box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7);
   animation: mp-rec-pulse 1.4s infinite;
 }
 @keyframes mp-rec-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); }
+  0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); }
   70% { box-shadow: 0 0 0 8px rgba(255, 77, 77, 0); }
   100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
 }
@@ -311,7 +311,7 @@
   }
 }
 .mp-question-required {
-  color: #dc2626;
+  color: #b91c1c;
   margin-left: 3px;
 }
 .mp-question-media {
@@ -715,7 +715,7 @@
   flex: 1;
 }
 .mp-btn-success:hover:not(:disabled) {
-  background: #15803d;
+  background: #036045;
 }
 
 /* ------------------------------- Capa / final ----------------------------- */

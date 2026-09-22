@@ -206,7 +206,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [darkMode, setDarkModeState] = useState<boolean>(() => {
     const stored = localStorage.getItem(STORAGE_KEYS.DARK_MODE);
-    return stored !== null ? stored === 'true' : true;
+    // Paleta aprovada = clara (branco predominante + azul #2b66b0).
+    // O tema claro passa a ser o padrao para quem ainda nao escolheu;
+    // quem ja escolheu (valor salvo) continua com a sua preferencia.
+    return stored !== null ? stored === 'true' : false;
   });
 
   const [profiles, setProfiles] = useState<AccessProfile[]>(() => {
@@ -1088,6 +1091,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       document.documentElement.classList.add('light');
       document.documentElement.setAttribute('data-theme', 'light');
     }
+    // Mantem a barra do navegador/PWA coerente com o tema ativo.
+    const themeColor = darkMode ? '#0f172a' : '#f7f9fc';
+    let metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta');
+      metaTheme.setAttribute('name', 'theme-color');
+      document.head.appendChild(metaTheme);
+    }
+    metaTheme.setAttribute('content', themeColor);
   }, [darkMode]);
 
   useEffect(() => {

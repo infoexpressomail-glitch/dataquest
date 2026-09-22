@@ -76,9 +76,9 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
   const r = Math.sqrt(nx * nx + ny * ny);
 
   // Base background
-  let bgR = 15, bgG = 23, bgB = 42; // #0f172a
+  let bgR = 231, bgG = 240, bgB = 250; // #e7f0fa
   if (nx + ny > 0) {
-    bgR = 20; bgG = 30; bgB = 60;
+    bgR = 247; bgG = 249; bgB = 252; // #f7f9fc
   }
 
   if (isMaskable) {
@@ -97,7 +97,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
   if (inClipboard) {
     // Clipboard clip at top: nx between -0.22 and 0.22, ny between -0.68 and -0.52
     // Check clip
-    let cr = 30, cg = 41, cb = 59; // slate-800
+    let cr = 255, cg = 255, cb = 255; // branco (clipboard no tema claro)
     // Clipboard header clip
     if (nx >= -0.22 && nx <= 0.22 && ny >= -0.65 && ny <= -0.5) {
       return [11, 74, 143, 255]; // brand-600 (Azul GIDE)
@@ -106,8 +106,8 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
     // Row 1: Checkbox & bar
     if (ny >= -0.38 && ny <= -0.22) {
       if (nx >= -0.42 && nx <= -0.22) {
-        // Emerald check box
-        return [16, 185, 129, 255];
+        // Caixa de selecao (azul de marca)
+        return [43, 102, 176, 255];
       }
       if (nx >= -0.15 && nx <= 0.4) {
         return [148, 163, 184, 255]; // line
@@ -119,7 +119,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
       const rx = nx - (-0.32);
       const ry = ny - (-0.02);
       if (rx * rx + ry * ry <= 0.08 * 0.08) {
-        return [16, 185, 129, 255]; // Emerald radio
+        return [43, 102, 176, 255]; // Azul de marca
       }
       if (nx >= -0.15 && nx <= 0.3) {
         return [203, 213, 225, 255]; // line
@@ -129,7 +129,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
     // Row 3: Bar chart metric
     if (ny >= 0.18 && ny <= 0.34) {
       if (nx >= -0.42 && nx <= -0.22) {
-        return [5, 150, 105, 255]; // Emerald box
+        return [11, 74, 143, 255]; // Azul de marca (escuro)
       }
       if (nx >= -0.15 && nx <= 0.42) {
         return [148, 163, 184, 255];
@@ -147,7 +147,7 @@ function drawBrandIcon(x, y, w, h, isMaskable = false) {
     if (badgeDist >= 0.25) {
       return [255, 255, 255, 255]; // white border
     }
-    // Emerald microphone icon center
+    // Microfone branco no selo azul
     if (Math.abs(badgeDx) <= 0.06 && Math.abs(badgeDy) <= 0.12) {
       return [255, 255, 255, 255]; // white mic
     }

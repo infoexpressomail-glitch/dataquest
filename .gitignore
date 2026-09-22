@@ -10,3 +10,6 @@ dataquest.zip
 prompt_dataquest_claude_ai.md
 dataquest-atualizado.zip
 .vercel
+
+# Credenciais locais de teste — NUNCA versionar (contem login/senha em texto puro)
+auth.json

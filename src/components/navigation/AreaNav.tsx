@@ -224,7 +224,7 @@ export const AreaNav: React.FC<AreaNavProps> = ({ isOpenMobile, onCloseMobile })
         {/* Rodapé de perfil */}
         <div className="border-t border-ui/80 p-4 space-y-3 bg-surface-app">
           <div className="flex items-center gap-3 bg-surface-raised p-3 rounded-xl border border-ui shadow-sm">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-500 to-brand-400 flex items-center justify-center text-xs font-bold text-primary shadow-lg shadow-brand-950/60 shrink-0">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-500 to-brand-400 flex items-center justify-center text-xs font-bold text-on-accent shadow-lg shadow-brand-950/60 shrink-0">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div className="overflow-hidden min-w-0 flex-1">

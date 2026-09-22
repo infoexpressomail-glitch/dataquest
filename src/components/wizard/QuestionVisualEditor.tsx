@@ -255,7 +255,7 @@ export const QuestionVisualEditor: React.FC<QuestionVisualEditorProps> = ({ ques
             />
             <input
               type="color"
-              value={visual.badgeColor || '#16a34a'}
+              value={visual.badgeColor || '#047857'}
               onChange={(e) => patch({ badgeColor: e.target.value })}
               className="h-7 w-9 cursor-pointer rounded border border-ui"
             />

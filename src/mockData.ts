@@ -799,8 +799,8 @@ export const initialSurveys: Survey[] = [
       'Agradecemos a sua participação! As respostas são anônimas e serão usadas para planejar melhorias na rede municipal de ensino.',
     prefeituraMessage:
       'Secretaria Municipal de Educação — Compromisso com a qualidade do ensino para todos.',
-    themeAccent: '#0b4a8f',
-    themeSecondary: '#16a34a',
+    themeAccent: '#2b66b0',
+    themeSecondary: '#047857',
     showProgressPercent: true,
     showQuestionIndicator: true,
     startButtonLabel: 'Iniciar Pesquisa',

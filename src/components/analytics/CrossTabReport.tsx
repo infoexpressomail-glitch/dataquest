@@ -589,17 +589,17 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
                 <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border)" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
+                    backgroundColor: 'var(--surface-raised)',
+                    borderColor: 'var(--border)',
                     borderRadius: '12px',
-                    color: '#fff',
+                    color: 'var(--text-primary)',
                     fontSize: '12px',
                     boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
                   }}
-                  itemStyle={{ color: '#e2e8f0' }}
+                  itemStyle={{ color: 'var(--text-secondary)' }}
                 />
                 <Legend
-                  wrapperStyle={{ paddingTop: '10px', fontSize: '11px', color: '#cbd5e1' }}
+                  wrapperStyle={{ paddingTop: '10px', fontSize: '11px', color: 'var(--text-secondary)' }}
                 />
                 {crossTabMatrix.cols.map((colName, idx) => (
                   <Bar

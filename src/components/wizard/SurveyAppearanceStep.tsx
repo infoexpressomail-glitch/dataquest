@@ -152,7 +152,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 <div className="mt-1.5 flex items-center gap-3">
                   <input
                     type="color"
-                    value={formData.themeAccent || '#0b4a8f'}
+                    value={formData.themeAccent || '#2b66b0'}
                     onChange={(e) => set({ themeAccent: e.target.value })}
                     className="h-10 w-14 cursor-pointer rounded-lg border border-ui bg-surface-card"
                   />
@@ -175,7 +175,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 <div className="mt-1.5 flex items-center gap-3">
                   <input
                     type="color"
-                    value={formData.themeSecondary || '#16a34a'}
+                    value={formData.themeSecondary || '#047857'}
                     onChange={(e) => set({ themeSecondary: e.target.value })}
                     className="h-10 w-14 cursor-pointer rounded-lg border border-ui bg-surface-card"
                   />

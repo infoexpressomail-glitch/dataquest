@@ -20,10 +20,10 @@ import { getGalleryImageById } from './imageLibrary';
 
 // ------------------------------- Tema GIDE --------------------------------
 export const GIDE_THEME = {
-  primary: '#0b4a8f',
-  primaryDark: '#083a70',
-  primaryLight: '#e8f0fb',
-  secondary: '#16a34a',
+  primary: '#2b66b0',
+  primaryDark: '#1d4f8f',
+  primaryLight: '#e7f0fa',
+  secondary: '#047857',
   surface: '#ffffff',
   background: '#f4f7fb',
   text: '#0f172a',

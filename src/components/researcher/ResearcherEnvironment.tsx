@@ -162,7 +162,7 @@ export const ResearcherEnvironment: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Identificação do pesquisador + ações pontuais (sem barra de abas) */}
-      <div className="relative overflow-hidden rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-[#121629] via-[#111624] to-[#0e121d] p-6 shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl border border-accent-primary-soft-border bg-gradient-to-r from-accent-primary-soft via-surface to-surface-raised p-6 shadow-2xl">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-start sm:items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-700 to-brand-500 text-on-accent font-black text-xl shadow-lg shadow-brand-900/50 shrink-0">

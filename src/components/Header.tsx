@@ -227,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
             onClick={() => setUserDropdownOpen(!userDropdownOpen)}
             className="flex items-center gap-2.5 rounded-xl border border-ui bg-surface p-1.5 pr-2.5 text-left text-xs transition hover:bg-surface-raised"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-brand-500 to-brand-400 text-xs font-bold text-primary shadow-md shadow-brand-900/40">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-brand-500 to-brand-400 text-xs font-bold text-on-accent shadow-md shadow-brand-900/40">
               {currentUser.nome.slice(0, 2).toUpperCase()}
             </div>
             <div className="hidden text-left lg:block">

@@ -810,7 +810,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                   <span>Perfil: <strong className="text-secondary">{currentProfile?.name || 'Pesquisador'}</strong></span>
                 </div>
               </div>
-              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-xs font-bold text-primary shrink-0 shadow-md">
+              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-xs font-bold text-on-accent shrink-0 shadow-md">
                 {currentUser.nome.slice(0, 2).toUpperCase()}
               </div>
             </div>

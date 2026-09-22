@@ -138,10 +138,10 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
       </div>
 
       {/* Researcher Identity Header */}
-      <div className="bg-gradient-to-b from-[#161822] to-[#0d0e12] px-5 pt-4 pb-4 border-b border-ui/80">
+      <div className="bg-gradient-to-b from-surface to-surface-raised px-5 pt-4 pb-4 border-b border-ui/80">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-600 text-sm font-black text-primary shadow-md shadow-brand-900/40">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-600 text-sm font-black text-on-accent shadow-md shadow-brand-900/40">
               {activeResearcher.nome.charAt(0)}
             </div>
             <div>

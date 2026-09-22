@@ -140,7 +140,7 @@ export const PWAFirstVisitMobilePrompt: React.FC<PWAFirstVisitMobilePromptProps>
           <div className="space-y-2.5 pt-1">
             <button
               onClick={handleInstallClick}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-600 py-3 text-xs font-black text-primary shadow-xl shadow-brand-900/40 hover:from-brand-500 hover:to-brand-500 transition-all active:scale-[0.99]"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-600 py-3 text-xs font-black text-on-accent shadow-xl shadow-brand-900/40 hover:from-brand-500 hover:to-brand-500 transition-all active:scale-[0.99]"
             >
               <Download className="h-4 w-4" />
               <span>Instalar Aplicativo no Celular</span>

@@ -153,7 +153,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           {/* Login Form Box */}
           <div className="rounded-3xl border border-ui bg-surface p-6 sm:p-8 shadow-2xl backdrop-blur-md">
             <div className="text-center space-y-1.5 mb-6">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 text-primary shadow-xl shadow-brand-900/40 mb-3">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 text-on-accent shadow-xl shadow-brand-900/40 mb-3">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <h1 className="text-xl font-bold text-primary sm:text-2xl">

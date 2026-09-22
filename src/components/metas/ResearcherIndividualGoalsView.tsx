@@ -84,10 +84,10 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3.5">
             <div className="relative">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-600 to-brand-700 text-lg font-bold text-primary shadow-lg shadow-brand-900/30">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-600 to-brand-700 text-lg font-bold text-on-accent shadow-lg shadow-brand-900/30">
                 {activeResearcher.nome.charAt(0)}
               </div>
-              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-success-solid ring-2 ring-[#16171d]">
+              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-success-solid ring-2 ring-surface">
                 <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
               </span>
             </div>
