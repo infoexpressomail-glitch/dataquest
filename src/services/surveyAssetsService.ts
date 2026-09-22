@@ -1,3 +1,4 @@
+import { apiFetch } from './apiClient';
 // ============================================================================
 // Serviço de assets de pesquisa — Modelo Mobile First Premium
 // ----------------------------------------------------------------------------
@@ -62,7 +63,7 @@ export async function uploadSurveyAsset(
 ): Promise<UploadResult> {
   try {
     const dataUrl = await fileToDataUrl(file);
-    const res = await fetch(`${API_BASE}/survey-assets`, {
+    const res = await apiFetch(`${API_BASE}/survey-assets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -92,7 +93,7 @@ export async function uploadSurveyAsset(
 export async function removeSurveyAsset(publicUrl: string): Promise<void> {
   if (!publicUrl.includes(`/${SURVEY_ASSETS_BUCKET}/`)) return; // data URL local, nada a remover
   try {
-    await fetch(`${API_BASE}/survey-assets`, {
+    await apiFetch(`${API_BASE}/survey-assets`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: publicUrl }),

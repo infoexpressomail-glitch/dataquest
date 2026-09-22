@@ -46,7 +46,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
   const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
@@ -56,24 +56,23 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
     }
 
     setIsLoading(true);
+    // F1 — a validação acontece no SERVIDOR (POST /api/auth). Nada é comparado no navegador.
+    const result = await login(loginInput, senhaInput);
+    setIsLoading(false);
 
-    setTimeout(() => {
-      const result = login(loginInput, senhaInput);
-      setIsLoading(false);
-
-      if (result.success) {
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        }
-      } else {
-        setErrorMessage(result.error || 'Credenciais inválidas.');
+    if (result.success) {
+      if (onLoginSuccess) {
+        onLoginSuccess();
       }
-    }, 300);
+    } else {
+      setErrorMessage(result.error || 'Credenciais inválidas.');
+    }
   };
 
-  const handleSelectQuickAccount = (loginValue: string, senhaValue: string) => {
+  // Só preenche o login: a senha não fica exposta na interface (F1).
+  const handleSelectQuickAccount = (loginValue: string) => {
     setLoginInput(loginValue);
-    setSenhaInput(senhaValue);
+    setSenhaInput('');
     setErrorMessage(null);
   };
 
@@ -250,7 +249,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-[11px] font-bold text-muted uppercase tracking-wider flex items-center gap-1.5">
                   <Sparkles className="h-3 w-3 text-accent-warning" />
-                  Contas de Demonstração
+                  Contas cadastradas
                 </span>
                 <button
                   type="button"
@@ -273,7 +272,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                       <button
                         key={c.id}
                         type="button"
-                        onClick={() => handleSelectQuickAccount(c.login, c.senha || 'pesq123')}
+                        onClick={() => handleSelectQuickAccount(c.login)}
                         className={`w-full flex items-center justify-between p-2 rounded-xl border text-left text-xs transition-all ${
                           isSelected
                             ? 'border-brand-500 bg-accent-primary-soft text-primary font-bold'
@@ -290,7 +289,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                             )}
                           </div>
                           <div className="text-[10px] text-muted font-mono">
-                            login: <strong className="text-primary">{c.login}</strong> • senha: <strong className="text-primary">{c.senha}</strong>
+                            login: <strong className="text-primary">{c.login}</strong>
                           </div>
                         </div>
                         <span className="text-[10px] text-accent-primary shrink-0 font-medium">

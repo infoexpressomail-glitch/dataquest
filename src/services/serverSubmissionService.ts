@@ -1,4 +1,5 @@
 import { InterviewSubmission } from '../types';
+import { apiFetch, setSessionToken } from './apiClient';
 
 /**
  * Cliente de Comunicação com o Servidor Central de Entrevistas Coletadas
@@ -33,7 +34,7 @@ export async function uploadSubmissionsToServer(
   }
 
   try {
-    const res = await fetch(`${API_BASE}/submissions`, {
+    const res = await apiFetch(`${API_BASE}/submissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ submissions }),

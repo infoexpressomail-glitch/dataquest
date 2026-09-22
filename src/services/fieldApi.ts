@@ -1,4 +1,5 @@
 import { Collaborator, AccessProfile, Survey } from '../types';
+import { apiFetch, setSessionToken } from './apiClient';
 
 /**
  * Cliente de comunicação do APP DE CAMPO (Modo Pesquisador) com o Servidor Central.
@@ -34,7 +35,7 @@ export interface FieldSurveysResult {
  * @throws {Error} com mensagem amigável em caso de falha de rede/HTTP/credenciais.
  */
 export async function fieldLogin(login: string, senha: string): Promise<FieldAuthResult> {
-  const res = await fetch(`${API_BASE}/auth`, {
+  const res = await apiFetch(`${API_BASE}/auth`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ login, senha }),
@@ -51,6 +52,9 @@ export async function fieldLogin(login: string, senha: string): Promise<FieldAut
     throw new Error(data?.message || 'Falha na autenticação.');
   }
 
+  // F1 — guarda o token de sessão emitido pelo servidor para as próximas chamadas.
+  if (data.sessionToken) setSessionToken(data.sessionToken);
+
   return {
     success: true,
     colaborador: data.colaborador,
@@ -64,7 +68,7 @@ export async function fieldLogin(login: string, senha: string): Promise<FieldAut
  * para um pesquisador de campo.
  */
 export async function fetchFieldSurveys(pesquisadorId: string): Promise<FieldSurveysResult> {
-  const res = await fetch(`${API_BASE}/collaborators/${encodeURIComponent(pesquisadorId)}/pesquisas`);
+  const res = await apiFetch(`${API_BASE}/collaborators/${encodeURIComponent(pesquisadorId)}/pesquisas`);
 
   const data = await res.json().catch(() => null);
 

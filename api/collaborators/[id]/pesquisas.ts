@@ -14,6 +14,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSupabaseAdmin } from '../../_lib/supabaseAdmin.js';
 import { rowToDTO, SurveyRow } from '../../_lib/surveyMapper.js';
+import { requireSession, sessionHasPermission } from '../../_lib/session.js';
 
 function isSurveyPassed(row: SurveyRow): boolean {
   if (row.status === 'excluida' || row.status === 'inativa') return true;
@@ -41,9 +42,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ success: false, message: 'Método não permitido.' });
   }
 
+  // F1 — exige sessão e só permite ver as pesquisas do PRÓPRIO colaborador,
+  // ou de qualquer um se o perfil tiver acesso a pesquisas/colaboradores.
+  const session = requireSession(req, res);
+  if (!session) return;
+
   const { id } = req.query as { id?: string };
   if (!id) {
     return res.status(400).json({ success: false, message: 'Informe o id do colaborador.' });
+  }
+
+  const isSelf = session.sub === id;
+  const canSeeOthers =
+    sessionHasPermission(session, 'pesquisa_acesso') ||
+    sessionHasPermission(session, 'colaboradores_acesso');
+  if (!isSelf && !canSeeOthers) {
+    return res.status(403).json({
+      success: false,
+      code: 'FORBIDDEN',
+      message: 'Você só pode consultar as pesquisas vinculadas ao seu próprio login.',
+    });
   }
 
   try {

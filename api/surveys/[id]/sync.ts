@@ -7,6 +7,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSupabaseAdmin } from '../../_lib/supabaseAdmin.js';
 import { isSurveyInProgress, rowToDTO, surveyPayloadToRow, SurveyRow } from '../../_lib/surveyMapper.js';
+import { requireSession, requirePermission } from '../../_lib/session.js';
 
 function generateSyncToken(): string {
   const randomSuffix = Math.random().toString(36).substring(2, 9).toUpperCase();
@@ -18,6 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ success: false, message: 'Método não permitido.' });
   }
+
+  // F1 — sincronização prévia exige sessão e permissão de edição/criação de pesquisa.
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_alterar', 'pesquisa_criar'])) return;
 
   const { id } = req.query as { id: string };
   const { clientDraft } = req.body || {};

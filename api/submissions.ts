@@ -8,11 +8,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 import { rowToSubmissionDTO, submissionPayloadToRow, SubmissionRow } from './_lib/submissionMapper.js';
+import { requireSession, requirePermission } from './_lib/session.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // F1 — exige sessão válida em qualquer método.
+  const session = requireSession(req, res);
+  if (!session) return;
+
   const supabase = getSupabaseAdmin();
 
   if (req.method === 'GET') {
+    // Consultar entrevistas coletadas exige acesso ao módulo de respostas.
+    if (!requirePermission(res, session, ['respostas_acesso'])) return;
     const pesquisaId = typeof req.query.pesquisaId === 'string' ? req.query.pesquisaId : undefined;
 
     let query = supabase.from('respostas').select('*').order('data_hora', { ascending: false });
@@ -28,6 +35,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
+    // Quem grava entrevista é o pesquisador de campo (que não tem
+    // respostas_acesso) OU um perfil de gestão com o módulo de respostas.
+    if (!session.pesquisador && !requirePermission(res, session, ['respostas_acesso'])) return;
     const body = (req.body || {}) as { submissions?: any[]; submission?: any };
     const incoming: any[] = Array.isArray(body.submissions)
       ? body.submissions

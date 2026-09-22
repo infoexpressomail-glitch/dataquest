@@ -11,6 +11,7 @@
 // DELETE /api/survey-assets — remove um asset pelo path (mesma justificativa acima).
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
+import { requireSession, requirePermission } from './_lib/session.js';
 
 export const SURVEY_ASSETS_BUCKET = 'survey-assets';
 const ALLOWED_FOLDERS = ['covers', 'questions', 'answers', 'gallery', 'logos'];
@@ -43,6 +44,11 @@ function sanitizeFileName(name: string): string {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // F1 — gravação/remoção de assets exige sessão e permissão de edição de pesquisa.
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_alterar', 'pesquisa_criar'])) return;
+
   const supabase = getSupabaseAdmin();
 
   if (req.method === 'POST') {

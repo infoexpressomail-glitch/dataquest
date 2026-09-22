@@ -5,6 +5,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSupabaseAdmin } from '../_lib/supabaseAdmin.js';
 import { isSurveyInProgress, rowToDTO, surveyPayloadToRow, SurveyRow } from '../_lib/surveyMapper.js';
+import { requireSession, requirePermission } from '../_lib/session.js';
 
 async function getSubmissionsCount(supabase: ReturnType<typeof getSupabaseAdmin>, surveyId: string): Promise<number> {
   const { count } = await supabase
@@ -15,6 +16,11 @@ async function getSubmissionsCount(supabase: ReturnType<typeof getSupabaseAdmin>
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // F1 — exige sessão válida em qualquer método.
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_acesso', 'pesquisa_alterar', 'pesquisa_criar'])) return;
+
   const { id } = req.query as { id: string };
   const supabase = getSupabaseAdmin();
 

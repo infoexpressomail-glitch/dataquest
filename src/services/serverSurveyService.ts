@@ -1,4 +1,5 @@
 import { Survey, ServerSyncCheckResult } from '../types';
+import { apiFetch, setSessionToken } from './apiClient';
 
 /**
  * Cliente de Comunicação com o Servidor Central de Pesquisas
@@ -21,7 +22,7 @@ export interface ServerUploadResult {
  */
 export async function checkServerHealth(): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE}/health`, { method: 'GET' });
+    const res = await apiFetch(`${API_BASE}/health`, { method: 'GET' });
     if (!res.ok) return false;
     const data = await res.json();
     return data.status === 'ok';
@@ -35,7 +36,7 @@ export async function checkServerHealth(): Promise<boolean> {
  */
 export async function fetchServerSurveys(): Promise<{ success: boolean; surveys: Survey[]; message?: string }> {
   try {
-    const res = await fetch(`${API_BASE}/surveys`);
+    const res = await apiFetch(`${API_BASE}/surveys`);
     if (!res.ok) {
       throw new Error(`Servidor respondeu com código ${res.status}`);
     }
@@ -51,7 +52,7 @@ export async function fetchServerSurveys(): Promise<{ success: boolean; surveys:
  */
 export async function fetchServerSurveyById(surveyId: string): Promise<{ success: boolean; survey?: Survey; message?: string }> {
   try {
-    const res = await fetch(`${API_BASE}/surveys/${encodeURIComponent(surveyId)}`);
+    const res = await apiFetch(`${API_BASE}/surveys/${encodeURIComponent(surveyId)}`);
     if (!res.ok) {
       throw new Error(`Pesquisa não encontrada ou erro no servidor (${res.status})`);
     }
@@ -75,7 +76,7 @@ export async function syncSurveyWithServer(
   clientDraft?: Partial<Survey>
 ): Promise<ServerSyncCheckResult> {
   try {
-    const res = await fetch(`${API_BASE}/surveys/${encodeURIComponent(surveyId)}/sync`, {
+    const res = await apiFetch(`${API_BASE}/surveys/${encodeURIComponent(surveyId)}/sync`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -138,7 +139,7 @@ export async function uploadSurveyToServer(
       headers['x-sync-token'] = syncToken;
     }
 
-    const res = await fetch(`${API_BASE}/surveys/${encodeURIComponent(survey.id)}`, {
+    const res = await apiFetch(`${API_BASE}/surveys/${encodeURIComponent(survey.id)}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify({
@@ -187,7 +188,7 @@ export async function uploadSurveyToServer(
  */
 export async function createServerSurvey(survey: Survey): Promise<ServerUploadResult> {
   try {
-    const res = await fetch(`${API_BASE}/surveys`, {
+    const res = await apiFetch(`${API_BASE}/surveys`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

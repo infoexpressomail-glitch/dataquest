@@ -33,6 +33,7 @@ import { ShieldAlert, ArrowLeft, ClipboardList } from 'lucide-react';
 const MainContent: React.FC = () => {
   const {
     isAuthenticated,
+    isAuthChecking,
     activeModule,
     setActiveModule,
     hasPermission,
@@ -40,6 +41,18 @@ const MainContent: React.FC = () => {
   } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [twoFactorModalOpen, setTwoFactorModalOpen] = useState(false);
+
+  // F1 — antes de mostrar o login, confirmamos a sessão com o servidor.
+  if (isAuthChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-app text-muted">
+        <div className="flex items-center gap-3 text-sm font-medium">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent-primary border-t-transparent" />
+          <span>Verificando sessão no servidor…</span>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (

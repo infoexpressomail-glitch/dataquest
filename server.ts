@@ -3,6 +3,14 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import {
+  createSessionToken,
+  setSessionCookie,
+  clearSessionCookie,
+  requireSession,
+  requirePermission,
+  sessionHasPermission,
+} from './api/_lib/session.js';
 
 const app = express();
 const PORT = 3000;
@@ -214,6 +222,9 @@ app.get('/api/health', async (req: Request, res: Response) => {
 
 // 2. Listar todas as pesquisas armazenadas no servidor
 app.get('/api/surveys', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_acesso'])) return;
   try {
     const db = getDb();
     const { data, error } = await db.from('pesquisas').select('*').order('atualizada_em', { ascending: false });
@@ -240,6 +251,9 @@ app.get('/api/surveys', async (req: Request, res: Response) => {
 
 // 3. Obter pesquisa específica no servidor
 app.get('/api/surveys/:id', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_acesso', 'pesquisa_alterar', 'pesquisa_criar'])) return;
   const { id } = req.params;
   try {
     const db = getDb();
@@ -259,6 +273,9 @@ app.get('/api/surveys/:id', async (req: Request, res: Response) => {
 // 4. SINCRONIZAÇÃO PRÉVIA MANDATÓRIA (/api/surveys/:id/sync)
 // Valida o estado com o servidor antes de permitir subir qualquer alteração em pesquisa em andamento
 app.post('/api/surveys/:id/sync', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_alterar', 'pesquisa_criar'])) return;
   const { id } = req.params;
   const { clientDraft } = req.body;
 
@@ -338,6 +355,9 @@ app.post('/api/surveys/:id/sync', async (req: Request, res: Response) => {
 // 5. SUBIR ALTERAÇÕES DA PESQUISA (/api/surveys/:id)
 // SE A PESQUISA ESTIVER EM ANDAMENTO, O SERVIDOR EXIGE O TOKEN DE PRÉ-SINCRONIZAÇÃO
 app.put('/api/surveys/:id', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_alterar', 'pesquisa_criar'])) return;
   const { id } = req.params;
   const { survey, syncToken: bodyToken } = req.body;
   const headerToken = req.headers['x-sync-token'] as string | undefined;
@@ -428,6 +448,9 @@ app.put('/api/surveys/:id', async (req: Request, res: Response) => {
 
 // 6. Criar nova pesquisa no servidor
 app.post('/api/surveys', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_criar', 'pesquisa_alterar'])) return;
   const newSurveyData = req.body;
   const id = newSurveyData.id || `pesq_${Date.now()}`;
 
@@ -453,9 +476,21 @@ app.post('/api/surveys', async (req: Request, res: Response) => {
   }
 });
 
-// 7. AUTENTICAÇÃO DO APP DE CAMPO (Modo Pesquisador)
-// Mesmo contrato de api/auth.ts: valida login/senha via RPC `autenticar_campo`
-// (hash bcrypt feito no banco) e nunca retorna o hash da senha.
+// 7a. SESSÃO ATUAL (F1) — usada para restaurar a sessão no reload e para o logout.
+app.get('/api/auth', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  return res.json({ success: true, session });
+});
+
+app.delete('/api/auth', async (_req: Request, res: Response) => {
+  clearSessionCookie(res);
+  return res.json({ success: true, message: 'Sessão encerrada.' });
+});
+
+// 7. AUTENTICAÇÃO DO APP DE CAMPO + EMISSÃO DE SESSÃO (F1)
+// Valida login/senha via RPC `autenticar_campo` (hash bcrypt no banco) e emite
+// uma sessão ASSINADA (cookie HttpOnly + token). Nunca retorna o hash da senha.
 app.post('/api/auth', async (req: Request, res: Response) => {
   const { login, senha } = (req.body || {}) as { login?: string; senha?: string };
 
@@ -488,21 +523,50 @@ app.post('/api/auth', async (req: Request, res: Response) => {
       pesquisador?: boolean;
     } | null;
 
-    if (!payload?.success) {
+    if (!payload?.success || !payload.colaborador) {
       return res.status(401).json({
         success: false,
         message: payload?.error || 'Credenciais inválidas.',
       });
     }
 
+    const perfil = payload.perfil || {};
+    const permissions: Record<string, boolean> = {};
+    for (const [k, v] of Object.entries((perfil.permissions || {}) as Record<string, unknown>)) {
+      permissions[k] = v === true;
+    }
+
+    const ttl = Number(process.env.SESSION_TTL_SECONDS || 8 * 60 * 60);
+    const token = createSessionToken(
+      {
+        sub: String(payload.colaborador.id),
+        login: String(payload.colaborador.login || login).trim(),
+        nome: String(payload.colaborador.nome || ''),
+        perfilId: String(perfil.id || payload.colaborador.perfilAcessoId || ''),
+        perfilNome: String(perfil.name || 'Colaborador'),
+        permissions,
+        pesquisador: Boolean(payload.pesquisador),
+      },
+      ttl
+    );
+    setSessionCookie(res, token, ttl);
+
     return res.status(200).json({
       success: true,
       colaborador: payload.colaborador,
-      perfil: payload.perfil,
+      perfil: { ...perfil, permissions },
       pesquisador: Boolean(payload.pesquisador),
+      sessionToken: token,
+      expiresAt: new Date(Date.now() + ttl * 1000).toISOString(),
     });
   } catch (err: any) {
-    return res.status(500).json({ success: false, message: `Falha na autenticação: ${err?.message || err}` });
+    const isConfig = /Supabase/i.test(String(err?.message || ''));
+    return res.status(isConfig ? 503 : 500).json({
+      success: false,
+      message: isConfig
+        ? 'Servidor de autenticação indisponível (Supabase não configurado no backend).'
+        : `Falha na autenticação: ${err?.message || err}`,
+    });
   }
 });
 
@@ -510,6 +574,9 @@ app.post('/api/auth', async (req: Request, res: Response) => {
 // Mesmo contrato de api/collaborators.ts: grava via RPC `salvar_colaborador`
 // (migration 0004), com hash bcrypt feito no banco. Senha vazia preserva a atual.
 app.post('/api/collaborators', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['colaboradores_acesso'])) return;
   const body = (req.body || {}) as { colaborador?: Record<string, any>; senha?: string };
   const colab = body.colaborador;
   const senha = body.senha;
@@ -554,7 +621,19 @@ function isSurveyPassed(row: ServerSurveyRow): boolean {
 }
 
 app.get('/api/collaborators/:id/pesquisas', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
   const { id } = req.params;
+  const isSelf = session.sub === id;
+  const canSeeOthers =
+    sessionHasPermission(session, 'pesquisa_acesso') || sessionHasPermission(session, 'colaboradores_acesso');
+  if (!isSelf && !canSeeOthers) {
+    return res.status(403).json({
+      success: false,
+      code: 'FORBIDDEN',
+      message: 'Você só pode consultar as pesquisas vinculadas ao seu próprio login.',
+    });
+  }
 
   try {
     const db = getDb();
@@ -647,6 +726,9 @@ function submissionRowToDTOLocal(row: any) {
 }
 
 app.get('/api/submissions', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['respostas_acesso'])) return;
   try {
     const db = getDb();
     const pesquisaId = typeof req.query.pesquisaId === 'string' ? req.query.pesquisaId : undefined;
@@ -665,6 +747,9 @@ app.get('/api/submissions', async (req: Request, res: Response) => {
 });
 
 app.post('/api/submissions', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!session.pesquisador && !requirePermission(res, session, ['respostas_acesso'])) return;
   const body = (req.body || {}) as { submissions?: any[]; submission?: any };
   const incoming: any[] = Array.isArray(body.submissions)
     ? body.submissions
@@ -743,6 +828,9 @@ function sanitizeSurveyAssetFileName(name: string): string {
 }
 
 app.post('/api/survey-assets', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_alterar', 'pesquisa_criar'])) return;
   const body = (req.body || {}) as { folder?: string; fileName?: string; contentType?: string; dataBase64?: string };
   const { folder, fileName, contentType, dataBase64 } = body;
 
@@ -783,6 +871,9 @@ app.post('/api/survey-assets', async (req: Request, res: Response) => {
 });
 
 app.delete('/api/survey-assets', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['pesquisa_alterar', 'pesquisa_criar'])) return;
   const body = (req.body || {}) as { path?: string; url?: string };
   let path = body.path;
 

@@ -56,10 +56,13 @@ import {
 import { ServerSyncCheckResult } from '../types';
 import { saveCollaboratorToServer } from '../services/serverCollaboratorService';
 import { uploadSubmissionsToServer, uploadSubmissionToServer } from '../services/serverSubmissionService';
+import { apiFetch, setSessionToken, clearSessionToken } from '../services/apiClient';
 
 interface AppContextType {
   isAuthenticated: boolean;
-  login: (loginInput: string, senhaInput: string) => { success: boolean; error?: string };
+  login: (loginInput: string, senhaInput: string) => Promise<{ success: boolean; error?: string }>;
+  /** true enquanto a sessão é validada no servidor no primeiro carregamento. */
+  isAuthChecking: boolean;
   logout: () => void;
   language: Language;
   setLanguage: (l: Language) => void;
@@ -240,7 +243,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [collaborators, setCollaborators] = useState<Collaborator[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.COLLABORATORS);
-    return saved ? JSON.parse(saved) : initialCollaborators;
+    const list: Collaborator[] = saved ? JSON.parse(saved) : initialCollaborators;
+    // F1 — limpa qualquer senha gravada por versões anteriores do app.
+    return list.map((c) => {
+      const semSenha = { ...(c as Collaborator & { senha?: string }) };
+      delete semSenha.senha;
+      return semSenha as Collaborator;
+    });
   });
 
   // Quota de licenças (teto pré-definido). null = sem quota configurada.
@@ -269,9 +278,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return initialCollaborators[0]; // Admin Master
   });
 
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return sessionStorage.getItem('dataquest_auth_session') === 'true';
-  });
+  // F1 — a autenticação NÃO é mais decidida por um valor do navegador. O estado
+  // inicial é deslogado e a sessão é validada no servidor (GET /api/auth).
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true);
 
   const [twoFactorVerified, setTwoFactorVerified] = useState<boolean>(true);
 
@@ -1231,6 +1241,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const saveCollaborator = async (colab: Collaborator, senha?: string): Promise<boolean> => {
+    // F1 — a senha vai apenas para o servidor. Nunca entra no estado do navegador
+    // (o estado de colaboradores é persistido em localStorage).
+    {
+      const semSenha = { ...(colab as Collaborator & { senha?: string }) };
+      delete semSenha.senha;
+      colab = semSenha as Collaborator;
+    }
+
     // Persiste no servidor central (grava no Supabase com senha em hash).
     // Se falhar, mantém o estado local e retorna false para o formulário exibir o erro.
     let serverOk = false;
@@ -1323,46 +1341,100 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
-  const login = (loginInput: string, senhaInput: string): { success: boolean; error?: string } => {
-    const trimmedLogin = loginInput.trim().toLowerCase();
-    const trimmedSenha = senhaInput.trim();
+  /**
+   * F1 — aplica o usuário/perfil vindos do servidor no estado local, criando o
+   * perfil na lista local se ele ainda não existir (deixa de depender do mock).
+   */
+  const applyServerUser = (serverColab: Collaborator, serverPerfil: AccessProfile): Collaborator => {
+    const serverPerms = (serverPerfil?.permissions || {}) as AccessPolicyPermissions;
+    const existing =
+      profiles.find((p) => p.name === serverPerfil?.name) || profiles.find((p) => p.id === serverPerfil?.id);
 
-    const colab = collaborators.find(
-      (c) => c.login.toLowerCase() === trimmedLogin
-    );
-
-    if (!colab) {
-      return {
-        success: false,
-        error: 'Usuário não encontrado. Verifique o login cadastrado pelo administrador.',
-      };
+    if (existing) {
+      setProfiles((prev) =>
+        prev.map((p) =>
+          p.id === existing.id ? { ...p, permissions: { ...p.permissions, ...serverPerms } } : p
+        )
+      );
+    } else if (serverPerfil?.id || serverPerfil?.name) {
+      setProfiles((prev) => [...prev, { ...serverPerfil, permissions: serverPerms }]);
     }
 
-    if (!colab.ativo) {
-      return {
-        success: false,
-        error: 'Este colaborador está inativo no sistema. Contate o administrador para reativação.',
-      };
-    }
+    const resolvedProfileId = existing?.id || serverPerfil?.id || serverColab.perfilAcessoId;
+    const base = collaborators.find((c) => c.login === serverColab.login) || ({} as Collaborator);
+    return { ...base, ...serverColab, perfilAcessoId: resolvedProfileId } as Collaborator;
+  };
 
-    if (colab.senha !== trimmedSenha) {
-      return {
-        success: false,
-        error: 'Senha incorreta. Por favor, verifique a senha definida pelo administrador.',
-      };
-    }
+  // Restaura a sessão (se houver) validando SEMPRE no servidor.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await apiFetch('/api/auth', { method: 'GET' });
+        if (res.ok) {
+          const data = await res.json().catch(() => null);
+          if (!cancelled && data?.success && data.session) {
+            const s = data.session as {
+              sub: string;
+              login: string;
+              nome: string;
+              perfilId: string;
+              perfilNome: string;
+              permissions: Record<string, boolean>;
+            };
+            const user = applyServerUser(
+              { id: s.sub, login: s.login, nome: s.nome, perfilAcessoId: s.perfilId, ativo: true } as Collaborator,
+              {
+                id: s.perfilId,
+                name: s.perfilNome,
+                description: '',
+                permissions: s.permissions as unknown as AccessPolicyPermissions,
+              }
+            );
+            setCurrentUser(user);
+            setIsAuthenticated(true);
+          }
+        }
+      } catch {
+        // Servidor indisponível: permanece deslogado (não há bypass no cliente).
+      } finally {
+        if (!cancelled) setIsAuthChecking(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    setCurrentUser(colab);
-    setIsAuthenticated(true);
-    sessionStorage.setItem('dataquest_auth_session', 'true');
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER_ID, colab.id);
+  const login = async (
+    loginInput: string,
+    senhaInput: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await apiFetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login: loginInput.trim(), senha: senhaInput }),
+      });
+      const data = await res.json().catch(() => null);
 
-    const prof = profiles.find((p) => p.id === colab.perfilAcessoId);
-    if (prof?.id === 'prof_pesq' || prof?.name.toLowerCase().includes('pesquisador')) {
-      setActiveModule('pesquisador');
-    } else {
-      setActiveModule('home');
-    }
+      if (!res.ok || !data?.success || !data.colaborador) {
+        return { success: false, error: data?.message || 'Login ou senha inválidos.' };
+      }
+
+      setSessionToken(data.sessionToken);
+      const colab = applyServerUser(data.colaborador as Collaborator, data.perfil as AccessProfile);
+      setCurrentUser(colab);
+      setIsAuthenticated(true);
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER_ID, colab.id);
+
+      const prof = profiles.find((p) => p.id === colab.perfilAcessoId) || (data.perfil as AccessProfile);
+      if (prof?.id === 'prof_pesq' || prof?.name?.toLowerCase().includes('pesquisador')) {
+        setActiveModule('pesquisador');
+      } else {
+        setActiveModule('home');
+      }
 
     addAuditLog({
       categoria: 'SISTEMA',
@@ -1387,12 +1459,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       statusConformidade: 'conforme',
     });
 
-    return { success: true };
+      return { success: true };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: `Não foi possível concluir o login no servidor: ${err?.message || 'falha de rede'}.`,
+      };
+    }
   };
 
   const logout = () => {
     setIsAuthenticated(false);
-    sessionStorage.removeItem('dataquest_auth_session');
+    clearSessionToken();
+    // Encerra a sessão no servidor (limpa o cookie HttpOnly). Silencioso se offline.
+    void apiFetch('/api/auth', { method: 'DELETE' }).catch(() => undefined);
   };
 
   const saveSurvey = (survey: Survey) => {
@@ -2569,6 +2649,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <AppContext.Provider
       value={{
         isAuthenticated,
+        isAuthChecking,
         login,
         logout,
         language,

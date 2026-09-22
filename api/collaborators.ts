@@ -10,12 +10,18 @@
 // no APP DE CAMPO (POST /api/auth -> autenticar_campo).
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
+import { requireSession, requirePermission } from './_lib/session.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ success: false, message: 'Método não permitido.' });
   }
+
+  // F1 — cadastro/edição de colaboradores exige sessão e permissão de cadastro.
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['colaboradores_acesso'])) return;
 
   const body = (req.body || {}) as { colaborador?: Record<string, any>; senha?: string };
 

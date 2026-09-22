@@ -1,4 +1,5 @@
 import { Collaborator } from '../types';
+import { apiFetch, setSessionToken } from './apiClient';
 
 /**
  * Cliente de persistência do cadastro de colaboradores no SISTEMA BASE.
@@ -31,7 +32,7 @@ export async function saveCollaboratorToServer(
   colaborador: Collaborator,
   senha?: string
 ): Promise<ServerCollaboratorSaveResult> {
-  const res = await fetch(`${API_BASE}/collaborators`, {
+  const res = await apiFetch(`${API_BASE}/collaborators`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

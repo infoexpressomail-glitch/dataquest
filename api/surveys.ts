@@ -4,6 +4,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 import { rowToDTO, surveyPayloadToRow, SurveyRow } from './_lib/surveyMapper.js';
+import { requireSession, requirePermission } from './_lib/session.js';
 
 async function getSubmissionsCounts(surveyIds: string[]): Promise<Record<string, number>> {
   if (surveyIds.length === 0) return {};
@@ -23,9 +24,15 @@ async function getSubmissionsCounts(surveyIds: string[]): Promise<Record<string,
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // F1 — exige sessão válida em qualquer método.
+  const session = requireSession(req, res);
+  if (!session) return;
+
   const supabase = getSupabaseAdmin();
 
   if (req.method === 'GET') {
+    // Listar pesquisas exige acesso ao módulo de pesquisas.
+    if (!requirePermission(res, session, ['pesquisa_acesso'])) return;
     const { data, error } = await supabase
       .from('pesquisas')
       .select('*')
@@ -43,6 +50,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
+    // Criar pesquisa exige permissão de criação.
+    if (!requirePermission(res, session, ['pesquisa_criar', 'pesquisa_alterar'])) return;
     const newSurveyData = req.body || {};
     const id = newSurveyData.id || `pesq_${Date.now()}`;
 
