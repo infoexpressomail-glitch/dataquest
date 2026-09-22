@@ -88,6 +88,30 @@
   --scrollbar-track: #0a0b10;
   --scrollbar-thumb: #1e2230;
   --scrollbar-thumb-hover: #2b3245;
+
+  /* App de campo (fieldMobile.css) — cabeçalho, hero e status.
+     No tema escuro mantém o azul institucional sólido. */
+  --field-header-bg: linear-gradient(160deg, #0b2b50 0%, #0b4a8f 100%);
+  --field-header-text: #ffffff;
+  --field-header-subtext: rgba(255, 255, 255, 0.75);
+  --field-header-border: rgba(255, 255, 255, 0.12);
+  --field-header-control-bg: rgba(255, 255, 255, 0.12);
+  --field-header-control-border: rgba(255, 255, 255, 0.16);
+  --field-header-control-hover: rgba(255, 255, 255, 0.22);
+  --field-header-logo-bg: rgba(255, 255, 255, 0.16);
+  --field-header-logo-border: rgba(255, 255, 255, 0.22);
+  --field-header-badge-border: #0b2b50;
+  --field-focus-ring: #ffffff;
+  --field-hero-bg: linear-gradient(150deg, #0b2b50 0%, #0b4a8f 100%);
+  --field-hero-text: #ffffff;
+  --field-hero-subtext: rgba(255, 255, 255, 0.8);
+  --field-hero-track: rgba(255, 255, 255, 0.2);
+  --field-status-online-bg: rgba(52, 211, 153, 0.18);
+  --field-status-online-text: #6ee7b7;
+  --field-status-online-border: rgba(52, 211, 153, 0.35);
+  --field-status-offline-bg: rgba(251, 191, 36, 0.18);
+  --field-status-offline-text: #fcd34d;
+  --field-status-offline-border: rgba(251, 191, 36, 0.35);
 }
 
 /* ==========================================================================
@@ -171,6 +195,29 @@ html:not(.dark) {
   --scrollbar-track: #f1f5f9;
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: #94a3b8;
+
+  /* App de campo — branco predominante com toques suaves em azul. */
+  --field-header-bg: #ffffff;
+  --field-header-text: #0f172a;
+  --field-header-subtext: #475569;
+  --field-header-border: #dbe7f6;
+  --field-header-control-bg: #eef3f9;
+  --field-header-control-border: #dbe7f6;
+  --field-header-control-hover: #e2ebf7;
+  --field-header-logo-bg: #e7f0fa;
+  --field-header-logo-border: #c5daf0;
+  --field-header-badge-border: #ffffff;
+  --field-focus-ring: #2b66b0;
+  --field-hero-bg: linear-gradient(150deg, #eef4fb 0%, #dbe7f6 100%);
+  --field-hero-text: #0b2b50;
+  --field-hero-subtext: #475569;
+  --field-hero-track: rgba(43, 102, 176, 0.18);
+  --field-status-online-bg: #e3f5ec;
+  --field-status-online-text: #047857;
+  --field-status-online-border: #b7e3cd;
+  --field-status-offline-bg: #fdf1e0;
+  --field-status-offline-text: #8a4105;
+  --field-status-offline-border: #f6dcb8;
 }
 
 /* ==========================================================================

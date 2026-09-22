@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { FieldSession } from './fieldTypes';
 import { filterResearcherVisibleSurveys } from '../utils/researcherUtils';
 import { FieldColeta } from './FieldColeta';
+import { FieldMission } from './FieldMission';
 import { FieldBottomNav, FieldTab } from './FieldBottomNav';
 import { FieldHeader } from './FieldHeader';
 import { ResearcherIndividualGoalsView } from '../components/metas/ResearcherIndividualGoalsView';
@@ -20,7 +21,6 @@ import {
   MapPin,
   RefreshCw,
   Target,
-  TrendingUp,
   UploadCloud,
   User,
   WifiOff,
@@ -334,105 +334,23 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
   );
 
   // -------------------------------- INÍCIO ---------------------------------
+  // Modo missão: uma ação principal (Nova entrevista), meta do dia, cotas
+  // faltantes e sincronização discreta. Os dados vêm do AppContext/serviços.
   const renderHome = () => (
-    <>
-      <div className="field-hero">
-        <div className="field-hero-greeting">
-          Olá, {session.user.nome.split(' ')[0]}! 👋
-        </div>
-        <div className="field-hero-sub">
-          {effectiveOnline ? 'Pronto para sua coleta?' : 'Modo offline — você pode coletar normalmente.'}
-        </div>
-
-        {totalMeta > 0 && (
-          <>
-            <div className="field-hero-progress" aria-hidden="true">
-              <span
-                style={{
-                  width: `${Math.min(100, Math.round((researcherSubmissions.length / totalMeta) * 100))}%`,
-                }}
-              />
-            </div>
-            <div className="field-hero-stats">
-              <span>
-                <strong>{researcherSubmissions.length}</strong> / {totalMeta} coletas
-              </span>
-              <span>Meta das pesquisas</span>
-            </div>
-          </>
-        )}
-      </div>
-
-      <div className="field-summary-grid">
-        <div className="field-summary-item">
-          <div className="field-summary-value">{submissionsToday.length}</div>
-          <div className="field-summary-label">Hoje</div>
-        </div>
-        <div className="field-summary-item">
-          <div
-            className="field-summary-value"
-            style={{ color: pendingCount > 0 ? 'var(--accent-warning)' : 'var(--accent-success)' }}
-          >
-            {pendingCount}
-          </div>
-          <div className="field-summary-label">Pendentes</div>
-        </div>
-        <div className="field-summary-item">
-          <div className="field-summary-value">{activeSurveys.length}</div>
-          <div className="field-summary-label">Pesquisas</div>
-        </div>
-      </div>
-
-      {!effectiveOnline && (
-        <div className="field-alert is-warning">
-          <WifiOff className="h-4 w-4 shrink-0" />
-          <span>
-            Você está offline. As coletas serão armazenadas e sincronizadas quando a conexão voltar.
-          </span>
-        </div>
-      )}
-
-      {pendingCount > 0 && (
-        <button
-          type="button"
-          onClick={goToSync}
-          className="field-alert is-warning"
-          style={{ width: '100%', textAlign: 'left', cursor: 'pointer' }}
-        >
-          <Cloud className="h-4 w-4 shrink-0" />
-          <span>
-            <strong>{pendingCount}</strong> registro(s) aguardando sincronização.
-          </span>
-          <ArrowRight className="h-4 w-4 shrink-0" style={{ marginLeft: 'auto' }} />
-        </button>
-      )}
-
-      <div className="field-section-title">
-        <TrendingUp className="h-4 w-4" style={{ color: 'var(--accent-primary)' }} />
-        Pesquisas disponíveis
-        <span className="field-count">{activeSurveys.length}</span>
-      </div>
-
-      {activeSurveys.length === 0 ? (
-        <div className="field-empty">
-          <div className="field-empty-icon">
-            <Inbox className="h-6 w-6" />
-          </div>
-          <div className="field-text-sm" style={{ fontWeight: 800 }}>
-            Nenhuma pesquisa ativa no momento
-          </div>
-          <div className="field-text-xs field-text-muted">
-            As pesquisas ativas atribuídas ao seu login aparecerão aqui. Toque em Sync para atualizar.
-          </div>
-          <button type="button" onClick={goToSync} className="field-btn field-btn-primary field-mt">
-            <RefreshCw className="h-4 w-4" />
-            Sincronizar agora
-          </button>
-        </div>
-      ) : (
-        activeSurveys.slice(0, 2).map((survey) => renderSurveyCard(survey, true))
-      )}
-    </>
+    <FieldMission
+      session={session}
+      activeSurveys={activeSurveys}
+      researcherSubmissions={researcherSubmissions}
+      submissionsToday={submissionsToday}
+      totalMeta={totalMeta}
+      pendingCount={pendingCount}
+      effectiveOnline={effectiveOnline}
+      busy={busy}
+      onStartColeta={startColeta}
+      onOpenSync={goToSync}
+      onSendNow={handleUnload}
+      onOpenPesquisas={() => setTab('pesquisas')}
+    />
   );
 
   // ------------------------------ PESQUISAS --------------------------------

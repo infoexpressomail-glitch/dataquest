@@ -16,6 +16,7 @@ import {
   Undo2,
 } from 'lucide-react';
 import { AccessProfile, AccessPolicyPermissions } from '../../types';
+import { AccessPoliciesMatrix } from './AccessPoliciesMatrix';
 
 interface PermissionGroup {
   moduleName: string;
@@ -256,6 +257,9 @@ export const AccessPolicies: React.FC = () => {
     { tone: 'success' | 'info' | 'error'; text: string } | null
   >(null);
   const [searchTerm, setSearchTerm] = useState('');
+  // Visualização padrão = MATRIZ perfil × módulo (decisão aprovada).
+  // A lista detalhada das 33 permissões continua disponível como visão alternativa.
+  const [viewMode, setViewMode] = useState<'matrix' | 'detailed'>('matrix');
   // Por padrão, grupos totalmente vazios ficam recolhidos — reduz a "parede de
   // checkboxes" e ajuda a responder rápido "o que este perfil PODE fazer?"
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
@@ -402,6 +406,11 @@ export const AccessPolicies: React.FC = () => {
       })).filter((group) => group.items.length > 0)
     : PERMISSION_GROUPS;
 
+  // Matriz perfil × módulo — visão padrão (decisão aprovada).
+  if (viewMode === 'matrix') {
+    return <AccessPoliciesMatrix onSwitchToDetailed={() => setViewMode('detailed')} />;
+  }
+
   if (!activeProfile) {
     return (
       <div className="rounded-2xl border border-dashed border-ui bg-surface p-8 text-center text-xs text-muted">
@@ -446,6 +455,14 @@ export const AccessPolicies: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setViewMode('matrix')}
+            className="flex items-center gap-1.5 rounded-xl border border-ui bg-surface-raised px-3 py-2 text-xs font-semibold text-secondary transition hover:bg-surface-hover hover:text-primary"
+          >
+            <ShieldCheck className="h-4 w-4" />
+            <span>Matriz perfil × módulo</span>
+          </button>
           {isDirty && (
             <button
               type="button"
