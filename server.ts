@@ -605,6 +605,148 @@ app.post('/api/collaborators', async (req: Request, res: Response) => {
   }
 });
 
+// 8.1 LISTAGEM E ATUALIZAÇÃO PARCIAL DE COLABORADORES (F2)
+// Mesmo contrato de api/collaborators.ts (GET/PATCH). A leitura usa a view
+// `colaboradores_publicos` — o hash de senha nunca sai do banco.
+function colaboradorRowToDTO(row: Record<string, any>) {
+  return {
+    id: row.id,
+    cpf: row.cpf,
+    nome: row.nome,
+    rg: row.rg || undefined,
+    dataNascimento: row.data_nascimento || undefined,
+    sexo: row.sexo || undefined,
+    login: row.login,
+    perfilAcessoId: row.perfil_acesso_id || '',
+    email: row.email,
+    celular: row.celular || undefined,
+    nomeContatoCelular: row.nome_contato_celular || undefined,
+    telefoneFixo: row.telefone_fixo || undefined,
+    nomeContatoFixo: row.nome_contato_fixo || undefined,
+    ativo: row.ativo,
+    pesquisasVinculadasIds: row.pesquisas_vinculadas_ids || [],
+    pesquisasReabilitadasIds: row.pesquisas_reabilitadas_ids || [],
+    criadoEm: row.criado_em,
+  };
+}
+
+function isUuidDb(v: unknown): v is string {
+  return typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+}
+
+app.get('/api/collaborators', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['colaboradores_acesso', 'colaboradores_editar'])) return;
+  try {
+    const db = getDb();
+    const { data, error } = await db.from('colaboradores_publicos').select('*').order('nome', { ascending: true });
+    if (error) {
+      return res.status(500).json({ success: false, message: `Erro ao listar colaboradores: ${error.message}` });
+    }
+    return res.status(200).json({
+      success: true,
+      collaborators: (data || []).map((r: Record<string, any>) => colaboradorRowToDTO(r)),
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: `Falha ao listar colaboradores: ${err?.message || err}` });
+  }
+});
+
+app.patch('/api/collaborators', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  const body = (req.body || {}) as {
+    id?: string;
+    ativo?: boolean;
+    perfilAcessoId?: string | null;
+    pesquisasReabilitadasIds?: string[];
+  };
+  if (!body.id) return res.status(400).json({ success: false, message: 'Informe o id do colaborador.' });
+
+  if (
+    (body.perfilAcessoId !== undefined || body.pesquisasReabilitadasIds !== undefined) &&
+    !requirePermission(res, session, ['colaboradores_editar', 'colaboradores_acesso'])
+  )
+    return;
+  if (body.ativo !== undefined && !requirePermission(res, session, ['colaboradores_desativar', 'colaboradores_acesso']))
+    return;
+
+  try {
+    const db = getDb();
+    let row: any = null;
+    if (body.ativo !== undefined) {
+      const r = await db.rpc('definir_ativo_colaborador', { p_id: body.id, p_ativo: Boolean(body.ativo) });
+      if (r.error) throw new Error(r.error.message);
+      row = r.data;
+    }
+    if (body.perfilAcessoId !== undefined) {
+      const r = await db.rpc('definir_perfil_colaborador', {
+        p_id: body.id,
+        p_perfil_id: isUuidDb(body.perfilAcessoId) ? body.perfilAcessoId : null,
+      });
+      if (r.error) throw new Error(r.error.message);
+      if (!row) row = r.data;
+    }
+    if (body.pesquisasReabilitadasIds !== undefined) {
+      const r = await db.rpc('definir_reabilitadas_colaborador', {
+        p_id: body.id,
+        p_ids: Array.isArray(body.pesquisasReabilitadasIds) ? body.pesquisasReabilitadasIds : [],
+      });
+      if (r.error) throw new Error(r.error.message);
+      if (!row) row = r.data;
+    }
+    if (!row) return res.status(400).json({ success: false, message: 'Nada para atualizar.' });
+    return res.status(200).json({ success: true, colaborador: colaboradorRowToDTO(row) });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: `Falha ao atualizar colaborador: ${err?.message || err}` });
+  }
+});
+
+// 8.2 PERFIS DE ACESSO (F2) — mesma contrato de api/profiles.ts.
+function perfilRowToDTO(row: Record<string, any>) {
+  return { id: row.id, name: row.nome, description: row.descricao || '', permissions: row.permissions || {} };
+}
+
+app.get('/api/profiles', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  try {
+    const db = getDb();
+    const { data, error } = await db
+      .from('perfis_acesso')
+      .select('id, nome, descricao, permissions')
+      .order('nome', { ascending: true });
+    if (error) return res.status(500).json({ success: false, message: `Erro ao listar perfis: ${error.message}` });
+    return res.status(200).json({ success: true, profiles: (data || []).map((r: Record<string, any>) => perfilRowToDTO(r)) });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: `Falha ao listar perfis: ${err?.message || err}` });
+  }
+});
+
+app.post('/api/profiles', async (req: Request, res: Response) => {
+  const session = requireSession(req, res);
+  if (!session) return;
+  if (!requirePermission(res, session, ['politicas_acesso'])) return;
+  const profile = ((req.body || {}) as { profile?: Record<string, any> }).profile;
+  if (!profile || typeof profile.name !== 'string' || !profile.name.trim()) {
+    return res.status(400).json({ success: false, message: 'Perfil inválido (informe o nome do perfil).' });
+  }
+  try {
+    const db = getDb();
+    const { data, error } = await db.rpc('salvar_perfil_acesso', {
+      p_id: isUuidDb(profile.id) ? profile.id : null,
+      p_nome: String(profile.name).trim(),
+      p_descricao: typeof profile.description === 'string' ? profile.description : '',
+      p_permissions: profile.permissions && typeof profile.permissions === 'object' ? profile.permissions : {},
+    });
+    if (error) return res.status(500).json({ success: false, message: `Erro ao salvar perfil: ${error.message}` });
+    return res.status(200).json({ success: true, profile: perfilRowToDTO(data as Record<string, any>) });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: `Falha ao salvar perfil: ${err?.message || err}` });
+  }
+});
+
 // 9. PESQUISAS LIBERADAS PARA O PESQUISADOR DE CAMPO
 // Mesmo contrato de api/collaborators/[id]/pesquisas.ts. Fonte de verdade única:
 // pesquisas.pesquisadores_ids contém o id do colaborador (ver nota no arquivo original).

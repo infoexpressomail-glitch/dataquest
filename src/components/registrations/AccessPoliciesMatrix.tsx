@@ -78,7 +78,7 @@ export const AccessPoliciesMatrix: React.FC<AccessPoliciesMatrixProps> = ({
     null
   );
 
-  // Quando os perfis salvos mudam (ex.: primeira carga do localStorage),
+  // Quando os perfis salvos mudam (ex.: primeira carga vinda do servidor),
   // reflete no rascunho desde que não haja alteração pendente.
   useEffect(() => {
     setDrafts((prev) => {
@@ -129,12 +129,16 @@ export const AccessPoliciesMatrix: React.FC<AccessPoliciesMatrixProps> = ({
   };
 
   const restoreDefaultModel = (profileId: string) => {
-    const standard = initialProfiles.find((p) => p.id === profileId);
+    // F2 — os perfis agora vêm do Supabase (ids uuid). O "modelo padrão" de cada
+    // perfil é resolvido pelo NOME (o conjunto canônico vive em initialProfiles),
+    // preservando o id real do banco.
+    const current = profiles.find((p) => p.id === profileId);
+    const standard = initialProfiles.find((p) => p.name === current?.name);
     if (!standard) return;
     setFeedback(null);
     setDrafts((prev) => ({
       ...prev,
-      [profileId]: JSON.parse(JSON.stringify(standard)) as AccessProfile,
+      [profileId]: { ...(JSON.parse(JSON.stringify(standard)) as AccessProfile), id: profileId },
     }));
     setOpenColumn(null);
   };
@@ -194,7 +198,7 @@ export const AccessPoliciesMatrix: React.FC<AccessPoliciesMatrixProps> = ({
 
     setFeedback({
       tone: 'success',
-      text: `${saved} perfil(is) salvo(s): ${changed} permissão(ões) alterada(s). As alterações valem neste navegador e ficam registradas no Histórico de Ações.`,
+      text: `${saved} perfil(is) salvo(s): ${changed} permissão(ões) alterada(s). As alterações são gravadas no servidor (fonte única) e ficam registradas no Histórico de Ações.`,
     });
     setOpenCell(null);
     setOpenColumn(null);

@@ -264,7 +264,7 @@ export const AccessPolicies: React.FC = () => {
   // checkboxes" e ajuda a responder rápido "o que este perfil PODE fazer?"
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
-  // Versão gravada do perfil em edição (a que está no contexto/localStorage).
+  // Versão gravada do perfil em edição (a que está no contexto/servidor).
   const savedProfile = useMemo(
     () => profiles.find((p) => p.id === activeProfile?.id) || null,
     [profiles, activeProfile?.id]
@@ -387,7 +387,7 @@ export const AccessPolicies: React.FC = () => {
     }
     setFeedback({
       tone: 'success',
-      text: `Perfil "${activeProfile.name}" salvo: ${result.changes.length} permissão(ões) alterada(s). A alteração vale neste navegador e é registrada no Histórico de Ações.`,
+      text: `Perfil "${activeProfile.name}" salvo: ${result.changes.length} permissão(ões) alterada(s). A alteração é gravada no servidor (fonte única) e registrada no Histórico de Ações.`,
     });
   };
 

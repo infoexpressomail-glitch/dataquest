@@ -19,9 +19,7 @@ import {
   AnalyticalReport,
 } from '../types';
 import {
-  initialProfiles,
   initialCollaborators,
-  initialSurveys,
   initialSubmissions,
   initialConnections,
   initialImports,
@@ -51,10 +49,16 @@ import {
   fetchServerSurveys,
   syncSurveyWithServer,
   uploadSurveyToServer,
+  createServerSurvey,
   checkServerHealth,
 } from '../services/serverSurveyService';
 import { ServerSyncCheckResult } from '../types';
-import { saveCollaboratorToServer } from '../services/serverCollaboratorService';
+import {
+  saveCollaboratorToServer,
+  fetchServerCollaborators,
+  updateCollaboratorPartial,
+} from '../services/serverCollaboratorService';
+import { fetchServerProfiles, saveProfileToServer } from '../services/serverProfileService';
 import { uploadSubmissionsToServer, uploadSubmissionToServer } from '../services/serverSubmissionService';
 import { apiFetch, setSessionToken, clearSessionToken } from '../services/apiClient';
 
@@ -185,10 +189,9 @@ const AppContext = createContext<AppContextType | null>(null);
 const STORAGE_KEYS = {
   LANGUAGE: 'dataquest_lang',
   DARK_MODE: 'dataquest_dark',
-  PROFILES: 'dataquest_profiles_v1',
-  COLLABORATORS: 'dataquest_collaborators_v1',
+  // F2 — PROFILES/COLLABORATORS/SURVEYS deixaram de existir aqui: são fonte única
+  // no Supabase (via /api) e ficam apenas em memória no navegador.
   LICENSE_QUOTA: 'dataquest_license_quota_v1',
-  SURVEYS: 'dataquest_surveys_v1',
   SUBMISSIONS: 'dataquest_submissions_v1',
   IMPORTS: 'dataquest_imports_v1',
   CURRENT_USER_ID: 'dataquest_user_id',
@@ -212,48 +215,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return stored !== null ? stored === 'true' : false;
   });
 
-  const [profiles, setProfiles] = useState<AccessProfile[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.PROFILES);
-    if (!saved) return initialProfiles;
-    try {
-      const parsed: AccessProfile[] = JSON.parse(saved);
-      // Lista vazia ou inválida derrubaria a tela de Políticas de Acesso
-      // (profiles[0] indefinido) e deixaria o usuário logado sem perfil.
-      if (!Array.isArray(parsed) || parsed.length === 0) return initialProfiles;
+  // F2 — os perfis vivem no Supabase (fonte única). O navegador mantém apenas a
+  // lista em MEMÓRIA, hidratada de /api/profiles após o login. Sem localStorage e
+  // sem mock: era justamente isso que fazia uma política editada valer só no
+  // navegador onde foi editada, enquanto o app de campo lia o perfil do banco.
+  const [profiles, setProfiles] = useState<AccessProfile[]>([]);
 
-      const merged = parsed
-        .filter((p) => p && typeof p.id === 'string')
-        .map((p) => {
-          const init = initialProfiles.find((x) => x.id === p.id);
-          return {
-            ...p,
-            // Completa chaves de permissão criadas depois do perfil ter sido salvo,
-            // sem sobrescrever nenhum valor que o administrador já tenha definido.
-            permissions: {
-              ...(init ? init.permissions : {}),
-              ...(p.permissions || {}),
-            } as AccessPolicyPermissions,
-          };
-        });
-
-      // Garante que os perfis padrão nunca desapareçam (colaboradores apontam para eles).
-      const missing = initialProfiles.filter((init) => !merged.some((p) => p.id === init.id));
-      return merged.length > 0 ? [...merged, ...missing] : initialProfiles;
-    } catch {
-      return initialProfiles;
-    }
-  });
-
-  const [collaborators, setCollaborators] = useState<Collaborator[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.COLLABORATORS);
-    const list: Collaborator[] = saved ? JSON.parse(saved) : initialCollaborators;
-    // F1 — limpa qualquer senha gravada por versões anteriores do app.
-    return list.map((c) => {
-      const semSenha = { ...(c as Collaborator & { senha?: string }) };
-      delete semSenha.senha;
-      return semSenha as Collaborator;
-    });
-  });
+  // F2 — colaboradores também vêm do servidor (/api/collaborators, sem senha) e
+  // ficam apenas em memória. Nenhuma senha (nem hash) entra no estado do navegador.
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
 
   // Quota de licenças (teto pré-definido). null = sem quota configurada.
   const [licenseQuota, setLicenseQuotaState] = useState<number | null>(() => {
@@ -288,22 +258,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [twoFactorVerified, setTwoFactorVerified] = useState<boolean>(true);
 
-  const [surveys, setSurveys] = useState<Survey[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.SURVEYS);
-    if (!saved) return initialSurveys;
-    try {
-      const parsed: Survey[] = JSON.parse(saved);
-      return parsed.map((s) => {
-        const init = initialSurveys.find((x) => x.id === s.id);
-        return {
-          ...s,
-          metasGlobais: s.metasGlobais && s.metasGlobais.length > 0 ? s.metasGlobais : init?.metasGlobais || [],
-        };
-      });
-    } catch {
-      return initialSurveys;
-    }
-  });
+  // F2 — pesquisas vivem no Supabase (fonte única). O navegador mantém a lista em
+  // memória e usa o IndexedDB apenas como CACHE OFFLINE DE CAMPO (pesquisas
+  // baixadas + fila de coletas), nunca como fonte de verdade do painel.
+  const [surveys, setSurveys] = useState<Survey[]>([]);
 
   // Catálogo de metas base reutilizáveis (sistema base) — independe de pesquisa
   const [baseMetas, setBaseMetas] = useState<BaseMeta[]>(() => {
@@ -1102,17 +1060,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     metaTheme.setAttribute('content', themeColor);
   }, [darkMode]);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles));
-  }, [profiles]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.COLLABORATORS, JSON.stringify(collaborators));
-  }, [collaborators]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.SURVEYS, JSON.stringify(surveys));
-  }, [surveys]);
+  // F2 — perfis, colaboradores e pesquisas NÃO são mais gravados em localStorage.
+  // A fonte de verdade é o Supabase (via /api/*). O navegador guarda apenas o
+  // cache offline de campo no IndexedDB (ver indexedDBStorage.ts).
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions));
@@ -1141,7 +1091,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     profiles.find((p) => p.id === currentUser.perfilAcessoId) || profiles[0];
 
   const hasPermission = (perm: keyof AccessPolicyPermissions): boolean => {
-    if (!currentProfile) return true;
+    // F2 — sem perfil carregado (ex.: logo após o login, antes de hidratar), a
+    // regra é NEGAR. Antes retornava true aqui, o que dava permissão total a
+    // qualquer estado intermediário — um furo da proteção na interface.
+    if (!currentProfile) return false;
     return !!currentProfile.permissions[perm];
   };
 
@@ -1179,6 +1132,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     setProfiles((prev) => prev.map((p) => (p.id === updatedProfile.id ? updatedProfile : p)));
+
+    // F2 — persiste no Supabase. Antes, a alteração ficava só no localStorage do
+    // navegador e o app de campo (que lê o perfil do banco) continuava com a
+    // política antiga. Agora o servidor é a fonte única; em caso de falha, a lista
+    // é recarregada do banco para a tela nunca exibir um estado que não foi salvo.
+    void saveProfileToServer(updatedProfile)
+      .then((res) => {
+        if (!res?.profile) return;
+        const saved = res.profile;
+        setProfiles((prev) => {
+          const idx = prev.findIndex((p) => p.id === updatedProfile.id);
+          if (idx < 0) return [...prev, saved];
+          const next = [...prev];
+          next[idx] = saved;
+          return next;
+        });
+      })
+      .catch((err) => {
+        console.warn('[F2] Falha ao salvar perfil no servidor; recarregando do banco:', err);
+        fetchServerProfiles()
+          .then((r) => setProfiles(r.profiles))
+          .catch(() => undefined);
+      });
 
     const ativadas = changes.filter((c) => c.valorNovo === true).length;
     const removidas = changes.length - ativadas;
@@ -1253,8 +1229,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const saveCollaborator = async (colab: Collaborator, senha?: string): Promise<boolean> => {
-    // F1 — a senha vai apenas para o servidor. Nunca entra no estado do navegador
-    // (o estado de colaboradores é persistido em localStorage).
+    // F1/F2 — a senha vai apenas para o servidor (hash bcrypt no banco). Nunca
+    // entra no estado do navegador, e o cadastro NÃO é mais gravado em localStorage.
     {
       const semSenha = { ...(colab as Collaborator & { senha?: string }) };
       delete semSenha.senha;
@@ -1348,8 +1324,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const toggleCollaboratorStatus = (id: string) => {
-    setCollaborators((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ativo: !c.ativo } : c))
+    const target = collaborators.find((c) => c.id === id);
+    const nextAtivo = target ? !target.ativo : true;
+    setCollaborators((prev) => prev.map((c) => (c.id === id ? { ...c, ativo: nextAtivo } : c)));
+    // F2 — persiste no servidor. Antes só mudava o estado do navegador e voltava
+    // ao recarregar (um dos defeitos citados no diagnóstico).
+    updateCollaboratorPartial(id, { ativo: nextAtivo }).catch((err) =>
+      console.warn('[F2] Falha ao alterar status do colaborador no servidor:', err)
     );
   };
 
@@ -1419,6 +1400,49 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // F2 — HIDRATAÇÃO A PARTIR DO SERVIDOR (fonte única).
+  // Perfis, colaboradores e pesquisas do painel deixam de vir de localStorage/mock:
+  // são lidos de /api/profiles, /api/collaborators e /api/surveys após a sessão ser
+  // validada, e sempre que a conexão volta. O navegador mantém apenas o cache
+  // offline de campo (IndexedDB).
+  const hydrateFromServer = async () => {
+    if (!effectiveOnline) return;
+
+    const [profRes, colabRes, surveyRes] = await Promise.allSettled([
+      fetchServerProfiles(),
+      fetchServerCollaborators(),
+      fetchServerSurveys(),
+    ]);
+
+    if (profRes.status === 'fulfilled' && profRes.value.profiles.length > 0) {
+      setProfiles(profRes.value.profiles);
+    }
+
+    if (colabRes.status === 'fulfilled') {
+      const list = colabRes.value;
+      setCollaborators(list);
+      // Reflete no usuário logado o cadastro canônico do banco (perfil, vínculos).
+      const me = list.find((c) => c.id === currentUser.id);
+      if (me) setCurrentUser(me);
+    }
+
+    if (surveyRes.status === 'fulfilled' && surveyRes.value.success) {
+      const serverList = surveyRes.value.surveys;
+      setSurveys((prev) => {
+        // Preserva pesquisas que só existem localmente (cache offline ainda não subiu).
+        const serverIds = new Set(serverList.map((s) => s.id));
+        const localOnly = prev.filter((s) => !serverIds.has(s.id));
+        return [...serverList, ...localOnly];
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated || !effectiveOnline) return;
+    void hydrateFromServer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, effectiveOnline]);
+
   const login = async (
     loginInput: string,
     senhaInput: string
@@ -1487,6 +1511,43 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     void apiFetch('/api/auth', { method: 'DELETE' }).catch(() => undefined);
   };
 
+  /**
+   * F2 — grava uma alteração de pesquisa na FONTE ÚNICA (Supabase, via /api).
+   * Offline, a alteração vai para o CACHE DE CAMPO no IndexedDB e sobe na próxima
+   * reconexão. Nada de localStorage: o navegador não é mais dono da pesquisa.
+   */
+  const persistSurveyChange = (survey: Survey, resumo?: string) => {
+    if (!effectiveOnline) {
+      addOfflineItem({
+        tipo: 'PESQUISA_SALVA',
+        titulo: `Pesquisa: ${survey.nome}`,
+        resumo: resumo || `Código ${survey.codigo} • Ciclo ${survey.cicloAtual} • ${survey.perguntas?.length || 0} questões`,
+        payload: survey,
+      });
+      saveOfflineSurveyToDB(survey)
+        .then(() => {
+          getAllPendingOfflineSurveysFromDB().then((items) => setPendingIndexedDbCount(items.length));
+          setSupabaseSyncStatus('pending');
+        })
+        .catch((err) => console.warn('[IndexedDB] Falha ao gravar pesquisa offline:', err));
+      return;
+    }
+
+    syncSurveyToSupabase(survey)
+      .then((res) => {
+        if (res.success) {
+          setSupabaseSyncStatus('synced');
+          setLastSupabaseSync(new Date().toLocaleTimeString());
+        } else {
+          setSupabaseSyncStatus('error');
+        }
+      })
+      .catch((err) => {
+        setSupabaseSyncStatus('error');
+        console.warn('[Supabase] Falha ao enviar pesquisa:', err);
+      });
+  };
+
   const saveSurvey = (survey: Survey) => {
     const orig = surveys.find((s) => s.id === survey.id);
     const isNew = !orig;
@@ -1542,32 +1603,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
     }
 
-    if (!effectiveOnline) {
-      addOfflineItem({
-        tipo: 'PESQUISA_SALVA',
-        titulo: `Pesquisa: ${survey.nome}`,
-        resumo: `Código ${survey.codigo} • Ciclo ${survey.cicloAtual} • ${survey.perguntas.length} questões`,
-        payload: survey,
-      });
-
-      // Salva no armazenamento offline do IndexedDB
-      saveOfflineSurveyToDB(survey)
-        .then(() => {
-          getAllPendingOfflineSurveysFromDB().then((items) => setPendingIndexedDbCount(items.length));
-          setSupabaseSyncStatus('pending');
-        })
-        .catch((err) => console.warn('[IndexedDB] Falha ao gravar pesquisa offline:', err));
-    } else {
-      // Sincroniza diretamente com Supabase quando online
-      syncSurveyToSupabase(survey)
-        .then((res) => {
-          if (res.success) {
-            setSupabaseSyncStatus('synced');
-            setLastSupabaseSync(new Date().toLocaleTimeString());
-          }
-        })
-        .catch((err) => console.warn('[Supabase] Falha ao enviar pesquisa:', err));
-    }
+    // F2 — persiste na fonte única (Supabase via /api) ou no cache offline de campo.
+    persistSurveyChange(survey);
 
     setSurveys((prev) => {
       const idx = prev.findIndex((s) => s.id === survey.id);
@@ -1641,6 +1678,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
 
     setSurveys((prev) => [clonedSurvey, ...prev]);
+
+    // F2 — a réplica é criada no servidor (POST /api/surveys) e assume o id/versão
+    // canônicos do banco.
+    void createServerSurvey(clonedSurvey)
+      .then((res) => {
+        if (res.success && res.survey) {
+          const saved = res.survey;
+          setSurveys((prev) => prev.map((s) => (s.id === clonedSurvey.id ? { ...s, ...saved } : s)));
+        } else {
+          console.warn('[F2] Falha ao replicar pesquisa no servidor:', res.message);
+        }
+      })
+      .catch((err) => console.warn('[F2] Erro ao replicar pesquisa no servidor:', err));
+
     return clonedSurvey;
   };
 
@@ -1682,6 +1733,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return s;
       })
     );
+
+    // F2 — o status passa a valer no servidor (antes só mudava no navegador).
+    const targetForSync = surveys.find((s) => s.id === surveyId);
+    if (targetForSync) {
+      const nextStatus = targetForSync.status === 'ativa' ? 'inativa' : 'ativa';
+      persistSurveyChange(
+        { ...targetForSync, status: nextStatus, atualizadaEm: new Date().toISOString() },
+        `Status: ${nextStatus}`
+      );
+    }
   };
 
   // Marca a pesquisa como CONCLUÍDA (finalizada) pela coordenação.
@@ -1720,6 +1781,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           : s
       )
     );
+
+    // F2 — a finalização precisa valer no banco: é ela que esconde a pesquisa do campo.
+    if (target) {
+      persistSurveyChange(
+        { ...target, status: 'concluida', emAndamento: false, atualizadaEm: new Date().toISOString() },
+        'Status: concluida'
+      );
+    }
   };
 
   // Reabre uma pesquisa finalizada (volta para o status ativa).
@@ -1756,6 +1825,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           : s
       )
     );
+
+    // F2 — reabertura persistida no servidor.
+    if (target) {
+      persistSurveyChange(
+        { ...target, status: 'ativa', emAndamento: true, atualizadaEm: new Date().toISOString() },
+        'Status: ativa'
+      );
+    }
   };
 
   // Habilita/desabilita uma pesquisa já concluída para um login específico.
@@ -1764,15 +1841,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     researcherId: string,
     enabled: boolean
   ) => {
+    const target = collaborators.find((c) => c.id === researcherId);
+    const list = Array.isArray(target?.pesquisasReabilitadasIds) ? [...target!.pesquisasReabilitadasIds!] : [];
+    const updated = enabled
+      ? Array.from(new Set([...list, surveyId]))
+      : list.filter((id) => id !== surveyId);
+
     setCollaborators((prev) => {
-      const updatedColabs = prev.map((c) => {
-        if (c.id !== researcherId) return c;
-        const list = Array.isArray(c.pesquisasReabilitadasIds) ? [...c.pesquisasReabilitadasIds] : [];
-        const updated = enabled
-          ? Array.from(new Set([...list, surveyId]))
-          : list.filter((id) => id !== surveyId);
-        return { ...c, pesquisasReabilitadasIds: updated };
-      });
+      const updatedColabs = prev.map((c) =>
+        c.id === researcherId ? { ...c, pesquisasReabilitadasIds: updated } : c
+      );
 
       // Se o pesquisador alterado é o usuário atualmente logado, reflete a
       // mudança na sessão corrente para a tela reagir imediatamente.
@@ -1785,6 +1863,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       return updatedColabs;
     });
+
+    // F2 — persiste no banco para a re-habilitação valer no app de campo.
+    updateCollaboratorPartial(researcherId, { pesquisasReabilitadasIds: updated }).catch((err) =>
+      console.warn('[F2] Falha ao persistir re-habilitação de pesquisa no servidor:', err)
+    );
   };
 
   const deleteSurvey = (surveyId: string) => {
@@ -1818,6 +1901,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSurveys((prev) =>
       prev.map((s) => (s.id === surveyId ? { ...s, status: 'excluida' } : s))
     );
+
+    // F2 — exclusão lógica persistida no servidor.
+    if (target) persistSurveyChange({ ...target, status: 'excluida' }, 'Status: excluida');
   };
 
   const restoreSurvey = (surveyId: string) => {
@@ -1851,6 +1937,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSurveys((prev) =>
       prev.map((s) => (s.id === surveyId ? { ...s, status: 'ativa' } : s))
     );
+
+    // F2 — restauração persistida no servidor.
+    if (target) persistSurveyChange({ ...target, status: 'ativa' }, 'Status: ativa');
   };
 
   // Módulo de Relatórios Analíticos
@@ -1944,6 +2033,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return updated;
     });
 
+    // F2 — metas globais fazem parte da pesquisa: persiste no servidor.
+    {
+      const base = surveys.find((s) => s.id === surveyId);
+      if (base) {
+        const currentMetas = base.metasGlobais || [];
+        const idx = currentMetas.findIndex((m) => m.id === target.id);
+        const newMetas =
+          idx >= 0 ? currentMetas.map((m) => (m.id === target.id ? target : m)) : [...currentMetas, target];
+        persistSurveyChange(
+          { ...base, metasGlobais: newMetas, atualizadaEm: new Date().toISOString() },
+          `Meta global: ${target.titulo}`
+        );
+      }
+    }
+
     addAuditLog({
       categoria: 'PESQUISA',
       tipoAcao: 'CRIACAO_PESQUISA',
@@ -1983,6 +2087,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
       return updated;
     });
+
+    // F2 — remoção de meta global persistida no servidor.
+    {
+      const base = surveys.find((s) => s.id === surveyId);
+      if (base) {
+        const newMetas = (base.metasGlobais || []).filter((m) => m.id !== targetId);
+        persistSurveyChange(
+          { ...base, metasGlobais: newMetas, atualizadaEm: new Date().toISOString() },
+          `Meta global removida: ${targetId}`
+        );
+      }
+    }
 
     addAuditLog({
       categoria: 'PESQUISA',
@@ -2093,6 +2209,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
       return updated;
     });
+
+    // F2 — atribuição de cota persistida no servidor.
+    {
+      const base = surveys.find((s) => s.id === surveyId);
+      if (base) {
+        const currentMetas = base.metasGlobais || [];
+        const target = currentMetas.find((m) => m.id === targetId);
+        if (target) {
+          const existingIdx = target.atribuicoes.findIndex(
+            (a) => a.pesquisadorId === assignment.pesquisadorId
+          );
+          const newAssignments =
+            existingIdx >= 0
+              ? target.atribuicoes.map((a) =>
+                  a.pesquisadorId === assignment.pesquisadorId ? assignment : a
+                )
+              : [...target.atribuicoes, assignment];
+          const updatedTarget: GlobalDemographicTarget = {
+            ...target,
+            atribuicoes: newAssignments,
+            atualizadoEm: new Date().toISOString(),
+          };
+          persistSurveyChange(
+            {
+              ...base,
+              metasGlobais: currentMetas.map((m) => (m.id === targetId ? updatedTarget : m)),
+              atualizadaEm: new Date().toISOString(),
+            },
+            `Cota: ${updatedTarget.titulo}`
+          );
+        }
+      }
+    }
   };
 
   const addSubmission = (sub: InterviewSubmission) => {
@@ -2455,6 +2604,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSurveys((prev) =>
       prev.map((s) => (ids.includes(s.id) ? { ...s, status, atualizadaEm: new Date().toISOString() } : s))
     );
+    // F2 — persiste cada pesquisa alterada no servidor.
+    ids.forEach((id) => {
+      const base = surveys.find((s) => s.id === id);
+      if (base) persistSurveyChange({ ...base, status, atualizadaEm: new Date().toISOString() }, `Status: ${status}`);
+    });
     addAuditLog({
       categoria: 'PESQUISA',
       tipoAcao: 'ACAO_EM_LOTE',
@@ -2483,6 +2637,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSurveys((prev) =>
       prev.map((s) => (ids.includes(s.id) ? { ...s, status: 'excluida', atualizadaEm: new Date().toISOString() } : s))
     );
+    // F2 — exclusão lógica em lote persistida no servidor.
+    ids.forEach((id) => {
+      const base = surveys.find((s) => s.id === id);
+      if (base) persistSurveyChange({ ...base, status: 'excluida', atualizadaEm: new Date().toISOString() }, 'Status: excluida');
+    });
     addAuditLog({
       categoria: 'PESQUISA',
       tipoAcao: 'ACAO_EM_LOTE',
@@ -2525,6 +2684,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCollaborators((prev) =>
       prev.map((c) => (ids.includes(c.id) ? { ...c, ativo } : c))
     );
+    // F2 — persiste a ativação/desativação no servidor.
+    ids.forEach((id) => {
+      updateCollaboratorPartial(id, { ativo }).catch((err) =>
+        console.warn('[F2] Falha ao alterar status do colaborador no servidor:', err)
+      );
+    });
     addAuditLog({
       categoria: 'CONFIGURACAO',
       tipoAcao: 'ACAO_EM_LOTE',
@@ -2554,6 +2719,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCollaborators((prev) =>
       prev.map((c) => (ids.includes(c.id) ? { ...c, perfilAcessoId: perfilId } : c))
     );
+    // F2 — persiste a troca de perfil no servidor.
+    ids.forEach((id) => {
+      updateCollaboratorPartial(id, { perfilAcessoId: perfilId }).catch((err) =>
+        console.warn('[F2] Falha ao alterar perfil do colaborador no servidor:', err)
+      );
+    });
     addAuditLog({
       categoria: 'CONFIGURACAO',
       tipoAcao: 'ACAO_EM_LOTE',
@@ -2579,12 +2750,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const bulkDeleteCollaborators = (ids: string[]) => {
     if (ids.length === 0) return;
-    setCollaborators((prev) => prev.filter((c) => !ids.includes(c.id)));
+    // F2 — a exclusão vira DESATIVAÇÃO no banco (fonte única): preserva a trilha
+    // de auditoria e o histórico de coletas do operador. Antes a remoção era só
+    // no estado do navegador e voltava ao recarregar.
+    setCollaborators((prev) => prev.map((c) => (ids.includes(c.id) ? { ...c, ativo: false } : c)));
+    ids.forEach((id) => {
+      updateCollaboratorPartial(id, { ativo: false }).catch((err) =>
+        console.warn('[F2] Falha ao desativar colaborador no servidor:', err)
+      );
+    });
     addAuditLog({
       categoria: 'CONFIGURACAO',
       tipoAcao: 'ACAO_EM_LOTE',
-      tituloAcao: `Exclusão em Lote de Colaboradores (${ids.length} registros)`,
-      descricaoDetalhada: `${ids.length} colaborador(es) foram removidos do sistema por ${currentUser.nome}.`,
+      tituloAcao: `Desativação em Lote de Colaboradores (${ids.length} registros)`,
+      descricaoDetalhada: `${ids.length} colaborador(es) foram desativados no sistema por ${currentUser.nome}.`,
       autor: {
         id: currentUser.id,
         nome: currentUser.nome,
@@ -2638,23 +2817,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const resetToDefaults = () => {
-    localStorage.clear();
-    setProfiles(initialProfiles);
-    setCollaborators(initialCollaborators);
+    // F2 — "reset" não volta mais para dados de exemplo no navegador. A fonte de
+    // verdade é o Supabase: limpamos o CACHE OFFLINE DE CAMPO do aparelho e
+    // recarregamos perfis, colaboradores e pesquisas do servidor.
     setLicenseQuotaState(null);
-    setSurveys(initialSurveys);
-    setSubmissions(initialSubmissions);
-    setImports(initialImports);
-    setAuditLogs(initialAuditLogs);
-    setAnalyticalReports(initialAnalyticalReports);
-    setCurrentUser(initialCollaborators[0]);
+    localStorage.removeItem(STORAGE_KEYS.LICENSE_QUOTA);
     setTwoFactorVerified(true);
     setActiveModule('home');
     setOfflineQueue([]);
     setIsSimulatedOfflineState(false);
+    localStorage.removeItem(STORAGE_KEYS.SIMULATED_OFFLINE);
     clearCurrentSurveyDraftFromDB().catch(console.error);
     setPendingIndexedDbCount(0);
     setSupabaseSyncStatus('synced');
+    void hydrateFromServer();
   };
 
   return (

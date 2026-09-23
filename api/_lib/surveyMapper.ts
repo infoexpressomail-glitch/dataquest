@@ -7,7 +7,7 @@ export interface SurveyRow {
   codigo: string;
   nome: string;
   descricao: string;
-  status: 'ativa' | 'inativa' | 'excluida';
+  status: 'ativa' | 'inativa' | 'concluida' | 'excluida';
   habilitar_coleta_web: boolean;
   tipo_coleta_web: 'publico' | 'interno';
   colaborador_web_id: string | null;
@@ -58,7 +58,7 @@ export interface SurveyDTO {
   codigo: string;
   nome: string;
   descricao: string;
-  status: 'ativa' | 'inativa' | 'excluida';
+  status: 'ativa' | 'inativa' | 'concluida' | 'excluida';
   habilitarColetaWeb: boolean;
   tipoColetaWeb: 'publico' | 'interno';
   colaboradorWebId?: string;

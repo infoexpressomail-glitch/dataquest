@@ -1,5 +1,5 @@
 import { Collaborator } from '../types';
-import { apiFetch, setSessionToken } from './apiClient';
+import { apiFetch } from './apiClient';
 
 /**
  * Cliente de persistência do cadastro de colaboradores no SISTEMA BASE.
@@ -18,6 +18,49 @@ export interface ServerCollaboratorSaveResult {
   success: boolean;
   colaborador?: Collaborator;
   message?: string;
+}
+
+/**
+ * F2 — Lê todos os colaboradores do servidor (sem senha; a view do banco
+ * `colaboradores_publicos` nem expõe a coluna). A lista deixa de vir do
+ * localStorage. Lança em falha de rede/HTTP.
+ */
+export async function fetchServerCollaborators(): Promise<Collaborator[]> {
+  const res = await apiFetch(`${API_BASE}/collaborators`, { method: 'GET' });
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok || !data?.success) {
+    throw new Error(data?.message || `Erro no servidor (${res.status}) ao carregar colaboradores.`);
+  }
+
+  return (data.collaborators || []) as Collaborator[];
+}
+
+/**
+ * F2 — Atualização PARCIAL de colaborador (ativar/desativar, trocar perfil,
+ * pesquisas re-habilitadas). Não reenvia o cadastro nem toca na senha.
+ */
+export async function updateCollaboratorPartial(
+  id: string,
+  patch: {
+    ativo?: boolean;
+    perfilAcessoId?: string | null;
+    pesquisasReabilitadasIds?: string[];
+  }
+): Promise<Collaborator | undefined> {
+  const res = await apiFetch(`${API_BASE}/collaborators`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, ...patch }),
+  });
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok || !data?.success) {
+    throw new Error(data?.message || `Erro no servidor (${res.status}) ao atualizar colaborador.`);
+  }
+
+  return data.colaborador as Collaborator | undefined;
 }
 
 /**
