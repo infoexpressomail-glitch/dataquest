@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AppContext';
 import {
   ShieldCheck,
   KeyRound,
@@ -17,7 +17,8 @@ interface TwoFactorModalProps {
 }
 
 export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose }) => {
-  const { twoFactorVerified, setTwoFactorVerified, currentUser } = useApp();
+  // F3 — depender só do domínio de que precisa (Autenticação).
+  const { twoFactorVerified, setTwoFactorVerified, currentUser } = useAuth();
 
   const [verificationCode, setVerificationCode] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);

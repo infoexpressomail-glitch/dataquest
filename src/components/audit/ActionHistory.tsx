@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useAuth, useAuditoria, useCadastros, useSurveys } from '../../context/AppContext';
 import {
   History,
   Search,
@@ -34,7 +34,11 @@ import {
 } from '../../utils/auditUtils';
 
 export const ActionHistory: React.FC = () => {
-  const { auditLogs, surveys, collaborators, setActiveModule } = useApp();
+  // F3 — cada dado vem do domínio responsável, em vez do AppContext monólito.
+  const { auditLogs } = useAuditoria();
+  const { surveys } = useSurveys();
+  const { collaborators } = useCadastros();
+  const { setActiveModule } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
