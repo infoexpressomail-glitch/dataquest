@@ -98,6 +98,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     auth.setTwoFactorVerified(true);
     auth.setActiveModule('home');
     coletas.resetOfflineCacheState();
+    // resetOfflineCacheState() zera o estado React do rascunho (setCurrentSurveyDraft(null)),
+    // mas não apaga o registro físico no IndexedDB (chave fixa 'active_current_draft').
+    // clearCurrentSurveyDraft() faz as duas coisas — sem isso, um rascunho antigo ficava
+    // órfão no navegador do usuário até ser sobrescrito pelo próximo rascunho salvo.
+    void coletas.clearCurrentSurveyDraft();
     coletas.setSimulatedOffline(false);
     localStorage.removeItem('dataquest_simulated_offline');
     void auth.hydrateFromServer();
