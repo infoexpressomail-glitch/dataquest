@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Navigation, Compass, Layers, X, ExternalLink } from 'lucide-react';
+import { MapPin, Navigation, X } from 'lucide-react';
 import { InterviewSubmission } from '../../types';
 
 interface GeoMapModalProps {
@@ -77,7 +77,15 @@ export const GeoMapModal: React.FC<GeoMapModalProps> = ({ submissions, surveyNam
                 return (
                   <div
                     key={sub.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelectedSub(sub)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedSub(sub);
+                      }
+                    }}
                     style={{ top: pos.top, left: pos.left }}
                     className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-125"
                   >

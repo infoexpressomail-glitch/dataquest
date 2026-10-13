@@ -1,27 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  MessageSquare,
-  Search,
-  Filter,
-  Download,
-  FileSpreadsheet,
-  FileText,
-  Edit3,
-  Trash2,
-  Volume2,
-  MapPin,
-  CheckCircle2,
-  AlertCircle,
-  Eye,
-  ChevronDown,
-  ChevronUp,
-  History,
-  Save,
-  X,
-  Sparkles,
-} from 'lucide-react';
-import { InterviewSubmission, Survey } from '../../types';
+import { MessageSquare, Search, Download, FileSpreadsheet, FileText, Edit3, Trash2, Volume2, MapPin, ChevronDown, ChevronUp, History, Save, X, Sparkles } from 'lucide-react';
+import { InterviewSubmission } from '../../types';
 import { exportSubmissionsToCSV, exportSubmissionsToPDF } from '../../utils/exportUtils';
 import { exportSurveyToSPSS } from '../../utils/crosstabUtils';
 import { exportSingleAudio } from '../../utils/audioUtils';
@@ -34,7 +14,6 @@ export const ResponsesModule: React.FC = () => {
     surveys,
     submissions,
     collaborators,
-    currentUser,
     hasPermission,
     updateSubmissionAnswers,
     deleteSubmission,
@@ -198,10 +177,10 @@ export const ResponsesModule: React.FC = () => {
       <div className="grid grid-cols-1 gap-3 rounded-2xl border border-ui bg-surface p-4 shadow-xl sm:grid-cols-3">
         {/* Filter by Survey */}
         <div>
-          <label className="block text-[11px] font-bold text-muted">
+          <label htmlFor="fld-responsesmodule-1" className="block text-[11px] font-bold text-muted">
             Filtrar por Pesquisa:
           </label>
-          <select
+          <select id="fld-responsesmodule-1"
             value={selectedSurveyId}
             onChange={(e) => setSelectedSurveyId(e.target.value)}
             className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-1.5 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -217,10 +196,10 @@ export const ResponsesModule: React.FC = () => {
 
         {/* Filter by Researcher */}
         <div>
-          <label className="block text-[11px] font-bold text-muted">
+          <label htmlFor="fld-responsesmodule-2" className="block text-[11px] font-bold text-muted">
             Filtrar por Pesquisador:
           </label>
-          <select
+          <select id="fld-responsesmodule-2"
             value={selectedResearcherId}
             onChange={(e) => setSelectedResearcherId(e.target.value)}
             className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-1.5 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -236,12 +215,12 @@ export const ResponsesModule: React.FC = () => {
 
         {/* Search input */}
         <div>
-          <label className="block text-[11px] font-bold text-muted">
+          <label htmlFor="fld-responsesmodule-3" className="block text-[11px] font-bold text-muted">
             Pesquisar texto / resposta:
           </label>
           <div className="relative mt-1">
             <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted" />
-            <input
+            <input id="fld-responsesmodule-3"
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -466,10 +445,10 @@ export const ResponsesModule: React.FC = () => {
 
               {editingSubmission.respostas.map((resp) => (
                 <div key={resp.perguntaId} className="space-y-1">
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-responsesmodule-4" className="block text-xs font-bold text-secondary">
                     [{resp.perguntaCodigo}] {resp.perguntaEnunciado}
                   </label>
-                  <input
+                  <input id="fld-responsesmodule-4"
                     type="text"
                     value={editAnswersState[resp.perguntaId] || ''}
                     onChange={(e) =>
@@ -484,10 +463,10 @@ export const ResponsesModule: React.FC = () => {
               ))}
 
               <div className="pt-2">
-                <label className="block text-xs font-bold text-secondary">
+                <label htmlFor="fld-responsesmodule-5" className="block text-xs font-bold text-secondary">
                   Motivo da Alteração / Justificativa de Auditoria *
                 </label>
-                <textarea
+                <textarea id="fld-responsesmodule-5"
                   rows={2}
                   value={editReason}
                   onChange={(e) => setEditReason(e.target.value)}

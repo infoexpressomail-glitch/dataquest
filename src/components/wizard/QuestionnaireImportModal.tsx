@@ -1,21 +1,5 @@
 import React, { useState } from 'react';
-import {
-  FileSpreadsheet,
-  Upload,
-  Sparkles,
-  CheckCircle2,
-  Trash2,
-  Plus,
-  ArrowRight,
-  ArrowLeft,
-  X,
-  Copy,
-  Layers,
-  HelpCircle,
-  Settings2,
-  ListOrdered,
-  FileText,
-} from 'lucide-react';
+import { FileSpreadsheet, Upload, Sparkles, CheckCircle2, Trash2, Plus, ArrowRight, ArrowLeft, X, HelpCircle, ListOrdered, FileText } from 'lucide-react';
 import { Question, QuestionType, QuestionOption } from '../../types';
 import {
   parseQuestionnaireText,
@@ -38,7 +22,6 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
   isOpen,
   onClose,
   onImportQuestions,
-  surveyTitle,
 }) => {
   const [activeStep, setActiveStep] = useState<'input' | 'review'>('input');
   const [inputText, setInputText] = useState<string>('');
@@ -180,14 +163,6 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
     setParsedQuestions((prev) => {
       const updated = [...prev];
       updated[qIndex] = { ...updated[qIndex], enunciado: text };
-      return updated;
-    });
-  };
-
-  const handleUpdateCode = (qIndex: number, code: string) => {
-    setParsedQuestions((prev) => {
-      const updated = [...prev];
-      updated[qIndex] = { ...updated[qIndex], codigo: code };
       return updated;
     });
   };
@@ -387,7 +362,7 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
               {/* Upload or Paste */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-secondary uppercase tracking-wider">
+                  <label htmlFor="fld-questionnaireimportmodal-1" className="text-xs font-bold text-secondary uppercase tracking-wider">
                     Texto ou Conteúdo do Questionário
                   </label>
                   <div className="flex items-center gap-3">
@@ -403,7 +378,7 @@ export const QuestionnaireImportModal: React.FC<QuestionnaireImportModalProps> =
                     <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-xs font-medium text-secondary hover:bg-surface-raised hover:text-primary transition">
                       <Upload className="h-3.5 w-3.5 text-accent-primary" />
                       <span>Carregar Arquivo (.txt, .csv)</span>
-                      <input
+                      <input id="fld-questionnaireimportmodal-1"
                         type="file"
                         accept=".txt,.csv,.tsv,.json"
                         onChange={handleFileUpload}
@@ -551,10 +526,10 @@ D) 60 anos ou mais
 
                       {/* Type Selector (CRITICAL USER REQUIREMENT: alterar o tipo das alternativas depois de importadas) */}
                       <div className="flex items-center gap-2">
-                        <label className="text-[11px] font-bold text-muted">
+                        <label htmlFor="fld-questionnaireimportmodal-2" className="text-[11px] font-bold text-muted">
                           Tipo da Questão / Alternativas:
                         </label>
-                        <select
+                        <select id="fld-questionnaireimportmodal-2"
                           value={q.tipo}
                           onChange={(e) =>
                             handleUpdateQuestionType(qIdx, e.target.value as QuestionType)

@@ -1,19 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  X,
-  Calendar,
-  BarChart3,
-  TrendingUp,
-  Users,
-  CheckCircle2,
-  AlertCircle,
-  MapPin,
-  Volume2,
-  Download,
-  Filter,
-  Layers,
-  Sparkles,
-} from 'lucide-react';
+import { X, Calendar, BarChart3, TrendingUp, CheckCircle2, AlertCircle, MapPin, Volume2, Download, Layers } from 'lucide-react';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -25,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-import { Survey, InterviewSubmission, DailyCollectionMetric } from '../../types';
+import { Survey, InterviewSubmission } from '../../types';
 
 interface SurveyDailyTrackingModalProps {
   surveys: Survey[];
@@ -114,7 +100,7 @@ export const SurveyDailyTrackingModal: React.FC<SurveyDailyTrackingModalProps> =
 
     return sortedDates.map((dateKey) => {
       const item = map[dateKey];
-      const [year, month, day] = dateKey.split('-');
+      const [, month, day] = dateKey.split('-');
       const formattedDate = `${day}/${month}`;
 
       return {
@@ -379,7 +365,7 @@ export const SurveyDailyTrackingModal: React.FC<SurveyDailyTrackingModalProps> =
                   />
                   <YAxis stroke="var(--border)" fontSize={11} tickLine={false} />
                   <Tooltip
-                    content={({ active, payload, label }) => {
+                    content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
                         return (

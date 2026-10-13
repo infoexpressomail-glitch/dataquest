@@ -1,0 +1,576 @@
+/* ==========================================================================
+   MODO TOTEM (tablet em quiosque) — DataQuest
+   --------------------------------------------------------------------------
+   Arquivo isolado sob o prefixo `.totem-`. Reaproveita o visual "Mobile First
+   Premium" (`.mp-*`, importado por TotemSurvey.tsx) e amplia tipografia e
+   alvos de toque para uso desassistido em tablet na vertical ou horizontal.
+   Nada aqui altera os estilos globais do sistema.
+   ========================================================================== */
+
+.totem-root {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, color-mix(in srgb, var(--mp-primary) 16%, #fff) 0%, transparent 60%),
+    var(--mp-bg);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   TELA DE ATRAÇÃO (idle) — o totem "chama" o respondente
+   -------------------------------------------------------------------------- */
+.totem-attract {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+}
+
+.totem-attract-card {
+  width: 100%;
+  max-width: 720px;
+  background: var(--mp-surface);
+  border-radius: 32px;
+  border: 1px solid var(--mp-border);
+  box-shadow: 0 40px 90px -50px rgba(8, 40, 80, 0.55);
+  overflow: hidden;
+  text-align: center;
+}
+
+.totem-attract-media img {
+  width: 100%;
+  max-height: 34vh;
+  object-fit: cover;
+  display: block;
+}
+
+.totem-attract-body {
+  padding: 30px 28px 36px;
+}
+
+.totem-attract-logo {
+  height: 76px;
+  width: 76px;
+  border-radius: 22px;
+  margin: -66px auto 14px;
+  background: #fff;
+  border: 4px solid #fff;
+  box-shadow: 0 14px 30px -16px rgba(15, 40, 80, 0.6);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+.totem-attract-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.totem-institution {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.totem-attract-title {
+  font-size: clamp(26px, 3.6vw, 40px);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-top: 8px;
+  color: var(--mp-text);
+}
+
+.totem-attract-desc {
+  font-size: clamp(15px, 1.6vw, 18px);
+  color: var(--mp-muted);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.totem-attract-meta {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mp-muted);
+}
+
+.totem-start-btn {
+  margin-top: 28px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-family: var(--mp-font);
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 900;
+  border-radius: 22px;
+  padding: 24px 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 24px 46px -22px rgba(8, 40, 80, 0.7);
+  animation: totem-pulse 2.4s ease-in-out infinite;
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+.totem-start-btn:active {
+  transform: scale(0.975);
+}
+
+@keyframes totem-pulse {
+  0%, 100% { box-shadow: 0 24px 46px -22px rgba(8, 40, 80, 0.7), 0 0 0 0 color-mix(in srgb, var(--mp-primary) 45%, transparent); }
+  50% { box-shadow: 0 24px 46px -22px rgba(8, 40, 80, 0.7), 0 0 0 16px color-mix(in srgb, var(--mp-primary) 0%, transparent); }
+}
+
+.totem-autostart {
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mp-muted);
+}
+
+.totem-fullscreen {
+  position: absolute;
+  bottom: 16px;
+  right: 18px;
+  border: 1px solid var(--mp-border);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--mp-muted);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Controles do operador (sair / trocar pesquisa) — discretos */
+.totem-operator {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.totem-operator select {
+  border: 1px solid var(--mp-border);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mp-text);
+  max-width: 240px;
+}
+.totem-operator button {
+  border: 1px solid var(--mp-border);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--mp-muted);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.totem-operator button.is-active {
+  border-color: color-mix(in srgb, var(--mp-secondary) 55%, #fff);
+  background: color-mix(in srgb, var(--mp-secondary) 12%, #fff);
+  color: var(--mp-secondary);
+}
+.totem-topbar-operator {
+  position: static;
+}
+.totem-topbar-operator .totem-operator {
+  position: static;
+}
+
+/* --------------------------------------------------------------------------
+   PALCO DAS PERGUNTAS
+   -------------------------------------------------------------------------- */
+.totem-stage {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.totem-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px clamp(16px, 3vw, 40px);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--mp-border);
+}
+
+.totem-progress {
+  flex: 1;
+  min-width: 0;
+}
+.totem-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--mp-muted);
+  margin-bottom: 8px;
+}
+.totem-progress-meta strong {
+  color: var(--mp-primary);
+}
+.totem-progress-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--mp-border);
+  overflow: hidden;
+}
+.totem-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--mp-primary), var(--mp-secondary));
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.totem-question-area {
+  flex: 1;
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 40px) clamp(16px, 3vw, 40px) 140px;
+}
+
+.totem-question-card .mp-card {
+  border-radius: 28px;
+  padding: clamp(22px, 3vw, 36px);
+  box-shadow: 0 30px 70px -40px rgba(8, 40, 80, 0.5);
+}
+.totem-question-card .mp-question-title {
+  font-size: clamp(22px, 2.6vw, 32px);
+  line-height: 1.28;
+}
+.totem-question-card .mp-option {
+  padding: 20px;
+  border-radius: 20px;
+}
+.totem-question-card .mp-option-label {
+  font-size: clamp(16px, 1.7vw, 20px);
+}
+.totem-question-card .mp-option-desc {
+  font-size: 14px;
+}
+.totem-question-card .mp-option-thumb {
+  height: 84px;
+  width: 84px;
+}
+.totem-question-card .mp-option-icon {
+  height: 58px;
+  width: 58px;
+}
+.totem-question-card .mp-option-emoji {
+  font-size: 40px;
+}
+.totem-question-card .mp-smile-emoji {
+  font-size: 56px;
+}
+.totem-question-card .mp-scale-emoji {
+  font-size: 44px;
+}
+.totem-question-card .mp-textarea {
+  font-size: 18px;
+  padding: 18px;
+}
+
+.totem-auto-hint {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mp-muted);
+  opacity: 0.9;
+}
+
+/* --------------------------------------------------------------------------
+   RODAPÉ — botões grandes (Voltar / Próxima / Finalizar)
+   -------------------------------------------------------------------------- */
+.totem-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 45;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px clamp(16px, 3vw, 40px) calc(14px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--mp-border);
+  box-shadow: 0 -16px 40px -30px rgba(15, 40, 80, 0.6);
+}
+
+.totem-btn {
+  border: none;
+  cursor: pointer;
+  font-family: var(--mp-font);
+  font-weight: 900;
+  font-size: clamp(16px, 1.7vw, 19px);
+  border-radius: 18px;
+  padding: 20px 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.16s ease, filter 0.16s ease, background 0.16s ease;
+}
+.totem-btn:active {
+  transform: scale(0.97);
+}
+.totem-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.totem-btn-primary {
+  flex: 1;
+  background: var(--mp-primary, #2b66b0);
+  color: #fff;
+  box-shadow: 0 18px 34px -18px rgba(8, 40, 80, 0.7);
+}
+.totem-btn-ghost {
+  background: #fff;
+  color: var(--mp-text);
+  border: 2px solid var(--mp-border);
+}
+.totem-btn-success {
+  flex: 1;
+  background: var(--mp-secondary);
+  color: #fff;
+  box-shadow: 0 18px 34px -18px rgba(4, 120, 87, 0.7);
+}
+
+/* --------------------------------------------------------------------------
+   CONFIRMAÇÃO FINAL ("Deseja finalizar o formulário e enviar?")
+   -------------------------------------------------------------------------- */
+.totem-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(8, 25, 50, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.totem-confirm {
+  width: 100%;
+  max-width: 560px;
+  background: var(--mp-surface);
+  border-radius: 28px;
+  padding: 34px 30px;
+  text-align: center;
+  box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.7);
+}
+.totem-confirm-icon {
+  height: 84px;
+  width: 84px;
+  border-radius: 999px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--mp-secondary) 14%, #fff);
+  color: var(--mp-secondary);
+}
+.totem-confirm h2 {
+  font-size: clamp(20px, 2.4vw, 27px);
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--mp-text);
+}
+.totem-confirm p {
+  margin-top: 12px;
+  font-size: 15px;
+  color: var(--mp-muted);
+  line-height: 1.5;
+}
+.totem-confirm-actions {
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.totem-confirm-actions .totem-btn {
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   ENVIO / AGRADECIMENTO
+   -------------------------------------------------------------------------- */
+.totem-center,
+.totem-thanks {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  gap: 10px;
+}
+.totem-spinner {
+  height: 64px;
+  width: 64px;
+  border-radius: 999px;
+  border: 6px solid var(--mp-border);
+  border-top-color: var(--mp-primary);
+  animation: totem-spin 0.9s linear infinite;
+  margin-bottom: 12px;
+}
+@keyframes totem-spin {
+  to { transform: rotate(360deg); }
+}
+
+.totem-center h2 {
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 900;
+}
+.totem-center p {
+  color: var(--mp-muted);
+  font-size: 15px;
+}
+
+.totem-thanks-icon {
+  height: 110px;
+  width: 110px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--mp-secondary) 14%, #fff);
+  color: var(--mp-secondary);
+  margin-bottom: 12px;
+}
+.totem-thanks-icon.is-offline {
+  background: #fef3c7;
+  color: #d97706;
+}
+.totem-thanks h1 {
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 900;
+  color: var(--mp-text);
+}
+.totem-thanks p {
+  max-width: 640px;
+  font-size: clamp(15px, 1.7vw, 19px);
+  color: var(--mp-muted);
+  line-height: 1.5;
+}
+.totem-thanks-offline {
+  color: #b45309 !important;
+  font-weight: 700;
+}
+.totem-institution-msg {
+  margin-top: 16px;
+  max-width: 640px;
+  border-radius: 18px;
+  padding: 16px 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.totem-thanks-countdown {
+  margin-top: 20px;
+  font-weight: 800;
+  color: var(--mp-muted);
+}
+.totem-thanks .totem-btn {
+  margin-top: 8px;
+}
+
+.totem-empty {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  gap: 10px;
+  color: var(--mp-text);
+}
+.totem-empty h1 {
+  font-size: 26px;
+  font-weight: 900;
+}
+.totem-empty p {
+  color: var(--mp-muted);
+}
+
+/* --------------------------------------------------------------------------
+   ORIENTAÇÃO PAISAGEM (tablet deitado no totem)
+   -------------------------------------------------------------------------- */
+@media (orientation: landscape) and (min-width: 900px) {
+  .totem-attract-card {
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    text-align: left;
+  }
+  .totem-attract-media {
+    height: 100%;
+  }
+  .totem-attract-media img {
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+  }
+  .totem-attract-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+  }
+  .totem-attract-logo {
+    margin: 0 0 14px;
+  }
+  .totem-attract-meta {
+    justify-content: flex-start;
+  }
+  .totem-question-area {
+    max-width: 1080px;
+  }
+  .totem-footer {
+    justify-content: center;
+  }
+  .totem-footer .totem-btn-primary,
+  .totem-footer .totem-btn-ghost {
+    max-width: 420px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .totem-start-btn,
+  .totem-spinner {
+    animation: none !important;
+  }
+}

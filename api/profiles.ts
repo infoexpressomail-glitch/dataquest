@@ -64,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     if (!requirePermission(res, session, ['politicas_acesso'])) return;
 
-    const body = (req.body || {}) as { profile?: Record<string, any> };
+    const body = (req.body || {}) as { profile?: Record<string, unknown> };
     const profile = body.profile;
 
     if (!profile || typeof profile.name !== 'string' || !profile.name.trim()) {
@@ -91,7 +91,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         profile: rowToDTO(data as PerfilRow),
         message: 'Perfil de acesso salvo no servidor.',
       });
-    } catch (err: any) {
+    } catch (err) {
       return res.status(500).json({ success: false, message: `Falha ao salvar perfil: ${err?.message || err}` });
     }
   }

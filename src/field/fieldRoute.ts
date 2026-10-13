@@ -105,7 +105,7 @@ export async function shareFieldLink(opts: {
     try {
       await navigator.share({ title, text, url });
       return 'shared';
-    } catch (e: any) {
+    } catch (e) {
       // AbortError = usuário cancelou a folha de compartilhamento.
       if (e?.name === 'AbortError') return 'failed';
       // Qualquer outra falha cai no fallback de copiar link.

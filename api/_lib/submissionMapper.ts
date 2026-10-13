@@ -2,6 +2,12 @@
 // TypeScript `InterviewSubmission` (camelCase) usado pelo frontend — ver src/types.ts.
 // Segue o mesmo padrão de api/_lib/surveyMapper.ts.
 
+import type { AnswerItem, InterviewSubmission } from '../../src/types.js';
+
+type Geolocation = NonNullable<InterviewSubmission['geolocalizacao']>;
+type AudioRecording = NonNullable<InterviewSubmission['audioGravacao']>;
+type EditHistoryEntry = NonNullable<InterviewSubmission['historicoEdicao']>[number];
+
 export interface SubmissionRow {
   id: string;
   codigo_pesquisa: string;
@@ -11,11 +17,11 @@ export interface SubmissionRow {
   pesquisador_nome: string;
   data_hora: string;
   status: 'concluida' | 'em_andamento' | 'cancelada';
-  respostas: any[];
-  geolocalizacao: any | null;
-  audio_gravacao: any | null;
+  respostas: AnswerItem[];
+  geolocalizacao: Geolocation | null;
+  audio_gravacao: AudioRecording | null;
   respostas_alteradas_pelo_admin: boolean | null;
-  historico_edicao: any[] | null;
+  historico_edicao: EditHistoryEntry[] | null;
 }
 
 export interface SubmissionDTO {
@@ -27,11 +33,11 @@ export interface SubmissionDTO {
   pesquisadorNome: string;
   dataHora: string;
   status: 'concluida' | 'em_andamento' | 'cancelada';
-  respostas: any[];
-  geolocalizacao?: any;
-  audioGravacao?: any;
+  respostas: AnswerItem[];
+  geolocalizacao?: Geolocation;
+  audioGravacao?: AudioRecording;
   respostasAlteradasPeloAdmin?: boolean;
-  historicoEdicao?: any[];
+  historicoEdicao?: EditHistoryEntry[];
 }
 
 export function rowToSubmissionDTO(row: SubmissionRow): SubmissionDTO {
@@ -57,7 +63,7 @@ export function rowToSubmissionDTO(row: SubmissionRow): SubmissionDTO {
  * colunas snake_case da tabela `respostas`, pronto para insert/upsert no Supabase.
  * Valida os campos mínimos indispensáveis antes de montar a linha.
  */
-export function submissionPayloadToRow(sub: Partial<SubmissionDTO>): { row?: Record<string, any>; error?: string } {
+export function submissionPayloadToRow(sub: Partial<SubmissionDTO>): { row?: Record<string, unknown>; error?: string } {
   if (!sub || typeof sub !== 'object') {
     return { error: 'Submissão inválida ou ausente.' };
   }
@@ -65,7 +71,7 @@ export function submissionPayloadToRow(sub: Partial<SubmissionDTO>): { row?: Rec
   if (!sub.pesquisaId) return { error: `Submissão ${sub.id} sem pesquisaId.` };
   if (!Array.isArray(sub.respostas)) return { error: `Submissão ${sub.id} sem respostas (deve ser um array).` };
 
-  const row: Record<string, any> = {
+  const row: Record<string, unknown> = {
     id: sub.id,
     codigo_pesquisa: sub.codigoPesquisa || '',
     pesquisa_id: sub.pesquisaId,

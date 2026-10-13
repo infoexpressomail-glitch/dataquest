@@ -2,6 +2,14 @@
 // TypeScript `Survey` (camelCase) usado pelo frontend — ver src/types.ts.
 // Mantém EXATAMENTE os mesmos nomes de campo já usados por serverSurveyService.ts.
 
+import type {
+  Question,
+  ConditionalRule,
+  MetaTarget,
+  GlobalDemographicTarget,
+  SurveyLayoutStyle,
+} from '../../src/types.js';
+
 export interface SurveyRow {
   id: string;
   codigo: string;
@@ -11,10 +19,10 @@ export interface SurveyRow {
   habilitar_coleta_web: boolean;
   tipo_coleta_web: 'publico' | 'interno';
   colaborador_web_id: string | null;
-  perguntas: any[];
-  regras: any[];
-  metas: any[];
-  metas_globais: any[];
+  perguntas: Question[];
+  regras: ConditionalRule[];
+  metas: MetaTarget[];
+  metas_globais: GlobalDemographicTarget[];
   pesquisadores_ids: string[];
   ciclo_atual: number;
   versao: number;
@@ -22,7 +30,7 @@ export interface SurveyRow {
   atualizada_em: string;
   em_andamento: boolean;
   server_version: number;
-  dados_completos: any;
+  dados_completos: unknown;
   // Plano amostral, cotas por sexo e configuração de áudio (migration 0002)
   data_inicio: string | null;
   data_fim: string | null;
@@ -40,7 +48,7 @@ export interface SurveyRow {
   gravar_audio_a_partir_pergunta_id: string | null;
   tempo_limite_gravacao_minutos: number | null;
   // Modelo Mobile First Premium (migration 0007)
-  layout_style: string | null;
+  layout_style: SurveyLayoutStyle | null;
   institution_name: string | null;
   logo_image: string | null;
   cover_image: string | null;
@@ -62,10 +70,10 @@ export interface SurveyDTO {
   habilitarColetaWeb: boolean;
   tipoColetaWeb: 'publico' | 'interno';
   colaboradorWebId?: string;
-  perguntas: any[];
-  regras: any[];
-  metas: any[];
-  metasGlobais?: any[];
+  perguntas: Question[];
+  regras: ConditionalRule[];
+  metas: MetaTarget[];
+  metasGlobais?: GlobalDemographicTarget[];
   pesquisadoresIds: string[];
   cicloAtual: number;
   versao: number;
@@ -155,7 +163,7 @@ export function rowToDTO(row: SurveyRow, submissionsCount: number): SurveyDTO {
     gravarAudioAPartirPerguntaId: row.gravar_audio_a_partir_pergunta_id || undefined,
     tempoLimiteGravacaoMinutos: row.tempo_limite_gravacao_minutos ?? undefined,
     // Modelo Mobile First Premium (migration 0007)
-    layoutStyle: (row.layout_style as any) || undefined,
+    layoutStyle: row.layout_style || undefined,
     institutionName: row.institution_name || undefined,
     logoImage: row.logo_image || undefined,
     coverImage: row.cover_image || undefined,
@@ -174,8 +182,8 @@ export function rowToDTO(row: SurveyRow, submissionsCount: number): SurveyDTO {
  * colunas snake_case da tabela `pesquisas`, pronto para insert/update no Supabase.
  * Campos ausentes no payload são omitidos (não sobrescrevem o valor existente).
  */
-export function surveyPayloadToRow(survey: Partial<SurveyDTO>): Record<string, any> {
-  const row: Record<string, any> = {};
+export function surveyPayloadToRow(survey: Partial<SurveyDTO>): Record<string, unknown> {
+  const row: Record<string, unknown> = {};
 
   if (survey.id !== undefined) row.id = survey.id;
   if (survey.codigo !== undefined) row.codigo = survey.codigo;

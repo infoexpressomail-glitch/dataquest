@@ -80,8 +80,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const payload = data as {
       success: boolean;
       error?: string;
-      colaborador?: Record<string, any>;
-      perfil?: Record<string, any>;
+      colaborador?: Record<string, unknown>;
+      perfil?: Record<string, unknown>;
       pesquisador?: boolean;
     } | null;
 
@@ -116,7 +116,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       sessionToken: token,
       expiresAt: new Date(Date.now() + DEFAULT_TTL_SECONDS * 1000).toISOString(),
     });
-  } catch (err: any) {
+  } catch (err) {
     // Sem Supabase configurado NÃO há caminho alternativo: o login falha aqui
     // (nunca cai para uma checagem no navegador, que era justamente o furo antigo).
     const isConfig = /Supabase/i.test(String(err?.message || ''));

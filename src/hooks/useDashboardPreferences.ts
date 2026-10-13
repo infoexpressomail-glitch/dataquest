@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 /**
  * Preferências de personalização do dashboard.
@@ -51,19 +51,28 @@ export function useDashboardPreferences(userId: string): DashboardPreferences {
   const hiddenKey = `${HIDDEN_PREFIX}.${userId || 'anonimo'}`;
   const orderKey = `${ORDER_PREFIX}.${userId || 'anonimo'}`;
 
-  const [hidden, setHidden] = useState<string[]>(() => readStringArray(hiddenKey));
-  const [order, setOrder] = useState<string[]>(() => readStringArray(orderKey));
+  const [prefs, setPrefs] = useState(() => ({
+    key: userId,
+    hidden: readStringArray(hiddenKey),
+    order: readStringArray(orderKey),
+  }));
 
   // Troca de usuário (ex.: "Alternar Usuário para Testes") recarrega a
-  // preferência correta daquele perfil.
-  useEffect(() => {
-    setHidden(readStringArray(hiddenKey));
-    setOrder(readStringArray(orderKey));
-  }, [hiddenKey, orderKey]);
+  // preferência correta daquele perfil. Ajuste de estado durante a renderização
+  // (padrão recomendado pelo React) em vez de setState dentro de useEffect.
+  if (prefs.key !== userId) {
+    setPrefs({
+      key: userId,
+      hidden: readStringArray(hiddenKey),
+      order: readStringArray(orderKey),
+    });
+  }
+
+  const { hidden, order } = prefs;
 
   const persistHidden = useCallback(
     (next: string[]) => {
-      setHidden(next);
+      setPrefs((prev) => ({ ...prev, hidden: next }));
       try {
         window.localStorage.setItem(hiddenKey, JSON.stringify(next));
       } catch {
@@ -75,7 +84,7 @@ export function useDashboardPreferences(userId: string): DashboardPreferences {
 
   const persistOrder = useCallback(
     (next: string[]) => {
-      setOrder(next);
+      setPrefs((prev) => ({ ...prev, order: next }));
       try {
         window.localStorage.setItem(orderKey, JSON.stringify(next));
       } catch {

@@ -1,32 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useAuth, useAuditoria, useCadastros, useSurveys } from '../../context/AppContext';
-import {
-  History,
-  Search,
-  Filter,
-  Download,
-  FileSpreadsheet,
-  FileCode,
-  ShieldCheck,
-  User,
-  Clock,
-  ArrowRight,
-  CheckCircle2,
-  AlertTriangle,
-  FileQuestion,
-  MessageSquare,
-  Hash,
-  Copy,
-  Check,
-  ChevronDown,
-  Info,
-  Layers,
-  ArrowLeft,
-  Eye,
-  X,
-  Lock,
-} from 'lucide-react';
-import { ActionAuditLog, ActionCategory, ActionType } from '../../types';
+import { History, Search, FileSpreadsheet, FileCode, ShieldCheck, User, Clock, ArrowRight, CheckCircle2, FileQuestion, MessageSquare, Hash, Copy, Check, Info, Eye, X, Lock } from 'lucide-react';
+import { ActionAuditLog } from '../../types';
 import {
   getActionTypeMeta,
   exportAuditLogsToCSV,
@@ -36,9 +11,9 @@ import {
 export const ActionHistory: React.FC = () => {
   // F3 — cada dado vem do domínio responsável, em vez do AppContext monólito.
   const { auditLogs } = useAuditoria();
-  const { surveys } = useSurveys();
+  useSurveys();
   const { collaborators } = useCadastros();
-  const { setActiveModule } = useAuth();
+  useAuth();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -47,6 +22,9 @@ export const ActionHistory: React.FC = () => {
   const [timeFilter, setTimeFilter] = useState<string>('all'); // all, 24h, 7d, 30d
   const [copiedHashId, setCopiedHashId] = useState<string | null>(null);
   const [inspectingLog, setInspectingLog] = useState<ActionAuditLog | null>(null);
+  // Instante de referência para os filtros relativos ("últimas 24h" etc.).
+  // Capturado uma única vez, de forma preguiçosa, para manter a renderização pura.
+  const [referenceNow] = useState(() => Date.now());
 
   // Filter logs
   const filteredLogs = useMemo(() => {
@@ -69,8 +47,7 @@ export const ActionHistory: React.FC = () => {
       // Time filter
       if (timeFilter !== 'all') {
         const logTime = new Date(log.timestamp).getTime();
-        const now = Date.now();
-        const diffHours = (now - logTime) / (1000 * 60 * 60);
+        const diffHours = (referenceNow - logTime) / (1000 * 60 * 60);
 
         if (timeFilter === '24h' && diffHours > 24) return false;
         if (timeFilter === '7d' && diffHours > 24 * 7) return false;
@@ -112,7 +89,7 @@ export const ActionHistory: React.FC = () => {
 
       return true;
     });
-  }, [auditLogs, selectedCategory, selectedTargetType, selectedUserLogin, timeFilter, searchTerm]);
+  }, [auditLogs, selectedCategory, selectedTargetType, selectedUserLogin, timeFilter, searchTerm, referenceNow]);
 
   // Statistics
   const totalLogs = auditLogs.length;
@@ -148,7 +125,7 @@ export const ActionHistory: React.FC = () => {
 
   const getRelativeTime = (isoString: string) => {
     try {
-      const diffMs = Date.now() - new Date(isoString).getTime();
+      const diffMs = referenceNow - new Date(isoString).getTime();
       const diffSec = Math.floor(diffMs / 1000);
       if (diffSec < 60) return 'agora mesmo';
       const diffMin = Math.floor(diffSec / 60);

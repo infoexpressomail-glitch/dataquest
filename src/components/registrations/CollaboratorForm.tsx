@@ -1,24 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  Users,
-  Plus,
-  Edit2,
-  Power,
-  KeyRound,
-  Trash2,
-  CheckCircle2,
-  Search,
-  Lock,
-  Phone,
-  User,
-  Mail,
-  Shield,
-  X,
-  FileCheck,
-  ArrowUpRight,
-  UserCheck,
-} from 'lucide-react';
+import { Users, Plus, Edit2, Power, KeyRound, Trash2, CheckCircle2, Search, User, Shield, X, FileCheck, ArrowUpRight, UserCheck } from 'lucide-react';
 import { Collaborator } from '../../types';
 
 export const CollaboratorForm: React.FC = () => {
@@ -595,10 +577,10 @@ export const CollaboratorForm: React.FC = () => {
 
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-1" className="block text-xs font-bold text-secondary">
                       Nome Completo *
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-1"
                       type="text"
                       required
                       value={formData.nome}
@@ -609,10 +591,10 @@ export const CollaboratorForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-2" className="block text-xs font-bold text-secondary">
                       CPF *
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-2"
                       type="text"
                       required
                       value={formData.cpf}
@@ -623,10 +605,10 @@ export const CollaboratorForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-3" className="block text-xs font-bold text-secondary">
                       RG
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-3"
                       type="text"
                       value={formData.rg || ''}
                       onChange={(e) => setFormData({ ...formData, rg: e.target.value })}
@@ -636,10 +618,10 @@ export const CollaboratorForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-4" className="block text-xs font-bold text-secondary">
                       Data de Nascimento
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-4"
                       type="date"
                       value={formData.dataNascimento || ''}
                       onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
@@ -648,10 +630,10 @@ export const CollaboratorForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-5" className="block text-xs font-bold text-secondary">
                       Sexo
                     </label>
-                    <select
+                    <select id="fld-collaboratorform-5"
                       value={formData.sexo || 'M'}
                       onChange={(e) =>
                         setFormData({ ...formData, sexo: e.target.value as 'M' | 'F' | 'Outro' })
@@ -674,10 +656,10 @@ export const CollaboratorForm: React.FC = () => {
 
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-6" className="block text-xs font-bold text-secondary">
                       Telefone Celular / WhatsApp
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-6"
                       type="text"
                       value={formData.celular || ''}
                       onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
@@ -687,10 +669,10 @@ export const CollaboratorForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-7" className="block text-xs font-bold text-secondary">
                       Nome Contato Celular
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-7"
                       type="text"
                       value={formData.nomeContatoCelular || ''}
                       onChange={(e) =>
@@ -702,10 +684,10 @@ export const CollaboratorForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-8" className="block text-xs font-bold text-secondary">
                       Telefone Fixo
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-8"
                       type="text"
                       value={formData.telefoneFixo || ''}
                       onChange={(e) => setFormData({ ...formData, telefoneFixo: e.target.value })}
@@ -715,10 +697,10 @@ export const CollaboratorForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-9" className="block text-xs font-bold text-secondary">
                       Nome Contato Fixo
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-9"
                       type="text"
                       value={formData.nomeContatoFixo || ''}
                       onChange={(e) =>
@@ -739,10 +721,10 @@ export const CollaboratorForm: React.FC = () => {
 
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-10" className="block text-xs font-bold text-secondary">
                       Login de Acesso *
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-10"
                       type="text"
                       required
                       value={formData.login}
@@ -753,10 +735,10 @@ export const CollaboratorForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-11" className="block text-xs font-bold text-secondary">
                       E-mail Institucional *
                     </label>
-                    <input
+                    <input id="fld-collaboratorform-11"
                       type="email"
                       required
                       value={formData.email}
@@ -768,10 +750,10 @@ export const CollaboratorForm: React.FC = () => {
 
                   {!isEditing && (
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-secondary">
+                      <label htmlFor="fld-collaboratorform-12" className="block text-xs font-bold text-secondary">
                         Senha Inicial *
                       </label>
-                      <input
+                      <input id="fld-collaboratorform-12"
                         type="password"
                         required
                         value={formData.senha || ''}
@@ -783,10 +765,10 @@ export const CollaboratorForm: React.FC = () => {
                   )}
 
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-secondary">
+                    <label htmlFor="fld-collaboratorform-13" className="block text-xs font-bold text-secondary">
                       Perfil de Acesso (RBAC) *
                     </label>
-                    <select
+                    <select id="fld-collaboratorform-13"
                       value={formData.perfilAcessoId}
                       onChange={(e) => setFormData({ ...formData, perfilAcessoId: e.target.value })}
                       className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-1.5 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -937,10 +919,10 @@ export const CollaboratorForm: React.FC = () => {
 
             <form onSubmit={handleSavePassword} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-secondary">
+                <label htmlFor="fld-collaboratorform-14" className="block text-xs font-bold text-secondary">
                   Nova Senha de Acesso *
                 </label>
-                <input
+                <input id="fld-collaboratorform-14"
                   type="password"
                   required
                   value={newPassword}
@@ -998,10 +980,10 @@ export const CollaboratorForm: React.FC = () => {
 
             <div className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-secondary mb-1">
+                <label htmlFor="fld-collaboratorform-15" className="block text-xs font-bold text-secondary mb-1">
                   Selecione o Perfil de Acesso Desejado
                 </label>
-                <select
+                <select id="fld-collaboratorform-15"
                   value={bulkTargetProfileId}
                   onChange={(e) => setBulkTargetProfileId(e.target.value)}
                   className="w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -1073,7 +1055,7 @@ export const CollaboratorForm: React.FC = () => {
 
             <div className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-secondary mb-2">
+                <label htmlFor="fld-collaboratorform-16" className="block text-xs font-bold text-secondary mb-2">
                   Selecione as pesquisas para vincular:
                 </label>
                 <div className="max-h-60 overflow-y-auto space-y-1.5 rounded-xl border border-ui bg-surface-card p-3">
@@ -1084,9 +1066,10 @@ export const CollaboratorForm: React.FC = () => {
                       return (
                         <label
                           key={sv.id}
+                          aria-label={`${sv.codigo} - ${sv.nome}`}
                           className="flex items-center gap-2 rounded-lg p-2 hover:bg-surface-raised cursor-pointer transition-colors"
                         >
-                          <input
+                          <input id="fld-collaboratorform-16"
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => {

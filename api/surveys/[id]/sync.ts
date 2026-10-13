@@ -29,11 +29,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { clientDraft } = req.body || {};
   const supabase = getSupabaseAdmin();
 
-  let { data: existing, error: fetchError } = await supabase
+  const { data: existingData, error: fetchError } = await supabase
     .from('pesquisas')
     .select('*')
     .eq('id', id)
     .maybeSingle();
+
+  let existing = existingData;
 
   if (fetchError) {
     return res.status(500).json({ success: false, message: `Erro no servidor: ${fetchError.message}` });
@@ -79,8 +81,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Analisa possíveis divergências ou impacto nas coletas ativas
   const divergences: string[] = [];
   if (clientDraft && clientDraft.perguntas) {
-    const clientQuestionIds = new Set((clientDraft.perguntas || []).map((q: any) => q.id));
-    const removedCount = (survey.perguntas || []).filter((q: any) => !clientQuestionIds.has(q.id)).length;
+    const clientQuestionIds = new Set((clientDraft.perguntas || []).map((q) => q.id));
+    const removedCount = (survey.perguntas || []).filter((q) => !clientQuestionIds.has(q.id)).length;
     if (removedCount > 0 && subsCount > 0) {
       divergences.push(
         `Atenção: ${removedCount} pergunta(s) foram excluídas localmente enquanto existem ${subsCount} entrevistas coletadas em campo.`

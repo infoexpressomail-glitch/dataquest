@@ -1,19 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  TrendingUp,
-  BarChart3,
-  Calendar,
-  Layers,
-  CheckCircle2,
-  Volume2,
-  MapPin,
-  Users,
-  ChevronDown,
-  ArrowUpRight,
-  Sparkles,
-  Smartphone,
-  Activity,
-} from 'lucide-react';
+import { Calendar, ChevronDown, ArrowUpRight, Smartphone, Activity } from 'lucide-react';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -33,6 +19,69 @@ interface SurveyEvolutionCardProps {
   submissions: InterviewSubmission[];
 }
 
+  // Custom Tooltip
+  interface ChartTooltipPoint {
+    dataIso?: string;
+    coletasDoDia?: number;
+    coletasAcumuladas?: number;
+    comAudio?: number;
+    comGPS?: number;
+    pesquisadoresAtivos?: number;
+  }
+  interface ChartTooltipProps {
+    active?: boolean;
+    payload?: Array<{ payload?: ChartTooltipPoint }>;
+    label?: string | number;
+  }
+  const CustomChartTooltip = ({ active, payload, label }: ChartTooltipProps) => {
+    if (active && payload && payload.length) {
+      const dataPoint = payload[0]?.payload;
+      return (
+        <div className="rounded-xl border border-ui bg-surface/95 p-3.5 shadow-2xl backdrop-blur-md text-xs">
+          <p className="font-bold text-primary mb-2 flex items-center gap-1.5 border-b border-ui pb-1.5">
+            <Calendar className="h-3.5 w-3.5 text-accent-primary" />
+            <span>Dia {label} ({dataPoint?.dataIso})</span>
+          </p>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between gap-4 text-secondary">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-accent-primary-solid" />
+                Coletas do Dia:
+              </span>
+              <span className="font-bold text-primary">{dataPoint?.coletasDoDia}</span>
+            </div>
+            <div className="flex items-center justify-between gap-4 text-accent-success">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-accent-success-solid" />
+                Total Acumulado:
+              </span>
+              <span className="font-bold">{dataPoint?.coletasAcumuladas}</span>
+            </div>
+            <div className="flex items-center justify-between gap-4 text-accent-purple">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-accent-purple-solid" />
+                Com Gravação de Áudio:
+              </span>
+              <span className="font-bold">{dataPoint?.comAudio}</span>
+            </div>
+            <div className="flex items-center justify-between gap-4 text-accent-warning">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-accent-warning-solid" />
+                Com Georreferenciamento:
+              </span>
+              <span className="font-bold">{dataPoint?.comGPS}</span>
+            </div>
+            <div className="flex items-center justify-between gap-4 text-muted pt-1 border-t border-ui/80 text-[11px]">
+              <span>Pesquisadores em Campo:</span>
+              <span className="font-medium text-primary">{dataPoint?.pesquisadoresAtivos}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
 export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
   surveys,
   submissions,
@@ -48,19 +97,15 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
     return surveys[0] || null;
   }, [surveys]);
 
-  const [selectedSurveyId, setSelectedSurveyId] = useState<string>(defaultSurvey?.id || '');
+  const [selectedSurveyId, setSelectedSurveyId] = useState<string>('');
   const [periodFilter, setPeriodFilter] = useState<'all' | '7d' | '14d'>('all');
 
-  // Atualiza a seleção se a lista de pesquisas mudar e nada estiver selecionado
-  React.useEffect(() => {
-    if (!selectedSurveyId && defaultSurvey) {
-      setSelectedSurveyId(defaultSurvey.id);
-    }
-  }, [defaultSurvey, selectedSurveyId]);
+  // Seleção efetiva: usa o que o usuário escolheu ou, na ausência, a pesquisa padrão.
+  const effectiveSurveyId = selectedSurveyId || defaultSurvey?.id || '';
 
   const selectedSurvey = useMemo(() => {
-    return surveys.find((s) => s.id === selectedSurveyId) || defaultSurvey;
-  }, [surveys, selectedSurveyId, defaultSurvey]);
+    return surveys.find((s) => s.id === effectiveSurveyId) || defaultSurvey;
+  }, [surveys, effectiveSurveyId, defaultSurvey]);
 
   // Filtrar entrevistas da pesquisa selecionada
   const surveySubmissions = useMemo(() => {
@@ -134,56 +179,6 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
   const percentAudio = totalColetadas > 0 ? Math.round((totalComAudio / totalColetadas) * 100) : 0;
   const percentGPS = totalColetadas > 0 ? Math.round((totalComGPS / totalColetadas) * 100) : 0;
 
-  // Custom Tooltip
-  const CustomChartTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const dataPoint = payload[0]?.payload;
-      return (
-        <div className="rounded-xl border border-ui bg-surface/95 p-3.5 shadow-2xl backdrop-blur-md text-xs">
-          <p className="font-bold text-primary mb-2 flex items-center gap-1.5 border-b border-ui pb-1.5">
-            <Calendar className="h-3.5 w-3.5 text-accent-primary" />
-            <span>Dia {label} ({dataPoint?.dataIso})</span>
-          </p>
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between gap-4 text-secondary">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-accent-primary-solid" />
-                Coletas do Dia:
-              </span>
-              <span className="font-bold text-primary">{dataPoint?.coletasDoDia}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4 text-accent-success">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-accent-success-solid" />
-                Total Acumulado:
-              </span>
-              <span className="font-bold">{dataPoint?.coletasAcumuladas}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4 text-accent-purple">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-accent-purple-solid" />
-                Com Gravação de Áudio:
-              </span>
-              <span className="font-bold">{dataPoint?.comAudio}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4 text-accent-warning">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-accent-warning-solid" />
-                Com Georreferenciamento:
-              </span>
-              <span className="font-bold">{dataPoint?.comGPS}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4 text-muted pt-1 border-t border-ui/80 text-[11px]">
-              <span>Pesquisadores em Campo:</span>
-              <span className="font-medium text-primary">{dataPoint?.pesquisadoresAtivos}</span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl transition-all">
       {/* Top Header com Seletor da Pesquisa Atual e Anteriores */}
@@ -216,7 +211,7 @@ export const SurveyEvolutionCard: React.FC<SurveyEvolutionCardProps> = ({
           <div className="relative">
             <select
               id="select-home-evolution-survey"
-              value={selectedSurveyId}
+              value={effectiveSurveyId}
               onChange={(e) => setSelectedSurveyId(e.target.value)}
               className="appearance-none rounded-lg border border-ui bg-surface-raised py-1.5 pl-3 pr-8 text-xs font-semibold text-primary focus:border-brand-500 focus:outline-none cursor-pointer max-w-xs truncate"
             >

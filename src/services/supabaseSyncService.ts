@@ -81,7 +81,7 @@ export async function syncSurveyToSupabase(survey: Survey): Promise<SupabaseSync
       error: result.error,
       timestamp,
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error('[Sync Error]', err);
     await logSyncEventToDB({
       type: 'SUPABASE_SYNC_SURVEY',

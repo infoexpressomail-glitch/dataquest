@@ -35,12 +35,12 @@ const DEFAULT_TTL_SECONDS = Number(process.env.SESSION_TTL_SECONDS || 8 * 60 * 6
 
 /** Interface mínima aceita por req/res — cobre Vercel e Express sem acoplar. */
 export interface HttpReq {
-  headers: Record<string, any>;
+  headers: Record<string, string | string[] | undefined>;
   method?: string;
 }
 export interface HttpRes {
-  status: (code: number) => any;
-  json: (body: any) => any;
+  status: (code: number) => HttpRes;
+  json: (body: unknown) => HttpRes;
   setHeader?: (name: string, value: string | string[]) => void;
 }
 

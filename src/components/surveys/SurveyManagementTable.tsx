@@ -1,29 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  PlusCircle,
-  Copy,
-  Power,
-  Trash2,
-  Edit3,
-  Volume2,
-  MapPin,
-  FileSpreadsheet,
-  FileText,
-  Smartphone,
-  Search,
-  CheckCircle2,
-  RotateCcw,
-  BarChart3,
-  X,
-  History,
-  Upload,
-  Share2,
-  Database,
-  FileQuestion,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { PlusCircle, Copy, Power, Trash2, Edit3, Volume2, MapPin, FileSpreadsheet, FileText, Smartphone, Search, CheckCircle2, RotateCcw, BarChart3, X, History, Upload, Share2, Database, FileQuestion } from 'lucide-react';
 import { Survey, InterviewSubmission, Question } from '../../types';
 import { exportSubmissionsToCSV, exportSubmissionsToPDF } from '../../utils/exportUtils';
 import { AudioPlayerModal } from './AudioPlayerModal';
@@ -140,7 +117,7 @@ export const SurveyManagementTable: React.FC = () => {
       }
       return true;
     });
-  }, [surveys, collaborators, currentUser, isResearcher, activeTab, searchTerm, accessAllWithoutAssociation]);
+  }, [surveys, currentUser, isResearcher, activeTab, searchTerm, accessAllWithoutAssociation]);
 
   const ordenados = useMemo(
     () => [...filteredSurveys].sort((a, b) => new Date(b.criadaEm).getTime() - new Date(a.criadaEm).getTime()),
@@ -483,7 +460,6 @@ export const SurveyManagementTable: React.FC = () => {
               const excluida = survey.status === 'excluida';
               const concluida = survey.status === 'concluida';
               const ativa = survey.status === 'ativa';
-              const surveySubs = submissions.filter((sub) => sub.pesquisaId === survey.id);
               const isSelected = selectedSurveyIds.includes(survey.id);
 
               return (

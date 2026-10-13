@@ -1,18 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  X,
-  Volume2,
-  Download,
-  ShieldCheck,
-  Search,
-  Play,
-  FileArchive,
-  CheckCircle2,
-  Clock,
-  Mic,
-  AlertCircle,
-  FileText,
-} from 'lucide-react';
+import { X, Volume2, Download, ShieldCheck, Search, Play, FileArchive, CheckCircle2, Clock, Mic, AlertCircle } from 'lucide-react';
 import { Survey, InterviewSubmission } from '../../types';
 import {
   exportSurveyAudiosBatchZip,
@@ -143,7 +130,7 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
       setSuccessMessage(
         `Lote exportado com sucesso! ${result.count} gravação(ões) empacotadas no arquivo "${result.zipName}".`
       );
-    } catch (err: any) {
+    } catch (err) {
       console.error('Erro ao exportar lote de áudios:', err);
       setErrorMessage(err.message || 'Falha ao gerar o arquivo ZIP dos áudios.');
     } finally {
@@ -154,7 +141,7 @@ export const AudioExportModal: React.FC<AudioExportModalProps> = ({
   const handleDownloadSingle = async (sub: InterviewSubmission) => {
     try {
       await exportSingleAudio(sub, selectedSurvey);
-    } catch (err: any) {
+    } catch (err) {
       alert(err.message || 'Erro ao baixar o áudio individual.');
     }
   };

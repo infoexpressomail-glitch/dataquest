@@ -1,20 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  Target,
-  Plus,
-  Trash2,
-  Globe2,
-  User,
-  Users,
-  Smartphone,
-  Layers,
-  Sparkles,
-  Info,
-  Calculator,
-  ArrowRight,
-  Library,
-} from 'lucide-react';
+import { Target, Plus, Trash2, Globe2, User, Users, Smartphone, Info, Calculator, ArrowRight, Library } from 'lucide-react';
 import { MetaTarget, ConditionOperator } from '../../types';
 import { GlobalMetasManager } from './GlobalMetasManager';
 import { MetaCatalogManager } from './MetaCatalogManager';
@@ -129,10 +115,10 @@ export const MetasModule: React.FC = () => {
 
         {/* Survey Selector */}
         <div className="flex items-center gap-2 bg-surface border border-ui rounded-xl px-3 py-1.5 shadow-sm">
-          <label className="text-xs font-semibold text-muted whitespace-nowrap">
+          <label htmlFor="fld-metasmodule-1" className="text-xs font-semibold text-muted whitespace-nowrap">
             Pesquisa:
           </label>
-          <select
+          <select id="fld-metasmodule-1"
             value={selectedSurveyId}
             onChange={(e) => setSelectedSurveyId(e.target.value)}
             className="bg-transparent text-xs font-bold text-primary focus:outline-none cursor-pointer max-w-[260px] truncate"
@@ -456,10 +442,10 @@ export const MetasModule: React.FC = () => {
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {/* 1. Questão */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-metasmodule-2" className="block text-xs font-bold text-secondary">
                     1. Questão *
                   </label>
-                  <select
+                  <select id="fld-metasmodule-2"
                     value={perguntaId}
                     onChange={(e) => {
                       setPerguntaId(e.target.value);
@@ -481,10 +467,10 @@ export const MetasModule: React.FC = () => {
 
                 {/* 2. Condição */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-metasmodule-3" className="block text-xs font-bold text-secondary">
                     2. Condição *
                   </label>
-                  <select
+                  <select id="fld-metasmodule-3"
                     value={condicao}
                     onChange={(e) => setCondicao(e.target.value as ConditionOperator)}
                     className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -497,10 +483,10 @@ export const MetasModule: React.FC = () => {
 
                 {/* 3. Resposta */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-metasmodule-4" className="block text-xs font-bold text-secondary">
                     3. Resposta Esperada *
                   </label>
-                  <input
+                  <input id="fld-metasmodule-4"
                     type="text"
                     value={resposta}
                     onChange={(e) => setResposta(e.target.value)}
@@ -511,10 +497,10 @@ export const MetasModule: React.FC = () => {
 
                 {/* Quantidade Alvo */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-metasmodule-5" className="block text-xs font-bold text-secondary">
                     Meta Amostral (Qtd)
                   </label>
-                  <input
+                  <input id="fld-metasmodule-5"
                     type="number"
                     min={1}
                     value={quantidadeAlvo}

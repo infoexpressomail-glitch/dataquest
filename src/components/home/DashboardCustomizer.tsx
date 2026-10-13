@@ -101,14 +101,16 @@ export const DashboardCustomizer: React.FC<DashboardCustomizerProps> = ({
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-overlay-modal p-0 backdrop-blur-sm sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="dashboard-customizer-title"
-      onClick={onClose}
+      role="presentation"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       <div
         className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border border-ui bg-surface shadow-2xl sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dashboard-customizer-title"
       >
         {/* Cabeçalho */}
         <div className="flex items-start justify-between gap-3 border-b border-ui p-5">

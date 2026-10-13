@@ -1,6 +1,6 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Check } from 'lucide-react';
-import type { Question } from '../../../types';
+import type { AnswerValue, Question } from '../../../types';
 import {
   resolveAnswerVisualType,
   resolveOptions,
@@ -11,10 +11,10 @@ import {
 
 interface AnswerGalleryProps {
   question: Question;
-  value: any;
+  value: AnswerValue;
   theme: { primary: string; secondary: string };
   /** Recebe o valor final da resposta (string, número ou array). */
-  onAnswer: (value: any) => void;
+  onAnswer: (value: AnswerValue) => void;
   /** Desabilita microinterações quando a pesquisa foi finalizada. */
   disabled?: boolean;
 }
@@ -66,9 +66,9 @@ const GalleryOptions: React.FC<{
   visual: ReturnType<typeof resolveAnswerVisualType>;
   options: ResolvedOption[];
   multiple: boolean;
-  value: any;
+  value: AnswerValue;
   theme: { primary: string; secondary: string };
-  onAnswer: (value: any) => void;
+  onAnswer: (value: AnswerValue) => void;
   disabled?: boolean;
 }> = ({ visual, options, multiple, value, theme, onAnswer, disabled }) => {
   const ripple = useRipple();
@@ -106,7 +106,6 @@ const GalleryOptions: React.FC<{
     >
       {options.map((opt) => {
         const selected = isSelected(opt.option.value);
-        const isSmile = visual === 'SMILEYS' || (visual === 'EMOJI' && !!opt.emoji && !opt.option.label);
         if (visual === 'SMILEYS' || (visual === 'EMOJI' && (opt.smile || opt.emoji))) {
           return (
             <button
@@ -167,12 +166,12 @@ const GalleryOptions: React.FC<{
 /** Renderização das escalas visuais (smiles, estrelas, corações, círculos, termômetro). */
 const GalleryScale: React.FC<{
   scale: ResolvedScale;
-  value: any;
+  value: AnswerValue;
   theme: { primary: string };
-  onAnswer: (value: any) => void;
+  onAnswer: (value: AnswerValue) => void;
   disabled?: boolean;
 }> = ({ scale, value, theme, onAnswer, disabled }) => {
-  const [hoverHalf, setHoverHalf] = useState<number | null>(null);
+  const [, setHoverHalf] = useState<number | null>(null);
   const numeric = value === undefined || value === null || value === '' ? NaN : Number(value);
 
   const handleHalf = (e: React.MouseEvent<HTMLButtonElement>, stepValue: number) => {

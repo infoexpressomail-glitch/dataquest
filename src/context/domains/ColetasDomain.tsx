@@ -259,10 +259,11 @@ export function useColetasDomain(): { domain: ColetasDomain; internal: ColetasIn
       }
 
       offlineQueue
-        .filter((q) => q.tipo === 'PESQUISA_SALVA' && q.payload && q.payload.id)
+        .filter((q) => q.tipo === 'PESQUISA_SALVA' && Boolean((q.payload as { id?: string } | null)?.id))
         .forEach((q) => {
-          if (!surveyMap.has(q.payload.id)) {
-            surveyMap.set(q.payload.id, q.payload as Survey);
+          const payload = q.payload as Survey;
+          if (!surveyMap.has(payload.id)) {
+            surveyMap.set(payload.id, payload);
           }
         });
 
@@ -361,7 +362,7 @@ export function useColetasDomain(): { domain: ColetasDomain; internal: ColetasIn
               ),
             }));
           }
-        } catch (err: any) {
+        } catch (err) {
           failedCount++;
           setSyncProgress((prev) => ({
             ...prev,
@@ -449,7 +450,7 @@ export function useColetasDomain(): { domain: ColetasDomain; internal: ColetasIn
         count: successCount,
         message: summaryMsg,
       };
-    } catch (err: any) {
+    } catch (err) {
       console.error('[Force Sync Supabase Error]', err);
       setSupabaseSyncStatus('error');
       setConnectionState('online');
@@ -926,7 +927,7 @@ export function useColetasDomain(): { domain: ColetasDomain; internal: ColetasIn
         } else {
           failedItems.push({ id: item.id, message: res.message });
         }
-      } catch (err: any) {
+      } catch (err) {
         failedItems.push({ id: item.id, message: err?.message || 'Falha de rede' });
       }
     }
@@ -948,7 +949,7 @@ export function useColetasDomain(): { domain: ColetasDomain; internal: ColetasIn
             failedItems.push({ id: item.id, message: result?.message || res.message });
           }
         });
-      } catch (err: any) {
+      } catch (err) {
         submissionItems.forEach((item) => {
           failedItems.push({ id: item.id, message: err?.message || 'Falha de rede' });
         });
@@ -1019,12 +1020,12 @@ export function useColetasDomain(): { domain: ColetasDomain; internal: ColetasIn
   useEffect(() => {
     const handleOnline = () => {
       const navOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
-      console.log('[ConnectionMonitor] Evento "online" disparado pelo navegador. navigator.onLine =', navOnline);
+      console.warn('[ConnectionMonitor] Evento "online" disparado pelo navegador. navigator.onLine =', navOnline);
       setIsOnline(navOnline);
     };
 
     const handleOffline = () => {
-      console.log('[ConnectionMonitor] Evento "offline" disparado pelo navegador.');
+      console.warn('[ConnectionMonitor] Evento "offline" disparado pelo navegador.');
       setIsOnline(false);
       setConnectionState('offline');
     };
@@ -1037,7 +1038,7 @@ export function useColetasDomain(): { domain: ColetasDomain; internal: ColetasIn
         const currentNavOnline = navigator.onLine;
         setIsOnline((prev) => {
           if (prev !== currentNavOnline) {
-            console.log(`[ConnectionMonitor] Heartbeat detectou mudança em navigator.onLine: ${prev} -> ${currentNavOnline}`);
+            console.warn(`[ConnectionMonitor] Heartbeat detectou mudança em navigator.onLine: ${prev} -> ${currentNavOnline}`);
             return currentNavOnline;
           }
           return prev;
@@ -1102,7 +1103,7 @@ export function useColetasDomain(): { domain: ColetasDomain; internal: ColetasIn
     prevEffectiveOnlineRef.current = effectiveOnline;
 
     if (wasOffline && isNowOnline) {
-      console.log('[ConnectionMonitor] Sinal de rede restabelecido (navigator.onLine = true). Forçando fila de sincronização IndexedDB -> Supabase...');
+      console.warn('[ConnectionMonitor] Sinal de rede restabelecido (navigator.onLine = true). Forçando fila de sincronização IndexedDB -> Supabase...');
       setConnectionState('reconnecting');
       forceSyncPendingWithSupabase(true);
       syncOfflineQueue().catch((err) =>

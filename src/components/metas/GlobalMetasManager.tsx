@@ -5,35 +5,8 @@ import {
   ResearcherQuotaAssignment,
   Survey,
 } from '../../types';
-import {
-  calculateGlobalDemographicProgress,
-  calculateResearcherIndividualProgress,
-  FAIXAS_ETARIAS_PADRAO,
-  OPCOES_BAIRROS_PADRAO,
-  OPCOES_SEXO_PADRAO,
-} from '../../utils/demographicGoalsHelper';
-import {
-  Globe2,
-  Users,
-  Plus,
-  Trash2,
-  Edit2,
-  CheckCircle2,
-  Clock,
-  MapPin,
-  Calendar,
-  UserCheck,
-  ChevronDown,
-  ChevronUp,
-  AlertCircle,
-  PauseCircle,
-  PlayCircle,
-  Share2,
-  Sliders,
-  Check,
-  Percent,
-  ArrowUpRight,
-} from 'lucide-react';
+import { calculateGlobalDemographicProgress, calculateResearcherIndividualProgress, FAIXAS_ETARIAS_PADRAO, OPCOES_BAIRROS_PADRAO } from '../../utils/demographicGoalsHelper';
+import { Globe2, Users, Plus, Trash2, Edit2, CheckCircle2, Clock, MapPin, UserCheck, ChevronDown, ChevronUp, AlertCircle, PauseCircle, PlayCircle, Sliders, Check, Percent, ArrowUpRight } from 'lucide-react';
 import { FieldTeamSizingCard } from './FieldTeamSizingCard';
 
 interface GlobalMetasManagerProps {
@@ -50,7 +23,6 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
     submissions,
     saveGlobalTarget,
     deleteGlobalTarget,
-    assignResearcherQuota,
     saveSurvey,
     setActiveModule,
   } = useApp();
@@ -723,10 +695,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
             <form onSubmit={handleSaveTarget} className="mt-4 space-y-4">
               {/* Título e Descrição */}
               <div>
-                <label className="block text-xs font-bold text-secondary">
+                <label htmlFor="fld-globalmetasmanager-1" className="block text-xs font-bold text-secondary">
                   Título da Meta Amostral *
                 </label>
-                <input
+                <input id="fld-globalmetasmanager-1"
                   type="text"
                   required
                   value={titulo}
@@ -737,10 +709,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-secondary">
+                <label htmlFor="fld-globalmetasmanager-2" className="block text-xs font-bold text-secondary">
                   Instruções de Campo / Descrição (Opcional)
                 </label>
-                <textarea
+                <textarea id="fld-globalmetasmanager-2"
                   rows={2}
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
@@ -759,10 +731,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   {/* Faixa Etária */}
                   <div>
-                    <label className="block text-xs font-medium text-muted">
+                    <label htmlFor="fld-globalmetasmanager-3" className="block text-xs font-medium text-muted">
                       🎂 Faixa Etária
                     </label>
-                    <select
+                    <select id="fld-globalmetasmanager-3"
                       value={faixaEtaria}
                       onChange={(e) => setFaixaEtaria(e.target.value)}
                       className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -778,12 +750,12 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
                   {/* Sexo */}
                   <div>
-                    <label className="block text-xs font-medium text-muted">
+                    <label htmlFor="fld-globalmetasmanager-4" className="block text-xs font-medium text-muted">
                       ⚧ Sexo / Gênero
                     </label>
-                    <select
+                    <select id="fld-globalmetasmanager-4"
                       value={sexo}
-                      onChange={(e) => setSexo(e.target.value as any)}
+                      onChange={(e) => setSexo(e.target.value as 'M' | 'F' | 'Outro' | 'Todos')}
                       className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
                     >
                       <option value="Todos">Todos os gêneros</option>
@@ -795,10 +767,10 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
 
                   {/* Bairro */}
                   <div>
-                    <label className="block text-xs font-medium text-muted">
+                    <label htmlFor="fld-globalmetasmanager-5" className="block text-xs font-medium text-muted">
                       📍 Bairro / Região
                     </label>
-                    <select
+                    <select id="fld-globalmetasmanager-5"
                       value={bairro}
                       onChange={(e) => setBairro(e.target.value)}
                       className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -817,14 +789,14 @@ export const GlobalMetasManager: React.FC<GlobalMetasManagerProps> = ({
               {/* Meta Alvo Total */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-globalmetasmanager-6" className="block text-xs font-bold text-secondary">
                     Meta Global Alvo (Coletas Consolidadas)
                   </label>
                   <span className="text-[11px] text-muted">
                     Total esperado para este estrato demográfico
                   </span>
                 </div>
-                <input
+                <input id="fld-globalmetasmanager-6"
                   type="number"
                   min={1}
                   required

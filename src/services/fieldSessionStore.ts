@@ -22,11 +22,16 @@ export function persistFieldSession(session: FieldSession): void {
   }
 }
 
-/** Carrega a sessão persistida, ou null se não houver / estiver corrompida. */
-export function loadFieldSession(): FieldSession | null {
+/**
+ * Valida e normaliza uma FieldSession serializada.
+ *
+ * Exportado para ser reaproveitado pelo Modo Totem, que persiste a MESMA
+ * sessão em localStorage (`src/totem/totemSessionStore.ts`) — assim a validação
+ * de integridade fica em um único lugar.
+ */
+export function parseFieldSession(raw: string | null): FieldSession | null {
+  if (!raw) return null;
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
     const parsed = JSON.parse(raw) as FieldSession;
     // Validação mínima de integridade
     if (!parsed || !parsed.user || !parsed.user.id || !parsed.profile || !parsed.profile.id) {
@@ -37,6 +42,15 @@ export function loadFieldSession(): FieldSession | null {
       profile: parsed.profile,
       surveys: Array.isArray(parsed.surveys) ? parsed.surveys : [],
     };
+  } catch {
+    return null;
+  }
+}
+
+/** Carrega a sessão persistida, ou null se não houver / estiver corrompida. */
+export function loadFieldSession(): FieldSession | null {
+  try {
+    return parseFieldSession(sessionStorage.getItem(STORAGE_KEY));
   } catch {
     return null;
   }

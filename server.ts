@@ -11,6 +11,7 @@ import {
   requirePermission,
   sessionHasPermission,
 } from './api/_lib/session.js';
+import type { Question, ConditionalRule, MetaTarget, GlobalDemographicTarget } from './src/types.js';
 
 const app = express();
 const PORT = 3000;
@@ -48,10 +49,10 @@ interface ServerSurveyRow {
   habilitar_coleta_web: boolean;
   tipo_coleta_web: 'publico' | 'interno';
   colaborador_web_id: string | null;
-  perguntas: any[];
-  regras: any[];
-  metas: any[];
-  metas_globais: any[];
+  perguntas: Question[];
+  regras: ConditionalRule[];
+  metas: MetaTarget[];
+  metas_globais: GlobalDemographicTarget[];
   pesquisadores_ids: string[];
   ciclo_atual: number;
   versao: number;
@@ -59,7 +60,7 @@ interface ServerSurveyRow {
   atualizada_em: string;
   em_andamento: boolean;
   server_version: number;
-  dados_completos: any;
+  dados_completos: unknown;
   data_inicio: string | null;
   data_fim: string | null;
   meta_total_coletas: number | null;
@@ -146,8 +147,8 @@ function toDTO(row: ServerSurveyRow, subsCount: number) {
   };
 }
 
-function payloadToRow(survey: Record<string, any>): Record<string, any> {
-  const row: Record<string, any> = {};
+function payloadToRow(survey: Record<string, unknown>): Record<string, unknown> {
+  const row: Record<string, unknown> = {};
   if (survey.id !== undefined) row.id = survey.id;
   if (survey.codigo !== undefined) row.codigo = survey.codigo;
   if (survey.nome !== undefined) row.nome = survey.nome;
@@ -199,9 +200,10 @@ async function getSubmissionsCount(db: SupabaseClient, surveyId: string): Promis
   return count ?? 0;
 }
 
-function handleDbError(res: Response, err: any) {
+function handleDbError(res: Response, err: unknown) {
   console.error('[Servidor Central] Erro de banco:', err);
-  return res.status(500).json({ success: false, message: err?.message || 'Erro interno do servidor.' });
+  const message = err instanceof Error ? err.message : 'Erro interno do servidor.';
+  return res.status(500).json({ success: false, message });
 }
 
 // -------------------------------------------------------------------------------------
@@ -215,7 +217,7 @@ app.get('/api/health', async (req: Request, res: Response) => {
     const db = getDb();
     const { count } = await db.from('pesquisas').select('*', { count: 'exact', head: true });
     res.json({ status: 'ok', serverTime: new Date().toISOString(), surveysCount: count ?? 0 });
-  } catch (err: any) {
+  } catch (err) {
     res.json({ status: 'degraded', serverTime: new Date().toISOString(), surveysCount: 0, error: err?.message });
   }
 });
@@ -244,7 +246,7 @@ app.get('/api/surveys', async (req: Request, res: Response) => {
 
     const list = rows.map((r) => toDTO(r, counts[r.id] || 0));
     res.json({ success: true, surveys: list });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -265,7 +267,7 @@ app.get('/api/surveys/:id', async (req: Request, res: Response) => {
 
     const subsCount = await getSubmissionsCount(db, id);
     res.json({ success: true, survey: toDTO(data as ServerSurveyRow, subsCount) });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -281,8 +283,9 @@ app.post('/api/surveys/:id/sync', async (req: Request, res: Response) => {
 
   try {
     const db = getDb();
-    let { data: existing, error } = await db.from('pesquisas').select('*').eq('id', id).maybeSingle();
+    const { data: existingData, error } = await db.from('pesquisas').select('*').eq('id', id).maybeSingle();
     if (error) throw error;
+    let existing = existingData;
 
     // Se não existir no repositório ainda mas foi enviada no draft (por exemplo, criada inicialmente offline)
     if (!existing && clientDraft) {
@@ -312,8 +315,8 @@ app.post('/api/surveys/:id/sync', async (req: Request, res: Response) => {
     // Analisa possíveis divergências ou impacto nas coletas ativas
     const divergences: string[] = [];
     if (clientDraft && clientDraft.perguntas) {
-      const clientQuestionIds = new Set(clientDraft.perguntas.map((q: any) => q.id));
-      const removedCount = (survey.perguntas || []).filter((q: any) => !clientQuestionIds.has(q.id)).length;
+      const clientQuestionIds = new Set(clientDraft.perguntas.map((q) => q.id));
+      const removedCount = (survey.perguntas || []).filter((q) => !clientQuestionIds.has(q.id)).length;
       if (removedCount > 0 && subsCount > 0) {
         divergences.push(`Atenção: ${removedCount} pergunta(s) foram excluídas localmente enquanto existem ${subsCount} entrevistas coletadas em campo.`);
       }
@@ -347,7 +350,7 @@ app.post('/api/surveys/:id/sync', async (req: Request, res: Response) => {
       divergences,
       serverSurvey: toDTO(survey, subsCount),
     });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -441,7 +444,7 @@ app.put('/api/surveys/:id', async (req: Request, res: Response) => {
       survey: toDTO(updated as ServerSurveyRow, subsCount),
       message: `Alterações subidas com sucesso para o servidor! Versão atualizada para v${nextVersao}.`,
     });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -471,7 +474,7 @@ app.post('/api/surveys', async (req: Request, res: Response) => {
       survey: toDTO(created as ServerSurveyRow, 0),
       message: 'Pesquisa criada com sucesso no servidor!',
     });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -518,8 +521,8 @@ app.post('/api/auth', async (req: Request, res: Response) => {
     const payload = data as {
       success: boolean;
       error?: string;
-      colaborador?: Record<string, any>;
-      perfil?: Record<string, any>;
+      colaborador?: Record<string, unknown>;
+      perfil?: Record<string, unknown>;
       pesquisador?: boolean;
     } | null;
 
@@ -559,7 +562,7 @@ app.post('/api/auth', async (req: Request, res: Response) => {
       sessionToken: token,
       expiresAt: new Date(Date.now() + ttl * 1000).toISOString(),
     });
-  } catch (err: any) {
+  } catch (err) {
     const isConfig = /Supabase/i.test(String(err?.message || ''));
     return res.status(isConfig ? 503 : 500).json({
       success: false,
@@ -577,7 +580,7 @@ app.post('/api/collaborators', async (req: Request, res: Response) => {
   const session = requireSession(req, res);
   if (!session) return;
   if (!requirePermission(res, session, ['colaboradores_acesso'])) return;
-  const body = (req.body || {}) as { colaborador?: Record<string, any>; senha?: string };
+  const body = (req.body || {}) as { colaborador?: Record<string, unknown>; senha?: string };
   const colab = body.colaborador;
   const senha = body.senha;
 
@@ -600,7 +603,7 @@ app.post('/api/collaborators', async (req: Request, res: Response) => {
     }
 
     return res.status(200).json({ success: true, colaborador: data, message: 'Colaborador salvo com sucesso no servidor.' });
-  } catch (err: any) {
+  } catch (err) {
     return res.status(500).json({ success: false, message: `Falha ao salvar colaborador: ${err?.message || err}` });
   }
 });
@@ -608,7 +611,7 @@ app.post('/api/collaborators', async (req: Request, res: Response) => {
 // 8.1 LISTAGEM E ATUALIZAÇÃO PARCIAL DE COLABORADORES (F2)
 // Mesmo contrato de api/collaborators.ts (GET/PATCH). A leitura usa a view
 // `colaboradores_publicos` — o hash de senha nunca sai do banco.
-function colaboradorRowToDTO(row: Record<string, any>) {
+function colaboradorRowToDTO(row: Record<string, unknown>) {
   return {
     id: row.id,
     cpf: row.cpf,
@@ -646,9 +649,9 @@ app.get('/api/collaborators', async (req: Request, res: Response) => {
     }
     return res.status(200).json({
       success: true,
-      collaborators: (data || []).map((r: Record<string, any>) => colaboradorRowToDTO(r)),
+      collaborators: (data || []).map((r) => colaboradorRowToDTO(r)),
     });
-  } catch (err: any) {
+  } catch (err) {
     return res.status(500).json({ success: false, message: `Falha ao listar colaboradores: ${err?.message || err}` });
   }
 });
@@ -674,7 +677,7 @@ app.patch('/api/collaborators', async (req: Request, res: Response) => {
 
   try {
     const db = getDb();
-    let row: any = null;
+    let row: Record<string, unknown> | null = null;
     if (body.ativo !== undefined) {
       const r = await db.rpc('definir_ativo_colaborador', { p_id: body.id, p_ativo: Boolean(body.ativo) });
       if (r.error) throw new Error(r.error.message);
@@ -698,13 +701,13 @@ app.patch('/api/collaborators', async (req: Request, res: Response) => {
     }
     if (!row) return res.status(400).json({ success: false, message: 'Nada para atualizar.' });
     return res.status(200).json({ success: true, colaborador: colaboradorRowToDTO(row) });
-  } catch (err: any) {
+  } catch (err) {
     return res.status(500).json({ success: false, message: `Falha ao atualizar colaborador: ${err?.message || err}` });
   }
 });
 
 // 8.2 PERFIS DE ACESSO (F2) — mesma contrato de api/profiles.ts.
-function perfilRowToDTO(row: Record<string, any>) {
+function perfilRowToDTO(row: Record<string, unknown>) {
   return { id: row.id, name: row.nome, description: row.descricao || '', permissions: row.permissions || {} };
 }
 
@@ -718,8 +721,8 @@ app.get('/api/profiles', async (req: Request, res: Response) => {
       .select('id, nome, descricao, permissions')
       .order('nome', { ascending: true });
     if (error) return res.status(500).json({ success: false, message: `Erro ao listar perfis: ${error.message}` });
-    return res.status(200).json({ success: true, profiles: (data || []).map((r: Record<string, any>) => perfilRowToDTO(r)) });
-  } catch (err: any) {
+    return res.status(200).json({ success: true, profiles: (data || []).map((r) => perfilRowToDTO(r)) });
+  } catch (err) {
     return res.status(500).json({ success: false, message: `Falha ao listar perfis: ${err?.message || err}` });
   }
 });
@@ -728,7 +731,7 @@ app.post('/api/profiles', async (req: Request, res: Response) => {
   const session = requireSession(req, res);
   if (!session) return;
   if (!requirePermission(res, session, ['politicas_acesso'])) return;
-  const profile = ((req.body || {}) as { profile?: Record<string, any> }).profile;
+  const profile = ((req.body || {}) as { profile?: Record<string, unknown> }).profile;
   if (!profile || typeof profile.name !== 'string' || !profile.name.trim()) {
     return res.status(400).json({ success: false, message: 'Perfil inválido (informe o nome do perfil).' });
   }
@@ -741,8 +744,8 @@ app.post('/api/profiles', async (req: Request, res: Response) => {
       p_permissions: profile.permissions && typeof profile.permissions === 'object' ? profile.permissions : {},
     });
     if (error) return res.status(500).json({ success: false, message: `Erro ao salvar perfil: ${error.message}` });
-    return res.status(200).json({ success: true, profile: perfilRowToDTO(data as Record<string, any>) });
-  } catch (err: any) {
+    return res.status(200).json({ success: true, profile: perfilRowToDTO(data as Record<string, unknown>) });
+  } catch (err) {
     return res.status(500).json({ success: false, message: `Falha ao salvar perfil: ${err?.message || err}` });
   }
 });
@@ -816,7 +819,7 @@ app.get('/api/collaborators/:id/pesquisas', async (req: Request, res: Response) 
     }
 
     return res.status(200).json({ success: true, pesquisadorId: id, pesquisas: list, count: list.length });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -824,7 +827,23 @@ app.get('/api/collaborators/:id/pesquisas', async (req: Request, res: Response) 
 // 10. ENTREVISTAS COLETADAS EM CAMPO (tabela `respostas`)
 // Mesmo contrato de api/submissions.ts. Sem esta rota, uma entrevista coletada
 // nunca saía do navegador do pesquisador — ficava só em memória/IndexedDB local.
-function submissionPayloadToRowLocal(sub: any): { row?: Record<string, any>; error?: string } {
+interface SubmissionPayload {
+  id?: string;
+  codigoPesquisa?: string;
+  pesquisaId?: string;
+  pesquisaNome?: string;
+  pesquisadorId?: string;
+  pesquisadorNome?: string;
+  dataHora?: string;
+  status?: string;
+  respostas?: unknown[];
+  geolocalizacao?: unknown;
+  audioGravacao?: unknown;
+  respostasAlteradasPeloAdmin?: boolean;
+  historicoEdicao?: unknown[];
+}
+
+function submissionPayloadToRowLocal(sub: SubmissionPayload): { row?: Record<string, unknown>; error?: string } {
   if (!sub || typeof sub !== 'object') return { error: 'Submissão inválida ou ausente.' };
   if (!sub.id) return { error: 'Submissão sem id.' };
   if (!sub.pesquisaId) return { error: `Submissão ${sub.id} sem pesquisaId.` };
@@ -849,7 +868,7 @@ function submissionPayloadToRowLocal(sub: any): { row?: Record<string, any>; err
   };
 }
 
-function submissionRowToDTOLocal(row: any) {
+function submissionRowToDTOLocal(row: Record<string, unknown>) {
   return {
     id: row.id,
     codigoPesquisa: row.codigo_pesquisa,
@@ -883,7 +902,7 @@ app.get('/api/submissions', async (req: Request, res: Response) => {
 
     const list = (data || []).map(submissionRowToDTOLocal);
     return res.status(200).json({ success: true, submissions: list, count: list.length });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -892,8 +911,8 @@ app.post('/api/submissions', async (req: Request, res: Response) => {
   const session = requireSession(req, res);
   if (!session) return;
   if (!session.pesquisador && !requirePermission(res, session, ['respostas_acesso'])) return;
-  const body = (req.body || {}) as { submissions?: any[]; submission?: any };
-  const incoming: any[] = Array.isArray(body.submissions)
+  const body = (req.body || {}) as { submissions?: SubmissionPayload[]; submission?: SubmissionPayload };
+  const incoming: SubmissionPayload[] = Array.isArray(body.submissions)
     ? body.submissions
     : body.submission
     ? [body.submission]
@@ -905,7 +924,7 @@ app.post('/api/submissions', async (req: Request, res: Response) => {
 
   try {
     const db = getDb();
-    const rows: Record<string, any>[] = [];
+    const rows: Record<string, unknown>[] = [];
     const results: { id: string; success: boolean; message?: string }[] = [];
 
     for (const sub of incoming) {
@@ -921,7 +940,7 @@ app.post('/api/submissions', async (req: Request, res: Response) => {
     // as demais válidas — ver mesmo comentário em api/submissions.ts.
     for (const row of rows) {
       const { error } = await db.from('respostas').upsert(row, { onConflict: 'id' });
-      results.push({ id: row.id, success: !error, message: error?.message });
+      results.push({ id: String(row.id), success: !error, message: error?.message });
     }
 
     const successCount = results.filter((r) => r.success).length;
@@ -935,7 +954,7 @@ app.post('/api/submissions', async (req: Request, res: Response) => {
           ? `${successCount} entrevista(s) gravada(s) com sucesso no servidor.`
           : `${successCount} gravada(s), ${failedCount} falharam.`,
     });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -1007,7 +1026,7 @@ app.post('/api/survey-assets', async (req: Request, res: Response) => {
 
     const { data } = db.storage.from(SURVEY_ASSETS_BUCKET).getPublicUrl(path);
     return res.status(200).json({ success: true, url: data.publicUrl, path });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });
@@ -1034,7 +1053,7 @@ app.delete('/api/survey-assets', async (req: Request, res: Response) => {
     const { error } = await db.storage.from(SURVEY_ASSETS_BUCKET).remove([path]);
     if (error) throw error;
     return res.status(200).json({ success: true });
-  } catch (err: any) {
+  } catch (err) {
     handleDbError(res, err);
   }
 });

@@ -311,7 +311,7 @@ export function useAuthDomain(): { domain: AuthDomain; internal: AuthInternal } 
       });
 
       return { success: true };
-    } catch (err: any) {
+    } catch (err) {
       return {
         success: false,
         error: `Não foi possível concluir o login no servidor: ${err?.message || 'falha de rede'}.`,

@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { BaseMeta } from '../../types';
-import {
-  FAIXAS_ETARIAS_PADRAO,
-  OPCOES_BAIRROS_PADRAO,
-  OPCOES_SEXO_PADRAO,
-  OPCOES_ESCOLARIDADE_PADRAO,
-} from '../../utils/demographicGoalsHelper';
+import { FAIXAS_ETARIAS_PADRAO, OPCOES_BAIRROS_PADRAO, OPCOES_ESCOLARIDADE_PADRAO } from '../../utils/demographicGoalsHelper';
 import {
   Library,
   Plus,
@@ -85,7 +80,7 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
       descricao: descricao.trim() || undefined,
       criterios: {
         faixaEtaria,
-        sexo: sexo as any,
+        sexo: sexo as 'M' | 'F' | 'Outro' | 'Todos',
         escolaridade,
         bairro,
       },
@@ -297,10 +292,10 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
 
             <form onSubmit={handleSave} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-secondary">
+                <label htmlFor="fld-metacatalogmanager-1" className="block text-xs font-bold text-secondary">
                   Título da Meta Base *
                 </label>
-                <input
+                <input id="fld-metacatalogmanager-1"
                   type="text"
                   required
                   value={titulo}
@@ -311,10 +306,10 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-secondary">
+                <label htmlFor="fld-metacatalogmanager-2" className="block text-xs font-bold text-secondary">
                   Instruções de Campo / Descrição (Opcional)
                 </label>
-                <textarea
+                <textarea id="fld-metacatalogmanager-2"
                   rows={2}
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
@@ -332,10 +327,10 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-medium text-muted">
+                    <label htmlFor="fld-metacatalogmanager-3" className="block text-xs font-medium text-muted">
                       🎂 Faixa Etária
                     </label>
-                    <select
+                    <select id="fld-metacatalogmanager-3"
                       value={faixaEtaria}
                       onChange={(e) => setFaixaEtaria(e.target.value)}
                       className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -350,10 +345,10 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-muted">
+                    <label htmlFor="fld-metacatalogmanager-4" className="block text-xs font-medium text-muted">
                       ⚧ Sexo / Gênero
                     </label>
-                    <select
+                    <select id="fld-metacatalogmanager-4"
                       value={sexo}
                       onChange={(e) => setSexo(e.target.value)}
                       className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -366,11 +361,11 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-muted">
+                    <label htmlFor="fld-metacatalogmanager-5" className="block text-xs font-medium text-muted">
                       <GraduationCap className="h-3 w-3 inline mr-1" />
                       Escolaridade
                     </label>
-                    <select
+                    <select id="fld-metacatalogmanager-5"
                       value={escolaridade}
                       onChange={(e) => setEscolaridade(e.target.value)}
                       className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -385,10 +380,10 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-muted">
+                    <label htmlFor="fld-metacatalogmanager-6" className="block text-xs font-medium text-muted">
                       📍 Bairro / Região
                     </label>
-                    <select
+                    <select id="fld-metacatalogmanager-6"
                       value={bairro}
                       onChange={(e) => setBairro(e.target.value)}
                       className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -407,14 +402,14 @@ export const MetaCatalogManager: React.FC<MetaCatalogManagerProps> = ({
               {/* Meta Alvo Total */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-metacatalogmanager-7" className="block text-xs font-bold text-secondary">
                     Meta Global Alvo (Coletas Consolidadas)
                   </label>
                   <span className="text-[11px] text-muted">
                     Total esperado para este estrato amostral
                   </span>
                 </div>
-                <input
+                <input id="fld-metacatalogmanager-7"
                   type="number"
                   min={1}
                   required

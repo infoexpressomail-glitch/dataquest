@@ -1,6 +1,6 @@
 import React from 'react';
 import { CalendarClock, MessageSquareText } from 'lucide-react';
-import type { Question } from '../../../types';
+import type { AnswerValue, Question } from '../../../types';
 import { AnswerGallery } from './AnswerGallery';
 import {
   resolveAppearance,
@@ -12,11 +12,11 @@ import {
 
 interface QuestionCardProps {
   question: Question;
-  value: any;
+  value: AnswerValue;
   comment?: string;
   theme: { primary: string; secondary: string };
   disabled?: boolean;
-  onAnswer: (value: any) => void;
+  onAnswer: (value: AnswerValue) => void;
   onComment: (text: string) => void;
 }
 

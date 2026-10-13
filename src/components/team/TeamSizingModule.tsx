@@ -1,38 +1,13 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Survey, Collaborator } from '../../types';
+import { Survey } from '../../types';
 import { calculateTeamSizing, TeamSizingResult, exportSurveyToSPSS } from '../../utils/crosstabUtils';
 import {
   exportTeamSizingToPDF,
   exportTeamSizingToXLSX,
   generateSensitivityMatrix,
 } from '../../utils/teamSizingExport';
-import {
-  Users,
-  Calculator,
-  UserCheck,
-  UserPlus,
-  UserMinus,
-  AlertTriangle,
-  CheckCircle2,
-  Calendar,
-  TrendingUp,
-  FileSpreadsheet,
-  FileText,
-  Save,
-  Clock,
-  Briefcase,
-  Target,
-  Sparkles,
-  Info,
-  Layers,
-  ArrowRight,
-  ShieldCheck,
-  HelpCircle,
-  BarChart3,
-  Sliders,
-  Percent,
-} from 'lucide-react';
+import { Users, Calculator, UserPlus, UserMinus, AlertTriangle, CheckCircle2, Calendar, TrendingUp, FileSpreadsheet, FileText, Save, Target, Sparkles, ShieldCheck, BarChart3, Sliders, Percent } from 'lucide-react';
 import { ConfidenceSampleCalculator } from '../common/ConfidenceSampleCalculator';
 import { calculateMarginOfErrorFromSample } from '../../utils/samplingUtils';
 
@@ -82,8 +57,11 @@ export const TeamSizingModule: React.FC = () => {
   const [allocatedIds, setAllocatedIds] = useState<string[]>([]);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
 
-  // Sincroniza parâmetros quando a pesquisa selecionada muda
-  useEffect(() => {
+  // Sincroniza parâmetros quando a pesquisa selecionada muda. Ajuste de estado
+  // durante a renderização (padrão recomendado pelo React) em vez de useEffect.
+  const [syncedSurvey, setSyncedSurvey] = useState(currentSurvey);
+  if (currentSurvey !== syncedSurvey) {
+    setSyncedSurvey(currentSurvey);
     if (currentSurvey) {
       const initialMeta = currentSurvey.metaTotalColetas || 400;
       setMetaTotalInput(initialMeta);
@@ -108,7 +86,7 @@ export const TeamSizingModule: React.FC = () => {
       setAllocatedIds(currentSurvey.pesquisadoresIds || []);
       setSaveSuccessMsg(null);
     }
-  }, [currentSurvey]);
+  }
 
   // Cálculo da Margem de Erro Estimada para a Meta atual (com o nível de confiança selecionado)
   const currentEstimatedMarginOfError = useMemo(() => {
@@ -625,7 +603,7 @@ export const TeamSizingModule: React.FC = () => {
           {/* 1. Meta Total de Entrevistas */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold text-secondary`}>
+              <label htmlFor="input-meta-total-coletas" className={`text-xs font-bold text-secondary`}>
                 Meta Total de Entrevistas (N Amostral)
               </label>
               <span className="text-xs font-mono font-bold text-accent-primary">{metaTotalInput}</span>
@@ -678,7 +656,7 @@ export const TeamSizingModule: React.FC = () => {
           {/* 2. Produtividade Média Diária Esperada */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold text-secondary`}>
+              <label htmlFor="slider-produtividade-dia" className={`text-xs font-bold text-secondary`}>
                 Produtividade Média Esperada (entr./pesquisador/dia)
               </label>
               <span className="text-xs font-mono font-bold text-accent-primary">{produtividadeInput} /dia</span>
@@ -716,7 +694,7 @@ export const TeamSizingModule: React.FC = () => {
           {/* 3. Prazo Previsto em Dias de Campo */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold text-secondary`}>
+              <label htmlFor="slider-dias-campo" className={`text-xs font-bold text-secondary`}>
                 Prazo Previsto de Campo (Dias Úteis)
               </label>
               <span className="text-xs font-mono font-bold text-accent-primary">{diasCampoInput} dias</span>
@@ -754,7 +732,7 @@ export const TeamSizingModule: React.FC = () => {
           {/* 4. Tempo Médio de Aplicação do Questionário */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold text-secondary`}>
+              <label htmlFor="slider-tempo-entrevista" className={`text-xs font-bold text-secondary`}>
                 Duração Média da Entrevista (minutos)
               </label>
               <span className="text-xs font-mono font-bold text-accent-primary">{tempoMinutosEntrevista} min</span>
@@ -790,7 +768,7 @@ export const TeamSizingModule: React.FC = () => {
           {/* 5. Jornada Diária de Trabalho */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold text-secondary`}>
+              <label htmlFor="slider-jornada-horas" className={`text-xs font-bold text-secondary`}>
                 Jornada Diária de Campo (horas/dia)
               </label>
               <span className="text-xs font-mono font-bold text-accent-primary">{jornadaHorasDia}h/dia</span>
@@ -826,7 +804,7 @@ export const TeamSizingModule: React.FC = () => {
           {/* 6. Reserva Técnica / Margem de Segurança */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className={`text-xs font-bold text-secondary`}>
+              <label htmlFor="slider-reserva-tecnica" className={`text-xs font-bold text-secondary`}>
                 Margem de Reserva Técnica
               </label>
               <span className="text-xs font-mono font-bold text-accent-primary">+{reservaTecnicaPercent}%</span>

@@ -1,20 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Users,
-  Target,
-  Calendar,
-  AlertTriangle,
-  CheckCircle2,
-  Sliders,
-  TrendingUp,
-  Clock,
-  ShieldCheck,
-  UserCheck,
-  ChevronDown,
-  ChevronUp,
-  Percent,
-  Calculator,
-} from 'lucide-react';
+import { Users, Target, Calendar, AlertTriangle, CheckCircle2, Sliders, TrendingUp, Clock, ShieldCheck, UserCheck, ChevronDown, ChevronUp, Calculator } from 'lucide-react';
 import { Survey, InterviewSubmission } from '../../types';
 import { calculateTeamSizing } from '../../utils/crosstabUtils';
 import { ConfidenceSampleCalculator } from '../common/ConfidenceSampleCalculator';
@@ -48,7 +33,7 @@ export const FieldTeamSizingCard: React.FC<FieldTeamSizingCardProps> = ({
   const [mediaDia, setMediaDia] = useState<number>(survey.mediaColetasDiaPesquisador || 15);
   const [nivelConfianca, setNivelConfianca] = useState<number>(survey.nivelConfiancaPercentual || 95);
   const [margemErro, setMargemErro] = useState<number>(survey.margemErroPercentual || 3.5);
-  const [populacaoUniverso, setPopulacaoUniverso] = useState<number | undefined>(survey.populacaoUniverso);
+  const [populacaoUniverso] = useState<number | undefined>(survey.populacaoUniverso);
 
   const [metaTotal, setMetaTotal] = useState<number>(() => {
     if (survey.metaTotalColetas) return survey.metaTotalColetas;
@@ -315,12 +300,12 @@ export const FieldTeamSizingCard: React.FC<FieldTeamSizingCardProps> = ({
             {/* Meta Total */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-secondary">
+                <label htmlFor="fld-fieldteamsizingcard-4" className="text-xs font-semibold text-secondary">
                   Meta Total de Coletas (N)
                 </label>
                 <span className="text-[10px] font-bold text-accent-primary">±{currentEstimatedMargin.marginOfErrorPercent}% erro</span>
               </div>
-              <input
+              <input id="fld-fieldteamsizingcard-4"
                 type="number"
                 min="10"
                 step="10"
@@ -336,10 +321,10 @@ export const FieldTeamSizingCard: React.FC<FieldTeamSizingCardProps> = ({
 
             {/* Dias de Campo */}
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">
+              <label htmlFor="fld-fieldteamsizingcard-1" className="block text-xs font-semibold text-secondary mb-1">
                 Prazo de Campo (Dias)
               </label>
-              <input
+              <input id="fld-fieldteamsizingcard-1"
                 type="number"
                 min="1"
                 max="30"
@@ -352,10 +337,10 @@ export const FieldTeamSizingCard: React.FC<FieldTeamSizingCardProps> = ({
 
             {/* Média Diária por Pesquisador */}
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">
+              <label htmlFor="fld-fieldteamsizingcard-2" className="block text-xs font-semibold text-secondary mb-1">
                 Coletas / Pesquisador / Dia
               </label>
-              <input
+              <input id="fld-fieldteamsizingcard-2"
                 type="number"
                 min="1"
                 max="50"
@@ -368,11 +353,11 @@ export const FieldTeamSizingCard: React.FC<FieldTeamSizingCardProps> = ({
 
             {/* Divisão de Metas de Sexo */}
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">
+              <label htmlFor="fld-fieldteamsizingcard-3" className="block text-xs font-semibold text-secondary mb-1">
                 Divisão por Sexo (M / F)
               </label>
               <div className="flex gap-2">
-                <input
+                <input id="fld-fieldteamsizingcard-3"
                   type="number"
                   min="0"
                   value={metaMasc}

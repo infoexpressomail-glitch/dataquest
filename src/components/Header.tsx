@@ -1,24 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTranslation } from '../i18n';
-import {
-  ShieldCheck,
-  Moon,
-  Sun,
-  Globe,
-  User,
-  LogOut,
-  KeyRound,
-  PlusCircle,
-  Menu,
-  CheckCircle2,
-  AlertTriangle,
-  Search,
-  Wifi,
-  WifiOff,
-  CloudOff,
-  RefreshCw,
-} from 'lucide-react';
+import { Moon, Sun, Globe, LogOut, KeyRound, PlusCircle, Menu, CheckCircle2, Search, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { Language } from '../types';
 import { OfflineSyncModal } from './OfflineSyncModal';
 
@@ -43,7 +26,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, onOpen2FA
     hasPermission,
     effectiveOnline,
     offlineQueue,
-    connectionState,
     syncProgress,
     pendingIndexedDbCount,
     logout,

@@ -1,21 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  FileSpreadsheet,
-  Download,
-  ArrowLeftRight,
-  Filter,
-  BarChart2,
-  Table as TableIcon,
-  Users,
-  Target,
-  FileText,
-  HelpCircle,
-  TrendingUp,
-  Layers,
-  Sparkles,
-  Calendar,
-  Eye,
-} from 'lucide-react';
+import { FileSpreadsheet, Download, ArrowLeftRight, BarChart2, Table as TableIcon, Users, FileText, Layers, Sparkles } from 'lucide-react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -180,10 +164,10 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
         <div className="mt-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
           {/* Eixo das Linhas */}
           <div className="md:col-span-5">
-            <label className="block text-xs font-bold text-accent-primary mb-1 flex items-center gap-1.5">
+            <label htmlFor="fld-crosstabreport-1" className="block text-xs font-bold text-accent-primary mb-1 flex items-center gap-1.5">
               <span>Variável 1 (Eixo das Linhas):</span>
             </label>
-            <select
+            <select id="fld-crosstabreport-1"
               value={rowVarId}
               onChange={(e) => setRowVarId(e.target.value)}
               className="w-full rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-medium text-primary focus:border-brand-500 focus:outline-none"
@@ -223,10 +207,10 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
 
           {/* Eixo das Colunas */}
           <div className="md:col-span-5">
-            <label className="block text-xs font-bold text-accent-success mb-1 flex items-center gap-1.5">
+            <label htmlFor="fld-crosstabreport-2" className="block text-xs font-bold text-accent-success mb-1 flex items-center gap-1.5">
               <span>Variável 2 (Eixo das Colunas):</span>
             </label>
-            <select
+            <select id="fld-crosstabreport-2"
               value={colVarId}
               onChange={(e) => setColVarId(e.target.value)}
               className="w-full rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-medium text-primary focus:border-brand-500 focus:outline-none"
@@ -476,7 +460,6 @@ export const CrossTabReport: React.FC<CrossTabReportProps> = ({
                         const count = crossTabMatrix.data[rIdx][cIdx];
                         const rPct = crossTabMatrix.rowPercentages[rIdx][cIdx];
                         const cPct = crossTabMatrix.colPercentages[rIdx][cIdx];
-                        const tPct = crossTabMatrix.totalPercentages[rIdx][cIdx];
 
                         return (
                           <td

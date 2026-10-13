@@ -134,7 +134,7 @@ const EXTENDED_CIRCLE_COLORS = ['#b91c1c', '#dc2626', '#f97316', '#eab308', '#84
 
 export function resolveScale(q: Question): ResolvedScale {
   const cfg = q.visual;
-  let type: VisualScaleType = cfg?.scaleType || 'estrelas';
+  const type: VisualScaleType = cfg?.scaleType || 'estrelas';
   let steps = cfg?.scaleSteps;
 
   if (!steps) {

@@ -5,26 +5,7 @@ import {
   calculateResearcherIndividualProgress,
   ResearcherIndividualProgressResult,
 } from '../../utils/demographicGoalsHelper';
-import {
-  Smartphone,
-  Maximize2,
-  Minimize2,
-  CheckCircle2,
-  Clock,
-  MapPin,
-  Wifi,
-  WifiOff,
-  Battery,
-  Radio,
-  Target,
-  ChevronRight,
-  TrendingUp,
-  AlertTriangle,
-  Award,
-  Sparkles,
-  RefreshCw,
-  PlusCircle,
-} from 'lucide-react';
+import { Smartphone, Maximize2, CheckCircle2, Clock, Wifi, WifiOff, Battery, Target, ChevronRight, AlertTriangle, PlusCircle } from 'lucide-react';
 
 interface MobileMetasDashboardProps {
   activeSurvey: Survey;
@@ -392,8 +373,8 @@ export const MobileMetasDashboard: React.FC<MobileMetasDashboardProps> = ({
           {/* Seletor de simulação para gestores */}
           {canSimulateOthers && (
             <div className="flex items-center gap-2">
-              <label className="text-xs text-muted hidden lg:inline">Pesquisador:</label>
-              <select
+              <label htmlFor="fld-mobilemetasdashboard-1" className="text-xs text-muted hidden lg:inline">Pesquisador:</label>
+              <select id="fld-mobilemetasdashboard-1"
                 value={selectedResearcherId}
                 onChange={(e) => setSelectedResearcherId(e.target.value)}
                 className="rounded-xl border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-brand-500 focus:outline-none"

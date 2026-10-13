@@ -1,12 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  ConditionOperator,
-  InterviewSubmission,
-  MetaCompositionRule,
-  MetaTarget,
-  Survey,
-} from '../../types';
+import { ConditionOperator, MetaCompositionRule, MetaTarget, Survey } from '../../types';
 import {
   calculateCompositionMetaProgress,
   CONDITION_LABELS,
@@ -249,8 +243,8 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {/* Pergunta */}
               <div>
-                <label className="block text-xs font-bold text-secondary">Pergunta *</label>
-                <select
+                <label htmlFor="fld-metacompositionscreen-1" className="block text-xs font-bold text-secondary">Pergunta *</label>
+                <select id="fld-metacompositionscreen-1"
                   value={perguntaId}
                   onChange={(e) => handleSelectPergunta(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -266,8 +260,8 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
 
               {/* Condição */}
               <div>
-                <label className="block text-xs font-bold text-secondary">Condição *</label>
-                <select
+                <label htmlFor="fld-metacompositionscreen-2" className="block text-xs font-bold text-secondary">Condição *</label>
+                <select id="fld-metacompositionscreen-2"
                   value={condicao}
                   onChange={(e) => setCondicao(e.target.value as ConditionOperator)}
                   className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -282,9 +276,9 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
 
               {/* Resposta */}
               <div>
-                <label className="block text-xs font-bold text-secondary">Resposta *</label>
+                <label htmlFor="fld-metacompositionscreen-3" className="block text-xs font-bold text-secondary">Resposta *</label>
                 {hasOpcoes ? (
-                  <select
+                  <select id="fld-metacompositionscreen-3"
                     value={resposta}
                     onChange={(e) => setResposta(e.target.value)}
                     className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -376,6 +370,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
           {/* Radio Geral / Por pesquisador */}
           <div className="mt-4 space-y-2.5">
             <label
+              aria-label="Geral"
               className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-all ${
                 distribuicao === 'geral'
                   ? 'border-accent-success-soft-border bg-accent-success-soft'
@@ -398,6 +393,7 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
             </label>
 
             <label
+              aria-label="Por pesquisador"
               className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-all ${
                 distribuicao === 'por_pesquisador'
                   ? 'border-accent-success-soft-border bg-accent-success-soft'
@@ -422,12 +418,12 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
 
           {/* Quantidade de coletas */}
           <div className="mt-4">
-            <label className="block text-xs font-bold text-secondary">
+            <label htmlFor="fld-metacompositionscreen-4" className="block text-xs font-bold text-secondary">
               {distribuicao === 'por_pesquisador'
                 ? 'Quantidade de coletas por pesquisador'
                 : 'Quantidade de coletas'}
             </label>
-            <input
+            <input id="fld-metacompositionscreen-4"
               type="number"
               min={0}
               value={
@@ -454,8 +450,8 @@ export const MetaCompositionScreen: React.FC<MetaCompositionScreenProps> = ({
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Nome da meta */}
           <div className="lg:col-span-1">
-            <label className="block text-xs font-bold text-secondary">Nome da meta</label>
-            <input
+            <label htmlFor="fld-metacompositionscreen-5" className="block text-xs font-bold text-secondary">Nome da meta</label>
+            <input id="fld-metacompositionscreen-5"
               type="text"
               value={nome}
               onChange={(e) => setNome(e.target.value)}

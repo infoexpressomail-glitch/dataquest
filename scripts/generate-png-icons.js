@@ -73,7 +73,6 @@ function createPng(width, height, drawPixel) {
 function drawBrandIcon(x, y, w, h, isMaskable = false) {
   const nx = (x / w) * 2 - 1; // -1 to +1
   const ny = (y / h) * 2 - 1;
-  const r = Math.sqrt(nx * nx + ny * ny);
 
   // Base background
   let bgR = 231, bgG = 240, bgB = 250; // #e7f0fa

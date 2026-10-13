@@ -116,7 +116,8 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
     const target = activeSurveys.find(
       (s) => s.id === autoStartSurveyId || s.codigo?.toLowerCase() === autoStartSurveyId.toLowerCase()
     );
-    if (target) startColeta(target.id);
+    // Dispara a coleta de forma assíncrona para não sincronizar setState no efeito.
+    if (target) Promise.resolve().then(() => startColeta(target.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoStartSurveyId, activeSurveys.length]);
 
@@ -135,7 +136,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
       setFeedback(
         `${updated.surveys.length} pesquisa(s) carregada(s). Somente as ativas vinculadas a você ficam disponíveis.`
       );
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message || 'Falha ao carregar pesquisas. Tente novamente.');
     } finally {
       setBusy(null);
@@ -164,7 +165,7 @@ export const FieldWorkspace: React.FC<FieldWorkspaceProps> = ({
             : 'Não havia nada pendente para enviar.'
         );
       }
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message || 'Falha ao enviar coletas. Tente novamente.');
     } finally {
       setBusy(null);

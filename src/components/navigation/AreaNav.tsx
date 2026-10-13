@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getTranslation } from '../../i18n';
 import {
@@ -69,17 +69,6 @@ export const AreaNav: React.FC<AreaNavProps> = ({ isOpenMobile, onCloseMobile })
 
   const [openAreas, setOpenAreas] = useState<Set<string>>(() => new Set());
 
-  // Abre a área do módulo ativo (sem fechar as demais que o usuário abriu).
-  useEffect(() => {
-    if (activeAreaId) {
-      setOpenAreas((prev) => {
-        if (prev.has(activeAreaId)) return prev;
-        const next = new Set(prev);
-        next.add(activeAreaId);
-        return next;
-      });
-    }
-  }, [activeAreaId]);
 
   const toggleArea = (area: NavArea) => {
     setOpenAreas((prev) => {
@@ -145,7 +134,7 @@ export const AreaNav: React.FC<AreaNavProps> = ({ isOpenMobile, onCloseMobile })
   };
 
   const renderArea = (area: NavArea) => {
-    const isOpen = openAreas.has(area.id);
+    const isOpen = openAreas.has(area.id) || area.id === activeAreaId;
     const hasActive = area.items.some((item) => item.module === activeModule);
     const single = area.items.length === 1;
     return (
@@ -186,6 +175,7 @@ export const AreaNav: React.FC<AreaNavProps> = ({ isOpenMobile, onCloseMobile })
       {isOpenMobile && (
         <div
           onClick={onCloseMobile}
+          role="presentation"
           className="fixed inset-0 z-40 bg-overlay-modal backdrop-blur-xs md:hidden"
         />
       )}

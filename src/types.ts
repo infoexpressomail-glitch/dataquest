@@ -125,7 +125,28 @@ export interface QuestionOption {
 }
 
 /** Modelo de layout de renderização da pesquisa. */
-export type SurveyLayoutStyle = 'DEFAULT' | 'CARD' | 'SIDEBAR' | 'MOBILE_PREMIUM';
+export type SurveyLayoutStyle = 'DEFAULT' | 'CARD' | 'SIDEBAR' | 'MOBILE_PREMIUM' | 'TOTEM';
+
+/**
+ * Configuração do Modo Totem (tablet em quiosque, uso desassistido).
+ * Todos os campos são opcionais; o renderizador aplica padrões seguros.
+ */
+export interface TotemConfig {
+  /** Inicia a pesquisa sozinho (sem toque) após o tempo de atração. */
+  autoStart?: boolean;
+  /** Segundos de atração antes do início automático (padrão 5). */
+  autoStartDelaySeconds?: number;
+  /** Atraso (ms) antes de avançar automaticamente ao escolher uma alternativa (padrão 420). */
+  autoAdvanceDelayMs?: number;
+  /** Segundos de inatividade até voltar à tela de atração (padrão 150; 0 desativa). */
+  inactivityResetSeconds?: number;
+  /** Pergunta "Deseja finalizar o formulário e enviar?" antes de gravar (padrão true). */
+  confirmBeforeSubmit?: boolean;
+  /** Segundos na tela de agradecimento antes de reiniciar (padrão 8). */
+  thankYouSeconds?: number;
+  /** Exibe o botão Voltar em todas as questões (padrão true). */
+  showBackButton?: boolean;
+}
 
 /** Forma de apresentação das alternativas no modelo Mobile Premium. */
 export type AnswerVisualType =
@@ -408,6 +429,8 @@ export interface Survey {
   showQuestionIndicator?: boolean;
   /** Rótulo do botão de início da capa. */
   startButtonLabel?: string;
+  /** Configuração do Modo Totem (tablet em quiosque). */
+  totemConfig?: TotemConfig;
 }
 
 export interface ServerSyncCheckResult {
@@ -458,6 +481,11 @@ export interface AnswerItem {
   /** Comentário opcional do entrevistado (Modelo Mobile Premium). */
   comentario?: string;
 }
+
+/** Valor de uma resposta durante a coleta (texto, número, booleano ou múltipla escolha). */
+export type AnswerValue = string | number | string[] | null | undefined;
+/** Mapa perguntaId → valor da resposta. */
+export type AnswerMap = Record<string, AnswerValue>;
 
 export interface InterviewSubmission {
   id: string;
@@ -532,7 +560,8 @@ export type ActionType =
   | 'SINCRONIZACAO_OFFLINE'
   | 'CRIACAO_RELATORIO'
   | 'EDICAO_RELATORIO'
-  | 'EXCLUSAO_RELATORIO';
+  | 'EXCLUSAO_RELATORIO'
+  | 'ALTERACAO_SISTEMA';
 
 export interface FieldChange {
   campo: string;
@@ -579,6 +608,17 @@ export interface ActionAuditLog {
   statusConformidade: 'conforme' | 'atencao' | 'critico';
 }
 
+/** Entrada aceita por `addAuditLog`: um log parcial mais atalhos legados. */
+export type AuditLogInput = Partial<ActionAuditLog> & {
+  registroId?: string;
+  identificador?: string;
+  detalhes?: string;
+  usuarioId?: string;
+  usuarioNome?: string;
+  usuarioPerfil?: string;
+  acao?: string;
+};
+
 export interface OfflineSyncItem {
   id: string;
   tipo: 'PESQUISA_SALVA' | 'RESPOSTA_COLETA';
@@ -586,7 +626,7 @@ export interface OfflineSyncItem {
   resumo: string;
   dataCriacao: string;
   status: 'pendente' | 'sincronizando' | 'sincronizado' | 'erro';
-  payload: any;
+  payload: unknown;
   erroMensagem?: string;
 }
 

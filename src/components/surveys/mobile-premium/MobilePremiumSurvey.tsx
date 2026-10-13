@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import type { Survey } from '../../../types';
+import type { AnswerMap, AnswerValue, Survey } from '../../../types';
 import { MobilePremiumHeader, type MobilePremiumAudioStatus } from './MobilePremiumHeader';
 import { QuestionCard } from './QuestionCard';
 import { FooterNavigation } from './FooterNavigation';
@@ -12,7 +12,7 @@ import './mobilePremium.css';
 export interface MobilePremiumSurveyProps {
   survey: Survey;
   currentQuestionIndex: number;
-  answers: Record<string, any>;
+  answers: AnswerMap;
   comments: Record<string, string>;
   isCompleted: boolean;
   wasSavedOffline?: boolean;
@@ -20,7 +20,7 @@ export interface MobilePremiumSurveyProps {
   saving?: boolean;
   /** Estado da gravação de áudio exibido no cabeçalho (coleta de campo). */
   audio?: MobilePremiumAudioStatus;
-  onAnswer: (questionId: string, value: any) => void;
+  onAnswer: (questionId: string, value: AnswerValue) => void;
   onComment: (questionId: string, value: string) => void;
   onNext: () => void;
   onPrev: () => void;
@@ -51,7 +51,7 @@ export const MobilePremiumSurvey: React.FC<MobilePremiumSurveyProps> = ({
   onSubmitFinal,
   onReset,
 }) => {
-  const theme = useMemo(() => getTheme(survey), [survey.themeAccent, survey.themeSecondary]);
+  const theme = useMemo(() => getTheme(survey), [survey]);
   const [started, setStarted] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
   const [largeFont, setLargeFont] = useState(false);
@@ -69,10 +69,6 @@ export const MobilePremiumSurvey: React.FC<MobilePremiumSurveyProps> = ({
   const percent = isCompleted
     ? 100
     : Math.round((Math.min(currentQuestionIndex, total - 1) / total) * 100);
-
-  useEffect(() => {
-    if (isCompleted) setStarted(true);
-  }, [isCompleted]);
 
   const rootClass = [
     'mp-root',

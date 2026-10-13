@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Search, Star, X, Check } from 'lucide-react';
 import {
   ICON_CATEGORIES,
@@ -67,15 +67,19 @@ export const VisualGalleryModal: React.FC<VisualGalleryModalProps> = ({
   const [selected, setSelected] = useState<string[]>(initialSelectedIds);
   const [favorites, setFavorites] = useState<string[]>([]);
 
-  useEffect(() => {
+  // Reinicia o estado da galeria quando o modal abre ou o modo muda. Ajuste de
+  // estado durante a renderização (padrão recomendado pelo React) em vez de useEffect.
+  const gallerySyncKey = `${isOpen}|${mode}`;
+  const [syncedGalleryKey, setSyncedGalleryKey] = useState(gallerySyncKey);
+  if (gallerySyncKey !== syncedGalleryKey) {
+    setSyncedGalleryKey(gallerySyncKey);
     if (isOpen) {
       setSelected(initialSelectedIds);
       setQuery('');
       setCategory('todas');
       setFavorites(readFavorites());
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, mode]);
+  }
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
@@ -165,10 +169,17 @@ export const VisualGalleryModal: React.FC<VisualGalleryModalProps> = ({
         <span className="text-[10px] font-semibold text-secondary leading-tight text-center">{icon.nome}</span>
         <span
           role="button"
-          tabIndex={-1}
+          tabIndex={0}
           onClick={(e) => {
             e.stopPropagation();
             toggleFavorite(icon.id);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavorite(icon.id);
+            }
           }}
           className="absolute right-1.5 top-1.5 text-muted hover:text-amber-500"
         >
@@ -198,10 +209,17 @@ export const VisualGalleryModal: React.FC<VisualGalleryModalProps> = ({
         <span className="block bg-surface-card px-2 py-1.5 text-[10px] font-semibold text-secondary">{img.nome}</span>
         <span
           role="button"
-          tabIndex={-1}
+          tabIndex={0}
           onClick={(e) => {
             e.stopPropagation();
             toggleFavorite(img.id);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavorite(img.id);
+            }
           }}
           className="absolute right-1.5 top-1.5 rounded-full bg-black/40 p-1 text-white"
         >
@@ -231,10 +249,17 @@ export const VisualGalleryModal: React.FC<VisualGalleryModalProps> = ({
         <span className="text-[10px] font-semibold text-secondary text-center">{smile.label}</span>
         <span
           role="button"
-          tabIndex={-1}
+          tabIndex={0}
           onClick={(e) => {
             e.stopPropagation();
             toggleFavorite(smile.id);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavorite(smile.id);
+            }
           }}
           className="absolute right-1.5 top-1.5 text-muted hover:text-amber-500"
         >

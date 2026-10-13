@@ -1,25 +1,12 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  Wifi,
-  WifiOff,
-  RefreshCw,
-  CheckCircle2,
-  AlertCircle,
-  Database,
-  Cloud,
-  X,
-  ChevronDown,
-  ChevronUp,
-  Server,
-} from 'lucide-react';
+import { WifiOff, RefreshCw, CheckCircle2, AlertCircle, Database, X, ChevronDown, ChevronUp, Server } from 'lucide-react';
 
 export const ConnectionSyncNotification: React.FC = () => {
   const {
     effectiveOnline,
     isOnline,
     isSimulatedOffline,
-    connectionState,
     syncProgress,
     dismissSyncProgress,
     forceSyncPendingWithSupabase,
@@ -79,7 +66,6 @@ export const ConnectionSyncNotification: React.FC = () => {
   // Active sync progress notification
   const isCompleted = syncProgress.phase === 'completed';
   const isError = syncProgress.phase === 'error';
-  const isSyncing = syncProgress.phase === 'syncing';
   const isDetecting = syncProgress.phase === 'detecting';
 
   return (

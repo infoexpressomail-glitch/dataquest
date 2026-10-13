@@ -5,28 +5,35 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 }
 
+interface PWAEnvironment {
+  isStandalone: boolean;
+  isIOS: boolean;
+  isMobile: boolean;
+}
+
+function readPWAEnvironment(): PWAEnvironment {
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+
+  const userAgent = (window.navigator.userAgent || '').toLowerCase();
+  const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
+  const isAndroidDevice = /android/.test(userAgent);
+
+  return {
+    isStandalone,
+    isIOS: isIOSDevice,
+    isMobile: isIOSDevice || isAndroidDevice || window.innerWidth <= 768,
+  };
+}
+
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstalled, setIsInstalled] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [environment] = useState<PWAEnvironment>(readPWAEnvironment);
+  const [isInstalled, setIsInstalled] = useState(environment.isStandalone);
+  const { isIOS, isMobile } = environment;
 
   useEffect(() => {
-    // Detect standalone mode (already installed)
-    const isStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as unknown as { standalone?: boolean }).standalone === true;
-    setIsInstalled(isStandalone);
-
-    // Detect mobile device
-    const userAgent = (window.navigator.userAgent || '').toLowerCase();
-    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
-    const isAndroidDevice = /android/.test(userAgent);
-    const isMobileDevice = isIOSDevice || isAndroidDevice || window.innerWidth <= 768;
-
-    setIsIOS(isIOSDevice);
-    setIsMobile(isMobileDevice);
-
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);

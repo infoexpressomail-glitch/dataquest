@@ -82,7 +82,7 @@ export async function uploadSurveyAsset(
     }
 
     return { url: data.url, storage: 'supabase' };
-  } catch (err: any) {
+  } catch (err) {
     // Servidor indisponível (offline/dev sem configurar) — mantém a imagem localmente.
     const url = await fileToDataUrl(file);
     return { url, storage: 'local', error: err?.message || 'Falha de rede' };

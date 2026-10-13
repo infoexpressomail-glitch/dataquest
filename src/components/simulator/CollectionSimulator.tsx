@@ -1,32 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  Smartphone,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  ArrowLeft,
-  Mic,
-  MicOff,
-  Clock,
-  MapPin,
-  Send,
-  RotateCcw,
-  Volume2,
-  CheckSquare,
-  Save,
-  Trash2,
-  Wifi,
-  WifiOff,
-  UserCheck,
-  ShieldCheck,
-  FileText,
-  X,
-  AlertTriangle,
-  Flag,
-  Zap,
-} from 'lucide-react';
-import { Survey, Question, InterviewSubmission, AnswerItem } from '../../types';
+import { Smartphone, CheckCircle2, ArrowRight, ArrowLeft, Mic, MicOff, Clock, MapPin, RotateCcw, CheckSquare, Save, Trash2, Wifi, WifiOff, X, Zap } from 'lucide-react';
+import { Survey, Question, InterviewSubmission, AnswerItem, AnswerMap, AnswerValue } from '../../types';
 import { filterResearcherVisibleSurveys } from '../../utils/researcherUtils';
 // Import tardio (code-splitting): o modelo Mobile Premium e a biblioteca de animação
 // `motion` só são baixados quando uma pesquisa com layoutStyle = MOBILE_PREMIUM é
@@ -63,7 +38,6 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
     addSubmission,
     setActiveModule,
     effectiveOnline,
-    addAuditLog,
     saveSurvey,
   } = useApp();
 
@@ -82,7 +56,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
     availableSurveys[0];
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<AnswerMap>({});
   // Comentários opcionais por pergunta (Modelo Mobile First Premium).
   const [answersComments, setAnswersComments] = useState<Record<string, string>>({});
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
@@ -90,7 +64,6 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
   const [confirmFinalizeModalOpen, setConfirmFinalizeModalOpen] = useState<boolean>(false);
   const [wasSavedOffline, setWasSavedOffline] = useState<boolean>(false);
   const [audioSeconds, setAudioSeconds] = useState<number>(0);
-  const [audioTranscript, setAudioTranscript] = useState<string>('Gravação ambiental de campo');
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   // Coordenadas GPS reais do dispositivo (quando o navegador/permissão permitir)
@@ -145,7 +118,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
   const isRecordingAudio = hasAudioStarted && !isAudioAtLimit && !isCompleted;
 
   useEffect(() => {
-    let timer: any;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (isRecordingAudio) {
       timer = setInterval(() => {
         setAudioSeconds((prev) => {
@@ -163,7 +136,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
   const currentQuestion: Question | undefined = hasValidQuestions ? activeSurvey?.perguntas[currentQuestionIndex] : undefined;
 
   // Open the final review screen
-  const handleOpenFinalReview = (lastAnswer?: any) => {
+  const handleOpenFinalReview = (lastAnswer?: AnswerValue) => {
     if (lastAnswer !== undefined && currentQuestion) {
       setAnswers((prev) => ({ ...prev, [currentQuestion.id]: lastAnswer }));
     }
@@ -184,7 +157,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
    * Uma pergunta está oculta quando existe regra 'esconder_pergunta' apontando
    * para ela cuja condição é satisfeita pela resposta já dada à pergunta de origem.
    */
-  const isQuestionHiddenByRule = (candidateId: string, givenAnswers: Record<string, any>): boolean =>
+  const isQuestionHiddenByRule = (candidateId: string, givenAnswers: AnswerMap): boolean =>
     (activeSurvey?.regras ?? []).some((r) => {
       if (r.acao !== 'esconder_pergunta' || r.perguntaDestinoId !== candidateId) return false;
       const ansFromOrigin = givenAnswers[r.perguntaOrigemId];
@@ -198,7 +171,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
       );
     });
 
-  const evaluateNextStep = (currentAns: any) => {
+  const evaluateNextStep = (currentAns: AnswerValue) => {
     if (!currentQuestion || !activeSurvey) return;
 
     const regras = activeSurvey.regras ?? [];
@@ -263,7 +236,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
    * já direciona para a próxima pergunta. Usado ao escolher uma opção ou ao
    * pressionar Enter em campos de texto/numérico/data.
    */
-  const handleAutoAdvance = (value: any) => {
+  const handleAutoAdvance = (value: AnswerValue) => {
     if (!currentQuestion) return;
     const val = Array.isArray(value) ? value : String(value ?? '');
     if (currentQuestion.obrigatoria && !val) {
@@ -311,7 +284,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
     }
   };
 
-  const handleSubmitFinal = async (answersOverride?: Record<string, any>) => {
+  const handleSubmitFinal = async (answersOverride?: AnswerMap) => {
     if (!activeSurvey) return;
     setIsSaving(true);
     // Permite passar as respostas atualizadas (evita problema de estado async ao
@@ -883,7 +856,7 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
               id="btn-finalizar-pesquisa"
               type="button"
               disabled={isSaving}
-              onClick={handleSubmitFinal}
+              onClick={() => handleSubmitFinal()}
               className="flex items-center justify-center gap-2 rounded-xl bg-accent-primary-solid px-6 py-2.5 text-xs font-bold text-on-accent shadow-lg shadow-brand-900/40 hover:bg-accent-primary-solid-hover transition active:scale-95 disabled:opacity-50 w-full sm:w-auto"
             >
               <CheckCircle2 className="h-4 w-4" />
@@ -959,9 +932,8 @@ export const CollectionSimulator: React.FC<CollectionSimulatorProps> = ({ fieldM
                 {/* Múltipla Seleção (Várias opções / Checkboxes) */}
                 {currentQuestion.tipo === 'multipla_selecao' &&
                   currentQuestion.opcoes?.map((opt) => {
-                    const currentSelected: string[] = Array.isArray(answers[currentQuestion.id])
-                      ? answers[currentQuestion.id]
-                      : [];
+                    const rawSelected = answers[currentQuestion.id];
+                    const currentSelected: string[] = Array.isArray(rawSelected) ? rawSelected : [];
                     const isChecked = currentSelected.includes(opt.value);
 
                     return (

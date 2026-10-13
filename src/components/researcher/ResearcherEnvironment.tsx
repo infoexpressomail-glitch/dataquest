@@ -98,7 +98,7 @@ export const ResearcherEnvironment: React.FC = () => {
     try {
       const res = await syncOfflineQueue();
       setSyncFeedback(res.message || `${res.count} registro(s) sincronizado(s) com sucesso!`);
-    } catch (err: any) {
+    } catch (err) {
       setSyncFeedback(`Erro na sincronização: ${err.message || 'Falha de conexão'}`);
     } finally {
       setIsSyncing(false);

@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       serverTime: new Date().toISOString(),
       surveysCount: count ?? 0,
     });
-  } catch (err: any) {
+  } catch (err) {
     return res.status(200).json({
       status: 'degraded',
       serverTime: new Date().toISOString(),

@@ -68,6 +68,16 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.node } },
   },
 
+  // Scripts utilitários executados no Node (geração de ícones, etc.)
+  {
+    files: ['scripts/**/*.{js,cjs,mjs}'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+  },
+
   // Desliga regras de estilo que conflitariam com o Prettier (deixa o Prettier
   // cuidar de formatação; o ESLint cuida só de qualidade/bugs).
   eslintConfigPrettier

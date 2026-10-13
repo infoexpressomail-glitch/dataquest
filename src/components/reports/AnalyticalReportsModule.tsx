@@ -243,10 +243,10 @@ export const AnalyticalReportsModule: React.FC = () => {
 
         <div className="rounded-2xl border border-ui bg-surface p-5 shadow-xl space-y-4">
           <div>
-            <label className="text-xs font-bold text-secondary uppercase tracking-wider">
+            <label htmlFor="fld-analyticalreportsmodule-1" className="text-xs font-bold text-secondary uppercase tracking-wider">
               Título do Relatório
             </label>
-            <input
+            <input id="fld-analyticalreportsmodule-1"
               type="text"
               value={draft.titulo}
               onChange={(e) => setDraft({ ...draft, titulo: e.target.value })}
@@ -400,8 +400,8 @@ export const AnalyticalReportsModule: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-secondary">Pesquisa</label>
-              <select
+              <label htmlFor="fld-analyticalreportsmodule-2" className="text-xs font-bold text-secondary">Pesquisa</label>
+              <select id="fld-analyticalreportsmodule-2"
                 value={newReportSurveyId}
                 onChange={(e) => setNewReportSurveyId(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
@@ -414,8 +414,8 @@ export const AnalyticalReportsModule: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="text-xs font-bold text-secondary">Título do Relatório (opcional)</label>
-              <input
+              <label htmlFor="fld-analyticalreportsmodule-3" className="text-xs font-bold text-secondary">Título do Relatório (opcional)</label>
+              <input id="fld-analyticalreportsmodule-3"
                 type="text"
                 value={newReportTitle}
                 onChange={(e) => setNewReportTitle(e.target.value)}

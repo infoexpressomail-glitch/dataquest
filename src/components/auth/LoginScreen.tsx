@@ -1,22 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getTranslation } from '../../i18n';
-import {
-  Lock,
-  User,
-  LogIn,
-  AlertCircle,
-  Eye,
-  EyeOff,
-  Smartphone,
-  CheckCircle2,
-  ShieldCheck,
-  Globe,
-  Sun,
-  Moon,
-  Sparkles,
-  Info,
-} from 'lucide-react';
+import { Lock, User, LogIn, AlertCircle, Eye, EyeOff, Smartphone, ShieldCheck, Sun, Moon, Sparkles } from 'lucide-react';
 import { Language } from '../../types';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
@@ -42,9 +27,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showDemoAccounts, setShowDemoAccounts] = useState(true);
 
-  const { isInstallable, isInstalled, install, isMobile, isIOS } = usePWAInstall();
+  const { isInstallable, isInstalled, install } = usePWAInstall();
 
-  const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key);
+  const _t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,14 +160,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Login Field */}
               <div>
-                <label className="block text-xs font-semibold text-secondary mb-1.5">
+                <label htmlFor="fld-loginscreen-1" className="block text-xs font-semibold text-secondary mb-1.5">
                   Login de Acesso
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
                     <User className="h-4 w-4" />
                   </div>
-                  <input
+                  <input id="fld-loginscreen-1"
                     type="text"
                     required
                     value={loginInput}
@@ -198,7 +183,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               {/* Password Field */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-semibold text-secondary">
+                  <label htmlFor="fld-loginscreen-2" className="block text-xs font-semibold text-secondary">
                     Senha
                   </label>
                 </div>
@@ -206,7 +191,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
                     <Lock className="h-4 w-4" />
                   </div>
-                  <input
+                  <input id="fld-loginscreen-2"
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={senhaInput}

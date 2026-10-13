@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
-import { Smartphone, Download, ArrowRight, CheckCircle2, Shield, Mic, WifiOff, X } from 'lucide-react';
+import { Smartphone, Download, ArrowRight, Mic, WifiOff, X } from 'lucide-react';
 
 interface PWAFirstVisitMobilePromptProps {
   onProceedToLogin: () => void;
@@ -9,23 +9,18 @@ interface PWAFirstVisitMobilePromptProps {
 export const PWAFirstVisitMobilePrompt: React.FC<PWAFirstVisitMobilePromptProps> = ({
   onProceedToLogin,
 }) => {
-  const { isInstallable, isInstalled, isIOS, isMobile, install } = usePWAInstall();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
+  const [isOpen, setIsOpen] = useState<boolean>(() => {
+    // Não exibe se já estiver instalado (modo standalone).
+    if (isInstalled) return false;
+    // Exibe na primeira visita, salvo se o usuário já dispensou neste navegador.
+    try {
+      return !localStorage.getItem('dataquest_pwa_first_visit_dismissed');
+    } catch {
+      return true;
+    }
+  });
   const [showIOSSteps, setShowIOSSteps] = useState(false);
-
-  useEffect(() => {
-    // If already installed in standalone mode, proceed straight to login
-    if (isInstalled) {
-      return;
-    }
-
-    // Check if prompt was dismissed in this browser
-    const dismissed = localStorage.getItem('dataquest_pwa_first_visit_dismissed');
-    if (!dismissed) {
-      // Show on first visit, especially prioritized for mobile devices or any installable browser
-      setIsOpen(true);
-    }
-  }, [isInstalled]);
 
   if (!isOpen || isInstalled) {
     return null;

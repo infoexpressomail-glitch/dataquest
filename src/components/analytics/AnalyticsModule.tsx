@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  BarChart3,
-  TrendingUp,
-  Users,
-  Smile,
-  FileSpreadsheet,
-  FileText,
-  Layers,
-  CheckCircle2,
-  Calendar,
-  Sparkles,
-} from 'lucide-react';
+import { BarChart3, TrendingUp, Users, Smile, FileSpreadsheet, FileText, Layers, Sparkles } from 'lucide-react';
 import { exportSubmissionsToCSV, exportSubmissionsToPDF } from '../../utils/exportUtils';
 import { CrossTabReport } from './CrossTabReport';
 import { FieldTeamSizingCard } from '../metas/FieldTeamSizingCard';
@@ -121,10 +110,10 @@ export const AnalyticsModule: React.FC = () => {
 
       {/* Pesquisa selecionada — informação principal, comum a todas as abas */}
       <div className="flex flex-col gap-3 rounded-2xl border border-ui bg-surface p-4 shadow-xl sm:flex-row sm:items-center">
-        <label className="text-xs font-bold text-secondary shrink-0">
+        <label htmlFor="fld-analyticsmodule-1" className="text-xs font-bold text-secondary shrink-0">
           Pesquisa em Análise:
         </label>
-        <select
+        <select id="fld-analyticsmodule-1"
           value={selectedSurveyId}
           onChange={(e) => setSelectedSurveyId(e.target.value)}
           className="w-full rounded-lg border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-brand-500 focus:outline-none sm:w-auto"

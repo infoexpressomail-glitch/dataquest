@@ -9,6 +9,7 @@ import {
   Language,
   AccessPolicyPermissions,
   ActionAuditLog,
+  AuditLogInput,
   FieldChange,
   OfflineSyncItem,
   SyncProgressState,
@@ -171,7 +172,7 @@ export interface SurveysDomain {
 
 export interface AuditDomain {
   auditLogs: ActionAuditLog[];
-  addAuditLog: (log: any) => ActionAuditLog;
+  addAuditLog: (log: AuditLogInput) => ActionAuditLog;
   clearAuditLogs: () => void;
   connections: RecentConnection[];
 }
@@ -206,7 +207,7 @@ export interface AuditInternal {
  */
 export interface DomainBridge {
   // Fornecido por AuditDomain
-  addAuditLog: (log: any) => ActionAuditLog;
+  addAuditLog: (log: AuditLogInput) => ActionAuditLog;
   // Fornecido por AuthDomain
   getCurrentUser: () => Collaborator;
   getCurrentProfile: () => AccessProfile | undefined;

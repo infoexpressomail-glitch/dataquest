@@ -16,7 +16,7 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
   const duration = submission?.audioGravacao?.duracaoSegundos || 120;
 
   useEffect(() => {
-    let interval: any;
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (isPlaying) {
       interval = setInterval(() => {
         setProgress((prev) => {
@@ -38,7 +38,7 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ submission, 
       await exportSingleAudio(submission);
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err: any) {
+    } catch (err) {
       alert(err.message || 'Erro ao exportar gravação.');
     }
   };

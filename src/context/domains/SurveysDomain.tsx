@@ -618,7 +618,7 @@ export function useSurveysDomain(): { domain: SurveysDomain; internal: SurveysIn
     const currentUser = bridge.getCurrentUser?.();
     const currentProfile = bridge.getCurrentProfile?.();
     bridge.addAuditLog?.({
-      categoria: 'METAS',
+      categoria: 'CONFIGURACAO',
       tipoAcao: 'CRIACAO_PESQUISA',
       tituloAcao: 'Cadastro de Meta Base no Sistema',
       descricaoDetalhada: `Meta base "${meta.titulo}" cadastrada no catálogo reutilizável.`,
@@ -628,10 +628,10 @@ export function useSurveysDomain(): { domain: SurveysDomain; internal: SurveysIn
         login: currentUser?.login,
         perfil: currentProfile?.name || 'Administrador',
       },
-      alvo: { tipo: 'metas', id: meta.id, identificador: meta.id, nome: meta.titulo },
+      alvo: { tipo: 'meta', id: meta.id, identificador: meta.id, nome: meta.titulo },
       alteracoes: [{ campo: 'status', rotulo: 'Status', valorAnterior: '—', valorNovo: 'ativa' }],
       motivoConformidade: 'Registro no catálogo base para reutilização em novas pesquisas.',
-      statusConformidade: 'ok',
+      statusConformidade: 'conforme',
     });
   };
 
@@ -640,7 +640,7 @@ export function useSurveysDomain(): { domain: SurveysDomain; internal: SurveysIn
     const currentUser = bridge.getCurrentUser?.();
     const currentProfile = bridge.getCurrentProfile?.();
     bridge.addAuditLog?.({
-      categoria: 'METAS',
+      categoria: 'CONFIGURACAO',
       tipoAcao: 'EXCLUSAO_PESQUISA',
       tituloAcao: 'Exclusão de Meta Base do Sistema',
       descricaoDetalhada: `Meta base ID ${metaId} removida do catálogo reutilizável.`,
@@ -650,7 +650,7 @@ export function useSurveysDomain(): { domain: SurveysDomain; internal: SurveysIn
         login: currentUser?.login,
         perfil: currentProfile?.name || 'Administrador',
       },
-      alvo: { tipo: 'metas', id: metaId, identificador: metaId, nome: 'Meta Base' },
+      alvo: { tipo: 'meta', id: metaId, identificador: metaId, nome: 'Meta Base' },
       alteracoes: [{ campo: 'status', rotulo: 'Status', valorAnterior: 'ativa', valorNovo: 'excluida' }],
       motivoConformidade: 'Remoção de meta base do catálogo por solicitação da coordenação.',
       statusConformidade: 'atencao',

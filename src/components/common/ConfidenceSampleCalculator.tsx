@@ -1,18 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  Calculator,
-  Percent,
-  ShieldCheck,
-  CheckCircle2,
-  TrendingUp,
-  Info,
-  Layers,
-  ArrowRight,
-  ChevronDown,
-  ChevronUp,
-  Sparkles,
-  FileText,
-} from 'lucide-react';
+import { Calculator, Percent, ShieldCheck, CheckCircle2, TrendingUp, Info, Layers, ChevronDown, ChevronUp, Sparkles, FileText } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import {
   calculateSampleSize,
@@ -36,7 +23,7 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
   initialMarginOfError = 3.5,
   initialPopulation,
   onApplyGoal,
-  compact = false,
+  compact: _compact = false,
 }) => {
   const [confidencePercent, setConfidencePercent] = useState<number>(initialConfidence);
   const [marginOfError, setMarginOfError] = useState<number>(initialMarginOfError);
@@ -265,7 +252,7 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
           {/* Nível / Margem de Confiança (%) */}
           <div className="space-y-3 p-3.5 rounded-xl bg-surface-raised border border-ui/80">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-primary flex items-center gap-1.5">
+              <label htmlFor="fld-confidencesamplecalculator-1" className="text-xs font-bold text-primary flex items-center gap-1.5">
                 <ShieldCheck className="h-4 w-4 text-accent-primary" />
                 <span>Nível de Confiança da Pesquisa (%)</span>
               </label>
@@ -276,7 +263,7 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
             </div>
 
             {/* Slider interativo */}
-            <input
+            <input id="fld-confidencesamplecalculator-1"
               type="range"
               min="80"
               max="99.9"
@@ -324,7 +311,7 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
           {/* Margem de Erro Aceitável (%) */}
           <div className="space-y-3 p-3.5 rounded-xl bg-surface-raised border border-ui/80">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-primary flex items-center gap-1.5">
+              <label htmlFor="fld-confidencesamplecalculator-2" className="text-xs font-bold text-primary flex items-center gap-1.5">
                 <Percent className="h-4 w-4 text-accent-success" />
                 <span>Margem de Erro Máxima Aceitável (± %)</span>
               </label>
@@ -335,7 +322,7 @@ export const ConfidenceSampleCalculator: React.FC<ConfidenceSampleCalculatorProp
             </div>
 
             {/* Slider interativo */}
-            <input
+            <input id="fld-confidencesamplecalculator-2"
               type="range"
               min="1.0"
               max="10.0"

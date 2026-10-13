@@ -38,8 +38,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Quem grava entrevista é o pesquisador de campo (que não tem
     // respostas_acesso) OU um perfil de gestão com o módulo de respostas.
     if (!session.pesquisador && !requirePermission(res, session, ['respostas_acesso'])) return;
-    const body = (req.body || {}) as { submissions?: any[]; submission?: any };
-    const incoming: any[] = Array.isArray(body.submissions)
+    const body = (req.body || {}) as { submissions?: Partial<SubmissionDTO>[]; submission?: Partial<SubmissionDTO> };
+    const incoming: Partial<SubmissionDTO>[] = Array.isArray(body.submissions)
       ? body.submissions
       : body.submission
       ? [body.submission]
@@ -49,7 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ success: false, message: 'Nenhuma submissão informada (envie "submission" ou "submissions").' });
     }
 
-    const rows: Record<string, any>[] = [];
+    const rows: Record<string, unknown>[] = [];
     const results: { id: string; success: boolean; message?: string }[] = [];
 
     for (const sub of incoming) {

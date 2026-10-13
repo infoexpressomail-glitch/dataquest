@@ -12,7 +12,7 @@ export interface SizingScenario {
 
 export function generateSensitivityMatrix(
   metaTotal: number,
-  reservaTecnica: number = 0.15
+  _reservaTecnica: number = 0.15
 ): {
   diasList: number[];
   prodList: number[];

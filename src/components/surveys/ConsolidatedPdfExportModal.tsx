@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import {
-  X,
-  FileText,
-  Download,
-  CheckCircle2,
-  AlertCircle,
-  Layers,
-  Sparkles,
-  Calendar,
-  Users,
-  ShieldCheck,
-  Check,
-} from 'lucide-react';
+import { X, FileText, Download, CheckCircle2, Layers, Users, ShieldCheck, Check } from 'lucide-react';
 import { Survey, InterviewSubmission } from '../../types';
 import { exportConsolidatedSurveysToPDF } from '../../utils/exportUtils';
 import { useApp } from '../../context/AppContext';

@@ -1,20 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  ShieldCheck,
-  CheckCircle2,
-  Lock,
-  Save,
-  Plus,
-  Edit2,
-  Check,
-  AlertCircle,
-  HelpCircle,
-  Search,
-  ChevronDown,
-  ChevronRight,
-  Undo2,
-} from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Save, AlertCircle, Search, ChevronDown, ChevronRight, Undo2 } from 'lucide-react';
 import { AccessProfile, AccessPolicyPermissions } from '../../types';
 import { AccessPoliciesMatrix } from './AccessPoliciesMatrix';
 
@@ -248,7 +234,7 @@ const PERMISSION_GROUPS: PermissionGroup[] = [
 
 export const AccessPolicies: React.FC = () => {
   const { profiles, updateProfile, currentProfile } = useApp();
-  const [selectedProfileId, setSelectedProfileId] = useState<string>(profiles[0]?.id || '');
+  const [, setSelectedProfileId] = useState<string>(profiles[0]?.id || '');
   const [activeProfile, setActiveProfile] = useState<AccessProfile | null>(() => {
     const first = profiles.find((p) => p.id === (profiles[0]?.id || '')) || profiles[0];
     return first ? (JSON.parse(JSON.stringify(first)) as AccessProfile) : null;
@@ -688,6 +674,7 @@ export const AccessPolicies: React.FC = () => {
                     return (
                       <label
                         key={item.key}
+                        aria-label={item.label}
                         className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
                           isChecked
                             ? 'border-accent-primary-soft-border bg-accent-primary-soft shadow-sm shadow-brand-950/40'

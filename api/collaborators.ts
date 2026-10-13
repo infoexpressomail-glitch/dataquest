@@ -96,7 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     if (!requirePermission(res, session, ['colaboradores_acesso'])) return;
 
-    const body = (req.body || {}) as { colaborador?: Record<string, any>; senha?: string };
+    const body = (req.body || {}) as { colaborador?: Record<string, unknown>; senha?: string };
     const colab = body.colaborador;
     const senha = body.senha;
 
@@ -126,7 +126,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         colaborador: rowToDTO(data as ColaboradorRow),
         message: 'Colaborador salvo com sucesso no servidor.',
       });
-    } catch (err: any) {
+    } catch (err) {
       return res.status(500).json({
         success: false,
         message: `Falha ao salvar colaborador: ${err?.message || err}`,
@@ -202,7 +202,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         colaborador: rowToDTO(updated),
         message: 'Colaborador atualizado no servidor.',
       });
-    } catch (err: any) {
+    } catch (err) {
       return res.status(500).json({
         success: false,
         message: `Falha ao atualizar colaborador: ${err?.message || err}`,

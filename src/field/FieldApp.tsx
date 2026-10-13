@@ -53,7 +53,7 @@ export const FieldApp: React.FC<FieldAppProps> = ({ onExit }) => {
     return () => {
       active = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   // Autentica (vindo do FieldLogin): persiste e segue para as pesquisas.

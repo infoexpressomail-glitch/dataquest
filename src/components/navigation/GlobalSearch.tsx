@@ -93,7 +93,11 @@ export const GlobalSearch: React.FC = () => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        open ? closeSearch() : openSearch();
+        if (open) {
+          closeSearch();
+        } else {
+          openSearch();
+        }
       } else if (e.key === 'Escape' && open) {
         closeSearch();
       }
@@ -107,10 +111,13 @@ export const GlobalSearch: React.FC = () => {
     };
   }, [open, openSearch, closeSearch]);
 
-  const go = (module: string) => {
-    setActiveModule(module);
-    closeSearch();
-  };
+  const go = useCallback(
+    (module: string) => {
+      setActiveModule(module);
+      closeSearch();
+    },
+    [setActiveModule, closeSearch]
+  );
 
   const results: SearchResult[] = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -210,12 +217,10 @@ export const GlobalSearch: React.FC = () => {
     });
 
     return out.filter((r) => match(r.label) || match(r.hint || ''));
-  }, [query, areas, surveys, collaborators, hasPermission, setFilterSurveyId, setEditingSurvey]);
+  }, [query, areas, surveys, collaborators, hasPermission, setFilterSurveyId, setEditingSurvey, go]);
 
-  // Mantém a seleção dentro dos limites ao filtrar.
-  useEffect(() => {
-    setSel((s) => Math.min(s, Math.max(results.length - 1, 0)));
-  }, [results.length]);
+  // Seleção efetiva, sempre dentro dos limites do resultado atual.
+  const activeSel = results.length === 0 ? 0 : Math.min(sel, results.length - 1);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
@@ -226,7 +231,7 @@ export const GlobalSearch: React.FC = () => {
       setSel((s) => Math.max(s - 1, 0));
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      results[sel]?.run();
+      results[activeSel]?.run();
     }
   };
 
@@ -236,7 +241,7 @@ export const GlobalSearch: React.FC = () => {
     (x) => x.items.length > 0,
   );
 
-  let runningIndex = -1;
+  const indexById = new Map(results.map((r, i) => [r.id, i]));
 
   return (
     <div
@@ -244,11 +249,14 @@ export const GlobalSearch: React.FC = () => {
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) closeSearch();
       }}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Busca global"
+      role="presentation"
     >
-      <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-ui bg-surface shadow-2xl">
+      <div
+        className="w-full max-w-xl overflow-hidden rounded-2xl border border-ui bg-surface shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Busca global"
+      >
         <div className="flex items-center gap-2.5 border-b border-ui px-4 py-3">
           <Search className="h-4 w-4 text-muted" />
           <input
@@ -286,9 +294,8 @@ export const GlobalSearch: React.FC = () => {
                 {GROUP_LABEL[g]}
               </div>
               {items.map((r) => {
-                runningIndex += 1;
-                const index = runningIndex;
-                const active = index === sel;
+                const index = indexById.get(r.id) ?? 0;
+                const active = index === activeSel;
                 return (
                   <button
                     key={r.id}

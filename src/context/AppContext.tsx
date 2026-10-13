@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- AppContext expõe o provider e re-exporta os hooks de contexto (API pública intencional). */
 import React, { createContext, useContext, useEffect, useLayoutEffect } from 'react';
 import type {
   AuditDomain,

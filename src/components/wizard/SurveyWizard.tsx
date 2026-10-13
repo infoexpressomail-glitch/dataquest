@@ -11,45 +11,7 @@ import {
   ConditionOperator,
   ConditionActionType,
 } from '../../types';
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle2,
-  Plus,
-  Trash2,
-  GripVertical,
-  MoveUp,
-  MoveDown,
-  Sparkles,
-  GitBranch,
-  Target,
-  UserCheck,
-  AlertCircle,
-  HelpCircle,
-  Eye,
-  Check,
-  RotateCcw,
-  CloudOff,
-  Wifi,
-  WifiOff,
-  Save,
-  RefreshCw,
-  Database,
-  Server,
-  ShieldCheck,
-  Lock,
-  ArrowUpCircle,
-  FileSpreadsheet,
-  Edit3,
-  ChevronDown,
-  ChevronUp,
-  ListOrdered,
-  Search,
-  X,
-  Mic,
-  Volume2,
-  Clock,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Plus, Trash2, MoveUp, MoveDown, GitBranch, Target, Eye, Check, CloudOff, Save, RefreshCw, Database, Server, ShieldCheck, ArrowUpCircle, FileSpreadsheet, Edit3, Search, X, Mic, Clock } from 'lucide-react';
 import { ServerSyncCheckModal } from './ServerSyncCheckModal';
 import { QuestionnaireImportModal } from './QuestionnaireImportModal';
 import { SurveyAppearanceStep } from './SurveyAppearanceStep';
@@ -60,19 +22,14 @@ export const SurveyWizard: React.FC = () => {
     surveys,
     saveSurvey,
     editingSurvey,
-    setEditingSurvey,
     collaborators,
     setActiveModule,
     effectiveOnline,
     offlineQueue,
-    syncOfflineQueue,
     // Central Server Sync
     isSurveyInProgress,
-    serverOnline,
-    syncSurveyWithCentralServer,
     uploadSurveyChangesToCentralServer,
     // IndexedDB & Supabase Sync
-    currentSurveyDraft,
     lastIndexedDBSave,
     supabaseSyncStatus,
     lastSupabaseSync,
@@ -80,7 +37,6 @@ export const SurveyWizard: React.FC = () => {
     saveCurrentSurveyDraft,
     clearCurrentSurveyDraft,
     syncAllPendingWithSupabase,
-    isSupabaseLive,
     lastAutoSyncNotice,
     setLastAutoSyncNotice,
   } = useApp();
@@ -501,7 +457,7 @@ export const SurveyWizard: React.FC = () => {
         }
       })
       .catch((err) => console.warn('Erro ao verificar rascunho:', err));
-  }, [editingSurvey]);
+  }, [editingSurvey, formData.id]);
 
   // Debounced auto-save of current survey state to IndexedDB cache
   useEffect(() => {
@@ -511,18 +467,18 @@ export const SurveyWizard: React.FC = () => {
       }
     }, 600);
     return () => clearTimeout(timer);
-  }, [formData, currentStep]);
+  }, [formData, currentStep, saveCurrentSurveyDraft]);
 
   // Central Server Sync Governance Check
   const isInProgress = isSurveyInProgress(formData) || (editingSurvey ? isSurveyInProgress(editingSurvey) : false);
-  const initialSnapshotRef = React.useRef<string>(JSON.stringify(editingSurvey || formData));
+  const [initialSnapshot] = React.useState<string>(() => JSON.stringify(editingSurvey || formData));
   const hasLocalModifications = React.useMemo(() => {
     try {
-      return JSON.stringify(formData) !== initialSnapshotRef.current;
+      return JSON.stringify(formData) !== initialSnapshot;
     } catch {
       return false;
     }
-  }, [formData]);
+  }, [formData, initialSnapshot]);
 
   const handleFinishWizard = async () => {
     if (!formData.nome.trim()) {
@@ -595,19 +551,21 @@ export const SurveyWizard: React.FC = () => {
             Wizard de criação de pesquisa
           </h1>
           <div className="mt-1 flex items-center gap-1.5 text-xs text-muted">
-            <span
+            <button
+              type="button"
               onClick={() => setActiveModule('home')}
               className="cursor-pointer hover:text-accent-primary hover:underline"
             >
               Home
-            </span>
+            </button>
             <span>/</span>
-            <span
+            <button
+              type="button"
               onClick={() => setActiveModule('pesquisas')}
               className="cursor-pointer hover:text-accent-primary hover:underline"
             >
               Nova Pesquisa
-            </span>
+            </button>
             <span>/</span>
             <span className="font-semibold text-primary">
               Wizard
@@ -962,7 +920,10 @@ export const SurveyWizard: React.FC = () => {
                 <div className="mt-4 space-y-4 pl-2">
                   {/* Radio buttons for Coleta Web */}
                   <div className="space-y-3">
-                    <label className="flex items-start gap-2.5 cursor-pointer">
+                    <label
+                      aria-label="Acesso público"
+                      className="flex items-start gap-2.5 cursor-pointer"
+                    >
                       <input
                         type="radio"
                         name="tipoColetaWeb"
@@ -982,7 +943,10 @@ export const SurveyWizard: React.FC = () => {
                       </div>
                     </label>
 
-                    <label className="flex items-start gap-2.5 cursor-pointer">
+                    <label
+                      aria-label="Acesso interno"
+                      className="flex items-start gap-2.5 cursor-pointer"
+                    >
                       <input
                         type="radio"
                         name="tipoColetaWeb"
@@ -1113,7 +1077,7 @@ export const SurveyWizard: React.FC = () => {
                   {/* Tempo Limite de Gravação */}
                   <div>
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-primary flex items-center gap-1.5">
+                      <label htmlFor="fld-surveywizard-5" className="text-xs font-bold text-primary flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5 text-accent-info" />
                         Tempo Limite de Gravação de Áudio:
                       </label>
@@ -1133,7 +1097,7 @@ export const SurveyWizard: React.FC = () => {
                     </div>
 
                     <div className="mt-2 flex items-center gap-3">
-                      <input
+                      <input id="fld-surveywizard-5"
                         type="range"
                         min="1"
                         max="10"
@@ -1336,10 +1300,10 @@ export const SurveyWizard: React.FC = () => {
                   <div className="mt-2 rounded-xl border border-accent-primary-soft-border bg-surface-app p-4 space-y-3 shadow-inner">
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ui pb-2.5">
                       <div className="flex items-center gap-2">
-                        <label className="text-xs font-bold text-secondary">
+                        <label htmlFor="fld-surveywizard-1" className="text-xs font-bold text-secondary">
                           Alterar Tipo de Resposta:
                         </label>
-                        <select
+                        <select id="fld-surveywizard-1"
                           value={q.tipo}
                           onChange={(e) => handleUpdateQuestionType(q.id, e.target.value as QuestionType)}
                           className="rounded-lg border border-accent-primary-soft-border bg-surface px-3 py-1.5 text-xs font-bold text-accent-primary focus:border-brand-400 focus:outline-none cursor-pointer"
@@ -1434,10 +1398,10 @@ export const SurveyWizard: React.FC = () => {
 
               <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-surveywizard-2" className="block text-xs font-bold text-secondary">
                     Enunciado da Pergunta *
                   </label>
-                  <input
+                  <input id="fld-surveywizard-2"
                     type="text"
                     value={newQuestionEnunciado}
                     onChange={(e) => setNewQuestionEnunciado(e.target.value)}
@@ -1447,10 +1411,10 @@ export const SurveyWizard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-surveywizard-3" className="block text-xs font-bold text-secondary">
                     Tipo de Dado da Resposta
                   </label>
-                  <select
+                  <select id="fld-surveywizard-3"
                     value={newQuestionTipo}
                     onChange={(e) => setNewQuestionTipo(e.target.value as QuestionType)}
                     className="mt-1 w-full rounded-lg border border-ui bg-surface px-3 py-2 text-xs text-primary shadow-xs focus:border-brand-500 focus:outline-none"
@@ -1469,10 +1433,10 @@ export const SurveyWizard: React.FC = () => {
               {(newQuestionTipo === 'multipla_escolha' ||
                 newQuestionTipo === 'multipla_selecao') && (
                 <div className="mt-3">
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="fld-surveywizard-4" className="block text-xs font-bold text-secondary">
                     Opções de Resposta (separadas por vírgula)
                   </label>
-                  <input
+                  <input id="fld-surveywizard-4"
                     type="text"
                     value={newQuestionOpcoes}
                     onChange={(e) => setNewQuestionOpcoes(e.target.value)}
@@ -1594,7 +1558,7 @@ export const SurveyWizard: React.FC = () => {
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {/* Pergunta (caixa de seleção) */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="select-rule-origem" className="block text-xs font-bold text-secondary">
                     Pergunta Anterior
                   </label>
                   <select
@@ -1620,7 +1584,7 @@ export const SurveyWizard: React.FC = () => {
 
                 {/* Condições (igual, diferente, contem) */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="select-rule-condicao" className="block text-xs font-bold text-secondary">
                     Condição
                   </label>
                   <select
@@ -1637,7 +1601,7 @@ export const SurveyWizard: React.FC = () => {
 
                 {/* Respostas como devem ser exibidas de acordo com a condição */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="select-rule-valor-opcao" className="block text-xs font-bold text-secondary">
                     Resposta de Comparação
                   </label>
                   {(() => {
@@ -1684,7 +1648,7 @@ export const SurveyWizard: React.FC = () => {
 
                 {/* Campo de ação de acordo com o filtro */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="select-rule-acao" className="block text-xs font-bold text-secondary">
                     Ação a Executar
                   </label>
                   <select
@@ -1703,7 +1667,7 @@ export const SurveyWizard: React.FC = () => {
               {/* Se a ação for saltar ou esconder, seleciona o destino */}
               {ruleAcao !== 'finalizar_formulario' && (
                 <div className="mt-3 max-w-sm">
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="select-rule-destino" className="block text-xs font-bold text-secondary">
                     Pergunta de Destino
                   </label>
                   <select
@@ -1896,7 +1860,7 @@ export const SurveyWizard: React.FC = () => {
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {/* Campo 1: Questão */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="select-meta-questao" className="block text-xs font-bold text-secondary">
                     1. Questão *
                   </label>
                   <select
@@ -1922,7 +1886,7 @@ export const SurveyWizard: React.FC = () => {
 
                 {/* Campo 2: Condição */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="select-meta-condicao" className="block text-xs font-bold text-secondary">
                     2. Condição *
                   </label>
                   <select
@@ -1939,7 +1903,7 @@ export const SurveyWizard: React.FC = () => {
 
                 {/* Campo 3: Resposta */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="input-meta-resposta" className="block text-xs font-bold text-secondary">
                     3. Resposta Esperada *
                   </label>
                   <input
@@ -1954,7 +1918,7 @@ export const SurveyWizard: React.FC = () => {
 
                 {/* Quantidade Alvo */}
                 <div>
-                  <label className="block text-xs font-bold text-secondary">
+                  <label htmlFor="input-meta-quantidade" className="block text-xs font-bold text-secondary">
                     Quantidade Alvo (Amostragem)
                   </label>
                   <input
@@ -2021,10 +1985,11 @@ export const SurveyWizard: React.FC = () => {
               {collaborators.map((colab) => {
                 const isSelected = formData.pesquisadoresIds.includes(colab.id);
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={colab.id}
                     onClick={() => toggleResearcher(colab.id)}
-                    className={`flex cursor-pointer items-start justify-between rounded-xl border p-4 transition ${
+                    className={`flex w-full cursor-pointer items-start justify-between rounded-xl border p-4 text-left transition ${
                       isSelected
                         ? 'border-accent-primary-soft-border bg-accent-primary-soft shadow-sm shadow-brand-950/40'
                         : 'border-ui bg-surface-card hover:border-ui'
@@ -2063,7 +2028,7 @@ export const SurveyWizard: React.FC = () => {
                     >
                       {isSelected && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>

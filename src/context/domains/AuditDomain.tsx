@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { ActionAuditLog, RecentConnection } from '../../types';
+import { ActionAuditLog, AuditLogInput, RecentConnection } from '../../types';
 import { initialAuditLogs, initialConnections } from '../../mockData';
 import { generateIntegrityHash } from '../../utils/auditUtils';
 import type { AuditDomain, AuditInternal } from './types';
@@ -23,7 +23,7 @@ export function useAuditDomain(): { domain: AuditDomain; internal: AuditInternal
       if (!saved) return initialAuditLogs;
       const parsed = JSON.parse(saved);
       if (!Array.isArray(parsed)) return initialAuditLogs;
-      return parsed.map((l: any) => ({
+      return parsed.map((l) => ({
         ...l,
         autor: l.autor || {
           id: l.usuarioId || 'sys',
@@ -46,7 +46,7 @@ export function useAuditDomain(): { domain: AuditDomain; internal: AuditInternal
   // Conexões recentes (painel da Home) — somente leitura.
   const [connections] = useState<RecentConnection[]>(initialConnections);
 
-  const addAuditLog = (logData: any): ActionAuditLog => {
+  const addAuditLog = (logData: AuditLogInput): ActionAuditLog => {
     const currentUser = bridge.getCurrentUser?.();
     const currentProfile = bridge.getCurrentProfile?.();
     const timestamp = logData.timestamp || new Date().toISOString();

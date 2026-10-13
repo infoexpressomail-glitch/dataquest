@@ -1,30 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTranslation } from '../i18n';
-import {
-  FileQuestion,
-  MessageSquare,
-  Key,
-  Users,
-  Activity,
-  ArrowUpRight,
-  PlusCircle,
-  Smartphone,
-  CheckCircle2,
-  Clock,
-  Sparkles,
-  Wifi,
-  WifiOff,
-  RefreshCw,
-  CloudOff,
-  Gauge,
-  Share2,
-  MonitorCog,
-  Link2,
-  Database,
-  CalendarDays,
-  SlidersHorizontal,
-} from 'lucide-react';
+import { FileQuestion, MessageSquare, Key, Users, Activity, ArrowUpRight, PlusCircle, Smartphone, CheckCircle2, Clock, Wifi, WifiOff, RefreshCw, CloudOff, Gauge, Share2, MonitorCog, Link2, Database, CalendarDays, SlidersHorizontal } from 'lucide-react';
 import { SurveyEvolutionCard } from './home/SurveyEvolutionCard';
 import { DashboardCustomizer, type DashboardCatalogSection } from './home/DashboardCustomizer';
 import { useDashboardPreferences } from '../hooks/useDashboardPreferences';

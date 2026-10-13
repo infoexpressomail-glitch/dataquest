@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  UploadCloud,
-  FileSpreadsheet,
-  FileCheck2,
-  AlertCircle,
-  CheckCircle2,
-  Download,
-  Database,
-  ArrowRight,
-} from 'lucide-react';
+import { UploadCloud, FileSpreadsheet, FileCheck2, AlertCircle, CheckCircle2, Download } from 'lucide-react';
 import { Survey, InterviewSubmission } from '../../types';
 import {
   parseStructuredQuestionnaire,
@@ -111,8 +102,6 @@ export const ExternalImportModule: React.FC = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-
-  const blockingErrorCount = structuredErrors.filter((e) => e.bloqueante).length;
 
   const handleExecuteImport = () => {
     if (!file) return;
@@ -247,10 +236,10 @@ export const ExternalImportModule: React.FC = () => {
       {importType === 'pesquisa' && (
         <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl space-y-3">
           <div>
-            <label className="text-xs font-bold text-secondary">
+            <label htmlFor="fld-externalimportmodule-1" className="text-xs font-bold text-secondary">
               Nome da Pesquisa a ser Criada
             </label>
-            <input
+            <input id="fld-externalimportmodule-1"
               type="text"
               value={novaPesquisaNome}
               onChange={(e) => setNovaPesquisaNome(e.target.value)}
@@ -282,10 +271,10 @@ export const ExternalImportModule: React.FC = () => {
       {/* Target Survey selection if importing responses */}
       {importType === 'respostas' && (
         <div className="rounded-2xl border border-ui bg-surface p-4 shadow-xl">
-          <label className="text-xs font-bold text-secondary">
+          <label htmlFor="fld-externalimportmodule-2" className="text-xs font-bold text-secondary">
             Selecione a Pesquisa de Destino para as Respostas:
           </label>
-          <select
+          <select id="fld-externalimportmodule-2"
             value={selectedSurveyId}
             onChange={(e) => setSelectedSurveyId(e.target.value)}
             className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-3 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none max-w-md"

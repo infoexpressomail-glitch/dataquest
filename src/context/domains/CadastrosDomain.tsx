@@ -94,7 +94,7 @@ export function useCadastrosDomain(): { domain: CadastrosDomain; internal: Cadas
           } else {
             syncFailures.push(`${survey.nome}: ${res.message}`);
           }
-        } catch (err: any) {
+        } catch (err) {
           syncFailures.push(`${survey.nome}: ${err?.message || 'falha de rede ao sincronizar'}`);
         }
       }

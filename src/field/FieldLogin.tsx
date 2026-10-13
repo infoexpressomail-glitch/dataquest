@@ -69,7 +69,7 @@ export const FieldLogin: React.FC<FieldLoginProps> = ({ onAuthenticated, onExit 
       // 3. Monta a sessão e segue para o ambiente de campo
       const session = toFieldSession(auth.colaborador, auth.perfil, surveys.pesquisas);
       onAuthenticated(session);
-    } catch (err: any) {
+    } catch (err) {
       setErrorMessage(err?.message || 'Falha na sincronização. Tente novamente.');
     } finally {
       setIsLoading(false);

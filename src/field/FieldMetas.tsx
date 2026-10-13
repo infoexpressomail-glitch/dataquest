@@ -54,7 +54,7 @@ export const FieldMetas: React.FC<FieldMetasProps> = ({ session, onResync }) => 
     try {
       await onResync(session);
       setFeedback('Metas atualizadas com sucesso a partir do último carregamento.');
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message || 'Falha ao atualizar metas. Tente novamente.');
     } finally {
       setUpdating(false);

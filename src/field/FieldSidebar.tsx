@@ -109,6 +109,7 @@ export const FieldSidebar: React.FC<FieldSidebarProps> = ({
       {mobileOpen && (
         <div
           className="fixed inset-0 z-40 bg-overlay-modal backdrop-blur-sm lg:hidden"
+          role="presentation"
           onClick={onCloseMobile}
         />
       )}

@@ -169,7 +169,7 @@ export interface CrossTabMatrix {
  */
 export function getSurveyCrossVariables(
   survey: Survey,
-  submissions: InterviewSubmission[] = []
+  _submissions: InterviewSubmission[] = []
 ): CrossTabVariable[] {
   const variables: CrossTabVariable[] = [];
 
@@ -328,7 +328,7 @@ function extractValueForSubmission(
       return 'Sem Resposta';
     }
 
-    let val = Array.isArray(answer.resposta) ? answer.resposta[0] : String(answer.resposta);
+    const val = Array.isArray(answer.resposta) ? answer.resposta[0] : String(answer.resposta);
 
     // Agrupamento para NPS
     if (variable.perguntaOriginal.tipo === 'nps') {
@@ -1022,7 +1022,6 @@ export function exportCrossTabToPDF(
   doc.setFontSize(8.5);
 
   const availableWidth = pageWidth - 28;
-  const colCount = matrix.cols.length + 2; // Linha + Colunas + Total
   const firstColWidth = Math.min(50, availableWidth * 0.28);
   const otherColWidth = (availableWidth - firstColWidth) / (matrix.cols.length + 1);
 

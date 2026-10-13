@@ -41,7 +41,6 @@ export const LicensesModule: React.FC = () => {
     collaborators,
     profiles,
     toggleCollaboratorStatus,
-    currentProfile,
     hasPermission,
     licenseQuota,
     setLicenseQuota,

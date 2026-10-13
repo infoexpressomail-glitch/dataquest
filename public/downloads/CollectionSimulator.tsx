@@ -3,27 +3,19 @@ import { useApp } from '../../context/AppContext';
 import {
   Smartphone,
   CheckCircle2,
-  AlertCircle,
   ArrowRight,
   ArrowLeft,
   Mic,
   MicOff,
   Clock,
   MapPin,
-  Send,
   RotateCcw,
-  Volume2,
   CheckSquare,
   Save,
   Trash2,
   Wifi,
   WifiOff,
-  UserCheck,
-  ShieldCheck,
-  FileText,
   X,
-  AlertTriangle,
-  Flag,
   Calculator,
   Zap,
 } from 'lucide-react';
@@ -45,7 +37,6 @@ export const CollectionSimulator: React.FC = () => {
     addSubmission,
     setActiveModule,
     effectiveOnline,
-    addAuditLog,
     saveSurvey,
   } = useApp();
 
@@ -71,13 +62,12 @@ export const CollectionSimulator: React.FC = () => {
 
   const [simulatorTab, setSimulatorTab] = useState<'amostragem' | 'coleta'>('amostragem');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isReviewStep, setIsReviewStep] = useState<boolean>(false);
   const [confirmFinalizeModalOpen, setConfirmFinalizeModalOpen] = useState<boolean>(false);
   const [wasSavedOffline, setWasSavedOffline] = useState<boolean>(false);
   const [audioSeconds, setAudioSeconds] = useState<number>(0);
-  const [audioTranscript, setAudioTranscript] = useState<string>('Gravação ambiental de campo');
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   // Configurações da Pesquisa para Áudio
@@ -104,7 +94,7 @@ export const CollectionSimulator: React.FC = () => {
   const isRecordingAudio = hasAudioStarted && !isAudioAtLimit && !isCompleted;
 
   useEffect(() => {
-    let timer: any;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (isRecordingAudio) {
       timer = setInterval(() => {
         setAudioSeconds((prev) => {
@@ -122,7 +112,7 @@ export const CollectionSimulator: React.FC = () => {
   const currentQuestion: Question | undefined = hasValidQuestions ? activeSurvey?.perguntas[currentQuestionIndex] : undefined;
 
   // Open the final review screen
-  const handleOpenFinalReview = (lastAnswer?: any) => {
+  const handleOpenFinalReview = (lastAnswer?: unknown) => {
     if (lastAnswer !== undefined && currentQuestion) {
       setAnswers((prev) => ({ ...prev, [currentQuestion.id]: lastAnswer }));
     }
@@ -130,7 +120,7 @@ export const CollectionSimulator: React.FC = () => {
   };
 
   // Evaluate conditional rules for this question
-  const evaluateNextStep = (currentAns: any) => {
+  const evaluateNextStep = (currentAns: unknown) => {
     if (!currentQuestion || !activeSurvey?.regras) return;
 
     const matchedRule = activeSurvey.regras.find((r) => {

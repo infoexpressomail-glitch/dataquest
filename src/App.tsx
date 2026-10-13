@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/Header';
 import { AreaNav } from './components/navigation/AreaNav';
@@ -28,6 +28,14 @@ import {
   navigateToFieldRoute,
   leaveFieldRoute,
 } from './field/fieldRoute';
+import { isTotemRoute, leaveTotemRoute } from './totem/totemRoute';
+
+// Import tardio (code-splitting): o Modo Totem e a biblioteca de animação
+// `motion` só são baixados quando a rota /totem é realmente aberta — evita
+// inflar o bundle principal carregado por todos os usuários de gestão.
+const TotemApp = lazy(() =>
+  import('./totem/TotemApp').then((m) => ({ default: m.TotemApp }))
+);
 import { ShieldAlert, ArrowLeft, ClipboardList } from 'lucide-react';
 
 const MainContent: React.FC = () => {
@@ -249,14 +257,19 @@ export default function App() {
   // uma URL própria (/campo ou #app-pesquisador), sem precisar estar logado no
   // ambiente de gestão (o FieldApp exibe o login de campo).
   const [fieldRoute, setFieldRoute] = useState<boolean>(() => isFieldRoute());
+  // Modo Totem (tablet em quiosque) — rota própria /totem ou #app-totem.
+  const [totemRoute, setTotemRoute] = useState<boolean>(() => isTotemRoute());
 
   useEffect(() => {
-    const evaluate = () => setFieldRoute(isFieldRoute());
+    const evaluate = () => {
+      setFieldRoute(isFieldRoute());
+      setTotemRoute(isTotemRoute());
+    };
     const onPopState = evaluate;
     const onHashChange = evaluate;
     window.addEventListener('hashchange', onHashChange);
     window.addEventListener('popstate', onPopState);
-    // Reavalia também após o mount (cobre carregamento direto em /campo).
+    // Reavalia também após o mount (cobre carregamento direto em /campo e /totem).
     evaluate();
     return () => {
       window.removeEventListener('hashchange', onHashChange);
@@ -266,7 +279,20 @@ export default function App() {
 
   return (
     <AppProvider>
-      {fieldRoute ? (
+      {totemRoute ? (
+        <Suspense
+          fallback={
+            <div className="min-h-screen flex items-center justify-center bg-surface-app text-muted">
+              <div className="flex items-center gap-3 text-sm font-medium">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent-primary border-t-transparent" />
+                <span>Preparando o Modo Totem…</span>
+              </div>
+            </div>
+          }
+        >
+          <TotemApp onExit={leaveTotemRoute} />
+        </Suspense>
+      ) : fieldRoute ? (
         <FieldApp onExit={leaveFieldRoute} />
       ) : (
         <MainContent />

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { initialProfiles } from '../../mockData';
 import { AccessProfile } from '../../types';
@@ -72,6 +72,7 @@ export const AccessPoliciesMatrix: React.FC<AccessPoliciesMatrixProps> = ({
   const { profiles, collaborators, currentProfile, updateProfile } = useApp();
 
   const [drafts, setDrafts] = useState<DraftMap>(() => cloneProfiles(profiles));
+  const [syncedProfiles, setSyncedProfiles] = useState(profiles);
   const [openCell, setOpenCell] = useState<{ profileId: string; moduleId: string } | null>(null);
   const [openColumn, setOpenColumn] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ tone: 'success' | 'info' | 'error'; text: string } | null>(
@@ -79,16 +80,15 @@ export const AccessPoliciesMatrix: React.FC<AccessPoliciesMatrixProps> = ({
   );
 
   // Quando os perfis salvos mudam (ex.: primeira carga vinda do servidor),
-  // reflete no rascunho desde que não haja alteração pendente.
-  useEffect(() => {
-    setDrafts((prev) => {
-      const hasPending = profiles.some(
-        (p) => prev[p.id] && diffPermissions(p.permissions, prev[p.id].permissions).length > 0
-      );
-      return hasPending ? prev : cloneProfiles(profiles);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profiles]);
+  // reflete no rascunho desde que não haja alteração pendente. Ajuste de estado
+  // durante a renderização (padrão recomendado pelo React) em vez de useEffect.
+  if (profiles !== syncedProfiles) {
+    setSyncedProfiles(profiles);
+    const hasPending = profiles.some(
+      (p) => drafts[p.id] && diffPermissions(p.permissions, drafts[p.id].permissions).length > 0
+    );
+    if (!hasPending) setDrafts(cloneProfiles(profiles));
+  }
 
   const peopleCount = useMemo(() => {
     const counts: Record<string, number> = {};

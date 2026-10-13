@@ -13,9 +13,30 @@ import { FieldSession } from './fieldTypes';
  *   - Aqui preservamos os ids reais vindos do servidor; não tentamos traduzir p/ 'prof_*'.
  */
 
+interface RawFieldUser {
+  id: string;
+  cpf?: string;
+  nome?: string;
+  login?: string;
+  perfilAcessoId?: string;
+  email?: string;
+  celular?: string;
+  ativo?: boolean;
+  pesquisasVinculadasIds?: string[];
+  pesquisasReabilitadasIds?: string[];
+  criadoEm?: string;
+}
+
+interface RawFieldProfile {
+  id: string;
+  name?: string;
+  description?: string;
+  permissions?: AccessProfile['permissions'];
+}
+
 export function toFieldSession(
-  rawUser: Record<string, any>,
-  rawProfile: Record<string, any>,
+  rawUser: RawFieldUser,
+  rawProfile: RawFieldProfile,
   surveys: Survey[]
 ): FieldSession {
   const user: Collaborator = {
@@ -41,7 +62,7 @@ export function toFieldSession(
     id: rawProfile.id,
     name: rawProfile.name || 'Pesquisador de Campo',
     description: rawProfile.description || '',
-    permissions: rawProfile.permissions || {},
+    permissions: (rawProfile.permissions || {}) as AccessProfile['permissions'],
   };
 
   return { user, profile, surveys: Array.isArray(surveys) ? surveys : [] };

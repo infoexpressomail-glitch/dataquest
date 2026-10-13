@@ -1,21 +1,5 @@
 import React, { useState } from 'react';
-import {
-  X,
-  Wifi,
-  WifiOff,
-  CloudOff,
-  RefreshCw,
-  UploadCloud,
-  CheckCircle2,
-  AlertCircle,
-  FileText,
-  Clock,
-  Trash2,
-  Info,
-  Check,
-  Database,
-  Server,
-} from 'lucide-react';
+import { X, Wifi, WifiOff, CloudOff, RefreshCw, CheckCircle2, AlertCircle, FileText, Clock, Trash2, Info, Check, Database, Server } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 interface OfflineSyncModalProps {
@@ -37,10 +21,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
     supabaseSyncStatus,
     lastSupabaseSync,
     pendingIndexedDbCount,
-    syncAllPendingWithSupabase,
     forceSyncPendingWithSupabase,
-    checkConnectionNow,
-    connectionState,
     syncProgress,
     isSupabaseLive,
     clearCurrentSurveyDraft,
@@ -56,7 +37,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
     try {
       const res = await syncOfflineQueue();
       setSyncResult({ success: res.success, message: res.message });
-    } catch (e: any) {
+    } catch (e) {
       setSyncResult({
         success: false,
         message: e?.message || 'Falha ao sincronizar com o servidor.',
@@ -119,7 +100,10 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({ onClose }) =
                 Permite testar a criação e edição de pesquisas e coletas sem enviar ao servidor até sincronizar.
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label
+              aria-label="Simular Modo Offline"
+              className="relative inline-flex items-center cursor-pointer"
+            >
               <input
                 type="checkbox"
                 id="toggle-simulated-offline"

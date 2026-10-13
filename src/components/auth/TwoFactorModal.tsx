@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AppContext';
-import {
-  ShieldCheck,
-  KeyRound,
-  CheckCircle2,
-  AlertCircle,
-  X,
-  Smartphone,
-  Copy,
-  RefreshCw,
-} from 'lucide-react';
+import { ShieldCheck, CheckCircle2, AlertCircle, X, Smartphone, Copy } from 'lucide-react';
 
 interface TwoFactorModalProps {
   isOpen: boolean;
@@ -147,10 +138,10 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
           {/* Form to enter 6-digit code */}
           <form onSubmit={handleVerify} className="space-y-3">
             <div>
-              <label className="block text-xs font-bold text-secondary">
+              <label htmlFor="fld-twofactormodal-1" className="block text-xs font-bold text-secondary">
                 Código de Verificação de 6 Dígitos
               </label>
-              <input
+              <input id="fld-twofactormodal-1"
                 type="text"
                 maxLength={6}
                 value={verificationCode}

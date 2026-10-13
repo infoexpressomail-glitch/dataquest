@@ -93,7 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       const { data } = supabase.storage.from(SURVEY_ASSETS_BUCKET).getPublicUrl(path);
       return res.status(200).json({ success: true, url: data.publicUrl, path });
-    } catch (err: any) {
+    } catch (err) {
       return res.status(500).json({ success: false, message: `Falha no upload: ${err?.message || err}` });
     }
   }

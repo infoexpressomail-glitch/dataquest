@@ -36,7 +36,7 @@ export async function fetchServerProfiles(): Promise<ServerProfileResult> {
     throw new Error(data?.message || `Erro no servidor (${res.status}) ao carregar perfis.`);
   }
 
-  const profiles: AccessProfile[] = (data.profiles || []).map((p: any) => ({
+  const profiles: AccessProfile[] = (data.profiles || []).map((p) => ({
     id: String(p.id),
     name: String(p.name || ''),
     description: String(p.description || ''),

@@ -4,20 +4,13 @@ import {
   Percent,
   Users,
   Target,
-  Info,
   TrendingUp,
   Sparkles,
-  ShieldCheck,
   CheckCircle2,
-  RefreshCw,
-  HelpCircle,
-  BarChart2,
-  Layers,
   Zap,
   SlidersHorizontal,
   Check,
   Download,
-  FileCode,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -36,7 +29,6 @@ import { useApp } from '../../context/AppContext';
 import {
   calculateSampleSize,
   getZScore,
-  calculateMarginOfErrorFromSample,
   STANDARD_CONFIDENCE_LEVELS,
   getConfidenceFromZScore,
 } from '../../utils/samplingUtils';

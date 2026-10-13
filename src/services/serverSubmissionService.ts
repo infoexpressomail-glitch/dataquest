@@ -1,5 +1,5 @@
 import { InterviewSubmission } from '../types';
-import { apiFetch, setSessionToken } from './apiClient';
+import { apiFetch } from './apiClient';
 
 /**
  * Cliente de Comunicação com o Servidor Central de Entrevistas Coletadas
@@ -55,7 +55,7 @@ export async function uploadSubmissionsToServer(
       results: data.results || [],
       message: data.message || (data.success ? 'Entrevistas sincronizadas.' : 'Falha ao sincronizar entrevistas.'),
     };
-  } catch (err: any) {
+  } catch (err) {
     return {
       success: false,
       results: submissions.map((s) => ({ id: s.id, success: false, message: err?.message || 'Falha de rede' })),

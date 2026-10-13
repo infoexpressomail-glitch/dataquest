@@ -1,18 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Server,
-  ShieldCheck,
-  RefreshCw,
-  AlertTriangle,
-  CheckCircle2,
-  Lock,
-  ArrowUpCircle,
-  X,
-  Clock,
-  Database,
-  Users,
-  FileQuestion,
-} from 'lucide-react';
+import { Server, ShieldCheck, RefreshCw, AlertTriangle, CheckCircle2, Lock, ArrowUpCircle, X, Users, FileQuestion } from 'lucide-react';
 import { Survey, ServerSyncCheckResult } from '../../types';
 import { useApp } from '../../context/AppContext';
 
@@ -28,7 +15,6 @@ export const ServerSyncCheckModal: React.FC<ServerSyncCheckModalProps> = ({
   isOpen,
   onClose,
   survey,
-  hasLocalModifications,
   onUploadSuccess,
 }) => {
   const {
@@ -63,7 +49,7 @@ export const ServerSyncCheckModal: React.FC<ServerSyncCheckModalProps> = ({
         setErrorMessage(result.message || 'O servidor recusou a autorização de sincronização.');
         setStep('error');
       }
-    } catch (err: any) {
+    } catch (err) {
       setErrorMessage(err.message || 'Falha ao sincronizar com o servidor.');
       setStep('error');
     }
@@ -87,7 +73,7 @@ export const ServerSyncCheckModal: React.FC<ServerSyncCheckModalProps> = ({
           setStep('error');
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       setErrorMessage(err.message || 'Erro de conexão ao subir alterações.');
       setStep('error');
     }

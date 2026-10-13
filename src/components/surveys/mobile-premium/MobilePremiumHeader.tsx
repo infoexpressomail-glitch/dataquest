@@ -69,7 +69,6 @@ export const MobilePremiumHeader: React.FC<MobilePremiumHeaderProps> = ({
           <button
             type="button"
             className={`mp-audio-mini ${audio.recording ? 'recording' : 'pending'}`}
-            role="status"
             aria-live="polite"
             title={
               audio.recording

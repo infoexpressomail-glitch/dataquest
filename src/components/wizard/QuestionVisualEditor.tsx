@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Check,
-  Image as ImageIcon,
-  MessageSquareText,
-  Palette,
-  Smile,
-  Sparkles,
-  Trash2,
-  Type,
-} from 'lucide-react';
+import { Image as ImageIcon, MessageSquareText, Palette, Smile, Sparkles, Trash2, Type } from 'lucide-react';
 import type {
   AnswerVisualType,
   Question,
@@ -84,8 +75,8 @@ export const QuestionVisualEditor: React.FC<QuestionVisualEditorProps> = ({ ques
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label className="block text-[11px] font-bold text-secondary">Aparência do enunciado</label>
-          <select
+          <label htmlFor="fld-questionvisualeditor-1" className="block text-[11px] font-bold text-secondary">Aparência do enunciado</label>
+          <select id="fld-questionvisualeditor-1"
             value={visual.appearanceType || 'TEXTO'}
             onChange={(e) => patch({ appearanceType: e.target.value as QuestionAppearanceType })}
             className="mt-1 w-full rounded-lg border border-ui bg-surface-card px-2.5 py-1.5 text-xs text-primary focus:outline-none"
@@ -98,8 +89,8 @@ export const QuestionVisualEditor: React.FC<QuestionVisualEditorProps> = ({ ques
           </select>
         </div>
         <div>
-          <label className="block text-[11px] font-bold text-secondary">Estilo das respostas</label>
-          <select
+          <label htmlFor="fld-questionvisualeditor-2" className="block text-[11px] font-bold text-secondary">Estilo das respostas</label>
+          <select id="fld-questionvisualeditor-2"
             value={visual.answerVisualType || question.answerVisualType || 'CARDS'}
             onChange={(e) =>
               onChange({ ...question, answerVisualType: e.target.value as AnswerVisualType, visual: { ...visual, answerVisualType: e.target.value as AnswerVisualType } })
@@ -119,8 +110,8 @@ export const QuestionVisualEditor: React.FC<QuestionVisualEditorProps> = ({ ques
       {(visual.answerVisualType === 'ESCALA_VISUAL' || question.answerVisualType === 'ESCALA_VISUAL' || question.tipo === 'nps' || question.tipo === 'escala_numerica') && (
         <div className="grid grid-cols-1 gap-3 rounded-lg border border-ui bg-surface-card p-3 sm:grid-cols-3">
           <div>
-            <label className="block text-[11px] font-bold text-secondary">Tipo de escala</label>
-            <select
+            <label htmlFor="fld-questionvisualeditor-3" className="block text-[11px] font-bold text-secondary">Tipo de escala</label>
+            <select id="fld-questionvisualeditor-3"
               value={visual.scaleType || 'estrelas'}
               onChange={(e) => patch({ scaleType: e.target.value as VisualScaleType })}
               className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-1.5 text-xs text-primary focus:outline-none"
@@ -133,8 +124,8 @@ export const QuestionVisualEditor: React.FC<QuestionVisualEditorProps> = ({ ques
             </select>
           </div>
           <div>
-            <label className="block text-[11px] font-bold text-secondary">Níveis</label>
-            <select
+            <label htmlFor="fld-questionvisualeditor-4" className="block text-[11px] font-bold text-secondary">Níveis</label>
+            <select id="fld-questionvisualeditor-4"
               value={visual.scaleSteps || (question.tipo === 'nps' ? 11 : 5)}
               onChange={(e) => patch({ scaleSteps: Number(e.target.value) })}
               className="mt-1 w-full rounded-lg border border-ui bg-surface px-2.5 py-1.5 text-xs text-primary focus:outline-none"

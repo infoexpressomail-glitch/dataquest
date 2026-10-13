@@ -1,0 +1,264 @@
+/* ==========================================================================
+   RELATÓRIO DE COLETAS DO MODO TOTEM — painel do operador
+   --------------------------------------------------------------------------
+   Overlay independente (não depende das variáveis --mp-* do TotemSurvey, pois
+   é renderizado fora do quiosque). Cores explícitas para funcionar em qualquer
+   tema. Prefixo `.totem-report-` para não vazar estilos.
+   ========================================================================== */
+
+.totem-report-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(8, 25, 50, 0.62);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.totem-report {
+  width: 100%;
+  max-width: 1040px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 40px 90px -40px rgba(2, 16, 40, 0.7);
+  padding: 24px 26px 20px;
+  font-family: inherit;
+}
+
+.totem-report-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.totem-report-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #1d4ed8;
+}
+.totem-report-title h2 {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.25;
+  color: #0f172a;
+}
+.totem-report-title p {
+  margin-top: 3px;
+  font-size: 12px;
+  color: #64748b;
+}
+.totem-report-close {
+  flex: none;
+  height: 36px;
+  width: 36px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.totem-report-close:hover {
+  background: #f1f5f9;
+}
+
+/* Cartões de resumo ------------------------------------------------------- */
+.totem-report-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.totem-report-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+}
+.totem-report-card.is-primary {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+.totem-report-card.is-info {
+  background: #ecfeff;
+  border-color: #a5f3fc;
+  color: #0e7490;
+}
+.totem-report-card.is-warn {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+.totem-report-card-value {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #0f172a;
+}
+.totem-report-card-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Tabela ------------------------------------------------------------------ */
+.totem-report-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+.totem-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 720px;
+}
+.totem-report-table thead th {
+  text-align: left;
+  padding: 11px 14px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+.totem-report-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7;
+  color: #334155;
+  vertical-align: middle;
+}
+.totem-report-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.totem-report-table td.is-strong {
+  font-weight: 800;
+  color: #0f172a;
+}
+.totem-report-survey-name {
+  display: block;
+  font-weight: 800;
+  color: #0f172a;
+}
+.totem-report-survey-code {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+}
+.totem-report-rate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 130px;
+}
+.totem-report-rate-bar {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+.totem-report-rate-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+.totem-report-rate-value {
+  font-weight: 800;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+/* Estado vazio ------------------------------------------------------------ */
+.totem-report-empty {
+  padding: 40px 24px;
+  text-align: center;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.totem-report-empty-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+/* Ações ------------------------------------------------------------------- */
+.totem-report-actions {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.totem-report-generated {
+  font-size: 11px;
+  color: #94a3b8;
+}
+.totem-report-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.totem-report-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.totem-report-btn:hover:not(:disabled) {
+  background: #f8fafc;
+}
+.totem-report-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.totem-report-btn.is-danger {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+.totem-report-btn.is-danger:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+@media (max-width: 720px) {
+  .totem-report-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

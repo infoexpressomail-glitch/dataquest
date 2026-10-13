@@ -45,7 +45,7 @@ export const FieldHome: React.FC<FieldHomeProps> = ({ session, onNavigate, onRes
     try {
       await onResync(session);
       setFeedback('Pesquisas e políticas de acesso carregadas com sucesso.');
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message || 'Falha ao carregar pesquisas. Tente novamente.');
     } finally {
       setLoading(null);
@@ -65,7 +65,7 @@ export const FieldHome: React.FC<FieldHomeProps> = ({ session, onNavigate, onRes
           ? `${pend} coleta(s) pendente(s) de envio. Conecte-se e utilize a sincronização para descarregar.`
           : 'Todas as coletas já foram descarregadas (enviadas ao servidor).'
       );
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message || 'Falha ao descarregar. Tente novamente.');
     } finally {
       setLoading(null);
@@ -80,7 +80,7 @@ export const FieldHome: React.FC<FieldHomeProps> = ({ session, onNavigate, onRes
     try {
       await onResync(session);
       setFeedback('Metas das pesquisas ativas atualizadas com sucesso.');
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message || 'Falha ao atualizar metas. Tente novamente.');
     } finally {
       setLoading(null);

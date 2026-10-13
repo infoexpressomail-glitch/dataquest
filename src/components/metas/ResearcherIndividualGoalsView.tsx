@@ -5,21 +5,7 @@ import {
   calculateResearcherIndividualProgress,
   ResearcherIndividualProgressResult,
 } from '../../utils/demographicGoalsHelper';
-import {
-  User,
-  CheckCircle2,
-  Clock,
-  Target,
-  MapPin,
-  TrendingUp,
-  AlertCircle,
-  Sparkles,
-  Zap,
-  Radio,
-  FileCheck,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
+import { CheckCircle2, Clock, Target, MapPin, TrendingUp, Sparkles, Zap, Radio, FileCheck, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ResearcherIndividualGoalsViewProps {
   activeSurvey: Survey;
@@ -110,8 +96,8 @@ export const ResearcherIndividualGoalsView: React.FC<ResearcherIndividualGoalsVi
             {/* Seletor de visualização (disponível apenas para coordenadores/admins para simular a visão de qualquer pesquisador) */}
             {canSimulateOthers && (
               <div className="flex items-center gap-2">
-                <label className="text-xs text-muted hidden sm:inline">Inspecionar Pesquisador:</label>
-                <select
+                <label htmlFor="fld-researcherindividualgoalsview-1" className="text-xs text-muted hidden sm:inline">Inspecionar Pesquisador:</label>
+                <select id="fld-researcherindividualgoalsview-1"
                   value={selectedResearcherId}
                   onChange={(e) => setSelectedResearcherId(e.target.value)}
                   className="rounded-xl border border-ui bg-surface-card px-3 py-1.5 text-xs text-primary focus:border-brand-500 focus:outline-none"

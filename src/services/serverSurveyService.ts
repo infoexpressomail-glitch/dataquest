@@ -1,5 +1,5 @@
 import { Survey, ServerSyncCheckResult } from '../types';
-import { apiFetch, setSessionToken } from './apiClient';
+import { apiFetch } from './apiClient';
 
 /**
  * Cliente de Comunicação com o Servidor Central de Pesquisas
@@ -42,7 +42,7 @@ export async function fetchServerSurveys(): Promise<{ success: boolean; surveys:
     }
     const data = await res.json();
     return { success: true, surveys: data.surveys || [] };
-  } catch (err: any) {
+  } catch (err) {
     return { success: false, surveys: [], message: err.message || 'Falha ao conectar com o servidor' };
   }
 }
@@ -58,7 +58,7 @@ export async function fetchServerSurveyById(surveyId: string): Promise<{ success
     }
     const data = await res.json();
     return { success: true, survey: data.survey };
-  } catch (err: any) {
+  } catch (err) {
     return { success: false, message: err.message || 'Falha ao buscar pesquisa no servidor' };
   }
 }
@@ -111,7 +111,7 @@ export async function syncSurveyWithServer(
       message: data.message || 'Sincronização com o servidor validada com sucesso!',
       serverSurvey: data.serverSurvey,
     };
-  } catch (err: any) {
+  } catch (err) {
     return {
       success: false,
       emAndamento: true,
@@ -174,7 +174,7 @@ export async function uploadSurveyToServer(
       survey: data.survey,
       message: data.message || 'Pesquisa e alterações subidas com sucesso para o servidor!',
     };
-  } catch (err: any) {
+  } catch (err) {
     return {
       success: false,
       error: 'NETWORK_ERROR',
@@ -211,7 +211,7 @@ export async function createServerSurvey(survey: Survey): Promise<ServerUploadRe
       survey: data.survey,
       message: 'Nova pesquisa criada com sucesso no servidor!',
     };
-  } catch (err: any) {
+  } catch (err) {
     return {
       success: false,
       error: 'NETWORK_ERROR',

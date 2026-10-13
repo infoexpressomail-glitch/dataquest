@@ -115,7 +115,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       pesquisas: list,
       count: list.length,
     });
-  } catch (err: any) {
+  } catch (err) {
     return res.status(500).json({
       success: false,
       message: `Falha ao buscar pesquisas do pesquisador: ${err?.message || err}`,

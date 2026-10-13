@@ -33,7 +33,7 @@ export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
     try {
       const updated = await onResync(session);
       setFeedback(`${updated.surveys.length} pesquisa(s) carregada(s) com sucesso do servidor.`);
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message || 'Falha ao carregar pesquisas.');
     } finally {
       setBusy(null);
@@ -64,7 +64,7 @@ export const FieldSync: React.FC<FieldSyncProps> = ({ session, onResync }) => {
             : 'Não havia nada pendente para enviar.'
         );
       }
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message || 'Falha ao descarregar coletas.');
     } finally {
       setBusy(null);

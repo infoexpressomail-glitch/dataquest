@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Check,
   Image as ImageIcon,
@@ -12,7 +12,11 @@ import {
   Building2,
   Smile,
   Star,
+  Tablet,
+  Copy,
+  ShieldCheck,
 } from 'lucide-react';
+import { buildTotemLink } from '../../totem/totemRoute';
 import type { Survey, SurveyLayoutStyle } from '../../types';
 import { VISUAL_COLOR_PALETTE } from '../surveys/mobile-premium/iconLibrary';
 import { IMAGE_LIBRARY } from '../surveys/mobile-premium/imageLibrary';
@@ -29,6 +33,7 @@ const LAYOUT_OPTIONS: { id: SurveyLayoutStyle; nome: string; descricao: string; 
   { id: 'CARD', nome: 'Card', descricao: 'Perguntas em cartões destacados.', icone: LayoutTemplate },
   { id: 'SIDEBAR', nome: 'Sidebar', descricao: 'Navegação lateral com foco em desktop.', icone: LayoutTemplate },
   { id: 'MOBILE_PREMIUM', nome: 'Mobile First Premium (Opção 6)', descricao: 'Nova interface mobile-first com ícones, smiles, imagens e escalas visuais.', icone: Sparkles },
+  { id: 'TOTEM', nome: 'Totem (tablet em quiosque)', descricao: 'Uso desassistido: abre, avança ao responder e reinicia sozinho para o próximo.', icone: Tablet },
 ];
 
 /**
@@ -41,17 +46,35 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
   const [galleryMode, setGalleryMode] = useState<GalleryMode | null>(null);
   const [galleryTarget, setGalleryTarget] = useState<'cover' | 'finish' | 'logo' | 'browse'>('browse');
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const layout = formData.layoutStyle || 'DEFAULT';
-  const isPremium = layout === 'MOBILE_PREMIUM';
+  const isPremium = layout === 'MOBILE_PREMIUM' || layout === 'TOTEM';
+  const isTotem = layout === 'TOTEM';
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const set = (patch: Partial<Survey>) => setFormData((prev) => ({ ...prev, ...patch }));
+
+  const setTotem = (patch: Partial<NonNullable<Survey['totemConfig']>>) =>
+    setFormData((prev) => ({
+      ...prev,
+      totemConfig: { ...(prev.totemConfig || {}), ...patch },
+    }));
+
+  const copyTotemLink = async () => {
+    const url = buildTotemLink(formData.codigo);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Fallback silencioso: o operador pode copiar manualmente.
+    }
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2500);
+  };
 
   const handleUpload = async (file: File, target: 'cover' | 'finish' | 'logo') => {
     setUploadError(null);
     const folder = target === 'logo' ? 'logos' : 'covers';
-    const res = await uploadSurveyAsset(file, folder as any);
+    const res = await uploadSurveyAsset(file, folder);
     if (res.error) setUploadError(`Upload para o Supabase falhou (${res.error}). A imagem foi mantida localmente.`);
     if (target === 'cover') set({ coverImage: res.url });
     if (target === 'finish') set({ finishImage: res.url });
@@ -109,12 +132,138 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
 
         {isPremium && (
           <div className="mt-4 rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft p-3.5 text-[11px] text-accent-primary">
-            O modelo <strong>Mobile First Premium</strong> será usado para responder esta pesquisa
-            (simulador e coleta de campo). Configure abaixo a identidade visual e, na aba
+            O modelo <strong>{isTotem ? 'Totem (quiosque)' : 'Mobile First Premium'}</strong> será
+            usado para responder esta pesquisa. Configure abaixo a identidade visual e, na aba
             <strong> Perguntas</strong>, a aparência de cada questão.
           </div>
         )}
       </div>
+
+      {/* Modo Totem — automação do quiosque */}
+      {isTotem && (
+        <div className="rounded-2xl border border-ui bg-surface p-6 shadow-xl space-y-5">
+          <div className="flex items-center gap-2">
+            <Tablet size={18} className="text-accent-primary" />
+            <h3 className="text-sm font-bold text-primary">Comportamento do Totem</h3>
+          </div>
+          <p className="text-[11px] text-muted">
+            O tablet roda a pesquisa do início ao fim sem operador: ao escolher uma alternativa a
+            próxima questão abre sozinha, há botão Voltar em todas as questões e, no final, o
+            sistema pergunta se deseja finalizar e enviar antes de reiniciar para o próximo.
+          </p>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <label className="flex items-center justify-between gap-3 rounded-xl border border-ui bg-surface-card px-4 py-3">
+              <span className="text-xs font-bold text-secondary">Iniciar sozinho (sem toque)</span>
+              <input
+                type="checkbox"
+                checked={!!formData.totemConfig?.autoStart}
+                onChange={(e) => setTotem({ autoStart: e.target.checked })}
+                className="h-5 w-5 accent-[var(--accent-primary)]"
+              />
+            </label>
+
+            <div>
+              <label htmlFor="fld-surveyappearancestep-1" className="block text-xs font-bold text-secondary">Segundos de atração antes de iniciar</label>
+              <input id="fld-surveyappearancestep-1"
+                type="number"
+                min={0}
+                max={120}
+                value={formData.totemConfig?.autoStartDelaySeconds ?? 5}
+                onChange={(e) => setTotem({ autoStartDelaySeconds: Number(e.target.value) })}
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="fld-surveyappearancestep-2" className="block text-xs font-bold text-secondary">Atraso ao avançar (milissegundos)</label>
+              <input id="fld-surveyappearancestep-2"
+                type="number"
+                min={0}
+                max={3000}
+                step={50}
+                value={formData.totemConfig?.autoAdvanceDelayMs ?? 420}
+                onChange={(e) => setTotem({ autoAdvanceDelayMs: Number(e.target.value) })}
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="fld-surveyappearancestep-3" className="block text-xs font-bold text-secondary">Inatividade até reiniciar (segundos)</label>
+              <input id="fld-surveyappearancestep-3"
+                type="number"
+                min={0}
+                max={900}
+                value={formData.totemConfig?.inactivityResetSeconds ?? 150}
+                onChange={(e) => setTotem({ inactivityResetSeconds: Number(e.target.value) })}
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="fld-surveyappearancestep-4" className="block text-xs font-bold text-secondary">Tempo de agradecimento (segundos)</label>
+              <input id="fld-surveyappearancestep-4"
+                type="number"
+                min={0}
+                max={120}
+                value={formData.totemConfig?.thankYouSeconds ?? 8}
+                onChange={(e) => setTotem({ thankYouSeconds: Number(e.target.value) })}
+                className="mt-1.5 w-full rounded-lg border border-ui bg-surface-card px-3.5 py-2 text-xs text-primary focus:border-brand-500 focus:outline-none"
+              />
+            </div>
+
+            <label className="flex items-center justify-between gap-3 rounded-xl border border-ui bg-surface-card px-4 py-3">
+              <span className="text-xs font-bold text-secondary">Confirmar antes de enviar</span>
+              <input
+                type="checkbox"
+                checked={formData.totemConfig?.confirmBeforeSubmit !== false}
+                onChange={(e) => setTotem({ confirmBeforeSubmit: e.target.checked })}
+                className="h-5 w-5 accent-[var(--accent-primary)]"
+              />
+            </label>
+
+            <label className="flex items-center justify-between gap-3 rounded-xl border border-ui bg-surface-card px-4 py-3">
+              <span className="text-xs font-bold text-secondary">Botão Voltar em todas as questões</span>
+              <input
+                type="checkbox"
+                checked={formData.totemConfig?.showBackButton !== false}
+                onChange={(e) => setTotem({ showBackButton: e.target.checked })}
+                className="h-5 w-5 accent-[var(--accent-primary)]"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 rounded-xl border border-ui bg-surface-card px-4 py-3">
+            <div className="min-w-0 flex-1">
+              <span className="block text-xs font-bold text-secondary">Link do Totem</span>
+              <code className="mt-0.5 block truncate text-[11px] text-muted">
+                {buildTotemLink(formData.codigo)}
+              </code>
+            </div>
+            <button
+              type="button"
+              onClick={copyTotemLink}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-bold text-secondary hover:bg-surface-hover"
+            >
+              {linkCopied ? <Check size={14} className="text-accent-success" /> : <Copy size={14} />}
+              <span>{linkCopied ? 'Link copiado' : 'Copiar link'}</span>
+            </button>
+          </div>
+
+          <div className="flex items-start gap-2.5 rounded-xl border border-accent-primary-soft-border bg-accent-primary-soft px-4 py-3">
+            <ShieldCheck size={16} className="mt-0.5 shrink-0 text-accent-primary" />
+            <p className="text-[11px] leading-relaxed text-secondary">
+              <strong>Login do tablet:</strong> por padrão o totem guarda a sessão do
+              pesquisador no <code>localStorage</code>, então o tablet não pede login
+              depois de reiniciar. O operador liga/desliga isso no botão “Login do
+              tablet” no canto do quiosque, ou abre o link com{' '}
+              <code>?sessao=temporaria</code> para não guardar nada. No totem, o botão
+              “Relatório” mostra as coletas por pesquisa, o tempo médio de resposta e a
+              taxa de conclusão.
+            </p>
+          </div>
+        </div>
+      )}
 
       {isPremium && (
         <>
@@ -127,8 +276,8 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-bold text-secondary">Nome da instituição</label>
-                <input
+                <label htmlFor="fld-surveyappearancestep-5" className="block text-xs font-bold text-secondary">Nome da instituição</label>
+                <input id="fld-surveyappearancestep-5"
                   value={formData.institutionName || ''}
                   onChange={(e) => set({ institutionName: e.target.value })}
                   placeholder="Ex: Prefeitura Municipal"
@@ -136,8 +285,8 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-secondary">Rótulo do botão iniciar</label>
-                <input
+                <label htmlFor="fld-surveyappearancestep-6" className="block text-xs font-bold text-secondary">Rótulo do botão iniciar</label>
+                <input id="fld-surveyappearancestep-6"
                   value={formData.startButtonLabel || ''}
                   onChange={(e) => set({ startButtonLabel: e.target.value })}
                   placeholder="Iniciar Pesquisa"
@@ -148,9 +297,9 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-bold text-secondary">Cor principal (azul institucional)</label>
+                <label htmlFor="fld-surveyappearancestep-7" className="block text-xs font-bold text-secondary">Cor principal (azul institucional)</label>
                 <div className="mt-1.5 flex items-center gap-3">
-                  <input
+                  <input id="fld-surveyappearancestep-7"
                     type="color"
                     value={formData.themeAccent || '#2b66b0'}
                     onChange={(e) => set({ themeAccent: e.target.value })}
@@ -171,9 +320,9 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-secondary">Cor secundária (verde)</label>
+                <label htmlFor="fld-surveyappearancestep-8" className="block text-xs font-bold text-secondary">Cor secundária (verde)</label>
                 <div className="mt-1.5 flex items-center gap-3">
-                  <input
+                  <input id="fld-surveyappearancestep-8"
                     type="color"
                     value={formData.themeSecondary || '#047857'}
                     onChange={(e) => set({ themeSecondary: e.target.value })}
@@ -197,7 +346,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
 
             {/* Logo */}
             <div>
-              <label className="block text-xs font-bold text-secondary">Logo da instituição (opcional)</label>
+              <label htmlFor="fld-surveyappearancestep-9" className="block text-xs font-bold text-secondary">Logo da instituição (opcional)</label>
               <div className="mt-1.5 flex flex-wrap items-center gap-3">
                 {formData.logoImage ? (
                   <div className="relative">
@@ -218,7 +367,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-2 text-xs font-semibold text-secondary hover:bg-surface-hover">
                   <Upload size={14} />
                   Enviar logo
-                  <input
+                  <input id="fld-surveyappearancestep-9"
                     type="file"
                     accept="image/*"
                     className="hidden"
@@ -250,7 +399,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 const label = target === 'cover' ? 'Imagem de capa' : 'Imagem final';
                 return (
                   <div key={target} className="rounded-xl border border-ui bg-surface-card p-4">
-                    <label className="block text-xs font-bold text-secondary">{label}</label>
+                    <label htmlFor="fld-surveyappearancestep-10" className="block text-xs font-bold text-secondary">{label}</label>
                     <div className="mt-2 flex items-center gap-3">
                       {image ? (
                         <div className="relative">
@@ -272,7 +421,7 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                         <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-ui bg-surface-raised px-3 py-1.5 text-[11px] font-semibold text-secondary hover:bg-surface-hover">
                           <Upload size={13} />
                           Enviar
-                          <input
+                          <input id="fld-surveyappearancestep-10"
                             type="file"
                             accept="image/*"
                             className="hidden"
@@ -295,8 +444,8 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-secondary">Mensagem inicial (capa)</label>
-              <textarea
+              <label htmlFor="fld-surveyappearancestep-11" className="block text-xs font-bold text-secondary">Mensagem inicial (capa)</label>
+              <textarea id="fld-surveyappearancestep-11"
                 rows={2}
                 value={formData.welcomeMessage || ''}
                 onChange={(e) => set({ welcomeMessage: e.target.value })}
@@ -306,8 +455,8 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-secondary">Mensagem final</label>
-              <textarea
+              <label htmlFor="fld-surveyappearancestep-12" className="block text-xs font-bold text-secondary">Mensagem final</label>
+              <textarea id="fld-surveyappearancestep-12"
                 rows={2}
                 value={formData.finishMessage || ''}
                 onChange={(e) => set({ finishMessage: e.target.value })}
@@ -317,8 +466,8 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-secondary">Mensagem da instituição / Prefeitura</label>
-              <textarea
+              <label htmlFor="fld-surveyappearancestep-13" className="block text-xs font-bold text-secondary">Mensagem da instituição / Prefeitura</label>
+              <textarea id="fld-surveyappearancestep-13"
                 rows={2}
                 value={formData.prefeituraMessage || ''}
                 onChange={(e) => set({ prefeituraMessage: e.target.value })}
@@ -328,10 +477,10 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-secondary flex items-center gap-1.5">
+              <label htmlFor="fld-surveyappearancestep-14" className="block text-xs font-bold text-secondary flex items-center gap-1.5">
                 <QrCode size={14} /> QR Code (opcional)
               </label>
-              <input
+              <input id="fld-surveyappearancestep-14"
                 value={formData.qrCodeUrl || ''}
                 onChange={(e) => set({ qrCodeUrl: e.target.value })}
                 placeholder="https://... (URL da imagem do QR Code)"
