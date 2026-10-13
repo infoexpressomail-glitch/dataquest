@@ -48,6 +48,7 @@ As opções ficam em “Comportamento do Totem”:
 | Tempo de agradecimento (s) | 8 | Tempo na tela final antes de reiniciar. |
 | Confirmar antes de enviar | ligado | Exibe a pergunta “Deseja finalizar o formulário e enviar?”. |
 | Botão Voltar em todas as questões | ligado | Mantém o botão Voltar visível. |
+| Entrar em tela cheia ao iniciar | ligado | Ao tocar em “Toque para começar”, entra em tela cheia (esconde as barras do navegador). O navegador só permite tela cheia após um toque. |
 
 ## Sessão e dados
 
@@ -67,9 +68,44 @@ As opções ficam em “Comportamento do Totem”:
   gravação automática em IndexedDB quando estiver offline.
 - A escolha da pesquisa segue esta ordem: `?pesquisa=CODIGO` → pesquisa marcada
   como `TOTEM` → primeira pesquisa ativa vinculada ao login.
-- Os controles do operador (relatório, login do tablet, trocar pesquisa,
-  atualizar, sair) aparecem discretos no canto superior e não interferem na
-  experiência do respondente.
+
+## Barra do operador oculta (sem barras na tela)
+
+No totem **não aparecem barras de título, de status nem a barra do operador**: o
+respondente vê apenas a pesquisa — e, na primeira vez, apenas a **tela de login
+do pesquisador**. Os controles do operador (relatório, login do tablet, trocar
+pesquisa, atualizar, sair e tela cheia) ficam **ocultos por padrão** e só
+aparecem quando o operador chama o atalho.
+
+### Como revelar a barra do operador
+
+| Forma | Como fazer |
+| --- | --- |
+| **Toque (tablet)** | Toque **5x rápido** no **canto superior direito** (janela de 2,5s). |
+| **Toque longo (tablet)** | Pressione e segure o **canto superior direito** por **2,5s**. |
+| **Teclado físico** | **`Ctrl + Shift + O`** (O de Operador) abre e fecha. |
+| **URL (configuração)** | Abra `/totem?operador=1` — a barra já inicia aberta. |
+
+A barra **se fecha sozinha após 30s** sem interação. Também fecha na hora com
+**`Esc`** ou com o botão **“Ocultar”** do próprio painel.
+
+> O ponto sensível é invisível: fica em um quadrado de 96×96 px no canto
+> superior direito e não interfere nos toques do respondente.
+
+### Ocultar as barras do navegador (título/status)
+
+Para o totem rodar realmente “sem barras” do sistema operacional/navegador:
+
+1. Entre em **tela cheia** pelo botão do painel do operador (atalho acima) — em
+   muitos teclados físicos, `F11` também funciona; ou
+2. Instale o sistema como **PWA** (“Adicionar à tela inicial” no Android/iOS): no
+   modo standalone o navegador não mostra barra de endereço nem status; ou
+3. Configure o tablet em **modo quiosque** (Android: *Fixação de tela*;
+   iPad: *Acesso Guiado*, em Ajustes → Acessibilidade).
+
+O login do tablet continua persistido em `localStorage` (opção **“Login do
+tablet”** no painel do operador), então o totem não pede login novamente depois
+de reiniciar.
 
 ## Relatório de coletas do Totem
 
@@ -99,6 +135,8 @@ números de coleta do tablet, por pesquisa:
   de desativar (`?sessao=` e preferência do aparelho).
 - `src/totem/totemStatsStore.ts` — log de sessões de coleta e cálculo do
   relatório (contagem, tempo médio, taxa de conclusão).
+- `src/totem/useTotemOperatorAccess.ts` — barra do operador oculta no quiosque:
+  gesto de toque, toque longo, atalho de teclado (`Ctrl + Shift + O`) e `?operador=1`.
 - `src/totem/TotemCollectionReport.tsx` + `src/totem/totemReport.css` — painel
   do relatório de coletas do totem.
 - `src/totem/TotemApp.tsx` — casca do quiosque, sessão, submissão e operador.

@@ -17,6 +17,7 @@ import {
   endTotemSession,
   type TotemEndReason,
 } from '../../../totem/totemStatsStore';
+import { useTotemOperatorAccess } from '../../../totem/useTotemOperatorAccess';
 import '../mobile-premium/mobilePremium.css';
 import './totem.css';
 
@@ -40,6 +41,7 @@ const DEFAULTS = {
   confirmBeforeSubmit: true,
   thankYouSeconds: 8,
   showBackButton: true,
+  autoFullscreen: true,
 };
 
 /** Tipos cuja resposta é escolhida com um único toque (avanço automático). */
@@ -83,6 +85,10 @@ export const TotemSurvey: React.FC<TotemSurveyProps> = ({
   const [autoStartIn, setAutoStartIn] = useState<number>(cfg.autoStartDelaySeconds);
   const [thankIn, setThankIn] = useState<number>(cfg.thankYouSeconds);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Barra do operador: oculta por padrão no totem (o respondente só vê a
+  // pesquisa). O operador revela com o atalho/gesto — ver useTotemOperatorAccess.
+  const { operatorVisible, hideOperator, hotspotProps } = useTotemOperatorAccess();
 
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -187,16 +193,6 @@ export const TotemSurvey: React.FC<TotemSurveyProps> = ({
     [clearTimers, cfg.autoStartDelaySeconds, cfg.thankYouSeconds]
   );
 
-  const startSurvey = useCallback(() => {
-    clearTimers();
-    setAnswers({});
-    setComments({});
-    setIndex(0);
-    // Abre a sessão de coleta para o relatório do totem.
-    sessionIdRef.current = beginTotemSession(survey);
-    setPhase('active');
-  }, [clearTimers, survey]);
-
   const requestFullscreen = useCallback(async () => {
     try {
       if (!document.fullscreenElement) {
@@ -210,6 +206,21 @@ export const TotemSurvey: React.FC<TotemSurveyProps> = ({
       // Navegador sem suporte/permissão — ignora silenciosamente.
     }
   }, []);
+
+  const startSurvey = useCallback(() => {
+    clearTimers();
+    setAnswers({});
+    setComments({});
+    setIndex(0);
+    // Tela cheia no totem (esconde as barras do navegador). O navegador exige
+    // um gesto do usuário — este toque em "Toque para começar" serve de gatilho.
+    if (cfg.autoFullscreen && !document.fullscreenElement) {
+      void requestFullscreen();
+    }
+    // Abre a sessão de coleta para o relatório do totem.
+    sessionIdRef.current = beginTotemSession(survey);
+    setPhase('active');
+  }, [clearTimers, cfg.autoFullscreen, requestFullscreen, survey]);
 
   // ---------------------------------------------------------------------------
   // Finalização / envio
@@ -449,8 +460,6 @@ export const TotemSurvey: React.FC<TotemSurveyProps> = ({
       {/* ----------------------------- ATRAÇÃO ----------------------------- */}
       {phase === 'attract' && (
         <div className="totem-attract mp-anim-fade">
-          <div className="totem-operator">{operatorSlot}</div>
-
           <div className="totem-attract-card">
             {cover && (
               <div className="totem-attract-media">
@@ -503,14 +512,6 @@ export const TotemSurvey: React.FC<TotemSurveyProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            className="totem-fullscreen"
-            onClick={requestFullscreen}
-            aria-label={isFullscreen ? 'Sair da tela cheia' : 'Tela cheia'}
-          >
-            {isFullscreen ? 'Sair da tela cheia' : 'Tela cheia'}
-          </button>
         </div>
       )}
 
@@ -529,7 +530,6 @@ export const TotemSurvey: React.FC<TotemSurveyProps> = ({
                 <span className="totem-progress-fill" style={{ width: `${percent}%` }} />
               </div>
             </div>
-            <div className="totem-topbar-operator">{operatorSlot}</div>
           </header>
 
           <main className="totem-question-area">
@@ -670,6 +670,40 @@ export const TotemSurvey: React.FC<TotemSurveyProps> = ({
             <RotateCcw size={20} />
             <span>Iniciar agora</span>
           </button>
+        </div>
+      )}
+
+      {/*
+        Acesso do operador — a barra NÃO aparece para o respondente.
+        Ponto sensível no canto superior direito (invisível):
+          • 5 toques rápidos, ou
+          • toque longo de 2,5s,
+        e a barra aparece. No teclado físico: Ctrl + Shift + O. Fecha com Esc.
+      */}
+      <div
+        className="totem-operator-hotspot"
+        aria-hidden="true"
+        {...hotspotProps}
+      />
+
+      {operatorVisible && (
+        <div className="totem-operator-panel" role="toolbar" aria-label="Controles do operador">
+          <div className="totem-operator">{operatorSlot}</div>
+          <div className="totem-operator-extra">
+            <button
+              type="button"
+              onClick={requestFullscreen}
+              aria-label={isFullscreen ? 'Sair da tela cheia' : 'Entrar em tela cheia'}
+            >
+              {isFullscreen ? 'Sair da tela cheia' : 'Tela cheia'}
+            </button>
+            <button type="button" onClick={hideOperator} aria-label="Ocultar barra do operador">
+              Ocultar
+            </button>
+          </div>
+          <p className="totem-operator-hint">
+            Fecha sozinha em 30s • Ctrl + Shift + O para reabrir
+          </p>
         </div>
       )}
     </div>

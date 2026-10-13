@@ -155,15 +155,83 @@
   cursor: pointer;
 }
 
+/* --------------------------------------------------------------------------
+   ACESSO DO OPERADOR (barra oculta no quiosque)
+   -------------------------------------------------------------------------- */
+
+/* Ponto sensível invisível no canto superior direito. Não aparece para o
+   respondente; escuta o gesto (5 toques rápidos ou toque longo de 2,5s). */
+.totem-operator-hotspot {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 96px;
+  height: 96px;
+  z-index: 55;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: default;
+}
+
+/* Painel que só aparece quando o operador usa o atalho/gesto. */
+.totem-operator-panel {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--mp-border);
+  box-shadow: 0 24px 48px -22px rgba(8, 40, 80, 0.55);
+  max-width: min(92vw, 640px);
+  animation: totem-operator-in 180ms ease-out;
+}
+
+@keyframes totem-operator-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.totem-operator-extra {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.totem-operator-extra button {
+  border: 1px solid var(--mp-border);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--mp-muted);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.totem-operator-hint {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mp-muted);
+  text-align: right;
+}
+
 /* Controles do operador (sair / trocar pesquisa) — discretos */
 .totem-operator {
-  position: absolute;
-  top: 16px;
-  right: 18px;
-  z-index: 60;
+  position: static;
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 .totem-operator select {
   border: 1px solid var(--mp-border);
@@ -193,12 +261,7 @@
   background: color-mix(in srgb, var(--mp-secondary) 12%, #fff);
   color: var(--mp-secondary);
 }
-.totem-topbar-operator {
-  position: static;
-}
-.totem-topbar-operator .totem-operator {
-  position: static;
-}
+
 
 /* --------------------------------------------------------------------------
    PALCO DAS PERGUNTAS

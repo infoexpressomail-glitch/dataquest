@@ -231,6 +231,21 @@ export const SurveyAppearanceStep: React.FC<SurveyAppearanceStepProps> = ({ form
                 className="h-5 w-5 accent-[var(--accent-primary)]"
               />
             </label>
+
+            <label className="flex items-center justify-between gap-3 rounded-xl border border-ui bg-surface-card px-4 py-3">
+              <span className="text-xs font-bold text-secondary">
+                Entrar em tela cheia ao iniciar
+                <span className="mt-0.5 block text-[11px] font-medium text-muted">
+                  Esconde as barras de título/status do navegador no totem.
+                </span>
+              </span>
+              <input
+                type="checkbox"
+                checked={formData.totemConfig?.autoFullscreen !== false}
+                onChange={(e) => setTotem({ autoFullscreen: e.target.checked })}
+                className="h-5 w-5 accent-[var(--accent-primary)]"
+              />
+            </label>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 rounded-xl border border-ui bg-surface-card px-4 py-3">

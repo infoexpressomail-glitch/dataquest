@@ -146,6 +146,12 @@ export interface TotemConfig {
   thankYouSeconds?: number;
   /** Exibe o botão Voltar em todas as questões (padrão true). */
   showBackButton?: boolean;
+  /**
+   * Entra em tela cheia ao iniciar a coleta (esconde as barras do navegador).
+   * Padrão true no totem; o navegador só permite tela cheia após um toque, por
+   * isso é acionado no botão "Toque para começar".
+   */
+  autoFullscreen?: boolean;
 }
 
 /** Forma de apresentação das alternativas no modelo Mobile Premium. */
